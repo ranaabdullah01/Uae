@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AK Web Services - Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Login Section -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-brand">
+                <h1>AK Web Services</h1>
+                <p>Admin Panel</p>
+            </div>
+            <form id="login-form" class="login-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
+                </div>
+                <button type="button" id="login-btn" class="btn btn-primary">Login</button>
+                <div id="login-error" class="login-error"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-dashboard" style="display:none;">
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <h1>AK Web Services Admin</h1>
+                    <div class="admin-header-actions">
+                        <span id="admin-user" class="admin-user">Admin</span>
+                        <button id="logout-btn" class="btn btn-secondary">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <section class="dashboard-stats">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Leads</h3>
+                        <div class="stat-value" id="total-leads">0</div>
+                        <div class="stat-details">
+                            <span>Today: <strong id="leads-today">0</strong></span>
+                            <span>Week: <strong id="leads-week">0</strong></span>
+                            <span>Month: <strong id="leads-month">0</strong></span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Active Listings</h3>
+                        <div class="stat-value" id="active-listings">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Off-Plan Projects</h3>
+                        <div class="stat-value" id="offplan-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Communities</h3>
+                        <div class="stat-value" id="communities-count">0</div>
+                    </div>
+                </div>
+                <div class="quick-actions">
+                    <button class="btn btn-primary" data-tab="listings">Manage Listings</button>
+                    <button class="btn btn-primary" data-tab="offplan">Manage Off-Plan</button>
+                    <button class="btn btn-primary" data-tab="communities">Manage Communities</button>
+                    <button class="btn btn-primary" data-tab="profile">Edit Profile</button>
+                    <button class="btn btn-primary" data-tab="leads">View Leads</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Content Management Tabs -->
+        <section class="admin-content">
+            <div class="container">
+                <div class="admin-tabs">
+                    <button class="tab-btn active" data-tab="listings">Listings</button>
+                    <button class="tab-btn" data-tab="offplan">Off-Plan</button>
+                    <button class="tab-btn" data-tab="communities">Communities</button>
+                    <button class="tab-btn" data-tab="profile">Agent Profile</button>
+                    <button class="tab-btn" data-tab="leads">Leads</button>
+                </div>
+
+                <!-- Tab 1: Listings Manager -->
+                <div id="tab-listings" class="tab-content active">
+                    <div class="tab-header">
+                        <h2>Manage Listings</h2>
+                        <button id="add-listing-btn" class="btn btn-primary">Add New Listing</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Price</th>
+                                    <th>Community</th>
+                                    <th>Status</th>
+                                    <th>Featured</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listings-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Off-Plan Manager -->
+                <div id="tab-offplan" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Off-Plan Projects</h2>
+                        <button id="add-offplan-btn" class="btn btn-primary">Add New Project</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Developer</th>
+                                    <th>Community</th>
+                                    <th>Starting Price</th>
+                                    <th>Golden Visa</th>
+                                    <th>Featured</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="offplan-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Communities Manager -->
+                <div id="tab-communities" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Communities</h2>
+                        <button id="add-community-btn" class="btn btn-primary">Add New Community</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Apartment Price</th>
+                                    <th>Villa Price</th>
+                                    <th>Popular</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="communities-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Agent Profile -->
+                <div id="tab-profile" class="tab-content">
+                    <h2>Agent Profile & Settings</h2>
+                    <form id="profile-form" class="profile-form">
+                        <div class="form-section">
+                            <h3>Agent Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-agent-name">Agent Name</label>
+                                    <input type="text" id="prof-agent-name" name="agentName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-agent-title">Agent Title</label>
+                                    <input type="text" id="prof-agent-title" name="agentTitle">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-rerna">RERA BRN</label>
+                                    <input type="text" id="prof-rerna" name="rerna">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-experience">Years Experience</label>
+                                    <input type="number" id="prof-experience" name="experience">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-bio">Bio</label>
+                                <textarea id="prof-bio" name="bio" rows="4"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-languages">Languages (comma separated)</label>
+                                <input type="text" id="prof-languages" name="languages">
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-specialties">Specialties (comma separated)</label>
+                                <input type="text" id="prof-specialties" name="specialties">
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Agency Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-agency-name">Agency Name</label>
+                                    <input type="text" id="prof-agency-name" name="agencyName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-agency-logo">Agency Logo URL</label>
+                                    <input type="text" id="prof-agency-logo" name="agencyLogo">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-address">Office Address</label>
+                                    <input type="text" id="prof-address" name="address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-rerna-number">RERA Number</label>
+                                    <input type="text" id="prof-rerna-number" name="rernaNumber">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-phone">Phone</label>
+                                    <input type="text" id="prof-phone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-whatsapp">WhatsApp</label>
+                                    <input type="text" id="prof-whatsapp" name="whatsapp">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-email">Email</label>
+                                    <input type="email" id="prof-email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-whatsapp-greeting">WhatsApp Greeting</label>
+                                    <input type="text" id="prof-whatsapp-greeting" name="whatsappGreeting">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-propertyfinder">Property Finder URL</label>
+                                    <input type="text" id="prof-propertyfinder" name="propertyfinder">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-bayut">Bayut URL</label>
+                                    <input type="text" id="prof-bayut" name="bayut">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-worker-url">Worker URL</label>
+                                    <input type="text" id="prof-worker-url" name="workerUrl">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-ga-id">GA Tracking ID</label>
+                                    <input type="text" id="prof-ga-id" name="gaId">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Social Links</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-facebook">Facebook</label>
+                                    <input type="text" id="prof-facebook" name="facebook">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-instagram">Instagram</label>
+                                    <input type="text" id="prof-instagram" name="instagram">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-linkedin">LinkedIn</label>
+                                    <input type="text" id="prof-linkedin" name="linkedin">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-youtube">YouTube</label>
+                                    <input type="text" id="prof-youtube" name="youtube">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Site Settings</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-site-name">Site Name</label>
+                                    <input type="text" id="prof-site-name" name="siteName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-site-description">Site Description</label>
+                                    <input type="text" id="prof-site-description" name="siteDescription">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+                    </form>
+                </div>
+
+                <!-- Tab 5: Leads Viewer -->
+                <div id="tab-leads" class="tab-content">
+                    <h2>Lead Management</h2>
+                    <div class="leads-filters">
+                        <div class="filter-group">
+                            <label for="lead-site">Site</label>
+                            <select id="lead-site">
+                                <option value="all">All Sites</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="lead-type">Lead Type</label>
+                            <select id="lead-type">
+                                <option value="all">All Types</option>
+                                <option value="contact">Contact</option>
+                                <option value="valuation">Valuation</option>
+                                <option value="viewing">Viewing</option>
+                                <option value="goldenvisa">Golden Visa</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="lead-date-from">From</label>
+                            <input type="date" id="lead-date-from">
+                        </div>
+                        <div class="filter-group">
+                            <label for="lead-date-to">To</label>
+                            <input type="date" id="lead-date-to">
+                        </div>
+                        <button id="filter-leads-btn" class="btn btn-secondary">Filter</button>
+                        <button id="export-leads-btn" class="btn btn-secondary">Export CSV</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Details</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer">
+                <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                <button class="btn btn-primary" id="modal-save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="admin.js"></script>
+</body>
+</html>
