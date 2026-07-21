@@ -8,16 +8,36 @@ import { CONFIG } from './config.js';
 
 function hidePreloader() {
     const preloader = document.getElementById('preloader');
-    if (preloader) {
-        preloader.classList.add('hide');
-        // Remove from DOM after animation completes
-        setTimeout(() => {
-            if (preloader.parentNode) {
-                preloader.remove();
-            }
-        }, 900);
+    const image = document.getElementById('preloader-image');
+    
+    if (image) {
+        // Slide image up
+        image.classList.add('slide-up');
     }
+    
+    // Hide preloader after animation completes
+    setTimeout(() => {
+        if (preloader) {
+            preloader.classList.add('hide');
+            setTimeout(() => {
+                if (preloader.parentNode) {
+                    preloader.remove();
+                }
+            }, 400);
+        }
+    }, 800); // Wait for slide animation to complete
 }
+
+// Auto-hide after 2 seconds
+setTimeout(hidePreloader, 2000);
+
+// Also hide on page load (whichever comes first)
+window.addEventListener('load', function() {
+    setTimeout(hidePreloader, 300);
+});
+
+// Fallback: hide after 3.5 seconds max
+setTimeout(hidePreloader, 3500);
 
 // ============= STATE =============
 let listings = [];
@@ -825,9 +845,6 @@ function initFAQ() {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Hide preloader after 2 seconds minimum
-    setTimeout(hidePreloader, 2000);
-    
     loadAllData();
     
     const rtlStored = localStorage.getItem('ak_rtl');
@@ -898,14 +915,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
-
-// Also hide preloader when page is fully loaded (whichever comes first)
-window.addEventListener('load', function() {
-    setTimeout(hidePreloader, 500);
-});
-
-// Fallback: hide preloader after 3.5 seconds max
-setTimeout(hidePreloader, 3500);
 
 // ============= EXPOSE FOR GLOBAL USE =============
 window.listings = listings;
