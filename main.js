@@ -15,15 +15,16 @@ function hidePreloader() {
         image.classList.add('slide-up');
     }
     
-    // Hide preloader after animation completes
+    // Remove preloader completely after animation completes
     setTimeout(() => {
         if (preloader) {
             preloader.classList.add('hide');
+            // Remove from DOM completely
             setTimeout(() => {
                 if (preloader.parentNode) {
                     preloader.remove();
                 }
-            }, 400);
+            }, 100);
         }
     }, 800); // Wait for slide animation to complete
 }
