@@ -81,115 +81,37 @@ img { max-width: 100%; height: auto; display: block; }
 .gold-text { color: var(--brass); font-style: italic; }
 
 /* ============================================================
-   PRELOADER — Full-screen brand intro with elegant animation
+   PRELOADER — Full-screen image that slides up after 2 seconds
    ============================================================ */
 
 #preloader {
     position: fixed;
     inset: 0;
     z-index: 9999;
+    background: var(--emerald-deep, #072720);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--emerald-deep, #072720);
-    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), 
-                visibility 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    overflow: hidden;
+    transition: opacity 0.3s ease;
 }
 
 #preloader.hide {
     opacity: 0;
-    visibility: hidden;
     pointer-events: none;
 }
 
-.preloader-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    text-align: center;
-    animation: preloaderFadeIn 0.8s ease-out;
+#preloader-image {
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
 }
 
-@keyframes preloaderFadeIn {
-    from { opacity: 0; transform: scale(0.92); }
-    to { opacity: 1; transform: scale(1); }
-}
-
-.preloader-icon {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    animation: preloaderPulse 2s ease-in-out infinite;
-    filter: drop-shadow(0 0 30px rgba(176, 138, 62, 0.3));
-}
-
-@keyframes preloaderPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.05); opacity: 0.9; }
-}
-
-/* Spinner Ring */
-.preloader-spinner {
-    position: relative;
-    width: 60px;
-    height: 60px;
-}
-
-.spinner-ring {
-    position: absolute;
-    inset: 0;
-    border: 3px solid rgba(176, 138, 62, 0.15);
-    border-top-color: var(--brass-light, #D4B266);
-    border-radius: 50%;
-    animation: spinnerSpin 0.9s linear infinite;
-}
-
-@keyframes spinnerSpin {
-    to { transform: rotate(360deg); }
-}
-
-/* Second ring for extra elegance */
-.spinner-ring::after {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border: 3px solid rgba(176, 138, 62, 0.1);
-    border-top-color: var(--brass, #B08A3E);
-    border-radius: 50%;
-    animation: spinnerSpin 0.6s linear infinite reverse;
-}
-
-.preloader-text {
-    font-family: 'Inter', sans-serif;
-    font-size: 12px;
-    font-weight: 500;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(247, 243, 234, 0.6);
-    margin-top: 4px;
-    animation: preloaderTextPulse 1.8s ease-in-out infinite;
-}
-
-@keyframes preloaderTextPulse {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
-}
-
-/* Responsive preloader */
-@media (max-width: 640px) {
-    .preloader-icon {
-        width: 80px;
-        height: 80px;
-    }
-    .preloader-spinner {
-        width: 48px;
-        height: 48px;
-    }
-    .spinner-ring::after {
-        inset: 6px;
-    }
+#preloader-image.slide-up {
+    transform: translateY(-100vh);
+    opacity: 0;
 }
 
 /* ================ BUTTONS ================ */
