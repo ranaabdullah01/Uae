@@ -1,5 +1,5 @@
 // ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + R2 UPLOAD
+// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -14,6 +14,7 @@ let listingsData = [];
 let offplanData = [];
 let communitiesData = [];
 let profileData = {};
+let sidebarCollapsed = false;
 
 // ============= DOM REFS =============
 const loginScreen = document.getElementById('login-screen');
@@ -21,8 +22,9 @@ const adminDashboard = document.getElementById('admin-dashboard');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
 const passwordInput = document.getElementById('admin-password');
+const sidebar = document.getElementById('admin-sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -65,7 +67,7 @@ function compressImageToBlob(file, maxWidth) {
                 ctx.drawImage(img, 0, 0, width, height);
                 canvas.toBlob((blob) => {
                     resolve(blob);
-                }, 'image/jpeg', 0.8); // 80% quality JPEG
+                }, 'image/jpeg', 0.8);
             };
             img.src = e.target.result;
         };
@@ -88,7 +90,7 @@ async function setupImageInput(inputId, isMultiple = false) {
         showToast('Uploading image(s)...', 'info');
         
         for (const file of files) {
-            const compressedBlob = await compressImageToBlob(file, 1200); // 1200px max width
+            const compressedBlob = await compressImageToBlob(file, 1200);
             
             const formData = new FormData();
             formData.append('file', compressedBlob, file.name);
@@ -211,7 +213,7 @@ function logout() {
 
 function showDashboard() {
     if (loginScreen) loginScreen.style.display = 'none';
-    if (adminDashboard) adminDashboard.style.display = 'block';
+    if (adminDashboard) adminDashboard.style.display = 'flex';
 }
 
 function showLogin() {
@@ -229,6 +231,57 @@ function getAuthHeaders() {
     };
 }
 
+// ============= SIDEBAR FUNCTIONS =============
+
+function toggleSidebar() {
+    sidebarCollapsed = !sidebarCollapsed;
+    if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle('open');
+    } else {
+        sidebar.classList.toggle('collapsed');
+    }
+    localStorage.setItem('ak_sidebar_collapsed', sidebarCollapsed ? 'true' : 'false');
+}
+
+function closeSidebar() {
+    if (window.innerWidth <= 1024) {
+        sidebar.classList.remove('open');
+    }
+}
+
+function navigateTab(tab) {
+    // Update sidebar links
+    document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+        link.classList.toggle('active', link.dataset.tab === tab);
+    });
+    
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(el => {
+        el.classList.toggle('active', el.id === `tab-${tab}`);
+    });
+    
+    // Update page title
+    const titles = {
+        listings: 'Listings',
+        offplan: 'Off-Plan Projects',
+        communities: 'Communities',
+        leads: 'Leads',
+        profile: 'Profile'
+    };
+    document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
+    
+    currentTab = tab;
+    
+    // Load data for the tab
+    if (tab === 'leads') loadLeads();
+    if (tab === 'listings') loadListings();
+    if (tab === 'offplan') loadOffplan();
+    if (tab === 'communities') loadCommunities();
+    if (tab === 'profile') loadProfile();
+    
+    closeSidebar();
+}
+
 // ============= LOAD DATA FROM API =============
 
 async function loadAllData() {
@@ -240,6 +293,7 @@ async function loadAllData() {
         loadLeads()
     ]);
     updateStats();
+    updateSidebarBadges();
 }
 
 async function loadListings() {
@@ -249,6 +303,7 @@ async function loadListings() {
         if (data.success) {
             listingsData = data.listings;
             renderListingsTable();
+            updateSidebarBadges();
         }
     } catch (error) {
         console.error('Error loading listings:', error);
@@ -263,6 +318,7 @@ async function loadOffplan() {
         if (data.success) {
             offplanData = data.projects;
             renderOffplanTable();
+            updateSidebarBadges();
         }
     } catch (error) {
         console.error('Error loading offplan:', error);
@@ -277,6 +333,7 @@ async function loadCommunities() {
         if (data.success) {
             communitiesData = data.communities;
             renderCommunitiesTable();
+            updateSidebarBadges();
         }
     } catch (error) {
         console.error('Error loading communities:', error);
@@ -310,11 +367,21 @@ async function loadLeads() {
             leadsData = data.leads || [];
             renderLeadsTable();
             updateStats();
+            updateSidebarBadges();
         }
     } catch (error) {
         console.error('Error loading leads:', error);
         showError('leads-table-body', 'Failed to load leads');
     }
+}
+
+// ============= UPDATE SIDEBAR BADGES =============
+
+function updateSidebarBadges() {
+    document.getElementById('sidebar-listings-count').textContent = listingsData.length || 0;
+    document.getElementById('sidebar-offplan-count').textContent = offplanData.length || 0;
+    document.getElementById('sidebar-communities-count').textContent = communitiesData.length || 0;
+    document.getElementById('sidebar-leads-count').textContent = leadsData.length || 0;
 }
 
 // ============= RENDER TABLES =============
@@ -335,13 +402,13 @@ function renderListingsTable() {
         const firstImage = Array.isArray(images) && images.length > 0 ? images[0] : 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Property';
         
         tr.innerHTML = `
-            <td><img src="${firstImage}" alt="${listing.title}" class="listing-image" style="width:60px;height:60px;object-fit:cover;border-radius:4px;"></td>
+            <td><img src="${firstImage}" alt="${listing.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong>${listing.title}</strong></td>
             <td>AED ${formatPrice(listing.price)}</td>
             <td>${listing.community}</td>
-            <td><span class="status-badge ${listing.status === 'for-sale' || listing.status === 'for-rent' ? 'active' : 'inactive'}">${listing.status.replace('-', ' ')}</span></td>
+            <td><span class="table-status ${listing.status}">${listing.status.replace('-', ' ')}</span></td>
             <td>${listing.featured ? '⭐' : ''}</td>
-            <td class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <td class="actions">
                 <button class="btn btn-primary btn-sm" onclick="window.editListing('${listing.id}')">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="window.deleteListing('${listing.id}')">Delete</button>
             </td>
@@ -369,7 +436,7 @@ function renderOffplanTable() {
             <td>AED ${formatPrice(project.startingPrice)}</td>
             <td>${project.goldenVisaEligible ? '✅' : '❌'}</td>
             <td>${project.featured ? '⭐' : ''}</td>
-            <td class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <td class="actions">
                 <button class="btn btn-primary btn-sm" onclick="window.editOffplan('${project.id}')">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="window.deleteOffplan('${project.id}')">Delete</button>
             </td>
@@ -396,7 +463,7 @@ function renderCommunitiesTable() {
             <td>${community.avgApartmentPrice}</td>
             <td>${community.avgVillaPrice}</td>
             <td>${community.popular ? '⭐' : ''}</td>
-            <td class="actions" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <td class="actions">
                 <button class="btn btn-primary btn-sm" onclick="window.editCommunity('${community.id}')">Edit</button>
                 <button class="btn btn-danger btn-sm" onclick="window.deleteCommunity('${community.id}')">Delete</button>
             </td>
@@ -415,11 +482,6 @@ function renderProfileForm() {
     document.getElementById('prof-languages').value = profileData.languages || '';
     document.getElementById('prof-specialties').value = profileData.specialties || '';
     document.getElementById('prof-agency-name').value = profileData.agencyName || '';
-    
-    // Keep existing image data in hidden inputs so they aren't lost if no new file is uploaded
-    document.getElementById('hidden-photo').value = profileData.photo || '';
-    document.getElementById('hidden-agencyLogo').value = profileData.agencyLogo || '';
-    
     document.getElementById('prof-address').value = profileData.address || '';
     document.getElementById('prof-rerna-number').value = profileData.rernaNumber || '';
     document.getElementById('prof-phone').value = profileData.phone || '';
@@ -450,19 +512,19 @@ function renderLeadsTable() {
     
     leadsData.forEach(lead => {
         const tr = document.createElement('tr');
-        const contactedStatus = lead.contacted ? '✅ Contacted' : '⏳ Pending';
-        const statusClass = lead.contacted ? 'active' : 'pending';
+        const statusClass = lead.contacted ? 'contacted' : 'new';
+        const statusText = lead.contacted ? 'Contacted' : 'Pending';
         
         tr.innerHTML = `
             <td>${formatDate(lead.created_at || lead.createdAt)}</td>
             <td>${lead.name || 'N/A'}</td>
             <td>${lead.phone || 'N/A'}</td>
             <td>${lead.email || 'N/A'}</td>
-            <td><span class="status-badge ${statusClass}">${lead.type || 'N/A'}</span></td>
+            <td><span class="table-status ${lead.type || 'new'}">${lead.type || 'N/A'}</span></td>
             <td><button class="btn btn-secondary btn-sm" onclick="window.viewLeadDetails('${lead.id}')">View</button></td>
-            <td>${lead.phone ? `<a href="https://wa.me/${lead.phone}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>` : 'N/A'}</td>
+            <td>${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-success btn-sm">WhatsApp</a>` : 'N/A'}</td>
             <td>
-                <span class="status-badge ${statusClass}">${contactedStatus}</span>
+                <span class="table-status ${statusClass}">${statusText}</span>
                 ${!lead.contacted ? `<button class="btn btn-success btn-sm" onclick="window.markLeadContacted('${lead.id}')" style="margin-top:4px;">Mark Contacted</button>` : ''}
             </td>
         `;
@@ -489,12 +551,8 @@ function updateStats() {
     if (leadsData.length > 0) {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
-        const monthAgo = new Date(today); monthAgo.setDate(monthAgo.getDate() - 30);
         
         document.getElementById('leads-today').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= today).length;
-        document.getElementById('leads-week').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= weekAgo).length;
-        document.getElementById('leads-month').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= monthAgo).length;
     }
 }
 
@@ -514,7 +572,7 @@ window.deleteListing = async function(id) {
         const response = await fetch(`${API_BASE}/api/listings/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
         const data = await response.json();
         if (data.success) {
-            await loadListings(); updateStats();
+            await loadListings(); updateStats(); updateSidebarBadges();
             showToast('Listing deleted successfully!', 'success');
         } else { showToast('Failed to delete: ' + data.message, 'error'); }
     } catch (error) { console.error('Delete error:', error); showToast('Error deleting listing.', 'error'); }
@@ -539,7 +597,7 @@ async function saveListing(formData) {
         permit: formData.get('permit') || '',
         description: formData.get('description') || '',
         features: (formData.get('features') || '').split(',').map(f => f.trim()).filter(f => f),
-        images: formData.get('images_hidden') || '', // Grab R2 URLs from hidden input
+        images: formData.get('images_hidden') || '',
         whatsappText: formData.get('whatsappText') || "I'm interested in this property",
         featured: formData.get('featured') === 'true'
     };
@@ -549,7 +607,7 @@ async function saveListing(formData) {
         const response = await fetch(`${API_BASE}/api/listings`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(listing) });
         const data = await response.json();
         if (data.success) {
-            closeModal(); await loadListings(); updateStats();
+            closeModal(); await loadListings(); updateStats(); updateSidebarBadges();
             showToast('✅ Listing saved successfully!', 'success');
             editingId = null; editingType = null;
         } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
@@ -597,7 +655,7 @@ window.deleteOffplan = async function(id) {
     try {
         const response = await fetch(`${API_BASE}/api/offplan/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
         const data = await response.json();
-        if (data.success) { await loadOffplan(); updateStats(); showToast('Project deleted successfully!', 'success'); }
+        if (data.success) { await loadOffplan(); updateStats(); updateSidebarBadges(); showToast('Project deleted successfully!', 'success'); }
         else { showToast('Failed to delete: ' + data.message, 'error'); }
     } catch (error) { console.error('Delete error:', error); showToast('Error deleting project.', 'error'); }
 };
@@ -620,7 +678,7 @@ async function saveOffplan(formData) {
         description: formData.get('description') || '',
         highlights: (formData.get('highlights') || '').split(',').map(h => h.trim()).filter(h => h),
         goldenVisaEligible: formData.get('goldenVisaEligible') === 'true',
-        image: formData.get('image_hidden') || '', // Grab R2 URL from hidden input
+        image: formData.get('image_hidden') || '',
         brochureWhatsApp: formData.get('brochureWhatsApp') || "I'm interested in this off-plan project",
         featured: formData.get('featured') === 'true'
     };
@@ -630,7 +688,7 @@ async function saveOffplan(formData) {
         const response = await fetch(`${API_BASE}/api/offplan`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(project) });
         const data = await response.json();
         if (data.success) {
-            closeModal(); await loadOffplan(); updateStats();
+            closeModal(); await loadOffplan(); updateStats(); updateSidebarBadges();
             showToast('✅ Off-plan project saved successfully!', 'success');
             editingId = null; editingType = null;
         } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
@@ -674,7 +732,7 @@ window.deleteCommunity = async function(id) {
     try {
         const response = await fetch(`${API_BASE}/api/communities/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
         const data = await response.json();
-        if (data.success) { await loadCommunities(); updateStats(); showToast('Community deleted successfully!', 'success'); }
+        if (data.success) { await loadCommunities(); updateStats(); updateSidebarBadges(); showToast('Community deleted successfully!', 'success'); }
         else { showToast('Failed to delete: ' + data.message, 'error'); }
     } catch (error) { console.error('Delete error:', error); showToast('Error deleting community.', 'error'); }
 };
@@ -703,7 +761,7 @@ async function saveCommunity(formData) {
         const response = await fetch(`${API_BASE}/api/communities`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(community) });
         const data = await response.json();
         if (data.success) {
-            closeModal(); await loadCommunities(); updateStats();
+            closeModal(); await loadCommunities(); updateStats(); updateSidebarBadges();
             showToast('✅ Community saved successfully!', 'success');
             editingId = null; editingType = null;
         } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
@@ -743,7 +801,7 @@ async function saveProfile(formData) {
         languages: formData.get('languages') || '',
         specialties: formData.get('specialties') || '',
         agencyName: formData.get('agencyName') || '',
-        agencyLogo: formData.get('agencyLogo_hidden') || '', // Grab from hidden input
+        agencyLogo: formData.get('agencyLogo') || '',
         address: formData.get('address') || '',
         rernaNumber: formData.get('rernaNumber') || '',
         phone: formData.get('phone') || '',
@@ -760,7 +818,7 @@ async function saveProfile(formData) {
         youtube: formData.get('youtube') || '',
         siteName: formData.get('siteName') || '',
         siteDescription: formData.get('siteDescription') || '',
-        photo: formData.get('photo_hidden') || '' // Grab from hidden input
+        photo: formData.get('photo') || ''
     };
     
     try {
@@ -792,7 +850,6 @@ function buildFormHTML(formId, fields) {
             html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''}>`;
             html += `<input type="hidden" id="hidden-${f.name}" name="${f.name}_hidden" value="${f.value || ''}">`;
             if (f.value) {
-                 const firstImg = Array.isArray(f.value) ? f.value[0] : f.value;
                  html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);">Current image will be kept unless you upload a new one.</small>`;
             }
         } else {
@@ -804,7 +861,7 @@ function buildFormHTML(formId, fields) {
     return html;
 }
 
-// ============= LEAD MANAGEMENT (REDESIGNED UI) =============
+// ============= LEAD MANAGEMENT =============
 
 window.viewLeadDetails = function(id) {
     const lead = leadsData.find(l => l.id == id);
@@ -862,6 +919,7 @@ window.markLeadContacted = function(id) {
         lead.contacted = 1; 
         renderLeadsTable(); 
         updateStats(); 
+        updateSidebarBadges();
         closeModal();
         showToast('✅ Lead marked as contacted!', 'success');
     }
@@ -879,6 +937,13 @@ function exportCSV() {
     document.body.appendChild(link); link.click(); document.body.removeChild(link);
 }
 
+function filterLeads() {
+    const type = document.getElementById('lead-type')?.value || 'all';
+    let filtered = [...leadsData];
+    if (type !== 'all') filtered = filtered.filter(l => l.type === type);
+    renderLeadsTable(filtered);
+}
+
 // ============= MODAL FUNCTIONS =============
 
 function openModal(title, bodyHTML) {
@@ -888,7 +953,6 @@ function openModal(title, bodyHTML) {
     document.getElementById('modal-footer').style.display = 'flex'; 
     modal.style.display = 'flex';
     
-    // Initialize file upload listeners for modal inputs
     setupImageInput('edit-images', true);
     setupImageInput('edit-image', false);
     
@@ -929,47 +993,80 @@ function formatDate(date) {
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     
-    // Initialize profile image upload listeners
-    setupImageInput('prof-agent-photo', false);
-    setupImageInput('prof-agency-logo', false);
+    // Restore sidebar state
+    const collapsed = localStorage.getItem('ak_sidebar_collapsed') === 'true';
+    if (collapsed && window.innerWidth > 1024) {
+        sidebar.classList.add('collapsed');
+        sidebarCollapsed = true;
+    }
     
+    // Login
     if (loginForm) loginForm.addEventListener('submit', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (loginBtn) loginBtn.addEventListener('click', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (passwordInput) passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); loginForm.dispatchEvent(new Event('submit')); } });
-    if (logoutBtn) logoutBtn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
     
-    document.querySelectorAll('.admin-tabs .tab-btn, .quick-actions .btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+    // Logout
+    document.querySelectorAll('#logout-btn, #logout-btn-sidebar').forEach(btn => {
+        btn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
+    });
+    
+    // Sidebar navigation
+    document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
             const tab = this.dataset.tab;
-            document.querySelectorAll('.admin-tabs .tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.toggle('active', el.id === `tab-${tab}`));
-            currentTab = tab;
-            if (tab === 'leads') loadLeads();
-            if (tab === 'listings') loadListings();
-            if (tab === 'offplan') loadOffplan();
-            if (tab === 'communities') loadCommunities();
-            if (tab === 'profile') loadProfile();
+            if (tab) navigateTab(tab);
         });
     });
     
+    // Sidebar toggle
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+    }
+    
+    // Close sidebar on outside click (mobile)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                closeSidebar();
+            }
+        }
+    });
+    
+    // Quick action buttons
+    document.querySelectorAll('.quick-actions .btn, [data-tab]').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tab = this.dataset.tab;
+            if (tab) {
+                navigateTab(tab);
+                // Update sidebar active state
+                document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => {
+                    l.classList.toggle('active', l.dataset.tab === tab);
+                });
+            }
+        });
+    });
+    
+    // Add buttons
     document.getElementById('add-listing-btn')?.addEventListener('click', () => { editingId = null; editingType = 'listing'; openModal('Add New Listing', buildListingForm()); });
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     
+    // Profile form
     document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
+    
+    // Leads filters
     document.getElementById('filter-leads-btn')?.addEventListener('click', filterLeads);
     document.getElementById('export-leads-btn')?.addEventListener('click', exportCSV);
     
+    // Modal
     document.getElementById('modal-close')?.addEventListener('click', closeModal);
     document.getElementById('modal-cancel')?.addEventListener('click', closeModal);
     document.getElementById('modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
     
-    setInterval(() => { if (currentUser) { loadLeads(); updateStats(); } }, 30000);
+    // Auto-refresh leads
+    setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
+    
+    // Load default tab
+    navigateTab('listings');
 });
-
-function filterLeads() {
-    const type = document.getElementById('lead-type')?.value || 'all';
-    let filtered = [...leadsData];
-    if (type !== 'all') filtered = filtered.filter(l => l.type === type);
-    renderLeadsTable(filtered);
-}
