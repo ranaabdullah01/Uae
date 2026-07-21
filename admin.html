@@ -45,8 +45,16 @@
 
             <nav class="sidebar-nav">
                 <div class="nav-section">
+                    <span class="nav-label">Main</span>
+                    <a href="#" class="nav-link active" data-tab="dashboard">
+                        <i class="fas fa-th-large"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
                     <span class="nav-label">Management</span>
-                    <a href="#" class="nav-link active" data-tab="listings">
+                    <a href="#" class="nav-link" data-tab="listings">
                         <i class="fas fa-building"></i>
                         <span>Listings</span>
                         <span class="nav-badge" id="sidebar-listings-count">0</span>
@@ -97,21 +105,21 @@
                     <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar">
                         <i class="fas fa-bars"></i>
                     </button>
-                    <h1 id="page-title">Listings</h1>
+                    <h1 id="page-title">Dashboard</h1>
                 </div>
                 <div class="topbar-right">
                     <span class="admin-user">
                         <i class="fas fa-user-circle"></i>
-                        Admin
+                        <span>Admin</span>
                     </span>
                 </div>
             </header>
 
-            <!-- Stats Row -->
-            <section class="dashboard-stats">
+            <!-- Dashboard Stats - Only visible on Dashboard tab -->
+            <section class="dashboard-stats" id="dashboard-stats">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-file-signature"></i></div>
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
                         <div class="stat-info">
                             <span class="stat-label">Total Leads</span>
                             <span class="stat-value" id="total-leads">0</span>
@@ -146,8 +154,38 @@
 
             <!-- Tab Content -->
             <section class="admin-content">
-                <!-- Tab 1: Listings Manager -->
-                <div id="tab-listings" class="tab-content active">
+                <!-- Tab: Dashboard -->
+                <div id="tab-dashboard" class="tab-content active">
+                    <div class="dashboard-welcome">
+                        <h2>Welcome to Your Admin Dashboard</h2>
+                        <p>Here's an overview of your real estate business. Use the sidebar to manage listings, off-plan projects, communities, and leads.</p>
+                    </div>
+                    <div class="dashboard-quick-actions">
+                        <div class="quick-action-card" onclick="window.navigateTab('listings')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add New Listing</h4>
+                            <p>Create a new property listing</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('offplan')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add Off-Plan Project</h4>
+                            <p>Create a new off-plan development</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('communities')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add Community</h4>
+                            <p>Create a new community</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('leads')">
+                            <div class="quick-action-icon"><i class="fas fa-eye"></i></div>
+                            <h4>View Leads</h4>
+                            <p>Check your latest leads</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Listings Manager -->
+                <div id="tab-listings" class="tab-content">
                     <div class="tab-header">
                         <h2>Manage Listings</h2>
                         <button id="add-listing-btn" class="btn btn-primary">
@@ -172,7 +210,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 2: Off-Plan Manager -->
+                <!-- Tab: Off-Plan Manager -->
                 <div id="tab-offplan" class="tab-content">
                     <div class="tab-header">
                         <h2>Manage Off-Plan Projects</h2>
@@ -198,7 +236,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 3: Communities Manager -->
+                <!-- Tab: Communities Manager -->
                 <div id="tab-communities" class="tab-content">
                     <div class="tab-header">
                         <h2>Manage Communities</h2>
@@ -223,7 +261,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 4: Leads Viewer -->
+                <!-- Tab: Leads Viewer -->
                 <div id="tab-leads" class="tab-content">
                     <div class="tab-header">
                         <h2>Lead Management</h2>
@@ -277,7 +315,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 5: Agent Profile -->
+                <!-- Tab: Agent Profile -->
                 <div id="tab-profile" class="tab-content">
                     <div class="tab-header">
                         <h2>Agent Profile &amp; Settings</h2>
