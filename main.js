@@ -4,6 +4,21 @@
 
 import { CONFIG } from './config.js';
 
+// ============= PRELOADER =============
+
+function hidePreloader() {
+    const preloader = document.getElementById('preloader');
+    if (preloader) {
+        preloader.classList.add('hide');
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+            if (preloader.parentNode) {
+                preloader.remove();
+            }
+        }, 900);
+    }
+}
+
 // ============= STATE =============
 let listings = [];
 let offplan = [];
@@ -810,6 +825,9 @@ function initFAQ() {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Hide preloader after 2 seconds minimum
+    setTimeout(hidePreloader, 2000);
+    
     loadAllData();
     
     const rtlStored = localStorage.getItem('ak_rtl');
@@ -880,6 +898,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Also hide preloader when page is fully loaded (whichever comes first)
+window.addEventListener('load', function() {
+    setTimeout(hidePreloader, 500);
+});
+
+// Fallback: hide preloader after 3.5 seconds max
+setTimeout(hidePreloader, 3500);
 
 // ============= EXPOSE FOR GLOBAL USE =============
 window.listings = listings;
