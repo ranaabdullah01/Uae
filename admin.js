@@ -6,7 +6,7 @@ import { CONFIG } from './config.js';
 
 // ============= STATE =============
 let currentUser = null;
-let currentTab = 'listings';
+let currentTab = 'dashboard';
 let leadsData = [];
 let editingId = null;
 let editingType = null;
@@ -260,8 +260,15 @@ function navigateTab(tab) {
         el.classList.toggle('active', el.id === `tab-${tab}`);
     });
     
+    // Show/hide dashboard stats (only on dashboard tab)
+    const statsSection = document.getElementById('dashboard-stats');
+    if (statsSection) {
+        statsSection.style.display = tab === 'dashboard' ? 'block' : 'none';
+    }
+    
     // Update page title
     const titles = {
+        dashboard: 'Dashboard',
         listings: 'Listings',
         offplan: 'Off-Plan Projects',
         communities: 'Communities',
@@ -278,9 +285,13 @@ function navigateTab(tab) {
     if (tab === 'offplan') loadOffplan();
     if (tab === 'communities') loadCommunities();
     if (tab === 'profile') loadProfile();
+    if (tab === 'dashboard') updateStats();
     
     closeSidebar();
 }
+
+// Expose navigateTab globally for quick action cards
+window.navigateTab = navigateTab;
 
 // ============= LOAD DATA FROM API =============
 
@@ -304,6 +315,7 @@ async function loadListings() {
             listingsData = data.listings;
             renderListingsTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading listings:', error);
@@ -319,6 +331,7 @@ async function loadOffplan() {
             offplanData = data.projects;
             renderOffplanTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading offplan:', error);
@@ -334,6 +347,7 @@ async function loadCommunities() {
             communitiesData = data.communities;
             renderCommunitiesTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading communities:', error);
@@ -1033,20 +1047,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Quick action buttons
-    document.querySelectorAll('.quick-actions .btn, [data-tab]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tab = this.dataset.tab;
-            if (tab) {
-                navigateTab(tab);
-                // Update sidebar active state
-                document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => {
-                    l.classList.toggle('active', l.dataset.tab === tab);
-                });
-            }
-        });
-    });
-    
     // Add buttons
     document.getElementById('add-listing-btn')?.addEventListener('click', () => { editingId = null; editingType = 'listing'; openModal('Add New Listing', buildListingForm()); });
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
@@ -1066,7 +1066,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Auto-refresh leads
     setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
+    setInterval(() => { if (currentUser && currentTab === 'dashboard') { updateStats(); } }, 30000);
     
-    // Load default tab
-    navigateTab('listings');
+    // Load default tab (Dashboard)
+    navigateTab('dashboard');
 });
