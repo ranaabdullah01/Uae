@@ -1,5 +1,5 @@
 /* =============================================================
-   AK WEB SERVICES — LUXURY REAL ESTATE UI  (v2 — Emerald Prestige)
+   REALTORSITE STUDIO — LUXURY REAL ESTATE UI
    Palette: Deep Emerald · Warm Cream · Brass Gold · Ink
    Refined typography, generous space, elegant motion.
    ============================================================= */
@@ -88,12 +88,12 @@ img { max-width: 100%; height: auto; display: block; }
     position: fixed;
     inset: 0;
     z-index: 9999;
-    background: transparent;  /* Changed to transparent */
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    pointer-events: none;  /* Allow clicks to pass through */
+    pointer-events: none;
 }
 
 #preloader-image {
@@ -111,7 +111,6 @@ img { max-width: 100%; height: auto; display: block; }
     opacity: 0;
 }
 
-/* Remove the preloader completely after animation */
 #preloader.hide {
     display: none;
 }
@@ -227,25 +226,52 @@ nav .nav-container {
 .nav-menu a:hover { color: var(--emerald); }
 .nav-menu a:hover::after { width: 100%; }
 
+/* ================ LOGO ================ */
 .logo a {
-    display: flex; align-items: center; gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
+
 .logo img {
-    width: 46px; height: 46px;
-    border-radius: 50%;
-    border: 2px solid var(--brass);
-    padding: 2px; background: var(--white);
+    width: 50px;
+    height: 50px;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    background: transparent;
+    object-fit: contain;
 }
-.logo-text { display: flex; flex-direction: column; line-height: 1.1; }
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
 .logo-main {
     font-family: 'Playfair Display', serif;
-    font-weight: 700; font-size: 18px; color: var(--emerald-deep);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--emerald-deep);
     letter-spacing: 0.01em;
 }
+
 .logo-sub {
-    font-size: 10px; letter-spacing: 0.25em;
-    text-transform: uppercase; color: var(--brass);
-    margin-top: 2px;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brass);
+    margin-top: 1px;
+}
+
+/* For transparent header state (homepage) */
+#main-header:not(.scrolled) .logo-main {
+    color: var(--cream);
+}
+
+#main-header:not(.scrolled) .logo-sub {
+    color: var(--brass-light);
 }
 
 .hamburger {
@@ -974,8 +1000,17 @@ footer::before {
     .nav-links-wrapper.active { transform: translateY(0); }
     .nav-menu { flex-direction: column; gap: 18px; width: 100%; align-items: center; }
     .nav-menu a { font-size: 15px; }
-    .logo { order: -1; }
-    .logo-main { font-size: 16px; }
+
+    .logo img {
+        width: 40px;
+        height: 40px;
+    }
+    .logo-main {
+        font-size: 15px;
+    }
+    .logo-sub {
+        font-size: 8px;
+    }
 
     .section { padding: 50px 0; }
     .featured-section { padding: 50px 0; }
@@ -1026,9 +1061,9 @@ footer::before {
     .property-info, .offplan-info, .community-info { padding: 20px; }
     .property-price { font-size: 1.35rem; }
 }
+
 /* ============================================================
    SAFE FIX PACK — restore hero images + transparent header
-   This block only overrides the broken header/hero rules above.
    ============================================================ */
 
 #main-header {
@@ -1049,10 +1084,6 @@ footer::before {
 #main-header .logo-sub { color: var(--brass-light) !important; }
 #main-header .nav-menu a:hover { color: var(--brass-light) !important; }
 #main-header .hamburger span { background: var(--cream) !important; }
-#main-header .logo img {
-    background: rgba(255,255,255,0.92) !important;
-    border-color: var(--brass) !important;
-}
 
 #main-header.scrolled {
     background: rgba(251,249,244,0.98) !important;
@@ -1154,18 +1185,8 @@ footer::before {
         justify-content: flex-end !important;
     }
 
-    #main-header .nav-links-wrapper .logo,
-    #main-header .nav-links-wrapper .logo * {
-        display: none !important;
-        visibility: hidden !important;
-        opacity: 0 !important;
-        width: 0 !important;
-        height: 0 !important;
-        overflow: hidden !important;
-    }
-
     #main-header::after {
-        content: 'AK Web Services';
+        content: 'RealtorSite Studio';
         position: absolute;
         left: 50%;
         top: 50%;
@@ -1251,9 +1272,8 @@ footer::before {
     .hero-buttons { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
     .hero-buttons .btn { width: 100% !important; }
 }
-/* =============== PAGE HERO IMAGES (v6) — unique high-quality background per page =============== */
-/* Change any URL below to swap the image for that page. Overlay keeps text readable. */
 
+/* =============== PAGE HERO IMAGES =============== */
 .listings-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
         url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
