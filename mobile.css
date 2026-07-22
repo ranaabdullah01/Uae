@@ -34,11 +34,9 @@
     justify-content: space-between !important;
   }
 
-  /* Mobile Logo with Text */
+  /* Mobile Logo */
   .mobile-logo {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
+    display: block !important;
     z-index: 1002 !important;
     flex-shrink: 0;
   }
@@ -46,8 +44,6 @@
   .mobile-logo a {
     display: flex !important;
     align-items: center !important;
-    gap: 10px !important;
-    text-decoration: none !important;
   }
   
   .mobile-logo img {
@@ -60,41 +56,12 @@
     background: transparent !important;
   }
 
-  .mobile-logo-text {
-    display: flex !important;
-    flex-direction: column !important;
-    line-height: 1.1 !important;
-  }
-
-  .mobile-logo-main {
-    font-family: 'Playfair Display', serif !important;
-    font-weight: 700 !important;
-    font-size: 15px !important;
-    color: #F7F3EA !important;
-    letter-spacing: 0.01em !important;
-  }
-
-  .mobile-logo-sub {
-    font-size: 8px !important;
-    letter-spacing: 0.15em !important;
-    text-transform: uppercase !important;
-    color: #D4B266 !important;
-    margin-top: 1px !important;
-  }
-
-  #main-header.scrolled .mobile-logo-main {
-    color: #0B3B2E !important;
-  }
-  #main-header.scrolled .mobile-logo-sub {
-    color: #B08A3E !important;
-  }
-
   /* Hide desktop logo on mobile */
   #main-header .logo {
     display: none !important;
   }
 
-  /* Remove the ::after pseudo-element */
+  /* Remove the ::after pseudo-element that was showing the old name */
   #main-header::after {
     display: none !important;
     content: none !important;
@@ -259,14 +226,8 @@
 
 @media (max-width: 380px) {
   .mobile-logo img {
-    width: 32px !important;
-    height: 32px !important;
-  }
-  .mobile-logo-main {
-    font-size: 13px !important;
-  }
-  .mobile-logo-sub {
-    font-size: 7px !important;
+    width: 34px !important;
+    height: 34px !important;
   }
   .hero-title { font-size: 1.9rem !important; }
   .btn { font-size: 13px !important; padding: 13px 16px !important; }
