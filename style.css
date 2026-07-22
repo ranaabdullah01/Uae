@@ -274,6 +274,11 @@ nav .nav-container {
     color: var(--brass-light);
 }
 
+/* Mobile Logo - hidden by default, shown on mobile */
+.mobile-logo {
+    display: none;
+}
+
 .hamburger {
     display: none;
     background: none; border: none; cursor: pointer;
@@ -1001,15 +1006,18 @@ footer::before {
     .nav-menu { flex-direction: column; gap: 18px; width: 100%; align-items: center; }
     .nav-menu a { font-size: 15px; }
 
-    .logo img {
+    /* Mobile Logo */
+    .mobile-logo {
+        display: block !important;
+    }
+    .mobile-logo img {
         width: 40px;
         height: 40px;
+        object-fit: contain;
     }
-    .logo-main {
-        font-size: 15px;
-    }
-    .logo-sub {
-        font-size: 8px;
+
+    .logo {
+        display: none !important;
     }
 
     .section { padding: 50px 0; }
@@ -1060,6 +1068,10 @@ footer::before {
     h2 { font-size: 1.5rem; }
     .property-info, .offplan-info, .community-info { padding: 20px; }
     .property-price { font-size: 1.35rem; }
+    .mobile-logo img {
+        width: 34px;
+        height: 34px;
+    }
 }
 
 /* ============================================================
@@ -1186,27 +1198,8 @@ footer::before {
     }
 
     #main-header::after {
-        content: 'RealtorSite Studio';
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1002;
-        max-width: calc(100vw - 104px);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        pointer-events: none;
-        font-family: 'Playfair Display', serif;
-        font-size: 18px;
-        font-weight: 800;
-        letter-spacing: 0.3px;
-        color: var(--cream);
-        text-shadow: 0 2px 14px rgba(0,0,0,0.45);
-    }
-    #main-header.scrolled::after {
-        color: var(--emerald-deep);
-        text-shadow: none;
+        display: none !important;
+        content: none !important;
     }
 
     #main-header .hamburger {
