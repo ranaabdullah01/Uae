@@ -1,5 +1,5 @@
 /* ============================================================
-   MOBILE.CSS — clean mobile-only overrides for AK Web Services
+   MOBILE.CSS — clean mobile-only overrides for RealtorSite Studio
    Load AFTER style.css.
    ============================================================ */
 
@@ -31,40 +31,40 @@
     padding: 0 18px !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-end !important;
+    justify-content: space-between !important;
   }
 
-  #main-header .nav-links-wrapper .logo,
-  #main-header .nav-links-wrapper .logo * {
+  /* Mobile Logo */
+  .mobile-logo {
+    display: block !important;
+    z-index: 1002 !important;
+    flex-shrink: 0;
+  }
+  
+  .mobile-logo a {
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  .mobile-logo img {
+    width: 40px !important;
+    height: 40px !important;
+    object-fit: contain !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    background: transparent !important;
+  }
+
+  /* Hide desktop logo on mobile */
+  #main-header .logo {
     display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    width: 0 !important;
-    height: 0 !important;
-    overflow: hidden !important;
   }
 
+  /* Remove the ::after pseudo-element that was showing the old name */
   #main-header::after {
-    content: "AK Web Services";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1002;
-    max-width: calc(100vw - 104px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    pointer-events: none;
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 800;
-    color: #F7F3EA;
-    text-shadow: 0 2px 14px rgba(0,0,0,.45);
-  }
-  #main-header.scrolled::after {
-    color: #0B3B2E;
-    text-shadow: none;
+    display: none !important;
+    content: none !important;
   }
 
   #main-header .hamburger {
@@ -133,12 +133,6 @@
     background: transparent !important;
     border-bottom: 0 !important;
     box-shadow: none !important;
-  }
-  #main-header:has(.nav-links-wrapper.active)::after,
-  #main-header:has(.nav-links-wrapper.open)::after,
-  #main-header:has(.nav-links-wrapper.is-open)::after {
-    color: #F7F3EA !important;
-    text-shadow: 0 2px 14px rgba(0,0,0,.45) !important;
   }
   #main-header:has(.nav-links-wrapper.active) .hamburger span,
   #main-header:has(.nav-links-wrapper.open) .hamburger span,
@@ -231,7 +225,10 @@
 }
 
 @media (max-width: 380px) {
-  #main-header::after { font-size: 16px; }
+  .mobile-logo img {
+    width: 34px !important;
+    height: 34px !important;
+  }
   .hero-title { font-size: 1.9rem !important; }
   .btn { font-size: 13px !important; padding: 13px 16px !important; }
 }
