@@ -275,21 +275,56 @@ nav .nav-container {
 }
 
 /* Mobile Logo - hidden by default, shown on mobile */
+/* Mobile Logo - hidden by default, shown on mobile */
 .mobile-logo {
     display: none;
 }
 
-.hamburger {
-    display: none;
-    background: none; border: none; cursor: pointer;
-    width: 40px; height: 40px;
-    flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+.mobile-logo a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
 }
-.hamburger span {
-    width: 24px; height: 2px;
-    background: var(--emerald-deep);
-    transition: var(--transition);
-    border-radius: 2px;
+
+.mobile-logo img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 0;
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+.mobile-logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.mobile-logo-main {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--cream);
+    letter-spacing: 0.01em;
+}
+
+.mobile-logo-sub {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brass-light);
+    margin-top: 1px;
+}
+
+#main-header.scrolled .mobile-logo-main {
+    color: var(--emerald-deep);
+}
+
+#main-header.scrolled .mobile-logo-sub {
+    color: var(--brass);
 }
 .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger.active span:nth-child(2) { opacity: 0; }
