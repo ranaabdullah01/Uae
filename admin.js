@@ -22,8 +22,9 @@ const adminDashboard = document.getElementById('admin-dashboard');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
 const loginBtn = document.getElementById('login-btn');
-const logoutBtn = document.getElementById('logout-btn');
 const passwordInput = document.getElementById('admin-password');
+const sidebar = document.getElementById('admin-sidebar');
+const sidebarToggle = document.getElementById('sidebar-toggle');
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -212,7 +213,7 @@ function logout() {
 
 function showDashboard() {
     if (loginScreen) loginScreen.style.display = 'none';
-    if (adminDashboard) adminDashboard.style.display = 'block';
+    if (adminDashboard) adminDashboard.style.display = 'flex';
 }
 
 function showLogin() {
@@ -233,11 +234,19 @@ function getAuthHeaders() {
 // ============= SIDEBAR FUNCTIONS =============
 
 function toggleSidebar() {
-    const sidebar = document.getElementById('admin-sidebar');
-    if (!sidebar) return;
     sidebarCollapsed = !sidebarCollapsed;
-    sidebar.classList.toggle('collapsed');
+    if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle('open');
+    } else {
+        sidebar.classList.toggle('collapsed');
+    }
     localStorage.setItem('ak_sidebar_collapsed', sidebarCollapsed ? 'true' : 'false');
+}
+
+function closeSidebar() {
+    if (window.innerWidth <= 1024) {
+        sidebar.classList.remove('open');
+    }
 }
 
 function navigateTab(tab) {
@@ -257,12 +266,6 @@ function navigateTab(tab) {
         statsSection.style.display = tab === 'dashboard' ? 'block' : 'none';
     }
     
-    // Show/hide quick actions
-    const quickActions = document.querySelector('.quick-actions');
-    if (quickActions) {
-        quickActions.style.display = tab === 'dashboard' ? 'flex' : 'none';
-    }
-    
     // Update page title
     const titles = {
         dashboard: 'Dashboard',
@@ -272,8 +275,7 @@ function navigateTab(tab) {
         leads: 'Leads',
         profile: 'Profile'
     };
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) pageTitle.textContent = titles[tab] || 'Dashboard';
+    document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
     
     currentTab = tab;
     
@@ -284,6 +286,8 @@ function navigateTab(tab) {
     if (tab === 'communities') loadCommunities();
     if (tab === 'profile') loadProfile();
     if (tab === 'dashboard') updateStats();
+    
+    closeSidebar();
 }
 
 // Expose navigateTab globally for quick action cards
@@ -311,6 +315,7 @@ async function loadListings() {
             listingsData = data.listings;
             renderListingsTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading listings:', error);
@@ -326,6 +331,7 @@ async function loadOffplan() {
             offplanData = data.projects;
             renderOffplanTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading offplan:', error);
@@ -341,6 +347,7 @@ async function loadCommunities() {
             communitiesData = data.communities;
             renderCommunitiesTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading communities:', error);
@@ -385,15 +392,10 @@ async function loadLeads() {
 // ============= UPDATE SIDEBAR BADGES =============
 
 function updateSidebarBadges() {
-    const listingBadge = document.getElementById('sidebar-listings-count');
-    const offplanBadge = document.getElementById('sidebar-offplan-count');
-    const communitiesBadge = document.getElementById('sidebar-communities-count');
-    const leadsBadge = document.getElementById('sidebar-leads-count');
-    
-    if (listingBadge) listingBadge.textContent = listingsData.length || 0;
-    if (offplanBadge) offplanBadge.textContent = offplanData.length || 0;
-    if (communitiesBadge) communitiesBadge.textContent = communitiesData.length || 0;
-    if (leadsBadge) leadsBadge.textContent = leadsData.length || 0;
+    document.getElementById('sidebar-listings-count').textContent = listingsData.length || 0;
+    document.getElementById('sidebar-offplan-count').textContent = offplanData.length || 0;
+    document.getElementById('sidebar-communities-count').textContent = communitiesData.length || 0;
+    document.getElementById('sidebar-leads-count').textContent = leadsData.length || 0;
 }
 
 // ============= RENDER TABLES =============
@@ -414,7 +416,7 @@ function renderListingsTable() {
         const firstImage = Array.isArray(images) && images.length > 0 ? images[0] : 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Property';
         
         tr.innerHTML = `
-            <td><img src="${firstImage}" alt="${listing.title}" class="thumb"></td>
+            <td><img src="${firstImage}" alt="${listing.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong>${listing.title}</strong></td>
             <td>AED ${formatPrice(listing.price)}</td>
             <td>${listing.community}</td>
@@ -524,8 +526,8 @@ function renderLeadsTable() {
     
     leadsData.forEach(lead => {
         const tr = document.createElement('tr');
-        const statusClass = lead.contacted ? 'contacted' : 'pending';
-        const statusText = lead.contacted ? '✅ Contacted' : '⏳ Pending';
+        const statusClass = lead.contacted ? 'contacted' : 'new';
+        const statusText = lead.contacted ? 'Contacted' : 'Pending';
         
         tr.innerHTML = `
             <td>${formatDate(lead.created_at || lead.createdAt)}</td>
@@ -563,12 +565,8 @@ function updateStats() {
     if (leadsData.length > 0) {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const weekAgo = new Date(today); weekAgo.setDate(weekAgo.getDate() - 7);
-        const monthAgo = new Date(today); monthAgo.setDate(monthAgo.getDate() - 30);
         
         document.getElementById('leads-today').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= today).length;
-        document.getElementById('leads-week').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= weekAgo).length;
-        document.getElementById('leads-month').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= monthAgo).length;
     }
 }
 
@@ -1009,38 +1007,22 @@ function formatDate(date) {
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     
-    // Sidebar toggle
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const mobileToggle = document.getElementById('mobile-sidebar-toggle');
-    const sidebar = document.getElementById('admin-sidebar');
-    
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
-            if (sidebar) sidebar.classList.toggle('collapsed');
-        });
+    // Restore sidebar state
+    const collapsed = localStorage.getItem('ak_sidebar_collapsed') === 'true';
+    if (collapsed && window.innerWidth > 1024) {
+        sidebar.classList.add('collapsed');
+        sidebarCollapsed = true;
     }
     
-    if (mobileToggle) {
-        mobileToggle.addEventListener('click', function() {
-            if (sidebar) {
-                sidebar.classList.toggle('collapsed');
-                // On mobile, also toggle a mobile-open class
-                sidebar.classList.toggle('mobile-open');
-            }
-        });
-    }
-    
-    // Profile image upload listeners
-    setupImageInput('prof-agent-photo', false);
-    setupImageInput('prof-agency-logo', false);
-    
+    // Login
     if (loginForm) loginForm.addEventListener('submit', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (loginBtn) loginBtn.addEventListener('click', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (passwordInput) passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); loginForm.dispatchEvent(new Event('submit')); } });
-    if (logoutBtn) logoutBtn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
     
-    // Sidebar logout
-    document.getElementById('logout-btn-sidebar')?.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
+    // Logout
+    document.querySelectorAll('#logout-btn, #logout-btn-sidebar').forEach(btn => {
+        btn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
+    });
     
     // Sidebar navigation
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
@@ -1051,17 +1033,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Quick action buttons
-    document.querySelectorAll('.quick-actions .btn, [data-tab]').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const tab = this.dataset.tab;
-            if (tab) {
-                navigateTab(tab);
-                document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => {
-                    l.classList.toggle('active', l.dataset.tab === tab);
-                });
+    // Sidebar toggle
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', toggleSidebar);
+    }
+    
+    // Close sidebar on outside click (mobile)
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                closeSidebar();
             }
-        });
+        }
     });
     
     // Add buttons
@@ -1081,8 +1064,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('modal-cancel')?.addEventListener('click', closeModal);
     document.getElementById('modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
     
-    // Auto-refresh
-    setInterval(() => { if (currentUser) { loadLeads(); updateStats(); } }, 30000);
+    // Auto-refresh leads
+    setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
     setInterval(() => { if (currentUser && currentTab === 'dashboard') { updateStats(); } }, 30000);
     
     // Load default tab (Dashboard)
