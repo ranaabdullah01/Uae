@@ -3,757 +3,496 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RealtorSite Studio | Websites That Sell Homes</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with RealtorSite Studio. RERA licensed agents.">
-    <meta name="keywords" content="Dubai real estate, luxury properties, buy property Dubai, rent Dubai, off-plan Dubai, Golden Visa">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://realtorsitestudio.com/">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="RealtorSite Studio | Luxury Real Estate Websites">
-    <meta property="og:description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with RealtorSite Studio.">
-    <meta property="og:url" content="https://realtorsitestudio.com/">
-    <meta property="og:type" content="website">
-    
-    <!-- Premium Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>AK Web Services - Admin Panel</title>
+    <link rel="stylesheet" href="admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mobile.css">
-
-    <!-- Schema.org RealEstateAgent Markup -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "RealEstateAgent",
-        "name": "RealtorSite Studio",
-        "description": "Premium Dubai real estate agency specializing in luxury properties, off-plan investments, and Golden Visa services.",
-        "url": "https://realtorsitestudio.com/",
-        "telephone": "+971501234567",
-        "email": "info@realtorsitestudio.com",
-        "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
-        "priceRange": "AED 500,000 - AED 50,000,000",
-        "openingHours": "Mo-Su 09:00-21:00",
-        "sameAs": ["https://instagram.com/realtorsitestudio", "https://facebook.com/realtorsitestudio", "https://linkedin.com/company/realtorsitestudio"]
-    }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <!-- =============== PRELOADER (Loading Screen Image) =============== -->
-    <div id="preloader">
-        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="RealtorSite Studio" id="preloader-image">
+    <!-- Login Section -->
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <div class="login-brand">
+                <h1>AK Web Services</h1>
+                <p>Admin Panel</p>
+            </div>
+            <form id="login-form" class="login-form" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" name="password" placeholder="Enter admin password" required>
+                </div>
+                <button type="button" id="login-btn" class="btn btn-primary">Login</button>
+                <div id="login-error" class="login-error"></div>
+            </form>
+        </div>
     </div>
 
-    <header id="main-header">
-        <nav>
-            <div class="container nav-container">
-                <!-- Left Navigation -->
-                <div id="nav-menu" class="nav-links-wrapper">
-                    <ul class="nav-menu nav-left">
-                        <li><a href="#listings" data-section="listings">Properties</a></li>
-                        <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
-                        <li><a href="#valuation" data-section="valuation">Valuation</a></li>
-                    </ul>
-                    
-                    <!-- Center Logo (New Logo) -->
-                    <div class="logo">
-                        <a href="#home" data-section="home">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="RealtorSite Studio">
-                            <div class="logo-text">
-                                <span class="logo-main">RealtorSite Studio</span>
-                                <span class="logo-sub">Websites That Sell Homes</span>
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="admin-dashboard" style="display:none;">
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar" id="admin-sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon">AK</div>
+                <span class="brand-text">AK Web Services</span>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section">Main</div>
+                <a href="#" class="nav-link active" data-tab="dashboard">
+                    <span class="nav-icon"><i class="fas fa-th-large"></i></span>
+                    <span class="nav-label">Dashboard</span>
+                </a>
+
+                <div class="nav-section">Management</div>
+                <a href="#" class="nav-link" data-tab="listings">
+                    <span class="nav-icon"><i class="fas fa-building"></i></span>
+                    <span class="nav-label">Listings</span>
+                    <span class="nav-badge" id="sidebar-listings-count">0</span>
+                </a>
+                <a href="#" class="nav-link" data-tab="offplan">
+                    <span class="nav-icon"><i class="fas fa-drafting-compass"></i></span>
+                    <span class="nav-label">Off-Plan</span>
+                    <span class="nav-badge" id="sidebar-offplan-count">0</span>
+                </a>
+                <a href="#" class="nav-link" data-tab="communities">
+                    <span class="nav-icon"><i class="fas fa-city"></i></span>
+                    <span class="nav-label">Communities</span>
+                    <span class="nav-badge" id="sidebar-communities-count">0</span>
+                </a>
+
+                <div class="nav-section">Analytics</div>
+                <a href="#" class="nav-link" data-tab="leads">
+                    <span class="nav-icon"><i class="fas fa-users"></i></span>
+                    <span class="nav-label">Leads</span>
+                    <span class="nav-badge" id="sidebar-leads-count">0</span>
+                </a>
+
+                <div class="nav-section">Settings</div>
+                <a href="#" class="nav-link" data-tab="profile">
+                    <span class="nav-icon"><i class="fas fa-user-cog"></i></span>
+                    <span class="nav-label">Profile</span>
+                </a>
+
+                <div class="nav-divider"></div>
+                <div class="nav-logout">
+                    <button id="logout-btn-sidebar" class="nav-link">
+                        <span class="nav-icon"><i class="fas fa-sign-out-alt"></i></span>
+                        <span class="nav-label">Logout</span>
+                    </button>
+                </div>
+            </nav>
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <button class="header-btn" id="mobile-sidebar-toggle" aria-label="Toggle sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <span class="page-title" id="page-title">Dashboard</span>
+                    <div class="search-bar">
+                        <span class="search-icon"><i class="fas fa-search"></i></span>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge-dot"></span>
+                    </button>
+                    <div class="user-profile">
+                        <div class="avatar">A</div>
+                        <div>
+                            <div class="user-name" id="admin-user-name">Admin</div>
+                            <div class="user-role">Administrator</div>
+                        </div>
+                    </div>
+                    <button id="logout-btn" class="header-btn" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <div class="page-content">
+                <!-- Dashboard Stats -->
+                <section class="dashboard-stats" id="dashboard-stats">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Total Leads</h3>
+                                <span class="stat-icon"><i class="fas fa-users"></i></span>
                             </div>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Navigation -->
-                    <ul class="nav-menu nav-right">
-                        <li><a href="#communities" data-section="communities">Communities</a></li>
-                        <li><a href="#about" data-section="about">About</a></li>
-                        <li><a href="#contact" data-section="contact">Contact Us</a></li>
-                        <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
-                    </ul>
-                </div>
-
-                <!-- Mobile Hamburger -->
-                <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <main id="main-content">
-        <!-- HOME SECTION -->
-        <section id="home" class="section active">
-            <div class="hero">
-                <div class="hero-slideshow" aria-hidden="true">
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1920&q=80')"></div>
-                </div>
-                <div class="hero-content">
-                    <div class="container">
-                        <div class="hero-badge">
-                            <span class="rerna-badge">RERA BRN: <strong id="rerna-number">123456</strong></span>
-                        </div>
-                        <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
-                        <p class="hero-subtitle" id="agent-tagline">Luxury Properties | Off-Plan Investments | Golden Visa Experts</p>
-                        <div class="hero-buttons">
-                            <a href="#listings" class="btn btn-primary" data-section="listings">View Properties</a>
-                            <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp">WhatsApp</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-                <!-- Featured Listings -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Featured Properties</h2>
-                        <a href="#listings" class="view-all" data-section="listings">View All <span>→</span></a>
-                    </div>
-                    <div class="listings-grid" id="featured-listings"></div>
-                </section>
-
-                <!-- Featured Off-Plan -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Featured Off-Plan Projects</h2>
-                        <a href="#offplan" class="view-all" data-section="offplan">View All <span>→</span></a>
-                    </div>
-                    <div class="offplan-grid" id="featured-offplan"></div>
-                </section>
-
-                <!-- Communities Preview -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Explore Dubai Communities</h2>
-                        <a href="#communities" class="view-all" data-section="communities">View All <span>→</span></a>
-                    </div>
-                    <div class="communities-grid" id="home-communities"></div>
-                </section>
-
-                <!-- About Snippet -->
-                <section class="about-snippet">
-                    <div class="about-snippet-content">
-                        <div class="about-snippet-image">
-                            <img src="https://via.placeholder.com/400x400/0A1628/C9A84C?text=Agent" alt="Agent Profile" id="agent-photo-home">
-                        </div>
-                        <div class="about-snippet-text">
-                            <h2 id="agent-name-home">Ahmed Khan</h2>
-                            <p id="agent-bio-home">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties.</p>
-                            <div class="stats">
-                                <div><span id="years-exp">12</span> Years Experience</div>
-                                <div><span id="properties-sold">850</span> Properties Sold</div>
-                                <div><span id="happy-clients">1200</span> Happy Clients</div>
+                            <div class="stat-value" id="total-leads">0</div>
+                            <div class="stat-details">
+                                <span>Today: <strong id="leads-today">0</strong></span>
+                                <span>Week: <strong id="leads-week">0</strong></span>
+                                <span>Month: <strong id="leads-month">0</strong></span>
                             </div>
-                            <a href="#about" class="btn btn-primary" data-section="about">More About Me</a>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Active Listings</h3>
+                                <span class="stat-icon"><i class="fas fa-home"></i></span>
+                            </div>
+                            <div class="stat-value" id="active-listings">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Off-Plan Projects</h3>
+                                <span class="stat-icon"><i class="fas fa-ruler-combined"></i></span>
+                            </div>
+                            <div class="stat-value" id="offplan-count">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <h3>Communities</h3>
+                                <span class="stat-icon"><i class="fas fa-map-pin"></i></span>
+                            </div>
+                            <div class="stat-value" id="communities-count">0</div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Portal Presence -->
-                <section class="portal-section">
-                    <h2>Find Us On</h2>
-                    <div class="portal-buttons">
-                        <a href="https://propertyfinder.ae/agents/realtorsite-studio" target="_blank" class="portal-btn propertyfinder">Property Finder</a>
-                        <a href="https://bayut.com/agents/realtorsite-studio" target="_blank" class="portal-btn bayut">Bayut</a>
-                    </div>
-                </section>
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="btn btn-primary" data-tab="listings">Manage Listings</button>
+                    <button class="btn btn-primary" data-tab="offplan">Manage Off-Plan</button>
+                    <button class="btn btn-primary" data-tab="communities">Manage Communities</button>
+                    <button class="btn btn-primary" data-tab="profile">Edit Profile</button>
+                    <button class="btn btn-primary" data-tab="leads">View Leads</button>
+                </div>
 
-                <!-- ROI Calculator -->
-                <section class="roi-calculator-section">
-                    <h2>Calculate Your ROI</h2>
-                    <p>Estimate your return on investment for Dubai properties</p>
-                    <div class="calculator">
-                        <div class="calc-group">
-                            <label for="calc-price">Property Price (AED)</label>
-                            <input type="number" id="calc-price" value="2000000" step="100000">
-                        </div>
-                        <div class="calc-group">
-                            <label for="calc-rent">Annual Rent (AED)</label>
-                            <input type="number" id="calc-rent" value="120000" step="10000">
-                        </div>
-                        <div class="calc-group">
-                            <label for="calc-service">Service Charges (AED/year)</label>
-                            <input type="number" id="calc-service" value="15000" step="1000">
-                        </div>
-                        <button id="calc-roi-btn" class="btn btn-primary">Calculate ROI</button>
-                        <div class="calc-results" id="calc-results"></div>
+                <!-- ===== TAB CONTENT ===== -->
+                <!-- Dashboard Tab -->
+                <div id="tab-dashboard" class="tab-content active">
+                    <div class="dashboard-welcome">
+                        <h2>Welcome to Your Admin Dashboard</h2>
+                        <p>Here's an overview of your real estate business. Use the sidebar to manage listings, off-plan projects, communities, and leads.</p>
                     </div>
-                </section>
+                    <div class="dashboard-quick-actions">
+                        <div class="quick-action-card" onclick="window.navigateTab('listings')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add New Listing</h4>
+                            <p>Create a new property listing</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('offplan')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add Off-Plan Project</h4>
+                            <p>Create a new off-plan development</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('communities')">
+                            <div class="quick-action-icon"><i class="fas fa-plus-circle"></i></div>
+                            <h4>Add Community</h4>
+                            <p>Create a new community</p>
+                        </div>
+                        <div class="quick-action-card" onclick="window.navigateTab('leads')">
+                            <div class="quick-action-icon"><i class="fas fa-eye"></i></div>
+                            <h4>View Leads</h4>
+                            <p>Check your latest leads</p>
+                        </div>
+                    </div>
+                </div>
 
-                <!-- Golden Visa Highlight -->
-                <section class="goldenvisa-highlight">
-                    <div class="gv-highlight-content">
-                        <h2>Golden Visa Opportunity</h2>
-                        <p>Invest AED 2M+ in Dubai property and qualify for the UAE Golden Visa. 10-year renewable residency for you and your family.</p>
-                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
+                <!-- Listings Tab -->
+                <div id="tab-listings" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Listings</h2>
+                        <button id="add-listing-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Listing</button>
                     </div>
-                </section>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Title</th>
+                                    <th>Price</th>
+                                    <th>Community</th>
+                                    <th>Status</th>
+                                    <th>Featured</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="listings-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-                <!-- WhatsApp Contact Section -->
-                <section class="whatsapp-contact">
-                    <h2>Connect on WhatsApp</h2>
-                    <p>Quick and easy communication with our team</p>
-                    <div class="whatsapp-buttons">
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">Buy Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">Rent Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">Off-Plan Investment</a>
+                <!-- Off-Plan Tab -->
+                <div id="tab-offplan" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Off-Plan Projects</h2>
+                        <button id="add-offplan-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Project</button>
                     </div>
-                </section>
-            </div>
-        </section>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Project</th>
+                                    <th>Developer</th>
+                                    <th>Community</th>
+                                    <th>Starting Price</th>
+                                    <th>Golden Visa</th>
+                                    <th>Featured</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="offplan-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
 
-        <!-- LISTINGS SECTION -->
-        <section id="listings" class="section">
-            <div class="listings-hero">
-                <div class="container">
-                    <h1>Property Listings</h1>
-                    <p>Discover Dubai's finest properties</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="filter-bar">
-                    <select id="filter-type">
-                        <option value="all">All Types</option>
-                        <option value="Apartment">Apartment</option>
-                        <option value="Villa">Villa</option>
-                        <option value="Penthouse">Penthouse</option>
-                        <option value="Studio">Studio</option>
-                        <option value="Townhouse">Townhouse</option>
-                    </select>
-                    <select id="filter-bedrooms">
-                        <option value="all">Any Bedrooms</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5+</option>
-                    </select>
-                    <select id="filter-price">
-                        <option value="all">Any Price</option>
-                        <option value="500k">Under AED 500K</option>
-                        <option value="1m">AED 500K - 1M</option>
-                        <option value="2m">AED 1M - 2M</option>
-                        <option value="5m">AED 2M - 5M</option>
-                        <option value="10m">AED 5M - 10M</option>
-                        <option value="10m+">AED 10M+</option>
-                    </select>
-                    <select id="filter-community">
-                        <option value="all">All Communities</option>
-                    </select>
-                    <select id="filter-status">
-                        <option value="all">All Status</option>
-                        <option value="for-sale">For Sale</option>
-                        <option value="for-rent">For Rent</option>
-                        <option value="sold">Sold</option>
-                    </select>
-                    <input type="text" id="filter-search" placeholder="Search properties...">
-                </div>
-                <div class="listings-grid" id="listings-grid"></div>
-                <div class="portal-section">
-                    <h3>More Properties</h3>
-                    <div class="portal-buttons">
-                        <a href="https://propertyfinder.ae/agents/realtorsite-studio" target="_blank" class="portal-btn propertyfinder">View on Property Finder</a>
-                        <a href="https://bayut.com/agents/realtorsite-studio" target="_blank" class="portal-btn bayut">View on Bayut</a>
+                <!-- Communities Tab -->
+                <div id="tab-communities" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Communities</h2>
+                        <button id="add-community-btn" class="btn btn-primary"><i class="fas fa-plus"></i> Add New Community</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Apartment Price</th>
+                                    <th>Villa Price</th>
+                                    <th>Popular</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="communities-table-body"></tbody>
+                        </table>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <!-- OFFPLAN SECTION -->
-        <section id="offplan" class="section">
-            <div class="offplan-hero">
-                <div class="container">
-                    <h1>Off-Plan Projects</h1>
-                    <p>Invest in Dubai's future with premium off-plan developments</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="offplan-grid" id="offplan-grid"></div>
-                <section class="benefits-section">
-                    <h2>Why Invest in Off-Plan</h2>
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-money-bill-wave"></i></div>
-                            <h3>Lower Prices</h3>
-                            <p>Off-plan properties are typically 20-30% cheaper than ready properties</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>High ROI</h3>
-                            <p>Significant capital appreciation by the time of handover</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-gem"></i></div>
-                            <h3>Modern Amenities</h3>
-                            <p>Access to the latest amenities and modern designs</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-map-marked-alt"></i></div>
-                            <h3>Prime Locations</h3>
-                            <p>Developments in Dubai's most sought-after areas</p>
-                        </div>
+                <!-- Leads Tab -->
+                <div id="tab-leads" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Lead Management</h2>
+                        <button id="export-leads-btn" class="btn btn-secondary"><i class="fas fa-file-export"></i> Export CSV</button>
                     </div>
-                </section>
-                <div class="goldenvisa-highlight">
-                    <div class="gv-highlight-content">
-                        <h2>Golden Visa Eligible Properties</h2>
-                        <p>Many off-plan projects qualify for UAE Golden Visa with AED 2M+ investment</p>
-                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- COMMUNITIES SECTION -->
-        <section id="communities" class="section">
-            <div class="communities-hero">
-                <div class="container">
-                    <h1>Dubai Communities</h1>
-                    <p>Explore Dubai's most desirable neighborhoods</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="communities-grid" id="communities-grid"></div>
-            </div>
-        </section>
-
-        <!-- ABOUT SECTION -->
-        <section id="about" class="section">
-            <div class="about-hero">
-                <div class="container">
-                    <h1>About Me</h1>
-                    <p>Your trusted partner in Dubai real estate</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="about-full">
-                    <div class="about-full-image">
-                        <img src="https://via.placeholder.com/600x600/0A1628/C9A84C?text=Agent" alt="Agent" id="agent-photo-about">
-                    </div>
-                    <div class="about-full-text">
-                        <h2 id="agent-name-about">Ahmed Khan</h2>
-                        <div class="rerna-badge-large">RERA BRN: <strong id="rerna-number-about">123456</strong></div>
-                        <p id="agent-full-bio">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.</p>
-                        <div class="stats-full">
-                            <div><span id="years-exp-about">12</span> Years Experience</div>
-                            <div><span id="properties-sold-about">850</span> Properties Sold</div>
-                            <div><span id="happy-clients-about">1200</span> Happy Clients</div>
+                    <div class="leads-filters">
+                        <div class="filter-group">
+                            <label for="lead-site">Site</label>
+                            <select id="lead-site">
+                                <option value="all">All Sites</option>
+                            </select>
                         </div>
-                        <div class="specialties">
-                            <h3>Specialties</h3>
-                            <div id="specialties-list"></div>
-                        </div>
-                        <div class="languages">
-                            <h3>Languages</h3>
-                            <div id="languages-list"></div>
-                        </div>
-                        <div class="about-ctas">
-                            <a href="#contact" class="btn btn-primary" data-section="contact">Contact Me</a>
-                            <a href="https://wa.me/971501234567" target="_blank" class="btn btn-whatsapp">WhatsApp</a>
-                        </div>
-                    </div>
-                </div>
-                <section class="testimonials">
-                    <h2>Client Testimonials</h2>
-                    <div class="testimonials-grid" id="testimonials-grid"></div>
-                </section>
-                <section class="recent-sales">
-                    <h2>Recent Sales</h2>
-                    <div class="sales-grid" id="sales-grid"></div>
-                </section>
-            </div>
-        </section>
-
-        <!-- CONTACT SECTION -->
-        <section id="contact" class="section">
-            <div class="contact-hero">
-                <div class="container">
-                    <h1>Contact Us</h1>
-                    <p>Get in touch with our team</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="contact-tabs">
-                    <button class="tab-btn active" data-tab="whatsapp">WhatsApp</button>
-                    <button class="tab-btn" data-tab="inquiry">Inquiry Form</button>
-                    <button class="tab-btn" data-tab="viewing">Schedule Viewing</button>
-                </div>
-                <div class="tab-content active" id="tab-whatsapp">
-                    <h3>Connect on WhatsApp</h3>
-                    <div class="whatsapp-buttons">
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">Buy Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">Rent Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">Off-Plan Investment</a>
-                        <a href="https://wa.me/971501234567?text=I%20have%20a%20question" target="_blank" class="btn btn-whatsapp">General Inquiry</a>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-inquiry">
-                    <h3>Send an Inquiry</h3>
-                    <form id="inquiry-form" class="contact-form">
-                        <input type="hidden" name="site_id" value="realtorsitestudio">
-                        <div class="form-group">
-                            <label for="inq-name">Full Name *</label>
-                            <input type="text" id="inq-name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-phone">Phone Number *</label>
-                            <input type="tel" id="inq-phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-email">Email Address</label>
-                            <input type="email" id="inq-email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-subject">Subject</label>
-                            <select id="inq-subject" name="subject">
-                                <option value="general">General Inquiry</option>
-                                <option value="buying">Buying Property</option>
-                                <option value="renting">Renting Property</option>
-                                <option value="offplan">Off-Plan Investment</option>
+                        <div class="filter-group">
+                            <label for="lead-type">Lead Type</label>
+                            <select id="lead-type">
+                                <option value="all">All Types</option>
+                                <option value="contact">Contact</option>
+                                <option value="valuation">Valuation</option>
+                                <option value="viewing">Viewing</option>
                                 <option value="goldenvisa">Golden Visa</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="inq-message">Message *</label>
-                            <textarea id="inq-message" name="message" rows="5" required></textarea>
+                        <div class="filter-group">
+                            <label for="lead-date-from">From</label>
+                            <input type="date" id="lead-date-from">
                         </div>
-                        <button type="submit" class="btn btn-primary">Send Inquiry</button>
-                    </form>
+                        <div class="filter-group">
+                            <label for="lead-date-to">To</label>
+                            <input type="date" id="lead-date-to">
+                        </div>
+                        <button id="filter-leads-btn" class="btn btn-secondary">Filter</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Details</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-table-body"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="tab-content" id="tab-viewing">
-                    <h3>Schedule a Viewing</h3>
-                    <form id="viewing-form" class="contact-form">
-                        <input type="hidden" name="site_id" value="realtorsitestudio">
-                        <div class="form-group">
-                            <label for="view-name">Full Name *</label>
-                            <input type="text" id="view-name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-phone">Phone Number *</label>
-                            <input type="tel" id="view-phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-email">Email Address</label>
-                            <input type="email" id="view-email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="view-property">Property *</label>
-                            <input type="text" id="view-property" name="property" placeholder="Property name or URL" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-date">Preferred Date *</label>
-                            <input type="date" id="view-date" name="date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-time">Preferred Time *</label>
-                            <input type="time" id="view-time" name="time" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Schedule Viewing</button>
-                    </form>
-                </div>
-                <div class="office-info">
-                    <h3>Office Information</h3>
-                    <p><strong>Address:</strong> <span id="office-address">Dubai, UAE</span></p>
-                    <p><strong>Phone:</strong> <span id="office-phone">+971501234567</span></p>
-                    <p><strong>Email:</strong> <span id="office-email">info@realtorsitestudio.com</span></p>
-                    <p><strong>WhatsApp:</strong> <span id="office-whatsapp">+971501234567</span></p>
-                    <p><strong>Hours:</strong> Mon-Sun 9:00 AM - 9:00 PM</p>
-                </div>
-                <div class="map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115164.99999999999!2d55.139835!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2sus!4v1699999999999" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
-        </section>
 
-        <!-- VALUATION SECTION -->
-        <section id="valuation" class="section">
-            <div class="valuation-hero">
-                <div class="container">
-                    <h1>Property Valuation</h1>
-                    <p>Get a free property valuation from our experts</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="valuation-form-container">
-                    <div class="valuation-trust">
-                        <div class="trust-badge"><i class="fas fa-check-circle"></i> Free Service</div>
-                        <div class="trust-badge"><i class="fas fa-shield-alt"></i> RERA Licensed</div>
-                        <div class="trust-badge"><i class="fas fa-clock"></i> 24hr Response</div>
+                <!-- Profile Tab -->
+                <div id="tab-profile" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Agent Profile &amp; Settings</h2>
                     </div>
-                    <form id="valuation-form" class="valuation-form">
-                        <input type="hidden" name="site_id" value="realtorsitestudio">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-name">Full Name *</label>
-                                <input type="text" id="val-name" name="name" required>
+                    <form id="profile-form" class="profile-form">
+                        <div class="form-section">
+                            <h3>Agent Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-agent-name">Agent Name</label>
+                                    <input type="text" id="prof-agent-name" name="agentName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-agent-title">Agent Title</label>
+                                    <input type="text" id="prof-agent-title" name="agentTitle">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-rerna">RERA BRN</label>
+                                    <input type="text" id="prof-rerna" name="rerna">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-experience">Years Experience</label>
+                                    <input type="number" id="prof-experience" name="experience">
+                                </div>
                             </div>
                             <div class="form-group">
-                                <label for="val-phone">Phone Number *</label>
-                                <input type="tel" id="val-phone" name="phone" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-email">Email Address</label>
-                                <input type="email" id="val-email" name="email">
+                                <label for="prof-bio">Bio</label>
+                                <textarea id="prof-bio" name="bio" rows="4"></textarea>
                             </div>
                             <div class="form-group">
-                                <label for="val-property-type">Property Type *</label>
-                                <select id="val-property-type" name="propertyType" required>
-                                    <option value="">Select Type</option>
-                                    <option value="Apartment">Apartment</option>
-                                    <option value="Villa">Villa</option>
-                                    <option value="Penthouse">Penthouse</option>
-                                    <option value="Studio">Studio</option>
-                                    <option value="Townhouse">Townhouse</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-community">Community *</label>
-                                <select id="val-community" name="community" required>
-                                    <option value="">Select Community</option>
-                                </select>
+                                <label for="prof-languages">Languages (comma separated)</label>
+                                <input type="text" id="prof-languages" name="languages">
                             </div>
                             <div class="form-group">
-                                <label for="val-bedrooms">Bedrooms *</label>
-                                <select id="val-bedrooms" name="bedrooms" required>
-                                    <option value="">Select</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="5+">5+</option>
-                                </select>
+                                <label for="prof-specialties">Specialties (comma separated)</label>
+                                <input type="text" id="prof-specialties" name="specialties">
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-size">Property Size (sqft)</label>
-                                <input type="number" id="val-size" name="size" placeholder="e.g. 1200">
-                            </div>
-                            <div class="form-group">
-                                <label for="val-year">Year Built</label>
-                                <input type="number" id="val-year" name="yearBuilt" placeholder="e.g. 2020">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="val-address">Property Address</label>
-                            <input type="text" id="val-address" name="address" placeholder="Building name, street, community">
-                        </div>
-                        <div class="form-group">
-                            <label for="val-features">Property Features</label>
-                            <textarea id="val-features" name="features" rows="3" placeholder="List key features..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Get Free Valuation</button>
-                    </form>
-                    <div class="valuation-index">
-                        <h3>Dubai DLD Rental Index</h3>
-                        <p>Average rental rates by community based on official DLD data.</p>
-                        <div id="rental-index" class="rental-index-grid"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
-        <!-- GOLDEN VISA SECTION -->
-        <section id="goldenvisa" class="section">
-            <div class="goldenvisa-hero">
-                <div class="container">
-                    <h1>UAE Golden Visa</h1>
-                    <p>Your pathway to 10-year renewable residency in the UAE</p>
-                </div>
-            </div>
-            <div class="container">
-                <section class="gv-intro">
-                    <h2>What is the Golden Visa?</h2>
-                    <p>The UAE Golden Visa is a long-term residence visa valid for 10 years, renewable, and without the need for a sponsor. It offers investors, entrepreneurs, and talented individuals the opportunity to live, work, and study in the UAE.</p>
-                    <div class="gv-requirements">
-                        <h3>Property Investment Requirements</h3>
-                        <ul>
-                            <li>Minimum investment of AED 2,000,000 in property</li>
-                            <li>Property can be off-plan or ready</li>
-                            <li>Property must be owned outright (not mortgaged)</li>
-                            <li>Valid for the investor, spouse, and children</li>
-                        </ul>
-                    </div>
-                </section>
-                <section class="gv-benefits">
-                    <h2>Golden Visa Benefits</h2>
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-passport"></i></div>
-                            <h3>10-Year Residency</h3>
-                            <p>Renewable visa for 10 years without a sponsor</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-users"></i></div>
-                            <h3>Family Inclusion</h3>
-                            <p>Includes spouse, children, and parents</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-briefcase"></i></div>
-                            <h3>Business Opportunities</h3>
-                            <p>Easier to start and manage businesses in UAE</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-plane-departure"></i></div>
-                            <h3>Travel Flexibility</h3>
-                            <p>Unrestricted travel in and out of UAE</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-process">
-                    <h2>How to Apply</h2>
-                    <div class="process-steps">
-                        <div class="step">
-                            <span class="step-number">1</span>
-                            <h3>Property Investment</h3>
-                            <p>Invest AED 2M+ in Dubai property</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">2</span>
-                            <h3>Property Verification</h3>
-                            <p>Get property valuation and legal documentation</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">3</span>
-                            <h3>Visa Application</h3>
-                            <p>Submit application through Dubai Land Department</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">4</span>
-                            <h3>Visa Issuance</h3>
-                            <p>Receive your 10-year Golden Visa</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-faq">
-                    <h2>Frequently Asked Questions</h2>
-                    <div class="faq-container">
-                        <div class="faq-item">
-                            <button class="faq-question">What is the minimum investment for Golden Visa?</button>
-                            <div class="faq-answer">The minimum investment is AED 2,000,000 in property. This can be a single property or multiple properties totaling AED 2M+.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I apply with an off-plan property?</button>
-                            <div class="faq-answer">Yes, off-plan properties are eligible if they are registered with the Dubai Land Department and meet the minimum value requirement.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">How long does the Golden Visa last?</button>
-                            <div class="faq-answer">The Golden Visa is valid for 10 years and is renewable.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I include my family?</button>
-                            <div class="faq-answer">Yes, you can include your spouse, children, and even parents under your Golden Visa.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">What if I sell the property?</button>
-                            <div class="faq-answer">You must maintain the AED 2M+ investment. Selling the property may affect your visa status.</div>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-lead">
-                    <h2>Interested in Golden Visa?</h2>
-                    <p>Contact us for a free consultation on Golden Visa eligibility</p>
-                    <form id="goldenvisa-form" class="gv-form">
-                        <input type="hidden" name="site_id" value="realtorsitestudio">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-name">Full Name *</label>
-                                <input type="text" id="gv-name" name="name" required>
+                        <div class="form-section">
+                            <h3>Agency Information</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-agency-name">Agency Name</label>
+                                    <input type="text" id="prof-agency-name" name="agencyName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-agency-logo">Agency Logo URL</label>
+                                    <input type="text" id="prof-agency-logo" name="agencyLogo">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="gv-phone">Phone Number *</label>
-                                <input type="tel" id="gv-phone" name="phone" required>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-address">Office Address</label>
+                                    <input type="text" id="prof-address" name="address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-rerna-number">RERA Number</label>
+                                    <input type="text" id="prof-rerna-number" name="rernaNumber">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-phone">Phone</label>
+                                    <input type="text" id="prof-phone" name="phone">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-whatsapp">WhatsApp</label>
+                                    <input type="text" id="prof-whatsapp" name="whatsapp">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-email">Email</label>
+                                    <input type="email" id="prof-email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-whatsapp-greeting">WhatsApp Greeting</label>
+                                    <input type="text" id="prof-whatsapp-greeting" name="whatsappGreeting">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-propertyfinder">Property Finder URL</label>
+                                    <input type="text" id="prof-propertyfinder" name="propertyfinder">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-bayut">Bayut URL</label>
+                                    <input type="text" id="prof-bayut" name="bayut">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-worker-url">Worker URL</label>
+                                    <input type="text" id="prof-worker-url" name="workerUrl">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-ga-id">GA Tracking ID</label>
+                                    <input type="text" id="prof-ga-id" name="gaId">
+                                </div>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-email">Email Address</label>
-                                <input type="email" id="gv-email" name="email">
-                            </div>
-                            <div class="form-group">
-                                <label for="gv-budget">Property Budget (AED)</label>
-                                <select id="gv-budget" name="budget">
-                                    <option value="">Select</option>
-                                    <option value="2m-3m">AED 2M - 3M</option>
-                                    <option value="3m-5m">AED 3M - 5M</option>
-                                    <option value="5m-10m">AED 5M - 10M</option>
-                                    <option value="10m+">AED 10M+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-gold">Get Free Consultation</button>
-                    </form>
-                    <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20Golden%20Visa" target="_blank" class="btn btn-whatsapp">Ask on WhatsApp</a>
-                </section>
-            </div>
-        </section>
-    </main>
 
-    <!-- Footer -->
-    <footer id="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3>RealtorSite Studio</h3>
-                    <p>Websites That Sell Homes</p>
-                    <div class="rerna-badge">RERA BRN: <strong id="footer-rerna">123456</strong></div>
-                    <div class="social-links">
-                        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#listings" data-section="listings">Listings</a></li>
-                        <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
-                        <li><a href="#communities" data-section="communities">Communities</a></li>
-                        <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact</h4>
-                    <p><span id="footer-address">Dubai, UAE</span></p>
-                    <p><a href="tel:+971501234567" id="footer-phone">+971501234567</a></p>
-                    <p><a href="mailto:info@realtorsitestudio.com" id="footer-email">info@realtorsitestudio.com</a></p>
-                    <p><a href="https://wa.me/971501234567" target="_blank" id="footer-whatsapp">WhatsApp</a></p>
+                        <div class="form-section">
+                            <h3>Social Links</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-facebook">Facebook</label>
+                                    <input type="text" id="prof-facebook" name="facebook">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-instagram">Instagram</label>
+                                    <input type="text" id="prof-instagram" name="instagram">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-linkedin">LinkedIn</label>
+                                    <input type="text" id="prof-linkedin" name="linkedin">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-youtube">YouTube</label>
+                                    <input type="text" id="prof-youtube" name="youtube">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>Site Settings</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="prof-site-name">Site Name</label>
+                                    <input type="text" id="prof-site-name" name="siteName">
+                                </div>
+                                <div class="form-group">
+                                    <label for="prof-site-description">Site Description</label>
+                                    <input type="text" id="prof-site-description" name="siteDescription">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save Profile Changes</button>
+                    </form>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="footer-year"></span> RealtorSite Studio. All rights reserved.</p>
-                <p>Websites That Sell Homes</p>
+        </main>
+    </div>
+
+    <!-- Modal for Add/Edit -->
+    <div id="modal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Add New</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+            <div class="modal-footer" id="modal-footer">
+                <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+                <button class="btn btn-primary" id="modal-save">Save</button>
             </div>
         </div>
-    </footer>
-
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/971501234567?text=Hello%20RealtorSite%20Studio%2C%20I%20need%20assistance" target="_blank" class="float-whatsapp" aria-label="Contact on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+    </div>
 
     <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+    <div id="toast-container"></div>
 
     <script type="module" src="config.js"></script>
-    <script type="module" src="main.js"></script>
+    <script type="module" src="admin.js"></script>
 </body>
 </html>
