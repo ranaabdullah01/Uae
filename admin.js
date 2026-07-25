@@ -890,106 +890,137 @@ window.viewLeadDetails = function(id) {
     const modalBody = document.getElementById('modal-body');
     const modalFooter = document.getElementById('modal-footer');
     
-    modalTitle.textContent = `Lead Details`;
+    modalTitle.textContent = 'Lead Details';
     modalFooter.style.display = 'none';
     
     // Format the lead type for display
     const leadTypeDisplay = lead.type ? lead.type.charAt(0).toUpperCase() + lead.type.slice(1) : 'N/A';
     
-    // Get the status class
-    const statusClass = lead.contacted ? 'contacted' : 'new';
+    // Get the status
     const statusText = lead.contacted ? 'Contacted' : 'Pending';
+    const statusClass = lead.contacted ? 'contacted' : 'new';
     
-    // Define field groups for better organization
-    const fieldGroups = {
-        'Property Details': ['propertyType', 'property', 'community', 'bedrooms', 'size', 'yearBuilt', 'address'],
-        'Property Features': ['features'],
-        'Inquiry Details': ['subject', 'message'],
-        'Additional Info': ['budget', 'date', 'time']
+    // ============================================================
+    // FIELD GROUPING - Organize fields into logical sections
+    // ============================================================
+    
+    // Define which fields belong to which group
+    // Only fields that have values will be shown
+    
+    // 1. CONTACT INFORMATION (always shown)
+    const contactFields = [
+        { key: 'phone', label: 'Phone', icon: 'fa-phone' },
+        { key: 'email', label: 'Email', icon: 'fa-envelope' }
+    ];
+    
+    // 2. PROPERTY DETAILS
+    const propertyFields = [
+        { key: 'propertyType', label: 'Property Type' },
+        { key: 'property', label: 'Property' },
+        { key: 'community', label: 'Community' },
+        { key: 'bedrooms', label: 'Bedrooms' },
+        { key: 'size', label: 'Size (sqft)' },
+        { key: 'yearBuilt', label: 'Year Built' },
+        { key: 'address', label: 'Address' }
+    ];
+    
+    // 3. PROPERTY FEATURES
+    const featuresFields = [
+        { key: 'features', label: 'Features' }
+    ];
+    
+    // 4. INQUIRY DETAILS
+    const inquiryFields = [
+        { key: 'subject', label: 'Subject' },
+        { key: 'message', label: 'Message' }
+    ];
+    
+    // 5. ADDITIONAL INFO
+    const additionalFields = [
+        { key: 'budget', label: 'Budget' },
+        { key: 'date', label: 'Date' },
+        { key: 'time', label: 'Time' }
+    ];
+    
+    // Helper to check if a field has a value
+    const hasValue = (val) => {
+        return val !== null && val !== undefined && val !== '' && val !== 'N/A';
     };
     
-    // Map field names to display labels
-    const fieldLabels = {
-        name: 'Name',
-        phone: 'Phone',
-        email: 'Email',
-        type: 'Lead Type',
-        propertyType: 'Property Type',
-        property: 'Property',
-        community: 'Community',
-        bedrooms: 'Bedrooms',
-        size: 'Size (sqft)',
-        yearBuilt: 'Year Built',
-        address: 'Address',
-        features: 'Features',
-        subject: 'Subject',
-        message: 'Message',
-        budget: 'Budget',
-        date: 'Date',
-        time: 'Time',
-        createdAt: 'Received',
-        created_at: 'Received',
-        contacted: 'Status'
-    };
-    
-    // Check if a field should be displayed (non-empty, non-null, not undefined)
-    const shouldShowField = (value) => {
-        return value !== null && value !== undefined && value !== '' && value !== 'N/A';
-    };
-    
-    // Get value from lead with proper fallback
-    const getFieldValue = (key) => {
-        const val = lead[key];
-        if (val === null || val === undefined) return 'N/A';
+    // Helper to get display value
+    const getDisplayValue = (val) => {
+        if (val === null || val === undefined || val === '') return 'N/A';
         if (typeof val === 'boolean') return val ? 'Yes' : 'No';
         if (typeof val === 'object') return JSON.stringify(val);
         return String(val);
     };
     
-    // Build organized field groups
-    let groupedFieldsHtml = '';
-    let hasFields = false;
-    
-    for (const [groupName, fields] of Object.entries(fieldGroups)) {
-        const groupFields = fields
-            .filter(key => lead[key] !== undefined && lead[key] !== null && lead[key] !== '')
-            .map(key => {
-                const value = getFieldValue(key);
-                if (value === 'N/A' || value === '') return null;
-                return { key, label: fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()), value };
+    // Build a group HTML if it has any fields with values
+    const buildGroup = (title, fields, isContact = false) => {
+        const validFields = fields
+            .map(f => {
+                const value = lead[f.key];
+                if (!hasValue(value)) return null;
+                return {
+                    ...f,
+                    value: getDisplayValue(value)
+                };
             })
-            .filter(item => item !== null);
+            .filter(f => f !== null);
         
-        if (groupFields.length > 0) {
-            hasFields = true;
-            groupedFieldsHtml += `
-                <div class="lead-detail-group">
-                    <h4 class="lead-group-title">${groupName}</h4>
-                    <div class="lead-detail-grid">
-                        ${groupFields.map(f => `
-                            <div class="lead-detail-item">
-                                <span class="lead-detail-label">${f.label}</span>
-                                <span class="lead-detail-value">${f.value}</span>
-                            </div>
-                        `).join('')}
-                    </div>
+        if (validFields.length === 0) return '';
+        
+        const gridClass = isContact ? 'lead-detail-grid contact-grid' : 'lead-detail-grid';
+        
+        return `
+            <div class="lead-detail-group">
+                <h4 class="lead-group-title">${title}</h4>
+                <div class="${gridClass}">
+                    ${validFields.map(f => `
+                        <div class="lead-detail-item">
+                            <span class="lead-detail-label">
+                                ${f.icon ? `<i class="fas ${f.icon}"></i>` : ''}
+                                ${f.label}
+                            </span>
+                            <span class="lead-detail-value">${f.value}</span>
+                        </div>
+                    `).join('')}
                 </div>
-            `;
-        }
-    }
+            </div>
+        `;
+    };
     
-    // If no fields were found in groups, show all fields as a fallback
-    if (!hasFields) {
+    // Build all groups
+    let groupsHtml = '';
+    
+    // Contact Information (always shown)
+    groupsHtml += buildGroup('Contact Information', contactFields, true);
+    
+    // Property Details
+    groupsHtml += buildGroup('Property Details', propertyFields);
+    
+    // Property Features
+    groupsHtml += buildGroup('Property Features', featuresFields);
+    
+    // Inquiry Details
+    groupsHtml += buildGroup('Inquiry Details', inquiryFields);
+    
+    // Additional Info
+    groupsHtml += buildGroup('Additional Information', additionalFields);
+    
+    // If no groups were built (shouldn't happen), show a fallback
+    if (!groupsHtml) {
+        // Show all fields as a fallback
         const allFields = Object.entries(lead)
             .filter(([key]) => !['id', 'site_id', 'contacted', 'created_at', 'createdAt', 'type', 'name', 'phone', 'email'].includes(key))
-            .filter(([key, value]) => shouldShowField(value))
+            .filter(([key, value]) => hasValue(value))
             .map(([key, value]) => {
-                const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
                 return { label, value: String(value) };
             });
         
         if (allFields.length > 0) {
-            groupedFieldsHtml = `
+            groupsHtml = `
                 <div class="lead-detail-group">
                     <h4 class="lead-group-title">Submitted Details</h4>
                     <div class="lead-detail-grid">
@@ -1022,27 +1053,8 @@ window.viewLeadDetails = function(id) {
                 </div>
             </div>
             
-            <!-- Contact Information -->
-            <div class="lead-detail-group">
-                <h4 class="lead-group-title">Contact Information</h4>
-                <div class="lead-detail-grid contact-grid">
-                    <div class="lead-detail-item">
-                        <span class="lead-detail-label"><i class="fas fa-phone"></i> Phone</span>
-                        <span class="lead-detail-value">${lead.phone || 'N/A'}</span>
-                    </div>
-                    <div class="lead-detail-item">
-                        <span class="lead-detail-label"><i class="fas fa-envelope"></i> Email</span>
-                        <span class="lead-detail-value">${lead.email || 'N/A'}</span>
-                    </div>
-                    <div class="lead-detail-item">
-                        <span class="lead-detail-label"><i class="fas fa-calendar"></i> Received</span>
-                        <span class="lead-detail-value">${formatDate(lead.created_at || lead.createdAt)}</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Dynamic Field Groups -->
-            ${groupedFieldsHtml}
+            <!-- Dynamic Groups -->
+            ${groupsHtml}
             
             <!-- Action Buttons -->
             <div class="lead-detail-actions">
