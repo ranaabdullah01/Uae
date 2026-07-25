@@ -877,6 +877,10 @@ function buildFormHTML(formId, fields) {
 
 // ============= LEAD MANAGEMENT =============
 
+/**
+ * Displays a beautifully formatted lead details modal with organized sections.
+ * Groups related fields together and presents them in a clean, professional layout.
+ */
 window.viewLeadDetails = function(id) {
     const lead = leadsData.find(l => l.id == id);
     if (!lead) return;
@@ -887,42 +891,168 @@ window.viewLeadDetails = function(id) {
     const modalFooter = document.getElementById('modal-footer');
     
     modalTitle.textContent = `Lead Details`;
-    modalFooter.style.display = 'none'; 
+    modalFooter.style.display = 'none';
     
-    const formatLabel = (val) => val ? val : 'N/A';
-    const ignoreKeys = ['id', 'name', 'phone', 'email', 'created_at', 'createdAt', 'contacted', 'type', 'site_id'];
-    let extraDetailsHtml = '';
+    // Format the lead type for display
+    const leadTypeDisplay = lead.type ? lead.type.charAt(0).toUpperCase() + lead.type.slice(1) : 'N/A';
     
-    for (const [key, value] of Object.entries(lead)) {
-        if (ignoreKeys.includes(key) || value === null || value === undefined || value === '') continue;
-        let label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-        let valStr = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
-        extraDetailsHtml += `<div class="lead-extra-item"><small>${label}</small><strong>${valStr}</strong></div>`;
+    // Get the status class
+    const statusClass = lead.contacted ? 'contacted' : 'new';
+    const statusText = lead.contacted ? 'Contacted' : 'Pending';
+    
+    // Define field groups for better organization
+    const fieldGroups = {
+        'Property Details': ['propertyType', 'property', 'community', 'bedrooms', 'size', 'yearBuilt', 'address'],
+        'Property Features': ['features'],
+        'Inquiry Details': ['subject', 'message'],
+        'Additional Info': ['budget', 'date', 'time']
+    };
+    
+    // Map field names to display labels
+    const fieldLabels = {
+        name: 'Name',
+        phone: 'Phone',
+        email: 'Email',
+        type: 'Lead Type',
+        propertyType: 'Property Type',
+        property: 'Property',
+        community: 'Community',
+        bedrooms: 'Bedrooms',
+        size: 'Size (sqft)',
+        yearBuilt: 'Year Built',
+        address: 'Address',
+        features: 'Features',
+        subject: 'Subject',
+        message: 'Message',
+        budget: 'Budget',
+        date: 'Date',
+        time: 'Time',
+        createdAt: 'Received',
+        created_at: 'Received',
+        contacted: 'Status'
+    };
+    
+    // Check if a field should be displayed (non-empty, non-null, not undefined)
+    const shouldShowField = (value) => {
+        return value !== null && value !== undefined && value !== '' && value !== 'N/A';
+    };
+    
+    // Get value from lead with proper fallback
+    const getFieldValue = (key) => {
+        const val = lead[key];
+        if (val === null || val === undefined) return 'N/A';
+        if (typeof val === 'boolean') return val ? 'Yes' : 'No';
+        if (typeof val === 'object') return JSON.stringify(val);
+        return String(val);
+    };
+    
+    // Build organized field groups
+    let groupedFieldsHtml = '';
+    let hasFields = false;
+    
+    for (const [groupName, fields] of Object.entries(fieldGroups)) {
+        const groupFields = fields
+            .filter(key => lead[key] !== undefined && lead[key] !== null && lead[key] !== '')
+            .map(key => {
+                const value = getFieldValue(key);
+                if (value === 'N/A' || value === '') return null;
+                return { key, label: fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()), value };
+            })
+            .filter(item => item !== null);
+        
+        if (groupFields.length > 0) {
+            hasFields = true;
+            groupedFieldsHtml += `
+                <div class="lead-detail-group">
+                    <h4 class="lead-group-title">${groupName}</h4>
+                    <div class="lead-detail-grid">
+                        ${groupFields.map(f => `
+                            <div class="lead-detail-item">
+                                <span class="lead-detail-label">${f.label}</span>
+                                <span class="lead-detail-value">${f.value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
     }
     
+    // If no fields were found in groups, show all fields as a fallback
+    if (!hasFields) {
+        const allFields = Object.entries(lead)
+            .filter(([key]) => !['id', 'site_id', 'contacted', 'created_at', 'createdAt', 'type', 'name', 'phone', 'email'].includes(key))
+            .filter(([key, value]) => shouldShowField(value))
+            .map(([key, value]) => {
+                const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                return { label, value: String(value) };
+            });
+        
+        if (allFields.length > 0) {
+            groupedFieldsHtml = `
+                <div class="lead-detail-group">
+                    <h4 class="lead-group-title">Submitted Details</h4>
+                    <div class="lead-detail-grid">
+                        ${allFields.map(f => `
+                            <div class="lead-detail-item">
+                                <span class="lead-detail-label">${f.label}</span>
+                                <span class="lead-detail-value">${f.value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    // Build the complete modal HTML
     modalBody.innerHTML = `
         <div class="lead-detail-container">
+            <!-- Lead Header -->
             <div class="lead-detail-header">
-                <div class="lead-avatar">${lead.name ? lead.name.charAt(0).toUpperCase() : '?'}</div>
-                <div>
-                    <h3>${formatLabel(lead.name)}</h3>
-                    <span class="lead-type-badge">${formatLabel(lead.type)}</span>
+                <div class="lead-detail-avatar">
+                    ${lead.name ? lead.name.charAt(0).toUpperCase() : '?'}
+                </div>
+                <div class="lead-detail-meta">
+                    <h3 class="lead-detail-name">${lead.name || 'Anonymous'}</h3>
+                    <div class="lead-detail-badges">
+                        <span class="lead-type-badge ${lead.type || 'general'}">${leadTypeDisplay}</span>
+                        <span class="lead-status-badge ${statusClass}">${statusText}</span>
+                    </div>
                 </div>
             </div>
-            <div class="lead-info-grid">
-                <div class="lead-info-item"><div class="icon">📞</div><div><small>Phone</small><strong>${formatLabel(lead.phone)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">✉️</div><div><small>Email</small><strong>${formatLabel(lead.email)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">🗓️</div><div><small>Received</small><strong>${formatDate(lead.created_at || lead.createdAt)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">🔄</div><div><small>Status</small><strong style="color: ${lead.contacted ? '#28A745' : '#FFC107'}">${lead.contacted ? 'Contacted' : 'Pending'}</strong></div></div>
+            
+            <!-- Contact Information -->
+            <div class="lead-detail-group">
+                <h4 class="lead-group-title">Contact Information</h4>
+                <div class="lead-detail-grid contact-grid">
+                    <div class="lead-detail-item">
+                        <span class="lead-detail-label"><i class="fas fa-phone"></i> Phone</span>
+                        <span class="lead-detail-value">${lead.phone || 'N/A'}</span>
+                    </div>
+                    <div class="lead-detail-item">
+                        <span class="lead-detail-label"><i class="fas fa-envelope"></i> Email</span>
+                        <span class="lead-detail-value">${lead.email || 'N/A'}</span>
+                    </div>
+                    <div class="lead-detail-item">
+                        <span class="lead-detail-label"><i class="fas fa-calendar"></i> Received</span>
+                        <span class="lead-detail-value">${formatDate(lead.created_at || lead.createdAt)}</span>
+                    </div>
+                </div>
             </div>
-            ${extraDetailsHtml ? `<div class="lead-message-box"><h4>Submitted Details</h4><div class="lead-extra-grid">${extraDetailsHtml}</div></div>` : ''}
-            <div class="lead-detail-footer">
-                <button class="btn btn-secondary" onclick="window.closeModal()">Close</button>
-                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${lead.id}')">Mark as Contacted</button>` : ''}
-                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp">Contact on WhatsApp</a>` : ''}
+            
+            <!-- Dynamic Field Groups -->
+            ${groupedFieldsHtml}
+            
+            <!-- Action Buttons -->
+            <div class="lead-detail-actions">
+                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${lead.id}')"><i class="fas fa-check"></i> Mark as Contacted</button>` : ''}
+                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> Contact on WhatsApp</a>` : ''}
+                <button class="btn btn-secondary" onclick="window.closeModal()"><i class="fas fa-times"></i> Close</button>
             </div>
         </div>
     `;
+    
     modal.style.display = 'flex';
 };
 
