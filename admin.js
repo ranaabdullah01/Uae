@@ -933,11 +933,8 @@ async function saveBlog(formData) {
         const data = await response.json();
         
         if (data.success) {
-            if (quillEditor) {
-                quillEditor.destroy();
-                quillEditor = null;
-                quillInitialized = false;
-            }
+            // Clean up Quill editor
+            destroyQuill();
             closeModal(); 
             await loadBlog(); 
             updateStats(); 
@@ -1007,13 +1004,31 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
     return html;
 }
 
-// ============= INITIALIZE QUILL EDITOR =============
+// ============= QUILL EDITOR FUNCTIONS =============
+
+function destroyQuill() {
+    try {
+        if (quillEditor) {
+            // Try to destroy properly if method exists
+            if (typeof quillEditor.destroy === 'function') {
+                quillEditor.destroy();
+            }
+            // Remove the container content to clean up
+            const container = document.getElementById('quill-editor-container');
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
+    } catch (e) {
+        console.log('Quill cleanup warning:', e.message);
+    }
+    quillEditor = null;
+    quillInitialized = false;
+}
 
 function initializeQuill(content) {
-    if (quillEditor) {
-        quillEditor.destroy();
-        quillEditor = null;
-    }
+    // Clean up any existing instance first
+    destroyQuill();
     
     const container = document.getElementById('quill-editor-container');
     if (!container) return;
@@ -1040,26 +1055,31 @@ function initializeQuill(content) {
         ['link', 'image', 'video']
     ];
     
-    quillEditor = new Quill(container, {
-        theme: 'snow',
-        modules: {
-            toolbar: toolbarOptions
-        },
-        placeholder: 'Write your blog post content here...'
-    });
-    
-    if (content) {
-        quillEditor.root.innerHTML = content;
-    }
-    
-    quillInitialized = true;
-    
-    quillEditor.on('text-change', function() {
-        const hiddenInput = document.getElementById('edit-content');
-        if (hiddenInput) {
-            hiddenInput.value = quillEditor.root.innerHTML;
+    try {
+        quillEditor = new Quill(container, {
+            theme: 'snow',
+            modules: {
+                toolbar: toolbarOptions
+            },
+            placeholder: 'Write your blog post content here...'
+        });
+        
+        if (content) {
+            quillEditor.root.innerHTML = content;
         }
-    });
+        
+        quillInitialized = true;
+        
+        quillEditor.on('text-change', function() {
+            const hiddenInput = document.getElementById('edit-content');
+            if (hiddenInput) {
+                hiddenInput.value = quillEditor.root.innerHTML;
+            }
+        });
+    } catch (e) {
+        console.error('Error initializing Quill:', e);
+        showToast('Error loading editor. Please refresh and try again.', 'error');
+    }
 }
 
 // ============= PROFILE SAVE =============
@@ -1383,11 +1403,7 @@ function openModal(title, bodyHTML) {
 }
 
 window.closeModal = function() {
-    if (quillEditor) {
-        quillEditor.destroy();
-        quillEditor = null;
-        quillInitialized = false;
-    }
+    destroyQuill();
     document.getElementById('modal').style.display = 'none';
     editingId = null; 
     editingType = null;
