@@ -887,44 +887,142 @@ window.viewLeadDetails = function(id) {
     const modalFooter = document.getElementById('modal-footer');
     
     modalTitle.textContent = `Lead Details`;
-    modalFooter.style.display = 'none'; 
+    modalFooter.style.display = 'none';
     
     const formatLabel = (val) => val ? val : 'N/A';
-    const ignoreKeys = ['id', 'name', 'phone', 'email', 'created_at', 'createdAt', 'contacted', 'type', 'site_id'];
-    let extraDetailsHtml = '';
     
-    for (const [key, value] of Object.entries(lead)) {
-        if (ignoreKeys.includes(key) || value === null || value === undefined || value === '') continue;
-        let label = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-        let valStr = typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value;
-        extraDetailsHtml += `<div class="lead-extra-item"><small>${label}</small><strong>${valStr}</strong></div>`;
+    // Define field display names for better readability
+    const fieldLabels = {
+        name: 'Full Name',
+        phone: 'Phone',
+        email: 'Email',
+        created_at: 'Received',
+        createdAt: 'Received',
+        type: 'Lead Type',
+        contacted: 'Status',
+        propertyType: 'Property Type',
+        community: 'Community',
+        bedrooms: 'Bedrooms',
+        size: 'Size (sqft)',
+        yearBuilt: 'Year Built',
+        address: 'Address',
+        features: 'Features',
+        subject: 'Subject',
+        message: 'Message',
+        property: 'Property',
+        date: 'Preferred Date',
+        time: 'Preferred Time',
+        budget: 'Budget Range',
+        site_id: 'Site ID'
+    };
+    
+    // Build main info section
+    const mainFields = ['name', 'phone', 'email', 'created_at', 'createdAt', 'type', 'contacted'];
+    let mainInfoHtml = '';
+    const mainData = {};
+    
+    mainFields.forEach(key => {
+        if (lead[key] !== undefined && lead[key] !== null && lead[key] !== '') {
+            let value = lead[key];
+            if (key === 'contacted') {
+                value = value ? 'Contacted ✅' : 'Pending ⏳';
+            } else if (key === 'type') {
+                const typeLabels = {
+                    'contact': '📋 Contact',
+                    'valuation': '📊 Valuation',
+                    'viewing': '👁️ Viewing',
+                    'goldenvisa': '🏆 Golden Visa'
+                };
+                value = typeLabels[value] || value;
+            } else if (key === 'created_at' || key === 'createdAt') {
+                value = formatDate(value);
+            }
+            const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            mainData[label] = value;
+        }
+    });
+    
+    if (Object.keys(mainData).length > 0) {
+        mainInfoHtml = `
+            <div class="lead-info-grid">
+                ${Object.entries(mainData).map(([label, value]) => `
+                    <div class="lead-info-item">
+                        <div class="lead-info-icon">${getIconForField(label)}</div>
+                        <div class="lead-info-content">
+                            <span class="lead-info-label">${label}</span>
+                            <span class="lead-info-value">${value}</span>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    // Build extra details section
+    const extraFields = ['propertyType', 'community', 'bedrooms', 'size', 'yearBuilt', 'address', 'features', 'subject', 'message', 'property', 'date', 'time', 'budget'];
+    let extraDetailsHtml = '';
+    let hasExtra = false;
+    const extraData = {};
+    
+    extraFields.forEach(key => {
+        if (lead[key] !== undefined && lead[key] !== null && lead[key] !== '') {
+            const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            extraData[label] = lead[key];
+            hasExtra = true;
+        }
+    });
+    
+    if (hasExtra) {
+        extraDetailsHtml = `
+            <div class="lead-extra-section">
+                <h4 class="lead-extra-title">📋 Submitted Details</h4>
+                <div class="lead-extra-grid">
+                    ${Object.entries(extraData).map(([label, value]) => `
+                        <div class="lead-extra-item">
+                            <span class="lead-extra-label">${label}</span>
+                            <span class="lead-extra-value">${value}</span>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
     }
     
     modalBody.innerHTML = `
         <div class="lead-detail-container">
             <div class="lead-detail-header">
                 <div class="lead-avatar">${lead.name ? lead.name.charAt(0).toUpperCase() : '?'}</div>
-                <div>
-                    <h3>${formatLabel(lead.name)}</h3>
-                    <span class="lead-type-badge">${formatLabel(lead.type)}</span>
+                <div class="lead-header-info">
+                    <h3 class="lead-header-name">${formatLabel(lead.name)}</h3>
+                    <span class="lead-type-badge ${lead.type || 'general'}">${lead.type || 'General'}</span>
                 </div>
             </div>
-            <div class="lead-info-grid">
-                <div class="lead-info-item"><div class="icon">📞</div><div><small>Phone</small><strong>${formatLabel(lead.phone)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">✉️</div><div><small>Email</small><strong>${formatLabel(lead.email)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">🗓️</div><div><small>Received</small><strong>${formatDate(lead.created_at || lead.createdAt)}</strong></div></div>
-                <div class="lead-info-item"><div class="icon">🔄</div><div><small>Status</small><strong style="color: ${lead.contacted ? '#28A745' : '#FFC107'}">${lead.contacted ? 'Contacted' : 'Pending'}</strong></div></div>
-            </div>
-            ${extraDetailsHtml ? `<div class="lead-message-box"><h4>Submitted Details</h4><div class="lead-extra-grid">${extraDetailsHtml}</div></div>` : ''}
+            
+            ${mainInfoHtml}
+            ${extraDetailsHtml}
+            
             <div class="lead-detail-footer">
+                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${lead.id}')">✅ Mark as Contacted</button>` : ''}
+                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp">💬 WhatsApp</a>` : ''}
                 <button class="btn btn-secondary" onclick="window.closeModal()">Close</button>
-                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${lead.id}')">Mark as Contacted</button>` : ''}
-                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp">Contact on WhatsApp</a>` : ''}
             </div>
         </div>
     `;
+    
     modal.style.display = 'flex';
 };
+
+function getIconForField(label) {
+    const iconMap = {
+        'Full Name': '👤',
+        'Phone': '📞',
+        'Email': '✉️',
+        'Received': '📅',
+        'Status': '🔄',
+        'Lead Type': '📌'
+    };
+    return iconMap[label] || '📄';
+}
 
 window.markLeadContacted = function(id) {
     if (!confirm('Mark this lead as contacted?')) return;
@@ -964,7 +1062,7 @@ function openModal(title, bodyHTML) {
     const modal = document.getElementById('modal');
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-body').innerHTML = bodyHTML;
-    document.getElementById('modal-footer').style.display = 'flex'; 
+    document.getElementById('modal-footer').style.display = 'flex';
     modal.style.display = 'flex';
     
     setupImageInput('edit-images', true);
