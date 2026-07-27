@@ -44,7 +44,7 @@
     </script>
 </head>
 <body>
-    <!-- =============== PRELOADER (Background Icon - Full Screen Loading) =============== -->
+    <!-- =============== PRELOADER =============== -->
     <div id="preloader">
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="RealtorSite Studio" id="preloader-image">
     </div>
@@ -53,16 +53,15 @@
         <nav>
             <div class="container nav-container">
                 <!-- Mobile Logo (shown on mobile only) -->
-                <!-- Mobile Logo (shown on mobile only) -->
-<div class="mobile-logo">
-    <a href="#home" data-section="home">
-        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="RealtorSite Studio">
-        <div class="mobile-logo-text">
-            <span class="mobile-logo-main">RealtorSite Studio</span>
-            <span class="mobile-logo-sub">Websites That Sell Homes</span>
-        </div>
-    </a>
-</div>
+                <div class="mobile-logo">
+                    <a href="#home" data-section="home">
+                        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="RealtorSite Studio">
+                        <div class="mobile-logo-text">
+                            <span class="mobile-logo-main">RealtorSite Studio</span>
+                            <span class="mobile-logo-sub">Websites That Sell Homes</span>
+                        </div>
+                    </a>
+                </div>
 
                 <!-- Left Navigation -->
                 <div id="nav-menu" class="nav-links-wrapper">
@@ -87,6 +86,7 @@
                     <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities">Communities</a></li>
                         <li><a href="#about" data-section="about">About</a></li>
+                        <li><a href="#blog" data-section="blog">Blog</a></li>
                         <li><a href="#contact" data-section="contact">Contact Us</a></li>
                         <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
                     </ul>
@@ -338,6 +338,26 @@
             </div>
             <div class="container">
                 <div class="communities-grid" id="communities-grid"></div>
+            </div>
+        </section>
+
+        <!-- BLOG SECTION -->
+        <section id="blog" class="section">
+            <div class="blog-hero">
+                <div class="container">
+                    <h1>Blog</h1>
+                    <p>Insights, tips, and news about Dubai real estate</p>
+                </div>
+            </div>
+            <div class="container">
+                <!-- Blog Grid -->
+                <div class="blog-grid" id="blog-grid"></div>
+                
+                <!-- Blog Detail (hidden by default) -->
+                <div id="blog-detail" style="display:none;">
+                    <button class="btn btn-secondary" onclick="window.showBlogList()">← Back to Blog</button>
+                    <div id="blog-detail-content"></div>
+                </div>
             </div>
         </section>
 
@@ -739,6 +759,7 @@
                         <li><a href="#listings" data-section="listings">Listings</a></li>
                         <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
                         <li><a href="#communities" data-section="communities">Communities</a></li>
+                        <li><a href="#blog" data-section="blog">Blog</a></li>
                         <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
                     </ul>
                 </div>
