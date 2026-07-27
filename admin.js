@@ -32,7 +32,11 @@ const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.
 // ============= TOAST NOTIFICATION =============
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
-    if (!container) return alert(message);
+    if (!container) {
+        // Fallback if container doesn't exist
+        console.log(message);
+        return;
+    }
     
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
@@ -1024,16 +1028,47 @@ function getIconForField(label) {
     return iconMap[label] || '📄';
 }
 
-window.markLeadContacted = function(id) {
-    if (!confirm('Mark this lead as contacted?')) return;
+// Updated markLeadContacted with API call to persist changes
+window.markLeadContacted = async function(id) {
     const lead = leadsData.find(l => l.id == id);
-    if (lead) { 
-        lead.contacted = 1; 
-        renderLeadsTable(); 
-        updateStats(); 
-        updateSidebarBadges();
-        closeModal();
-        showToast('✅ Lead marked as contacted!', 'success');
+    if (!lead) {
+        showToast('Lead not found.', 'error');
+        return;
+    }
+    
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        if (!token) {
+            showToast('Please login again.', 'error');
+            return;
+        }
+        
+        // Call API to update lead status
+        const response = await fetch(`${API_BASE}/admin/leads/${id}/contacted`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ contacted: 1 })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update local state
+            lead.contacted = 1;
+            renderLeadsTable();
+            updateStats();
+            updateSidebarBadges();
+            closeModal();
+            showToast('✅ Lead marked as contacted successfully!', 'success');
+        } else {
+            showToast('❌ Failed to update: ' + (data.message || 'Unknown error'), 'error');
+        }
+    } catch (error) {
+        console.error('Error marking lead as contacted:', error);
+        showToast('❌ Network error. Please try again.', 'error');
     }
 };
 
