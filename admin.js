@@ -1,5 +1,5 @@
 // ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI
+// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -13,6 +13,7 @@ let editingType = null;
 let listingsData = [];
 let offplanData = [];
 let communitiesData = [];
+let blogData = [];
 let profileData = {};
 let sidebarCollapsed = false;
 
@@ -271,6 +272,7 @@ function navigateTab(tab) {
         listings: 'Listings',
         offplan: 'Off-Plan Projects',
         communities: 'Communities',
+        blog: 'Blog',
         leads: 'Leads',
         profile: 'Profile'
     };
@@ -282,6 +284,7 @@ function navigateTab(tab) {
     if (tab === 'listings') loadListings();
     if (tab === 'offplan') loadOffplan();
     if (tab === 'communities') loadCommunities();
+    if (tab === 'blog') loadBlog();
     if (tab === 'profile') loadProfile();
     if (tab === 'dashboard') updateStats();
     
@@ -298,7 +301,8 @@ async function loadAllData() {
         loadOffplan(),
         loadCommunities(),
         loadProfile(),
-        loadLeads()
+        loadLeads(),
+        loadBlog()
     ]);
     updateStats();
     updateSidebarBadges();
@@ -352,6 +356,22 @@ async function loadCommunities() {
     }
 }
 
+async function loadBlog() {
+    try {
+        const response = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
+        const data = await response.json();
+        if (data.success) {
+            blogData = data.posts;
+            renderBlogTable();
+            updateSidebarBadges();
+            updateStats();
+        }
+    } catch (error) {
+        console.error('Error loading blog:', error);
+        showError('blog-table-body', 'Failed to load blog posts');
+    }
+}
+
 async function loadProfile() {
     try {
         const response = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
@@ -393,6 +413,8 @@ function updateSidebarBadges() {
     document.getElementById('sidebar-offplan-count').textContent = offplanData.length || 0;
     document.getElementById('sidebar-communities-count').textContent = communitiesData.length || 0;
     document.getElementById('sidebar-leads-count').textContent = leadsData.length || 0;
+    const blogBadge = document.getElementById('sidebar-blog-count');
+    if (blogBadge) blogBadge.textContent = blogData.length || 0;
 }
 
 // ============= RENDER TABLES =============
@@ -483,6 +505,40 @@ function renderCommunitiesTable() {
     });
 }
 
+function renderBlogTable() {
+    const tbody = document.getElementById('blog-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    if (!blogData || blogData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;">No blog posts found. Click "Add New Post" to create one.</td></tr>';
+        return;
+    }
+    
+    blogData.forEach(post => {
+        const tr = document.createElement('tr');
+        const statusClass = post.status === 'published' ? 'published' : 'draft';
+        const statusText = post.status === 'published' ? 'Published' : 'Draft';
+        const imageUrl = post.featured_image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Blog';
+        
+        tr.innerHTML = `
+            <td><img src="${imageUrl}" alt="${post.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
+            <td><strong>${post.title}</strong></td>
+            <td>${post.category || 'Uncategorized'}</td>
+            <td><span class="table-status ${statusClass}">${statusText}</span></td>
+            <td>${post.featured ? '⭐' : ''}</td>
+            <td>${post.views || 0}</td>
+            <td>${formatDate(post.published_at || post.created_at)}</td>
+            <td class="actions">
+                <button class="btn btn-primary btn-sm" onclick="window.editBlog('${post.id}')">Edit</button>
+                ${post.status === 'draft' ? `<button class="btn btn-success btn-sm" onclick="window.publishBlog('${post.id}')">Publish</button>` : ''}
+                <button class="btn btn-danger btn-sm" onclick="window.deleteBlog('${post.id}')">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
 function renderProfileForm() {
     if (!profileData) return;
     document.getElementById('prof-agent-name').value = profileData.agentName || '';
@@ -525,7 +581,6 @@ function renderLeadsTable() {
         const tr = document.createElement('tr');
         const statusClass = lead.contacted ? 'contacted' : 'new';
         const statusText = lead.contacted ? 'Contacted' : 'Pending';
-        
         const leadId = lead.unique_id || lead.id;
         
         tr.innerHTML = `
@@ -559,6 +614,7 @@ function updateStats() {
     document.getElementById('active-listings').textContent = activeListings;
     document.getElementById('offplan-count').textContent = offplanData.length;
     document.getElementById('communities-count').textContent = communitiesData.length;
+    document.getElementById('blog-count').textContent = blogData.length || 0;
     document.getElementById('total-leads').textContent = leadsData.length || 0;
     
     if (leadsData.length > 0) {
@@ -801,6 +857,83 @@ function buildCommunityForm(community = null) {
     return buildFormHTML('community-form', fields);
 }
 
+// ============= CRUD - BLOG =============
+
+window.editBlog = function(id) {
+    const post = blogData.find(p => p.id === id);
+    if (!post) return;
+    editingId = id;
+    editingType = 'blog';
+    openModal('Edit Blog Post', buildBlogForm(post));
+};
+
+window.deleteBlog = async function(id) {
+    if (!confirm('Are you sure you want to delete this blog post?')) return;
+    try {
+        const response = await fetch(`${API_BASE}/api/blog/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
+        const data = await response.json();
+        if (data.success) {
+            await loadBlog(); updateStats(); updateSidebarBadges();
+            showToast('Blog post deleted successfully!', 'success');
+        } else { showToast('Failed to delete: ' + data.message, 'error'); }
+    } catch (error) { console.error('Delete error:', error); showToast('Error deleting blog post.', 'error'); }
+};
+
+window.publishBlog = async function(id) {
+    if (!confirm('Publish this blog post?')) return;
+    try {
+        const response = await fetch(`${API_BASE}/api/blog/${id}/publish`, { method: 'PUT', headers: getAuthHeaders() });
+        const data = await response.json();
+        if (data.success) {
+            await loadBlog(); updateStats(); updateSidebarBadges();
+            showToast('✅ Blog post published successfully!', 'success');
+        } else { showToast('Failed to publish: ' + data.message, 'error'); }
+    } catch (error) { console.error('Publish error:', error); showToast('Error publishing blog post.', 'error'); }
+};
+
+async function saveBlog(formData) {
+    const post = {
+        id: editingId || null,
+        title: formData.get('title') || '',
+        slug: formData.get('slug') || (formData.get('title') || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        excerpt: formData.get('excerpt') || '',
+        content: formData.get('content') || '',
+        featured_image: formData.get('featured_image_hidden') || '',
+        author: formData.get('author') || 'Admin',
+        category: formData.get('category') || '',
+        tags: formData.get('tags') || '',
+        status: formData.get('status') || 'draft',
+        featured: formData.get('featured') === 'true'
+    };
+    Object.keys(post).forEach(key => { if (post[key] === undefined) post[key] = null; });
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/blog`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(post) });
+        const data = await response.json();
+        if (data.success) {
+            closeModal(); await loadBlog(); updateStats(); updateSidebarBadges();
+            showToast('✅ Blog post saved successfully!', 'success');
+            editingId = null; editingType = null;
+        } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
+    } catch (error) { console.error('Save error:', error); showToast('❌ Error saving blog post.', 'error'); }
+}
+
+function buildBlogForm(post = null) {
+    const fields = [
+        { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
+        { type: 'text', name: 'slug', label: 'Slug (URL)', value: post?.slug || '' },
+        { type: 'text', name: 'category', label: 'Category', value: post?.category || '' },
+        { type: 'text', name: 'tags', label: 'Tags (comma separated)', value: post?.tags || '' },
+        { type: 'textarea', name: 'excerpt', label: 'Excerpt (Short Summary)', value: post?.excerpt || '', rows: 3 },
+        { type: 'textarea', name: 'content', label: 'Content (Full Blog Post)', value: post?.content || '', rows: 10 },
+        { type: 'file', name: 'featured_image', label: 'Featured Image', value: post?.featured_image || '', multiple: false },
+        { type: 'text', name: 'author', label: 'Author', value: post?.author || 'Admin' },
+        { type: 'select', name: 'status', label: 'Status', value: post?.status || 'draft', options: ['draft', 'published'] },
+        { type: 'checkbox', name: 'featured', label: 'Featured Post', value: post?.featured || false }
+    ];
+    return buildFormHTML('blog-form', fields);
+}
+
 // ============= PROFILE SAVE =============
 
 async function saveProfile(formData) {
@@ -855,7 +988,7 @@ function buildFormHTML(formId, fields) {
             f.options.forEach(opt => { html += `<option value="${opt}" ${f.value === opt ? 'selected' : ''}>${opt}</option>`; });
             html += `</select>`;
         } else if (f.type === 'textarea') {
-            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="3">${f.value || ''}</textarea>`;
+            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="${f.rows || 3}">${f.value || ''}</textarea>`;
         } else if (f.type === 'checkbox') {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
@@ -1024,9 +1157,7 @@ function getIconForField(label) {
     return iconMap[label] || '📄';
 }
 
-// FIXED: Mark Lead Contacted - Updates UI immediately
 window.markLeadContacted = async function(id) {
-    // Find lead by unique_id or id
     const lead = leadsData.find(l => l.unique_id === id || l.id === id);
     if (!lead) {
         showToast('Lead not found.', 'error');
@@ -1040,18 +1171,9 @@ window.markLeadContacted = async function(id) {
             return;
         }
         
-        // Get the source table and original ID from the lead
         const sourceTable = lead.source_table || getSourceTableForLead(lead);
         const originalId = lead.original_id || lead.id;
         
-        console.log('Marking lead as contacted:', { 
-            id: id, 
-            sourceTable: sourceTable, 
-            originalId: originalId,
-            lead: lead
-        });
-        
-        // Call API to update lead status - use the original ID for the URL
         const response = await fetch(`${API_BASE}/admin/leads/${originalId}/contacted`, {
             method: 'PUT',
             headers: {
@@ -1067,40 +1189,28 @@ window.markLeadContacted = async function(id) {
         
         const data = await response.json();
         
-        // ALWAYS update the UI immediately, even if the API returns an error
-        // This is because the lead exists in the database and the update will work
         lead.contacted = 1;
         renderLeadsTable();
         updateStats();
         updateSidebarBadges();
         closeModal();
         
-        // Show appropriate message
         if (data.success) {
             showToast('✅ Lead marked as contacted successfully!', 'success');
         } else {
-            // If API failed but we updated UI, show a warning
             showToast('⚠️ Status updated in UI. Syncing with server...', 'warning');
-            console.error('API returned error but UI updated:', data);
         }
         
-        // Refresh leads from server in background
         await loadLeads();
         
     } catch (error) {
         console.error('Error marking lead as contacted:', error);
-        
-        // Even if there's a network error, update the UI
-        // The lead exists, and the user wants it marked as contacted
         lead.contacted = 1;
         renderLeadsTable();
         updateStats();
         updateSidebarBadges();
         closeModal();
-        
         showToast('⚠️ Status updated locally. Will sync with server.', 'warning');
-        
-        // Try again in background
         try {
             await loadLeads();
         } catch (e) {
@@ -1111,14 +1221,12 @@ window.markLeadContacted = async function(id) {
 
 function getSourceTableForLead(lead) {
     if (!lead || !lead.type) return 'contacts';
-    
     const typeMap = {
         'contact': 'contacts',
         'valuation': 'valuations',
         'viewing': 'viewings',
         'goldenvisa': 'goldenvisa_leads'
     };
-    
     return typeMap[lead.type] || 'contacts';
 }
 
@@ -1152,6 +1260,7 @@ function openModal(title, bodyHTML) {
     
     setupImageInput('edit-images', true);
     setupImageInput('edit-image', false);
+    setupImageInput('edit-featured_image', false);
     
     document.getElementById('modal-save').onclick = function() {
         const form = document.querySelector('#modal-body form');
@@ -1160,6 +1269,7 @@ function openModal(title, bodyHTML) {
         if (editingType === 'listing') saveListing(formData);
         else if (editingType === 'offplan') saveOffplan(formData);
         else if (editingType === 'community') saveCommunity(formData);
+        else if (editingType === 'blog') saveBlog(formData);
     };
 }
 
@@ -1227,6 +1337,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-listing-btn')?.addEventListener('click', () => { editingId = null; editingType = 'listing'; openModal('Add New Listing', buildListingForm()); });
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
+    document.getElementById('add-blog-btn')?.addEventListener('click', () => { editingId = null; editingType = 'blog'; openModal('Add New Blog Post', buildBlogForm()); });
     
     document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
     
