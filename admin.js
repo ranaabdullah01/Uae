@@ -923,6 +923,13 @@ async function saveBlog(formData) {
         }
     });
     
+    // Disable save button to prevent double submission
+    const saveBtn = document.getElementById('modal-save');
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Saving...';
+    }
+    
     try {
         const response = await fetch(`${API_BASE}/api/blog`, { 
             method: 'POST', 
@@ -934,7 +941,7 @@ async function saveBlog(formData) {
         
         if (data.success) {
             // Clean up Quill editor
-            destroyQuill();
+            cleanupQuill();
             closeModal(); 
             await loadBlog(); 
             updateStats(); 
@@ -948,6 +955,11 @@ async function saveBlog(formData) {
     } catch (error) { 
         console.error('Save error:', error); 
         showToast('❌ Error saving blog post: ' + error.message, 'error'); 
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Save';
+        }
     }
 }
 
@@ -1006,7 +1018,7 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
 
 // ============= QUILL EDITOR FUNCTIONS =============
 
-function destroyQuill() {
+function cleanupQuill() {
     try {
         if (quillEditor) {
             // Try to destroy properly if method exists
@@ -1028,13 +1040,17 @@ function destroyQuill() {
 
 function initializeQuill(content) {
     // Clean up any existing instance first
-    destroyQuill();
+    cleanupQuill();
     
     const container = document.getElementById('quill-editor-container');
-    if (!container) return;
+    if (!container) {
+        console.log('Quill container not found');
+        return;
+    }
     
     if (typeof Quill === 'undefined') {
         console.error('Quill library not loaded');
+        showToast('Editor not loaded. Please refresh.', 'error');
         return;
     }
     
@@ -1403,7 +1419,7 @@ function openModal(title, bodyHTML) {
 }
 
 window.closeModal = function() {
-    destroyQuill();
+    cleanupQuill();
     document.getElementById('modal').style.display = 'none';
     editingId = null; 
     editingType = null;
