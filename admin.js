@@ -1,5 +1,5 @@
 // ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG
+// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -16,6 +16,10 @@ let communitiesData = [];
 let blogData = [];
 let profileData = {};
 let sidebarCollapsed = false;
+
+// ============= QUILL EDITOR REFERENCE =============
+let quillEditor = null;
+let quillInitialized = false;
 
 // ============= DOM REFS =============
 const loginScreen = document.getElementById('login-screen');
@@ -857,7 +861,7 @@ function buildCommunityForm(community = null) {
     return buildFormHTML('community-form', fields);
 }
 
-// ============= CRUD - BLOG =============
+// ============= CRUD - BLOG WITH QUILL =============
 
 window.editBlog = function(id) {
     const post = blogData.find(p => p.id === id);
@@ -892,12 +896,20 @@ window.publishBlog = async function(id) {
 };
 
 async function saveBlog(formData) {
+    // Get content from Quill editor
+    let content = '';
+    if (quillEditor && quillInitialized) {
+        content = quillEditor.root.innerHTML;
+    } else {
+        content = formData.get('content') || '';
+    }
+    
     const post = {
         id: editingId || null,
         title: formData.get('title') || '',
         slug: formData.get('slug') || (formData.get('title') || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
         excerpt: formData.get('excerpt') || '',
-        content: formData.get('content') || '',
+        content: content,
         featured_image: formData.get('featured_image_hidden') || '',
         author: formData.get('author') || 'Admin',
         category: formData.get('category') || '',
@@ -911,27 +923,138 @@ async function saveBlog(formData) {
         const response = await fetch(`${API_BASE}/api/blog`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(post) });
         const data = await response.json();
         if (data.success) {
-            closeModal(); await loadBlog(); updateStats(); updateSidebarBadges();
+            // Clean up Quill editor
+            if (quillEditor) {
+                quillEditor.destroy();
+                quillEditor = null;
+                quillInitialized = false;
+            }
+            closeModal(); 
+            await loadBlog(); 
+            updateStats(); 
+            updateSidebarBadges();
             showToast('✅ Blog post saved successfully!', 'success');
-            editingId = null; editingType = null;
-        } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
-    } catch (error) { console.error('Save error:', error); showToast('❌ Error saving blog post.', 'error'); }
+            editingId = null; 
+            editingType = null;
+        } else { 
+            showToast('❌ Failed to save: ' + data.message, 'error'); 
+        }
+    } catch (error) { 
+        console.error('Save error:', error); 
+        showToast('❌ Error saving blog post.', 'error'); 
+    }
 }
 
 function buildBlogForm(post = null) {
+    const contentValue = post?.content || '';
     const fields = [
         { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: post?.slug || '' },
         { type: 'text', name: 'category', label: 'Category', value: post?.category || '' },
         { type: 'text', name: 'tags', label: 'Tags (comma separated)', value: post?.tags || '' },
         { type: 'textarea', name: 'excerpt', label: 'Excerpt (Short Summary)', value: post?.excerpt || '', rows: 3 },
-        { type: 'textarea', name: 'content', label: 'Content (Full Blog Post)', value: post?.content || '', rows: 10 },
+        { type: 'quill', name: 'content', label: 'Content (Full Blog Post)', value: contentValue },
         { type: 'file', name: 'featured_image', label: 'Featured Image', value: post?.featured_image || '', multiple: false },
         { type: 'text', name: 'author', label: 'Author', value: post?.author || 'Admin' },
         { type: 'select', name: 'status', label: 'Status', value: post?.status || 'draft', options: ['draft', 'published'] },
         { type: 'checkbox', name: 'featured', label: 'Featured Post', value: post?.featured || false }
     ];
-    return buildFormHTML('blog-form', fields);
+    return buildFormHTML('blog-form', fields, true);
+}
+
+// ============= HELPER FOR FORM HTML =============
+
+function buildFormHTML(formId, fields, isBlogForm = false) {
+    let html = `<form id="${formId}">`;
+    
+    let quillContent = '';
+    
+    fields.forEach(f => {
+        html += `<div class="form-group">`;
+        html += `<label for="edit-${f.name}">${f.label}</label>`;
+        
+        if (f.type === 'select') {
+            html += `<select id="edit-${f.name}" name="${f.name}">`;
+            f.options.forEach(opt => { html += `<option value="${opt}" ${f.value === opt ? 'selected' : ''}>${opt}</option>`; });
+            html += `</select>`;
+        } else if (f.type === 'textarea') {
+            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="${f.rows || 3}">${f.value || ''}</textarea>`;
+        } else if (f.type === 'checkbox') {
+            html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
+        } else if (f.type === 'file') {
+            html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''}>`;
+            html += `<input type="hidden" id="hidden-${f.name}" name="${f.name}_hidden" value="${f.value || ''}">`;
+            if (f.value) {
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);">Current image will be kept unless you upload a new one.</small>`;
+            }
+        } else if (f.type === 'quill') {
+            quillContent = f.value || '';
+            html += `<div id="quill-editor-container" style="min-height:300px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--line);"></div>`;
+            html += `<input type="hidden" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
+        } else {
+            html += `<input type="${f.type}" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
+        }
+        html += `</div>`;
+    });
+    html += '</form>';
+    
+    return html;
+}
+
+// ============= INITIALIZE QUILL EDITOR =============
+
+function initializeQuill(content) {
+    // Clean up any existing Quill instance
+    if (quillEditor) {
+        quillEditor.destroy();
+        quillEditor = null;
+    }
+    
+    const container = document.getElementById('quill-editor-container');
+    if (!container) return;
+    
+    if (typeof Quill === 'undefined') {
+        console.error('Quill library not loaded');
+        return;
+    }
+    
+    const toolbarOptions = [
+        ['bold', 'italic', 'underline', 'strike'],
+        ['blockquote', 'code-block'],
+        [{ 'header': 1 }, { 'header': 2 }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'script': 'sub'}, { 'script': 'super' }],
+        [{ 'indent': '-1'}, { 'indent': '+1' }],
+        [{ 'direction': 'rtl' }],
+        [{ 'size': ['small', false, 'large', 'huge'] }],
+        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'font': [] }],
+        [{ 'align': [] }],
+        ['clean'],
+        ['link', 'image', 'video']
+    ];
+    
+    quillEditor = new Quill(container, {
+        theme: 'snow',
+        modules: {
+            toolbar: toolbarOptions
+        },
+        placeholder: 'Write your blog post content here...'
+    });
+    
+    if (content) {
+        quillEditor.root.innerHTML = content;
+    }
+    
+    quillInitialized = true;
+    
+    quillEditor.on('text-change', function() {
+        const hiddenInput = document.getElementById('edit-content');
+        if (hiddenInput) {
+            hiddenInput.value = quillEditor.root.innerHTML;
+        }
+    });
 }
 
 // ============= PROFILE SAVE =============
@@ -974,36 +1097,6 @@ async function saveProfile(formData) {
             await loadProfile();
         } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
     } catch (error) { console.error('Save error:', error); showToast('❌ Error saving profile.', 'error'); }
-}
-
-// ============= HELPER FOR FORM HTML =============
-function buildFormHTML(formId, fields) {
-    let html = `<form id="${formId}">`;
-    fields.forEach(f => {
-        html += `<div class="form-group">`;
-        html += `<label for="edit-${f.name}">${f.label}</label>`;
-        
-        if (f.type === 'select') {
-            html += `<select id="edit-${f.name}" name="${f.name}">`;
-            f.options.forEach(opt => { html += `<option value="${opt}" ${f.value === opt ? 'selected' : ''}>${opt}</option>`; });
-            html += `</select>`;
-        } else if (f.type === 'textarea') {
-            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="${f.rows || 3}">${f.value || ''}</textarea>`;
-        } else if (f.type === 'checkbox') {
-            html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
-        } else if (f.type === 'file') {
-            html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''}>`;
-            html += `<input type="hidden" id="hidden-${f.name}" name="${f.name}_hidden" value="${f.value || ''}">`;
-            if (f.value) {
-                 html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);">Current image will be kept unless you upload a new one.</small>`;
-            }
-        } else {
-            html += `<input type="${f.type}" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
-        }
-        html += `</div>`;
-    });
-    html += '</form>';
-    return html;
 }
 
 // ============= LEAD MANAGEMENT =============
@@ -1262,6 +1355,17 @@ function openModal(title, bodyHTML) {
     setupImageInput('edit-image', false);
     setupImageInput('edit-featured_image', false);
     
+    if (editingType === 'blog') {
+        setTimeout(() => {
+            const container = document.getElementById('quill-editor-container');
+            const hiddenInput = document.getElementById('edit-content');
+            if (container && hiddenInput) {
+                const content = hiddenInput.value || '';
+                initializeQuill(content);
+            }
+        }, 200);
+    }
+    
     document.getElementById('modal-save').onclick = function() {
         const form = document.querySelector('#modal-body form');
         if (!form) { showToast('Form not found', 'error'); return; }
@@ -1274,8 +1378,14 @@ function openModal(title, bodyHTML) {
 }
 
 window.closeModal = function() {
+    if (quillEditor) {
+        quillEditor.destroy();
+        quillEditor = null;
+        quillInitialized = false;
+    }
     document.getElementById('modal').style.display = 'none';
-    editingId = null; editingType = null;
+    editingId = null; 
+    editingType = null;
 };
 
 // ============= UTILITY =============
