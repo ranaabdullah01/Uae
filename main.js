@@ -1,5 +1,5 @@
 // ================================================
-// MAIN.JS - FULL LUXURY UI INTEGRATION (UPDATED)
+// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -11,44 +11,40 @@ function hidePreloader() {
     const image = document.getElementById('preloader-image');
     
     if (image) {
-        // Slide image up
         image.classList.add('slide-up');
     }
     
-    // Remove preloader completely after animation completes
     setTimeout(() => {
         if (preloader) {
             preloader.classList.add('hide');
-            // Remove from DOM completely
             setTimeout(() => {
                 if (preloader.parentNode) {
                     preloader.remove();
                 }
             }, 100);
         }
-    }, 800); // Wait for slide animation to complete
+    }, 800);
 }
 
-// Auto-hide after 2 seconds
 setTimeout(hidePreloader, 2000);
 
-// Also hide on page load (whichever comes first)
 window.addEventListener('load', function() {
     setTimeout(hidePreloader, 300);
 });
 
-// Fallback: hide after 3.5 seconds max
 setTimeout(hidePreloader, 3500);
 
 // ============= STATE =============
 let listings = [];
 let offplan = [];
 let communities = [];
+let blogPosts = [];
 let currentSection = 'home';
 let config = { ...CONFIG };
 let agentProfile = {};
 let currentListingId = null;
 let isRTL = false;
+let currentBlogPost = null;
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -72,7 +68,6 @@ function showToast(message, type = 'success') {
 // ============= LOAD DATA FROM API =============
 
 async function loadAllData() {
-    // Show skeleton loaders immediately
     const listingsContainer = document.getElementById('listings-grid');
     const featuredContainer = document.getElementById('featured-listings');
     if (listingsContainer) listingsContainer.innerHTML = createSkeletons(3);
@@ -104,6 +99,12 @@ async function loadAllData() {
             communities = communitiesData.communities;
         }
         
+        const blogResponse = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
+        const blogData = await blogResponse.json();
+        if (blogData.success) {
+            blogPosts = blogData.posts;
+        }
+        
         updateAllSections();
         
     } catch (error) {
@@ -117,6 +118,7 @@ function loadFromLocalStorage() {
         listings = JSON.parse(localStorage.getItem('ak_listings') || '[]');
         offplan = JSON.parse(localStorage.getItem('ak_offplan') || '[]');
         communities = JSON.parse(localStorage.getItem('ak_communities') || '[]');
+        blogPosts = JSON.parse(localStorage.getItem('ak_blog') || '[]');
         Object.assign(config, JSON.parse(localStorage.getItem('ak_config') || '{}'));
         updateAllSections();
     } catch (e) {
@@ -124,7 +126,6 @@ function loadFromLocalStorage() {
     }
 }
 
-// Helper function to create skeleton loaders
 function createSkeletons(count) {
     let html = '';
     for (let i = 0; i < count; i++) {
@@ -154,6 +155,7 @@ function updateAllSections() {
     renderOffplanPage();
     renderCommunitiesPage();
     renderAboutPage();
+    renderBlogGrid();
     populateCommunityFilter();
 }
 
@@ -497,6 +499,127 @@ function renderAboutPage() {
     }
 }
 
+// ============= BLOG FUNCTIONS =============
+
+async function loadBlog() {
+    try {
+        const response = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
+        const data = await response.json();
+        if (data.success) {
+            blogPosts = data.posts;
+            renderBlogGrid();
+        }
+    } catch (error) {
+        console.error('Error loading blog:', error);
+        const container = document.getElementById('blog-grid');
+        if (container) {
+            container.innerHTML = '<p class="no-results">Failed to load blog posts.</p>';
+        }
+    }
+}
+
+function renderBlogGrid() {
+    const container = document.getElementById('blog-grid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (!blogPosts || blogPosts.length === 0) {
+        container.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px;">No blog posts found. Check back soon!</p>';
+        return;
+    }
+    
+    blogPosts.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'blog-card';
+        
+        const imageUrl = post.featured_image || 'https://via.placeholder.com/800x400/0A1628/C9A84C?text=Blog';
+        const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
+        
+        card.innerHTML = `
+            <div class="blog-card-image">
+                <img src="${imageUrl}" alt="${post.title}" loading="lazy">
+                ${post.featured ? '<span class="blog-badge featured">Featured</span>' : ''}
+            </div>
+            <div class="blog-card-body">
+                <div class="blog-card-meta">
+                    <span class="blog-category">${post.category || 'Uncategorized'}</span>
+                    <span class="blog-date">${formatDate(post.published_at || post.created_at)}</span>
+                </div>
+                <h3 class="blog-card-title">${post.title}</h3>
+                <p class="blog-card-excerpt">${post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                <div class="blog-card-footer">
+                    <div class="blog-tags">
+                        ${tags.slice(0, 3).map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">Read More</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+window.viewBlogPost = async function(id) {
+    const post = blogPosts.find(p => p.id == id);
+    if (!post) {
+        showToast('Post not found.', 'error');
+        return;
+    }
+    
+    currentBlogPost = post;
+    
+    document.getElementById('blog-grid').style.display = 'none';
+    const detailContainer = document.getElementById('blog-detail');
+    detailContainer.style.display = 'block';
+    
+    const content = document.getElementById('blog-detail-content');
+    const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
+    
+    content.innerHTML = `
+        <div class="blog-detail">
+            ${post.featured_image ? `<div class="blog-detail-image"><img src="${post.featured_image}" alt="${post.title}"></div>` : ''}
+            <div class="blog-detail-header">
+                <div class="blog-detail-meta">
+                    <span class="blog-category">${post.category || 'Uncategorized'}</span>
+                    <span class="blog-date">${formatDate(post.published_at || post.created_at)}</span>
+                    <span class="blog-author">By ${post.author || 'Admin'}</span>
+                    <span class="blog-views">👁️ ${post.views || 0} views</span>
+                </div>
+                <h1 class="blog-detail-title">${post.title}</h1>
+                ${post.excerpt ? `<p class="blog-detail-excerpt">${post.excerpt}</p>` : ''}
+            </div>
+            <div class="blog-detail-body">
+                ${post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}
+            </div>
+            ${tags.length > 0 ? `
+                <div class="blog-detail-tags">
+                    <h4>Tags</h4>
+                    <div class="blog-tags">
+                        ${tags.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
+                    </div>
+                </div>
+            ` : ''}
+            <div class="blog-detail-share">
+                <h4>Share this post</h4>
+                <div class="share-buttons">
+                    <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(post.title)}" target="_blank" class="share-btn linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="https://wa.me/?text=${encodeURIComponent(post.title + ' ' + window.location.href)}" target="_blank" class="share-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
+};
+
+window.showBlogList = function() {
+    document.getElementById('blog-grid').style.display = 'grid';
+    document.getElementById('blog-detail').style.display = 'none';
+    currentBlogPost = null;
+};
+
 // ============= FILTER FUNCTIONS =============
 
 function filterListings() {
@@ -549,7 +672,6 @@ window.filterByCommunity = function(communityName) {
 };
 
 function populateCommunityFilter() {
-    // 1. Handle Listings Page Filter
     const filterSelect = document.getElementById('filter-community');
     if (filterSelect) {
         const currentValue = filterSelect.value;
@@ -563,7 +685,6 @@ function populateCommunityFilter() {
         filterSelect.value = currentValue;
     }
     
-    // 2. Handle Valuation Page Dropdown
     const valSelect = document.getElementById('val-community');
     if (valSelect) {
         const currentVal = valSelect.value;
@@ -790,7 +911,8 @@ function navigateTo(sectionId) {
         about: 'About | ' + (config.siteName || 'AK Web Services'),
         contact: 'Contact | ' + (config.siteName || 'AK Web Services'),
         valuation: 'Valuation | ' + (config.siteName || 'AK Web Services'),
-        goldenvisa: 'Golden Visa | ' + (config.siteName || 'AK Web Services')
+        goldenvisa: 'Golden Visa | ' + (config.siteName || 'AK Web Services'),
+        blog: 'Blog | ' + (config.siteName || 'AK Web Services')
     };
     document.title = sectionNames[sectionId] || config.siteName || 'AK Web Services';
     
@@ -809,6 +931,8 @@ function navigateTo(sectionId) {
         renderCommunitiesPage();
     } else if (sectionId === 'about') {
         renderAboutPage();
+    } else if (sectionId === 'blog') {
+        loadBlog();
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -904,9 +1028,6 @@ document.addEventListener('DOMContentLoaded', function() {
     
     navigateTo('home');
 
-    // ================================================
-    // HEADER SCROLL EFFECT (Transparent to Navy)
-    // ================================================
     const header = document.getElementById('main-header');
     window.addEventListener('scroll', () => {
         if (window.scrollY > 50) {
@@ -921,6 +1042,7 @@ document.addEventListener('DOMContentLoaded', function() {
 window.listings = listings;
 window.offplan = offplan;
 window.communities = communities;
+window.blogPosts = blogPosts;
 window.config = config;
 window.agentProfile = agentProfile;
 window.loadAllData = loadAllData;
@@ -934,3 +1056,6 @@ window.closeModal = window.closeModal;
 window.toggleMobileMenu = toggleMobileMenu;
 window.toggleRTL = toggleRTL;
 window.CONFIG = CONFIG;
+window.viewBlogPost = window.viewBlogPost;
+window.showBlogList = window.showBlogList;
+window.loadBlog = loadBlog;
