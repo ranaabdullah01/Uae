@@ -94,7 +94,6 @@
     display: none !important;
   }
 
-  /* Remove the ::after pseudo-element that was showing the old name */
   #main-header::after {
     display: none !important;
     content: none !important;
@@ -159,7 +158,6 @@
   #main-header .nav-links-wrapper.open,
   #main-header .nav-links-wrapper.is-open { transform: translateX(0) !important; }
 
-  /* When menu is open: keep header transparent so hamburger (X) sits on drawer */
   #main-header:has(.nav-links-wrapper.active),
   #main-header:has(.nav-links-wrapper.open),
   #main-header:has(.nav-links-wrapper.is-open) {
@@ -247,14 +245,63 @@
   .communities-grid,
   .sales-grid,
   .properties-grid,
-  .cards-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
+  .cards-grid,
+  .blog-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
   .property-card img,
   .offplan-card img,
   .community-card img,
-  .sale-card img { height: 220px !important; object-fit: cover !important; }
+  .sale-card img,
+  .blog-card img { height: 220px !important; object-fit: cover !important; }
   form input,
   form select,
   form textarea { font-size: 16px !important; }
+
+  /* Blog Mobile Styles */
+  .blog-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding: 30px 0 !important;
+  }
+  
+  .blog-card-image {
+    aspect-ratio: 16/10 !important;
+  }
+  
+  .blog-detail {
+    padding: 16px 0 !important;
+  }
+  
+  .blog-detail-image img {
+    max-height: 300px !important;
+  }
+  
+  .blog-detail-title {
+    font-size: 1.6rem !important;
+  }
+  
+  .blog-detail-meta {
+    font-size: 11px !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+  }
+  
+  .blog-card-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  
+  .blog-card-footer .btn {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  
+  .share-buttons {
+    justify-content: center !important;
+  }
+  
+  .blog-hero {
+    padding: 70px 0 60px !important;
+  }
 }
 
 /* ========== VERY SMALL SCREENS (<= 380px) ========== */
@@ -271,4 +318,69 @@
   }
   .hero-title { font-size: 1.9rem !important; }
   .btn { font-size: 13px !important; padding: 13px 16px !important; }
+  
+  .blog-card-title {
+    font-size: 1rem !important;
+  }
+  .blog-card-excerpt {
+    font-size: 12px !important;
+  }
+  .blog-detail-title {
+    font-size: 1.2rem !important;
+  }
+  .blog-detail-body {
+    font-size: 0.85rem !important;
+  }
+}
+
+/* ========== TABLET (600px - 900px) ========== */
+@media (min-width: 601px) and (max-width: 900px) {
+  .listings-grid,
+  .offplan-grid,
+  .communities-grid,
+  .sales-grid,
+  .blog-grid { 
+    grid-template-columns: repeat(2, 1fr) !important; 
+    gap: 20px !important; 
+  }
+  
+  .blog-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ========== BLOG ADDITIONAL MOBILE FIXES ========== */
+@media (max-width: 768px) {
+  .blog-detail-excerpt {
+    font-size: 0.95rem !important;
+    padding-left: 14px !important;
+  }
+  
+  .blog-detail-body {
+    font-size: 0.92rem !important;
+  }
+  
+  .blog-detail-body p {
+    margin-bottom: 14px !important;
+  }
+  
+  .blog-tags {
+    gap: 4px !important;
+  }
+  
+  .blog-tag {
+    font-size: 9px !important;
+    padding: 1px 8px !important;
+  }
+  
+  .share-btn {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 14px !important;
+  }
+  
+  .blog-detail-share h4,
+  .blog-detail-tags h4 {
+    font-size: 12px !important;
+  }
 }
