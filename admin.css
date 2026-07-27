@@ -718,6 +718,10 @@ h1, h2, h3, h4 {
 .table-status.viewing { background: rgba(46,139,87,0.12); color: var(--success); }
 .table-status.goldenvisa { background: rgba(176,138,62,0.2); color: var(--brass-dark); }
 
+/* =============== BLOG STATUS BADGES =============== */
+.table-status.published { background: rgba(46,139,87,0.12); color: var(--success); }
+.table-status.draft { background: rgba(198,57,44,0.08); color: var(--danger); }
+
 /* =============== FILTERS =============== */
 .leads-filters {
     display: flex;
@@ -982,7 +986,6 @@ h1, h2, h3, h4 {
     padding: 4px 0;
 }
 
-/* Header */
 .lead-detail-header {
     display: flex;
     align-items: center;
@@ -1242,4 +1245,20 @@ h1, h2, h3, h4 {
     .lead-extra-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* =============== MODAL FORM TEXTAREA BLOG =============== */
+#modal-body textarea[name="content"] {
+    min-height: 300px !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    line-height: 1.8 !important;
+}
+
+#modal-body textarea[name="excerpt"] {
+    min-height: 80px !important;
+}
+
+#modal-body .form-group:has(textarea[name="content"]) label {
+    font-size: 13px !important;
+    letter-spacing: 0.08em !important;
 }
