@@ -53,7 +53,7 @@ function showToast(message, type = 'success') {
     }, 3500);
 }
 
-// ============= IMAGE COMPRESSION & R2 UPLOAD HELPER =============
+// ============= IMAGE COMPRESSION =============
 function compressImageToBlob(file, maxWidth) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -88,7 +88,7 @@ async function setupImageInput(inputId, isMultiple = false) {
     const input = document.getElementById(inputId);
     if (!input) return;
     
-    // Remove existing event listeners by cloning
+    // Remove existing event listeners
     const newInput = input.cloneNode(true);
     input.parentNode.replaceChild(newInput, input);
     
@@ -108,6 +108,12 @@ async function setupImageInput(inputId, isMultiple = false) {
         
         for (const file of files) {
             try {
+                // Check file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showToast('File too large. Please use images under 5MB.', 'error');
+                    continue;
+                }
+                
                 const compressedBlob = await compressImageToBlob(file, 1200);
                 
                 const formData = new FormData();
@@ -121,16 +127,27 @@ async function setupImageInput(inputId, isMultiple = false) {
                 
                 console.log('Uploading file:', file.name, 'Size:', compressedBlob.size);
                 
+                // Use fetch with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`
                     },
-                    body: formData
+                    body: formData,
+                    signal: controller.signal
                 });
+                
+                clearTimeout(timeoutId);
                 
                 const data = await response.json();
                 console.log('Upload response:', data);
+                
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP ${response.status}`);
+                }
                 
                 if (data.success && data.url) {
                     uploadedUrls.push(data.url);
@@ -139,7 +156,11 @@ async function setupImageInput(inputId, isMultiple = false) {
                 }
             } catch (err) {
                 console.error('Upload error:', err);
-                showToast('Upload error: ' + err.message, 'error');
+                if (err.name === 'AbortError') {
+                    showToast('Upload timeout. Please try again.', 'error');
+                } else {
+                    showToast('Upload error: ' + err.message, 'error');
+                }
             }
         }
         
@@ -153,10 +174,6 @@ async function setupImageInput(inputId, isMultiple = false) {
             showToast('✅ Image(s) uploaded successfully!', 'success');
         }
     });
-    
-    // Store reference for cleanup
-    window._imageInputs = window._imageInputs || [];
-    window._imageInputs.push(newInput);
 }
 
 // ============= AUTHENTICATION =============
@@ -392,7 +409,6 @@ async function loadBlog() {
         const data = await response.json();
         if (data.success) {
             blogData = data.posts;
-            console.log('Blog data loaded:', blogData.length, 'posts');
             renderBlogTable();
             updateSidebarBadges();
             updateStats();
@@ -1487,7 +1503,7 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
-    // Setup image inputs with a small delay to ensure DOM is ready
+    // Setup image inputs
     setTimeout(() => {
         setupImageInput('edit-images', true);
         setupImageInput('edit-image', false);
@@ -1500,7 +1516,6 @@ function openModal(title, bodyHTML) {
             const hiddenInput = document.getElementById('edit-content');
             if (container && hiddenInput) {
                 const content = hiddenInput.value || '';
-                console.log('Initializing Quill with content length:', content.length);
                 initializeQuill(content);
             }
         }, 300);
