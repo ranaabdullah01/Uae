@@ -366,6 +366,7 @@ async function loadBlog() {
         const data = await response.json();
         if (data.success) {
             blogData = data.posts;
+            console.log('Blog data loaded:', blogData.length, 'posts');
             renderBlogTable();
             updateSidebarBadges();
             updateStats();
@@ -525,6 +526,10 @@ function renderBlogTable() {
         const statusText = post.status === 'published' ? 'Published' : 'Draft';
         const imageUrl = post.featured_image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Blog';
         
+        // Use post.id directly - make sure it's properly passed
+        const postId = post.id;
+        console.log('Rendering blog post:', postId, post.title);
+        
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${post.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong>${post.title}</strong></td>
@@ -534,9 +539,9 @@ function renderBlogTable() {
             <td>${post.views || 0}</td>
             <td>${formatDate(post.published_at || post.created_at)}</td>
             <td class="actions">
-                <button class="btn btn-primary btn-sm" onclick="window.editBlog('${post.id}')">Edit</button>
-                ${post.status === 'draft' ? `<button class="btn btn-success btn-sm" onclick="window.publishBlog('${post.id}')">Publish</button>` : ''}
-                <button class="btn btn-danger btn-sm" onclick="window.deleteBlog('${post.id}')">Delete</button>
+                <button class="btn btn-primary btn-sm" onclick="window.editBlog('${postId}')">Edit</button>
+                ${post.status === 'draft' ? `<button class="btn btn-success btn-sm" onclick="window.publishBlog('${postId}')">Publish</button>` : ''}
+                <button class="btn btn-danger btn-sm" onclick="window.deleteBlog('${postId}')">Delete</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -631,7 +636,7 @@ function updateStats() {
 // ============= CRUD - LISTINGS =============
 
 window.editListing = function(id) {
-    const listing = listingsData.find(l => l.id === id);
+    const listing = listingsData.find(l => l.id == id);
     if (!listing) return;
     editingId = id;
     editingType = 'listing';
@@ -715,7 +720,7 @@ function buildListingForm(listing = null) {
 // ============= CRUD - OFFPLAN =============
 
 window.editOffplan = function(id) {
-    const project = offplanData.find(p => p.id === id);
+    const project = offplanData.find(p => p.id == id);
     if (!project) return;
     editingId = id;
     editingType = 'offplan';
@@ -792,7 +797,7 @@ function buildOffplanForm(project = null) {
 // ============= CRUD - COMMUNITIES =============
 
 window.editCommunity = function(id) {
-    const community = communitiesData.find(c => c.id === id);
+    const community = communitiesData.find(c => c.id == id);
     if (!community) return;
     editingId = id;
     editingType = 'community';
@@ -864,14 +869,26 @@ function buildCommunityForm(community = null) {
 // ============= CRUD - BLOG WITH QUILL =============
 
 window.editBlog = function(id) {
-    const post = blogData.find(p => p.id == id);
+    console.log('Edit blog called with ID:', id);
+    console.log('Current blogData:', blogData);
+    
+    // Find the post - try both ways
+    let post = blogData.find(p => p.id == id);
+    
+    // If not found, try with string comparison
     if (!post) {
-        showToast('Blog post not found.', 'error');
+        post = blogData.find(p => String(p.id) === String(id));
+    }
+    
+    if (!post) {
+        showToast('Blog post not found. Please refresh and try again.', 'error');
+        console.error('Post not found for ID:', id);
         return;
     }
+    
+    console.log('Found post:', post);
     editingId = id;
     editingType = 'blog';
-    console.log('Editing blog post:', post);
     openModal('Edit Blog Post', buildBlogForm(post));
 };
 
@@ -1014,6 +1031,8 @@ async function saveBlog(formData) {
 function buildBlogForm(post = null) {
     const contentValue = post?.content || '';
     const statusValue = post?.status || 'draft';
+    
+    console.log('Building blog form with post:', post);
     
     const fields = [
         { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
@@ -1474,6 +1493,7 @@ function openModal(title, bodyHTML) {
             const hiddenInput = document.getElementById('edit-content');
             if (container && hiddenInput) {
                 const content = hiddenInput.value || '';
+                console.log('Initializing Quill with content length:', content.length);
                 initializeQuill(content);
             }
         }, 300);
