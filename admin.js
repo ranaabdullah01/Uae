@@ -864,10 +864,14 @@ function buildCommunityForm(community = null) {
 // ============= CRUD - BLOG WITH QUILL =============
 
 window.editBlog = function(id) {
-    const post = blogData.find(p => p.id === id);
-    if (!post) return;
+    const post = blogData.find(p => p.id == id);
+    if (!post) {
+        showToast('Blog post not found.', 'error');
+        return;
+    }
     editingId = id;
     editingType = 'blog';
+    console.log('Editing blog post:', post);
     openModal('Edit Blog Post', buildBlogForm(post));
 };
 
@@ -890,7 +894,7 @@ window.publishBlog = async function(id) {
         const data = await response.json();
         if (data.success) {
             // Update local state immediately
-            const post = blogData.find(p => p.id === id);
+            const post = blogData.find(p => p.id == id);
             if (post) {
                 post.status = 'published';
                 post.published_at = new Date().toISOString();
@@ -955,12 +959,11 @@ async function saveBlog(formData) {
         if (data.success) {
             // Clean up Quill editor
             cleanupQuill();
-            closeModal();
             
             // Update local state immediately
             if (editingId) {
                 // Update existing post
-                const existingPost = blogData.find(p => p.id === editingId);
+                const existingPost = blogData.find(p => p.id == editingId);
                 if (existingPost) {
                     Object.assign(existingPost, post);
                     if (isPublishing) {
@@ -983,6 +986,9 @@ async function saveBlog(formData) {
             updateStats();
             updateSidebarBadges();
             
+            // Close modal
+            closeModal();
+            
             const message = isPublishing ? '✅ Blog post published successfully!' : '✅ Blog post saved as draft!';
             showToast(message, 'success');
             
@@ -1000,16 +1006,14 @@ async function saveBlog(formData) {
     } finally {
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = isPublishing ? 'Publish' : 'Save';
+            saveBtn.textContent = isPublishing ? 'Publish' : 'Save as Draft';
         }
     }
 }
 
 function buildBlogForm(post = null) {
     const contentValue = post?.content || '';
-    const isEditing = !!post;
     const statusValue = post?.status || 'draft';
-    const buttonText = statusValue === 'published' ? 'Publish' : 'Save as Draft';
     
     const fields = [
         { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
@@ -1058,15 +1062,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         html += `</div>`;
     });
     html += '</form>';
-    
-    // Store the button text for the save button
-    if (isBlogForm) {
-        const isEditing = fields.some(f => f.name === 'title' && f.value);
-        const statusField = fields.find(f => f.name === 'status');
-        const statusValue = statusField?.value || 'draft';
-        const buttonText = statusValue === 'published' ? 'Publish' : 'Save as Draft';
-        html += `<input type="hidden" id="blog-button-text" value="${buttonText}">`;
-    }
     
     return html;
 }
@@ -1481,7 +1476,7 @@ function openModal(title, bodyHTML) {
                 const content = hiddenInput.value || '';
                 initializeQuill(content);
             }
-        }, 200);
+        }, 300);
     }
     
     document.getElementById('modal-save').onclick = function() {
