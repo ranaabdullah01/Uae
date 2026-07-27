@@ -717,8 +717,6 @@ h1, h2, h3, h4 {
 .table-status.valuation { background: rgba(46,110,139,0.12); color: var(--info); }
 .table-status.viewing { background: rgba(46,139,87,0.12); color: var(--success); }
 .table-status.goldenvisa { background: rgba(176,138,62,0.2); color: var(--brass-dark); }
-
-/* =============== BLOG STATUS BADGES =============== */
 .table-status.published { background: rgba(46,139,87,0.12); color: var(--success); }
 .table-status.draft { background: rgba(198,57,44,0.08); color: var(--danger); }
 
@@ -910,6 +908,160 @@ h1, h2, h3, h4 {
     justify-content: flex-end;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+/* =============== QUILL EDITOR STYLES =============== */
+
+#quill-editor-container {
+    min-height: 300px !important;
+    background: var(--white) !important;
+    border-radius: var(--radius-sm) !important;
+    border: 1px solid var(--line) !important;
+}
+
+#quill-editor-container .ql-toolbar {
+    border-top-left-radius: var(--radius-sm) !important;
+    border-top-right-radius: var(--radius-sm) !important;
+    border-color: var(--line) !important;
+    background: var(--paper) !important;
+}
+
+#quill-editor-container .ql-container {
+    border-bottom-left-radius: var(--radius-sm) !important;
+    border-bottom-right-radius: var(--radius-sm) !important;
+    border-color: var(--line) !important;
+    min-height: 250px !important;
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 15px !important;
+    line-height: 1.8 !important;
+}
+
+#quill-editor-container .ql-editor {
+    min-height: 250px !important;
+}
+
+#quill-editor-container .ql-editor h1 {
+    font-size: 2.2rem !important;
+    font-family: 'Playfair Display', serif !important;
+    color: var(--emerald-deep) !important;
+    margin: 20px 0 12px 0 !important;
+}
+
+#quill-editor-container .ql-editor h2 {
+    font-size: 1.8rem !important;
+    font-family: 'Playfair Display', serif !important;
+    color: var(--emerald-deep) !important;
+    margin: 18px 0 10px 0 !important;
+}
+
+#quill-editor-container .ql-editor h3 {
+    font-size: 1.4rem !important;
+    font-family: 'Playfair Display', serif !important;
+    color: var(--emerald-deep) !important;
+    margin: 16px 0 8px 0 !important;
+}
+
+#quill-editor-container .ql-editor h4 {
+    font-size: 1.2rem !important;
+    font-family: 'Playfair Display', serif !important;
+    color: var(--emerald-deep) !important;
+    margin: 14px 0 8px 0 !important;
+}
+
+#quill-editor-container .ql-editor p {
+    font-size: 15px !important;
+    line-height: 1.8 !important;
+    color: var(--ink) !important;
+    margin-bottom: 16px !important;
+}
+
+#quill-editor-container .ql-editor ul,
+#quill-editor-container .ql-editor ol {
+    padding-left: 24px !important;
+    margin-bottom: 16px !important;
+}
+
+#quill-editor-container .ql-editor li {
+    margin-bottom: 6px !important;
+}
+
+#quill-editor-container .ql-editor blockquote {
+    border-left: 4px solid var(--brass) !important;
+    padding: 12px 20px !important;
+    margin: 16px 0 !important;
+    background: var(--cream-warm) !important;
+    border-radius: var(--radius-sm) !important;
+    font-style: italic !important;
+}
+
+#quill-editor-container .ql-editor a {
+    color: var(--brass) !important;
+    text-decoration: underline !important;
+}
+
+#quill-editor-container .ql-editor img {
+    max-width: 100% !important;
+    border-radius: var(--radius-sm) !important;
+    margin: 10px 0 !important;
+}
+
+#quill-editor-container .ql-editor code {
+    background: var(--cream-warm) !important;
+    padding: 2px 8px !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+}
+
+#quill-editor-container .ql-editor pre {
+    background: var(--cream-warm) !important;
+    padding: 16px !important;
+    border-radius: var(--radius-sm) !important;
+    overflow-x: auto !important;
+    border: 1px solid var(--line) !important;
+}
+
+#quill-editor-container .ql-editor .ql-size-small { font-size: 0.8rem !important; }
+#quill-editor-container .ql-editor .ql-size-large { font-size: 1.2rem !important; }
+#quill-editor-container .ql-editor .ql-size-huge { font-size: 1.6rem !important; }
+
+#quill-editor-container .ql-toolbar button {
+    color: var(--ink-soft) !important;
+}
+
+#quill-editor-container .ql-toolbar button:hover {
+    color: var(--emerald) !important;
+}
+
+#quill-editor-container .ql-toolbar .ql-active {
+    color: var(--brass) !important;
+}
+
+#quill-editor-container .ql-toolbar .ql-picker-label {
+    color: var(--ink-soft) !important;
+}
+
+#quill-editor-container .ql-toolbar .ql-picker-label:hover {
+    color: var(--emerald) !important;
+}
+
+.ql-picker-options {
+    background: var(--white) !important;
+    border: 1px solid var(--line) !important;
+    border-radius: var(--radius-sm) !important;
+    box-shadow: var(--shadow) !important;
+}
+
+.ql-picker-options .ql-picker-item {
+    color: var(--ink) !important;
+}
+
+.ql-picker-options .ql-picker-item:hover {
+    color: var(--brass) !important;
+    background: var(--cream) !important;
+}
+
+.modal-body:has(#quill-editor-container) {
+    max-height: 70vh !important;
 }
 
 /* =============== TOAST =============== */
@@ -1234,6 +1386,32 @@ h1, h2, h3, h4 {
     .lead-detail-footer .btn {
         width: 100%;
         justify-content: center;
+    }
+
+    /* Quill responsive */
+    #quill-editor-container .ql-toolbar {
+        flex-wrap: wrap !important;
+    }
+    
+    #quill-editor-container .ql-toolbar button {
+        padding: 4px !important;
+    }
+    
+    #quill-editor-container .ql-editor {
+        min-height: 180px !important;
+        font-size: 14px !important;
+    }
+    
+    #quill-editor-container .ql-editor h1 {
+        font-size: 1.6rem !important;
+    }
+    
+    #quill-editor-container .ql-editor h2 {
+        font-size: 1.3rem !important;
+    }
+    
+    #quill-editor-container .ql-editor h3 {
+        font-size: 1.1rem !important;
     }
 }
 
