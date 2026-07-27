@@ -889,8 +889,18 @@ window.publishBlog = async function(id) {
         const response = await fetch(`${API_BASE}/api/blog/${id}/publish`, { method: 'PUT', headers: getAuthHeaders() });
         const data = await response.json();
         if (data.success) {
-            await loadBlog(); updateStats(); updateSidebarBadges();
+            // Update local state immediately
+            const post = blogData.find(p => p.id === id);
+            if (post) {
+                post.status = 'published';
+                post.published_at = new Date().toISOString();
+            }
+            renderBlogTable();
+            updateStats();
+            updateSidebarBadges();
             showToast('✅ Blog post published successfully!', 'success');
+            // Refresh from server in background
+            await loadBlog();
         } else { showToast('Failed to publish: ' + data.message, 'error'); }
     } catch (error) { console.error('Publish error:', error); showToast('Error publishing blog post.', 'error'); }
 };
@@ -903,6 +913,9 @@ async function saveBlog(formData) {
         content = formData.get('content') || '';
     }
     
+    const status = formData.get('status') || 'draft';
+    const isPublishing = status === 'published';
+    
     const post = {
         id: editingId || null,
         title: formData.get('title') || '',
@@ -913,7 +926,7 @@ async function saveBlog(formData) {
         author: formData.get('author') || 'Admin',
         category: formData.get('category') || '',
         tags: formData.get('tags') || '',
-        status: formData.get('status') || 'draft',
+        status: status,
         featured: formData.get('featured') === 'true'
     };
     
@@ -927,7 +940,7 @@ async function saveBlog(formData) {
     const saveBtn = document.getElementById('modal-save');
     if (saveBtn) {
         saveBtn.disabled = true;
-        saveBtn.textContent = 'Saving...';
+        saveBtn.textContent = isPublishing ? 'Publishing...' : 'Saving...';
     }
     
     try {
@@ -942,13 +955,42 @@ async function saveBlog(formData) {
         if (data.success) {
             // Clean up Quill editor
             cleanupQuill();
-            closeModal(); 
-            await loadBlog(); 
-            updateStats(); 
+            closeModal();
+            
+            // Update local state immediately
+            if (editingId) {
+                // Update existing post
+                const existingPost = blogData.find(p => p.id === editingId);
+                if (existingPost) {
+                    Object.assign(existingPost, post);
+                    if (isPublishing) {
+                        existingPost.status = 'published';
+                        existingPost.published_at = new Date().toISOString();
+                    }
+                }
+            } else {
+                // Add new post with temporary ID
+                const newPost = {
+                    ...post,
+                    id: Date.now(),
+                    created_at: new Date().toISOString(),
+                    views: 0
+                };
+                blogData.unshift(newPost);
+            }
+            
+            renderBlogTable();
+            updateStats();
             updateSidebarBadges();
-            showToast('✅ Blog post saved successfully!', 'success');
+            
+            const message = isPublishing ? '✅ Blog post published successfully!' : '✅ Blog post saved as draft!';
+            showToast(message, 'success');
+            
             editingId = null; 
             editingType = null;
+            
+            // Refresh from server in background
+            await loadBlog();
         } else { 
             showToast('❌ Failed to save: ' + (data.message || 'Unknown error'), 'error'); 
         }
@@ -958,13 +1000,17 @@ async function saveBlog(formData) {
     } finally {
         if (saveBtn) {
             saveBtn.disabled = false;
-            saveBtn.textContent = 'Save';
+            saveBtn.textContent = isPublishing ? 'Publish' : 'Save';
         }
     }
 }
 
 function buildBlogForm(post = null) {
     const contentValue = post?.content || '';
+    const isEditing = !!post;
+    const statusValue = post?.status || 'draft';
+    const buttonText = statusValue === 'published' ? 'Publish' : 'Save as Draft';
+    
     const fields = [
         { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: post?.slug || '' },
@@ -974,7 +1020,7 @@ function buildBlogForm(post = null) {
         { type: 'quill', name: 'content', label: 'Content (Full Blog Post)', value: contentValue },
         { type: 'file', name: 'featured_image', label: 'Featured Image', value: post?.featured_image || '', multiple: false },
         { type: 'text', name: 'author', label: 'Author', value: post?.author || 'Admin' },
-        { type: 'select', name: 'status', label: 'Status', value: post?.status || 'draft', options: ['draft', 'published'] },
+        { type: 'select', name: 'status', label: 'Status', value: statusValue, options: ['draft', 'published'] },
         { type: 'checkbox', name: 'featured', label: 'Featured Post', value: post?.featured || false }
     ];
     return buildFormHTML('blog-form', fields, true);
@@ -1012,6 +1058,15 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         html += `</div>`;
     });
     html += '</form>';
+    
+    // Store the button text for the save button
+    if (isBlogForm) {
+        const isEditing = fields.some(f => f.name === 'title' && f.value);
+        const statusField = fields.find(f => f.name === 'status');
+        const statusValue = statusField?.value || 'draft';
+        const buttonText = statusValue === 'published' ? 'Publish' : 'Save as Draft';
+        html += `<input type="hidden" id="blog-button-text" value="${buttonText}">`;
+    }
     
     return html;
 }
@@ -1391,6 +1446,28 @@ function openModal(title, bodyHTML) {
     document.getElementById('modal-body').innerHTML = bodyHTML;
     document.getElementById('modal-footer').style.display = 'flex';
     modal.style.display = 'flex';
+    
+    // Update save button text for blog
+    if (editingType === 'blog') {
+        const saveBtn = document.getElementById('modal-save');
+        const statusSelect = document.getElementById('edit-status');
+        if (saveBtn) {
+            const isPublished = statusSelect && statusSelect.value === 'published';
+            saveBtn.textContent = isPublished ? 'Publish' : 'Save as Draft';
+        }
+        // Listen for status change to update button
+        setTimeout(() => {
+            const statusSelect = document.getElementById('edit-status');
+            if (statusSelect) {
+                statusSelect.addEventListener('change', function() {
+                    const saveBtn = document.getElementById('modal-save');
+                    if (saveBtn) {
+                        saveBtn.textContent = this.value === 'published' ? 'Publish' : 'Save as Draft';
+                    }
+                });
+            }
+        }, 100);
+    }
     
     setupImageInput('edit-images', true);
     setupImageInput('edit-image', false);
