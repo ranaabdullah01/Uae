@@ -83,41 +83,63 @@ function compressImageToBlob(file, maxWidth) {
     });
 }
 
+// ============= FIXED IMAGE UPLOAD =============
 async function setupImageInput(inputId, isMultiple = false) {
     const input = document.getElementById(inputId);
     if (!input) return;
     
-    input.addEventListener('change', async (e) => {
+    // Remove existing event listeners by cloning
+    const newInput = input.cloneNode(true);
+    input.parentNode.replaceChild(newInput, input);
+    
+    newInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
         
-        const hiddenInput = document.getElementById(`hidden-${input.name}`);
-        if (!hiddenInput) return;
+        const hiddenInput = document.getElementById(`hidden-${newInput.name}`);
+        if (!hiddenInput) {
+            console.error('Hidden input not found for:', newInput.name);
+            showToast('Error: Hidden input not found.', 'error');
+            return;
+        }
         
         const uploadedUrls = [];
         showToast('Uploading image(s)...', 'info');
         
         for (const file of files) {
-            const compressedBlob = await compressImageToBlob(file, 1200);
-            
-            const formData = new FormData();
-            formData.append('file', compressedBlob, file.name);
-            
             try {
+                const compressedBlob = await compressImageToBlob(file, 1200);
+                
+                const formData = new FormData();
+                formData.append('file', compressedBlob, file.name);
+                
                 const token = localStorage.getItem('ak_admin_token');
+                if (!token) {
+                    showToast('Please login again.', 'error');
+                    return;
+                }
+                
+                console.log('Uploading file:', file.name, 'Size:', compressedBlob.size);
+                
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${token}` },
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: formData
                 });
+                
                 const data = await response.json();
-                if (data.success) {
+                console.log('Upload response:', data);
+                
+                if (data.success && data.url) {
                     uploadedUrls.push(data.url);
                 } else {
-                    showToast('Upload failed: ' + data.message, 'error');
+                    showToast('Upload failed: ' + (data.message || 'Unknown error'), 'error');
                 }
             } catch (err) {
-                showToast('Network error during upload.', 'error');
+                console.error('Upload error:', err);
+                showToast('Upload error: ' + err.message, 'error');
             }
         }
         
@@ -131,6 +153,10 @@ async function setupImageInput(inputId, isMultiple = false) {
             showToast('✅ Image(s) uploaded successfully!', 'success');
         }
     });
+    
+    // Store reference for cleanup
+    window._imageInputs = window._imageInputs || [];
+    window._imageInputs.push(newInput);
 }
 
 // ============= AUTHENTICATION =============
@@ -526,10 +552,6 @@ function renderBlogTable() {
         const statusText = post.status === 'published' ? 'Published' : 'Draft';
         const imageUrl = post.featured_image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Blog';
         
-        // Use post.id directly - make sure it's properly passed
-        const postId = post.id;
-        console.log('Rendering blog post:', postId, post.title);
-        
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${post.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong>${post.title}</strong></td>
@@ -539,9 +561,9 @@ function renderBlogTable() {
             <td>${post.views || 0}</td>
             <td>${formatDate(post.published_at || post.created_at)}</td>
             <td class="actions">
-                <button class="btn btn-primary btn-sm" onclick="window.editBlog('${postId}')">Edit</button>
-                ${post.status === 'draft' ? `<button class="btn btn-success btn-sm" onclick="window.publishBlog('${postId}')">Publish</button>` : ''}
-                <button class="btn btn-danger btn-sm" onclick="window.deleteBlog('${postId}')">Delete</button>
+                <button class="btn btn-primary btn-sm" onclick="window.editBlog('${post.id}')">Edit</button>
+                ${post.status === 'draft' ? `<button class="btn btn-success btn-sm" onclick="window.publishBlog('${post.id}')">Publish</button>` : ''}
+                <button class="btn btn-danger btn-sm" onclick="window.deleteBlog('${post.id}')">Delete</button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -872,10 +894,7 @@ window.editBlog = function(id) {
     console.log('Edit blog called with ID:', id);
     console.log('Current blogData:', blogData);
     
-    // Find the post - try both ways
     let post = blogData.find(p => p.id == id);
-    
-    // If not found, try with string comparison
     if (!post) {
         post = blogData.find(p => String(p.id) === String(id));
     }
@@ -910,7 +929,6 @@ window.publishBlog = async function(id) {
         const response = await fetch(`${API_BASE}/api/blog/${id}/publish`, { method: 'PUT', headers: getAuthHeaders() });
         const data = await response.json();
         if (data.success) {
-            // Update local state immediately
             const post = blogData.find(p => p.id == id);
             if (post) {
                 post.status = 'published';
@@ -920,7 +938,6 @@ window.publishBlog = async function(id) {
             updateStats();
             updateSidebarBadges();
             showToast('✅ Blog post published successfully!', 'success');
-            // Refresh from server in background
             await loadBlog();
         } else { showToast('Failed to publish: ' + data.message, 'error'); }
     } catch (error) { console.error('Publish error:', error); showToast('Error publishing blog post.', 'error'); }
@@ -957,7 +974,6 @@ async function saveBlog(formData) {
         }
     });
     
-    // Disable save button to prevent double submission
     const saveBtn = document.getElementById('modal-save');
     if (saveBtn) {
         saveBtn.disabled = true;
@@ -974,12 +990,9 @@ async function saveBlog(formData) {
         const data = await response.json();
         
         if (data.success) {
-            // Clean up Quill editor
             cleanupQuill();
             
-            // Update local state immediately
             if (editingId) {
-                // Update existing post
                 const existingPost = blogData.find(p => p.id == editingId);
                 if (existingPost) {
                     Object.assign(existingPost, post);
@@ -989,7 +1002,6 @@ async function saveBlog(formData) {
                     }
                 }
             } else {
-                // Add new post with temporary ID
                 const newPost = {
                     ...post,
                     id: Date.now(),
@@ -1002,8 +1014,6 @@ async function saveBlog(formData) {
             renderBlogTable();
             updateStats();
             updateSidebarBadges();
-            
-            // Close modal
             closeModal();
             
             const message = isPublishing ? '✅ Blog post published successfully!' : '✅ Blog post saved as draft!';
@@ -1012,7 +1022,6 @@ async function saveBlog(formData) {
             editingId = null; 
             editingType = null;
             
-            // Refresh from server in background
             await loadBlog();
         } else { 
             showToast('❌ Failed to save: ' + (data.message || 'Unknown error'), 'error'); 
@@ -1090,11 +1099,9 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
 function cleanupQuill() {
     try {
         if (quillEditor) {
-            // Try to destroy properly if method exists
             if (typeof quillEditor.destroy === 'function') {
                 quillEditor.destroy();
             }
-            // Remove the container content to clean up
             const container = document.getElementById('quill-editor-container');
             if (container) {
                 container.innerHTML = '';
@@ -1108,7 +1115,6 @@ function cleanupQuill() {
 }
 
 function initializeQuill(content) {
-    // Clean up any existing instance first
     cleanupQuill();
     
     const container = document.getElementById('quill-editor-container');
@@ -1461,7 +1467,6 @@ function openModal(title, bodyHTML) {
     document.getElementById('modal-footer').style.display = 'flex';
     modal.style.display = 'flex';
     
-    // Update save button text for blog
     if (editingType === 'blog') {
         const saveBtn = document.getElementById('modal-save');
         const statusSelect = document.getElementById('edit-status');
@@ -1469,7 +1474,6 @@ function openModal(title, bodyHTML) {
             const isPublished = statusSelect && statusSelect.value === 'published';
             saveBtn.textContent = isPublished ? 'Publish' : 'Save as Draft';
         }
-        // Listen for status change to update button
         setTimeout(() => {
             const statusSelect = document.getElementById('edit-status');
             if (statusSelect) {
@@ -1483,9 +1487,12 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
-    setupImageInput('edit-images', true);
-    setupImageInput('edit-image', false);
-    setupImageInput('edit-featured_image', false);
+    // Setup image inputs with a small delay to ensure DOM is ready
+    setTimeout(() => {
+        setupImageInput('edit-images', true);
+        setupImageInput('edit-image', false);
+        setupImageInput('edit-featured_image', false);
+    }, 100);
     
     if (editingType === 'blog') {
         setTimeout(() => {
