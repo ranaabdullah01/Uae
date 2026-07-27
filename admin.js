@@ -896,7 +896,6 @@ window.publishBlog = async function(id) {
 };
 
 async function saveBlog(formData) {
-    // Get content from Quill editor
     let content = '';
     if (quillEditor && quillInitialized) {
         content = quillEditor.root.innerHTML;
@@ -917,13 +916,23 @@ async function saveBlog(formData) {
         status: formData.get('status') || 'draft',
         featured: formData.get('featured') === 'true'
     };
-    Object.keys(post).forEach(key => { if (post[key] === undefined) post[key] = null; });
+    
+    Object.keys(post).forEach(key => { 
+        if (post[key] === undefined || post[key] === null) {
+            post[key] = ''; 
+        }
+    });
     
     try {
-        const response = await fetch(`${API_BASE}/api/blog`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(post) });
+        const response = await fetch(`${API_BASE}/api/blog`, { 
+            method: 'POST', 
+            headers: getAuthHeaders(), 
+            body: JSON.stringify(post) 
+        });
+        
         const data = await response.json();
+        
         if (data.success) {
-            // Clean up Quill editor
             if (quillEditor) {
                 quillEditor.destroy();
                 quillEditor = null;
@@ -937,11 +946,11 @@ async function saveBlog(formData) {
             editingId = null; 
             editingType = null;
         } else { 
-            showToast('❌ Failed to save: ' + data.message, 'error'); 
+            showToast('❌ Failed to save: ' + (data.message || 'Unknown error'), 'error'); 
         }
     } catch (error) { 
         console.error('Save error:', error); 
-        showToast('❌ Error saving blog post.', 'error'); 
+        showToast('❌ Error saving blog post: ' + error.message, 'error'); 
     }
 }
 
@@ -967,8 +976,6 @@ function buildBlogForm(post = null) {
 function buildFormHTML(formId, fields, isBlogForm = false) {
     let html = `<form id="${formId}">`;
     
-    let quillContent = '';
-    
     fields.forEach(f => {
         html += `<div class="form-group">`;
         html += `<label for="edit-${f.name}">${f.label}</label>`;
@@ -988,7 +995,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
                 html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);">Current image will be kept unless you upload a new one.</small>`;
             }
         } else if (f.type === 'quill') {
-            quillContent = f.value || '';
             html += `<div id="quill-editor-container" style="min-height:300px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--line);"></div>`;
             html += `<input type="hidden" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
         } else {
@@ -1004,7 +1010,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
 // ============= INITIALIZE QUILL EDITOR =============
 
 function initializeQuill(content) {
-    // Clean up any existing Quill instance
     if (quillEditor) {
         quillEditor.destroy();
         quillEditor = null;
