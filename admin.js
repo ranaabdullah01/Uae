@@ -33,7 +33,6 @@ const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
     if (!container) {
-        // Fallback if container doesn't exist
         console.log(message);
         return;
     }
@@ -254,23 +253,19 @@ function closeSidebar() {
 }
 
 function navigateTab(tab) {
-    // Update sidebar links
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
         link.classList.toggle('active', link.dataset.tab === tab);
     });
     
-    // Update tab content
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.toggle('active', el.id === `tab-${tab}`);
     });
     
-    // Show/hide dashboard stats (only on dashboard tab)
     const statsSection = document.getElementById('dashboard-stats');
     if (statsSection) {
         statsSection.style.display = tab === 'dashboard' ? 'block' : 'none';
     }
     
-    // Update page title
     const titles = {
         dashboard: 'Dashboard',
         listings: 'Listings',
@@ -283,7 +278,6 @@ function navigateTab(tab) {
     
     currentTab = tab;
     
-    // Load data for the tab
     if (tab === 'leads') loadLeads();
     if (tab === 'listings') loadListings();
     if (tab === 'offplan') loadOffplan();
@@ -294,7 +288,6 @@ function navigateTab(tab) {
     closeSidebar();
 }
 
-// Expose navigateTab globally for quick action cards
 window.navigateTab = navigateTab;
 
 // ============= LOAD DATA FROM API =============
@@ -533,17 +526,19 @@ function renderLeadsTable() {
         const statusClass = lead.contacted ? 'contacted' : 'new';
         const statusText = lead.contacted ? 'Contacted' : 'Pending';
         
+        const leadId = lead.unique_id || lead.id;
+        
         tr.innerHTML = `
             <td>${formatDate(lead.created_at || lead.createdAt)}</td>
             <td>${lead.name || 'N/A'}</td>
             <td>${lead.phone || 'N/A'}</td>
             <td>${lead.email || 'N/A'}</td>
             <td><span class="table-status ${lead.type || 'new'}">${lead.type || 'N/A'}</span></td>
-            <td><button class="btn btn-secondary btn-sm" onclick="window.viewLeadDetails('${lead.id}')">View</button></td>
+            <td><button class="btn btn-secondary btn-sm" onclick="window.viewLeadDetails('${leadId}')">View</button></td>
             <td>${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-success btn-sm">WhatsApp</a>` : 'N/A'}</td>
             <td>
                 <span class="table-status ${statusClass}">${statusText}</span>
-                ${!lead.contacted ? `<button class="btn btn-success btn-sm" onclick="window.markLeadContacted('${lead.id}')" style="margin-top:4px;">Mark Contacted</button>` : ''}
+                ${!lead.contacted ? `<button class="btn btn-success btn-sm" onclick="window.markLeadContacted('${leadId}')" style="margin-top:4px;">Mark Contacted</button>` : ''}
             </td>
         `;
         tbody.appendChild(tr);
@@ -569,7 +564,6 @@ function updateStats() {
     if (leadsData.length > 0) {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
         document.getElementById('leads-today').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= today).length;
     }
 }
@@ -882,8 +876,11 @@ function buildFormHTML(formId, fields) {
 // ============= LEAD MANAGEMENT =============
 
 window.viewLeadDetails = function(id) {
-    const lead = leadsData.find(l => l.id == id);
-    if (!lead) return;
+    const lead = leadsData.find(l => l.unique_id === id || l.id === id);
+    if (!lead) {
+        showToast('Lead not found.', 'error');
+        return;
+    }
     
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modal-title');
@@ -895,7 +892,6 @@ window.viewLeadDetails = function(id) {
     
     const formatLabel = (val) => val ? val : 'N/A';
     
-    // Define field display names for better readability
     const fieldLabels = {
         name: 'Full Name',
         phone: 'Phone',
@@ -920,7 +916,6 @@ window.viewLeadDetails = function(id) {
         site_id: 'Site ID'
     };
     
-    // Build main info section
     const mainFields = ['name', 'phone', 'email', 'created_at', 'createdAt', 'type', 'contacted'];
     let mainInfoHtml = '';
     const mainData = {};
@@ -962,7 +957,6 @@ window.viewLeadDetails = function(id) {
         `;
     }
     
-    // Build extra details section
     const extraFields = ['propertyType', 'community', 'bedrooms', 'size', 'yearBuilt', 'address', 'features', 'subject', 'message', 'property', 'date', 'time', 'budget'];
     let extraDetailsHtml = '';
     let hasExtra = false;
@@ -992,6 +986,8 @@ window.viewLeadDetails = function(id) {
         `;
     }
     
+    const leadId = lead.unique_id || lead.id;
+    
     modalBody.innerHTML = `
         <div class="lead-detail-container">
             <div class="lead-detail-header">
@@ -1006,7 +1002,7 @@ window.viewLeadDetails = function(id) {
             ${extraDetailsHtml}
             
             <div class="lead-detail-footer">
-                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${lead.id}')">✅ Mark as Contacted</button>` : ''}
+                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${leadId}')">✅ Mark as Contacted</button>` : ''}
                 ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp">💬 WhatsApp</a>` : ''}
                 <button class="btn btn-secondary" onclick="window.closeModal()">Close</button>
             </div>
@@ -1028,9 +1024,9 @@ function getIconForField(label) {
     return iconMap[label] || '📄';
 }
 
-// Updated markLeadContacted with API call to persist changes
+// FIXED: Mark Lead Contacted with immediate UI update
 window.markLeadContacted = async function(id) {
-    const lead = leadsData.find(l => l.id == id);
+    const lead = leadsData.find(l => l.unique_id === id || l.id === id);
     if (!lead) {
         showToast('Lead not found.', 'error');
         return;
@@ -1043,34 +1039,70 @@ window.markLeadContacted = async function(id) {
             return;
         }
         
-        // Call API to update lead status
-        const response = await fetch(`${API_BASE}/admin/leads/${id}/contacted`, {
+        showToast('Updating lead status...', 'info');
+        
+        const sourceTable = lead.source_table || getSourceTableForLead(lead);
+        const originalId = lead.original_id || lead.id;
+        
+        console.log('Marking lead as contacted:', { 
+            id: id, 
+            sourceTable: sourceTable, 
+            originalId: originalId 
+        });
+        
+        const response = await fetch(`${API_BASE}/admin/leads/${originalId}/contacted`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${token}`
             },
-            body: JSON.stringify({ contacted: 1 })
+            body: JSON.stringify({ 
+                contacted: 1,
+                source_table: sourceTable,
+                original_id: originalId
+            })
         });
         
         const data = await response.json();
         
         if (data.success) {
-            // Update local state
+            // Update local state immediately
             lead.contacted = 1;
+            
+            // Re-render the table
             renderLeadsTable();
             updateStats();
             updateSidebarBadges();
+            
+            // Close the modal if it's open
             closeModal();
+            
             showToast('✅ Lead marked as contacted successfully!', 'success');
+            
+            // Refresh leads from server in background
+            await loadLeads();
         } else {
             showToast('❌ Failed to update: ' + (data.message || 'Unknown error'), 'error');
+            console.error('Update failed:', data);
         }
     } catch (error) {
         console.error('Error marking lead as contacted:', error);
         showToast('❌ Network error. Please try again.', 'error');
     }
 };
+
+function getSourceTableForLead(lead) {
+    if (!lead || !lead.type) return 'contacts';
+    
+    const typeMap = {
+        'contact': 'contacts',
+        'valuation': 'valuations',
+        'viewing': 'viewings',
+        'goldenvisa': 'goldenvisa_leads'
+    };
+    
+    return typeMap[lead.type] || 'contacts';
+}
 
 function exportCSV() {
     if (leadsData.length === 0) { showToast('No leads to export.', 'info'); return; }
@@ -1140,24 +1172,20 @@ function formatDate(date) {
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
     
-    // Restore sidebar state
     const collapsed = localStorage.getItem('ak_sidebar_collapsed') === 'true';
     if (collapsed && window.innerWidth > 1024) {
         sidebar.classList.add('collapsed');
         sidebarCollapsed = true;
     }
     
-    // Login
     if (loginForm) loginForm.addEventListener('submit', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (loginBtn) loginBtn.addEventListener('click', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (passwordInput) passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); loginForm.dispatchEvent(new Event('submit')); } });
     
-    // Logout
     document.querySelectorAll('#logout-btn, #logout-btn-sidebar').forEach(btn => {
         btn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
     });
     
-    // Sidebar navigation
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -1166,12 +1194,10 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Sidebar toggle
     if (sidebarToggle) {
         sidebarToggle.addEventListener('click', toggleSidebar);
     }
     
-    // Close sidebar on outside click (mobile)
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
             if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
@@ -1180,27 +1206,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Add buttons
     document.getElementById('add-listing-btn')?.addEventListener('click', () => { editingId = null; editingType = 'listing'; openModal('Add New Listing', buildListingForm()); });
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     
-    // Profile form
     document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
     
-    // Leads filters
     document.getElementById('filter-leads-btn')?.addEventListener('click', filterLeads);
     document.getElementById('export-leads-btn')?.addEventListener('click', exportCSV);
     
-    // Modal
     document.getElementById('modal-close')?.addEventListener('click', closeModal);
     document.getElementById('modal-cancel')?.addEventListener('click', closeModal);
     document.getElementById('modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
     
-    // Auto-refresh leads
     setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
     setInterval(() => { if (currentUser && currentTab === 'dashboard') { updateStats(); } }, 30000);
     
-    // Load default tab (Dashboard)
     navigateTab('dashboard');
 });
