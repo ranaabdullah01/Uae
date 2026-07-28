@@ -49,6 +49,64 @@ let currentBlogPost = null;
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
 
+// ============= URL ROUTING =============
+// Auto-detects whether the site is served from a GitHub Pages project folder
+// (username.github.io/Uae) or from a domain root (custom domain / user.github.io).
+// This means BASE_PATH updates itself automatically once a custom domain is connected
+// later - no code change needed.
+const BASE_PATH = (() => {
+    if (location.hostname.endsWith('.github.io')) {
+        const seg = location.pathname.split('/').filter(Boolean)[0];
+        return seg ? '/' + seg : '';
+    }
+    return '';
+})();
+
+function buildPath(sectionId, slug) {
+    const parts = [];
+    if (BASE_PATH) parts.push(BASE_PATH.replace(/^\//, ''));
+    if (sectionId && sectionId !== 'home') parts.push(sectionId);
+    if (slug) parts.push(String(slug));
+    const path = '/' + parts.join('/');
+    return path.length > 1 ? path : '/';
+}
+
+function parseCurrentRoute() {
+    let path = location.pathname;
+    if (BASE_PATH && path.startsWith(BASE_PATH)) {
+        path = path.slice(BASE_PATH.length);
+    }
+    const segments = path.split('/').filter(Boolean);
+    const knownSections = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
+    if (segments.length === 0) return { section: 'home', slug: null };
+    const section = knownSections.includes(segments[0]) ? segments[0] : 'home';
+    const slug = segments[1] || null;
+    return { section, slug };
+}
+
+function handleRoute() {
+    const { section, slug } = parseCurrentRoute();
+    if (section === 'blog' && slug) {
+        navigateTo('blog', { push: false });
+        window.viewBlogPost(slug, { push: false });
+    } else if (section === 'listings' && slug) {
+        navigateTo('listings', { push: false });
+        window.viewListing(slug, { push: false });
+    } else {
+        navigateTo(section, { push: false });
+    }
+}
+
+function updateCanonical(path) {
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', location.origin + path);
+}
+
 // ============= TOAST NOTIFICATION =============
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
@@ -559,18 +617,39 @@ function renderBlogGrid() {
     });
 }
 
-window.viewBlogPost = async function(id) {
-    const post = blogPosts.find(p => p.id == id);
+window.viewBlogPost = async function(idOrSlug, opts = {}) {
+    const { push = true } = opts;
+    const post = blogPosts.find(p => p.id == idOrSlug || p.slug === idOrSlug);
     if (!post) {
         showToast('Post not found.', 'error');
         return;
     }
     
     currentBlogPost = post;
+
+    // Make sure we're on the blog section (without resetting to the grid view)
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.getElementById('blog')?.classList.add('active');
+    document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === 'blog') el.classList.add('active');
+    });
+    currentSection = 'blog';
     
     document.getElementById('blog-grid').style.display = 'none';
     const detailContainer = document.getElementById('blog-detail');
     detailContainer.style.display = 'block';
+
+    // Update the URL FIRST so share buttons below pick up the correct link
+    if (push) {
+        const slugOrId = post.slug || post.id;
+        const path = buildPath('blog', slugOrId);
+        if (location.pathname !== path) {
+            history.pushState({ section: 'blog', slug: slugOrId }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = post.title + ' | ' + (config.siteName || 'AK Web Services');
     
     const content = document.getElementById('blog-detail-content');
     const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -614,10 +693,20 @@ window.viewBlogPost = async function(id) {
     document.getElementById('blog').scrollIntoView({ behavior: 'smooth' });
 };
 
-window.showBlogList = function() {
+window.showBlogList = function(opts = {}) {
+    const { push = true } = opts;
     document.getElementById('blog-grid').style.display = 'grid';
     document.getElementById('blog-detail').style.display = 'none';
     currentBlogPost = null;
+    document.title = 'Blog | ' + (config.siteName || 'AK Web Services');
+
+    if (push) {
+        const path = buildPath('blog');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'blog', slug: null }, '', path);
+        }
+        updateCanonical(path);
+    }
 };
 
 // ============= FILTER FUNCTIONS =============
@@ -701,8 +790,9 @@ function populateCommunityFilter() {
 
 // ============= VIEW LISTING DETAIL =============
 
-window.viewListing = function(id) {
-    const listing = listings.find(l => l.id === id);
+window.viewListing = function(id, opts = {}) {
+    const { push = true } = opts;
+    const listing = listings.find(l => l.id == id);
     if (!listing) return;
     
     currentListingId = id;
@@ -767,6 +857,14 @@ window.viewListing = function(id) {
     `;
     
     modal.style.display = 'flex';
+
+    if (push) {
+        const path = buildPath('listings', listing.id);
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: listing.id }, '', path);
+        }
+        updateCanonical(path);
+    }
 };
 
 window.scheduleViewing = function(property) {
@@ -785,6 +883,15 @@ window.scheduleViewing = function(property) {
 
 window.closeModal = function() {
     document.getElementById('modal').style.display = 'none';
+
+    if (currentListingId !== null && currentSection === 'listings') {
+        const path = buildPath('listings');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: null }, '', path);
+        }
+        updateCanonical(path);
+    }
+    currentListingId = null;
 };
 
 // ============= ROI CALCULATOR =============
@@ -892,7 +999,9 @@ function formatDate(date) {
 
 // ============= SPA NAVIGATION =============
 
-function navigateTo(sectionId) {
+function navigateTo(sectionId, opts = {}) {
+    const { push = true, slug = null } = opts;
+
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById(sectionId)?.classList.add('active');
     
@@ -902,6 +1011,13 @@ function navigateTo(sectionId) {
     });
     
     currentSection = sectionId;
+
+    if (sectionId === 'blog') {
+        // Reset to the grid view unless a specific post is being deep-linked
+        document.getElementById('blog-grid').style.display = 'grid';
+        document.getElementById('blog-detail').style.display = 'none';
+        currentBlogPost = null;
+    }
     
     const sectionNames = {
         home: config.siteName || 'AK Web Services - Luxury Real Estate Dubai',
@@ -933,6 +1049,14 @@ function navigateTo(sectionId) {
         renderAboutPage();
     } else if (sectionId === 'blog') {
         loadBlog();
+    }
+
+    if (push) {
+        const path = buildPath(sectionId, slug);
+        if (location.pathname + location.search !== path) {
+            history.pushState({ section: sectionId, slug: slug || null }, '', path);
+        }
+        updateCanonical(path);
     }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -969,8 +1093,8 @@ function initFAQ() {
 
 // ============= INIT =============
 
-document.addEventListener('DOMContentLoaded', function() {
-    loadAllData();
+document.addEventListener('DOMContentLoaded', async function() {
+    await loadAllData();
     
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
@@ -1022,11 +1146,16 @@ document.addEventListener('DOMContentLoaded', function() {
         el.addEventListener('keyup', function(e) { if (e.key === 'Enter') filterListings(); });
     });
     
-    document.getElementById('modal-close')?.addEventListener('click', () => document.getElementById('modal').style.display = 'none');
-    document.getElementById('modal-cancel')?.addEventListener('click', () => document.getElementById('modal').style.display = 'none');
-    window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) document.getElementById('modal').style.display = 'none'; });
-    
-    navigateTo('home');
+    document.getElementById('modal-close')?.addEventListener('click', () => window.closeModal());
+    document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
+    window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
+
+    window.addEventListener('popstate', function() {
+        document.getElementById('modal').style.display = 'none';
+        handleRoute();
+    });
+
+    handleRoute();
 
     const header = document.getElementById('main-header');
     window.addEventListener('scroll', () => {
