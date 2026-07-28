@@ -54,7 +54,14 @@ function showToast(message, type = 'success') {
 }
 
 // ============= IMAGE COMPRESSION =============
-function compressImageToBlob(file, maxWidth) {
+// Standardizes every upload to a consistent, HD-quality resolution
+// (max 1920px on the long edge, ~1080p-class) so listing/blog photos
+// are uniformly sharp regardless of what the agent originally uploaded.
+// The display grid (style.css .listing-card-image / .property-image /
+// .blog-card-image) then crops every photo to the same aspect-ratio box
+// with object-fit:cover, so images line up identically across cards
+// no matter their original size or orientation.
+function compressImageToBlob(file, maxWidth = 1920) {
     return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -64,6 +71,7 @@ function compressImageToBlob(file, maxWidth) {
                 let width = img.width;
                 let height = img.height;
 
+                // Only downscale — never upscale small source images (that would blur them further)
                 if (width > maxWidth) {
                     height = Math.round((height * maxWidth) / width);
                     width = maxWidth;
@@ -72,10 +80,12 @@ function compressImageToBlob(file, maxWidth) {
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
+                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, width, height);
                 canvas.toBlob((blob) => {
                     resolve(blob);
-                }, 'image/jpeg', 0.8);
+                }, 'image/jpeg', 0.85);
             };
             img.src = e.target.result;
         };
@@ -114,7 +124,7 @@ async function setupImageInput(inputId, isMultiple = false) {
                     continue;
                 }
                 
-                const compressedBlob = await compressImageToBlob(file, 1200);
+                const compressedBlob = await compressImageToBlob(file, 1920);
                 
                 const formData = new FormData();
                 formData.append('file', compressedBlob, file.name);
