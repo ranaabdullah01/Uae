@@ -3,6 +3,7 @@
    Load AFTER style.css.
    ============================================================ */
 
+/* ========== MOBILE NAV & HERO FIXES ========== */
 @media (max-width: 900px) {
   #main-header {
     position: fixed !important;
@@ -15,6 +16,7 @@
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
+    height: 64px !important;
   }
 
   #main-header.scrolled {
@@ -28,6 +30,7 @@
   #main-header nav .nav-container {
     position: relative !important;
     min-height: 64px !important;
+    height: 64px !important;
     padding: 0 18px !important;
     display: flex !important;
     align-items: center !important;
@@ -94,11 +97,6 @@
     display: none !important;
   }
 
-  #main-header::after {
-    display: none !important;
-    content: none !important;
-  }
-
   #main-header .hamburger {
     display: inline-flex !important;
     position: relative !important;
@@ -143,7 +141,7 @@
     align-items: stretch !important;
     justify-content: flex-start !important;
     gap: 10px !important;
-    padding: 84px 20px 44px !important;
+    padding: 80px 20px 44px !important;
     background: #0B3B2E !important;
     background: linear-gradient(180deg, #0B3B2E 0%, #072720 100%) !important;
     transform: translateX(-100%) !important;
@@ -200,41 +198,70 @@
     border-color: rgba(212,178,102,.32) !important;
   }
 
-  #home.section { padding-top: 0 !important; }
+  /* HERO FIXES */
+  #home.section { 
+    padding-top: 0 !important; 
+  }
+  
   .hero {
     min-height: 100svh !important;
-    padding: 108px 0 54px !important;
+    padding: 72px 0 40px !important;
     display: flex !important;
     align-items: center !important;
     background-position: center !important;
+    margin-top: 0 !important;
   }
+  
+  .hero-slideshow {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    overflow: hidden !important;
+    pointer-events: none !important;
+  }
+  
+  .hero-slideshow::after {
+    background: linear-gradient(180deg, rgba(7,39,32,.80) 0%, rgba(7,39,32,.60) 50%, rgba(7,39,32,.40) 100%) !important;
+  }
+  
   .hero-content {
     width: 100% !important;
     padding: 0 !important;
     text-align: left !important;
+    padding-top: 10px !important;
   }
+  
   .hero-title {
     font-size: clamp(2rem, 10vw, 3rem) !important;
     line-height: 1.08 !important;
     margin-bottom: 18px !important;
   }
+  
   .hero-subtitle {
     font-size: 1rem !important;
     line-height: 1.55 !important;
     margin-bottom: 28px !important;
   }
+  
   .hero-buttons {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 12px !important;
   }
+  
   .hero-buttons .btn {
     width: 100% !important;
     min-width: 0 !important;
   }
-  .hero-slideshow::after {
-    background: linear-gradient(180deg, rgba(7,39,32,.70) 0%, rgba(7,39,32,.60) 50%, rgba(7,39,32,.42) 100%) !important;
+
+  .hero-badge {
+    margin-bottom: 20px !important;
+  }
+
+  .rerna-badge {
+    font-size: 10px !important;
+    padding: 6px 14px !important;
   }
 
   .container { padding-left: 18px !important; padding-right: 18px !important; }
@@ -247,11 +274,7 @@
   .properties-grid,
   .cards-grid,
   .blog-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
-  .property-card img,
-  .offplan-card img,
-  .community-card img,
-  .sale-card img,
-  .blog-card img { height: 220px !important; object-fit: cover !important; }
+
   form input,
   form select,
   form textarea { font-size: 16px !important; }
