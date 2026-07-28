@@ -201,7 +201,6 @@
   }
 
   #home.section { padding-top: 0 !important; }
-  
   .hero {
     min-height: 100svh !important;
     padding: 108px 0 54px !important;
@@ -209,37 +208,31 @@
     align-items: center !important;
     background-position: center !important;
   }
-  
   .hero-content {
     width: 100% !important;
     padding: 0 !important;
     text-align: left !important;
   }
-  
   .hero-title {
     font-size: clamp(2rem, 10vw, 3rem) !important;
     line-height: 1.08 !important;
     margin-bottom: 18px !important;
   }
-  
   .hero-subtitle {
     font-size: 1rem !important;
     line-height: 1.55 !important;
     margin-bottom: 28px !important;
   }
-  
   .hero-buttons {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 12px !important;
   }
-  
   .hero-buttons .btn {
     width: 100% !important;
     min-width: 0 !important;
   }
-  
   .hero-slideshow::after {
     background: linear-gradient(180deg, rgba(7,39,32,.70) 0%, rgba(7,39,32,.60) 50%, rgba(7,39,32,.42) 100%) !important;
   }
@@ -254,52 +247,15 @@
   .properties-grid,
   .cards-grid,
   .blog-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
-  
+  .property-card img,
+  .listing-card img,
+  .offplan-card img,
+  .community-card img,
+  .sale-card img,
+  .blog-card img { height: 220px !important; object-fit: cover !important; }
   form input,
   form select,
   form textarea { font-size: 16px !important; }
-
-  /* ========== PROPERTY CARD FIXES ========== */
-  .listing-card,
-  .property-card,
-  .offplan-card,
-  .community-card,
-  .blog-card {
-    min-height: 420px !important;
-  }
-
-  .listing-card-image,
-  .property-card-image,
-  .offplan-card-image,
-  .community-card-image,
-  .blog-card-image {
-    aspect-ratio: 16 / 10 !important;
-  }
-
-  .listing-card-body h3,
-  .property-card-body h3,
-  .offplan-card-body h3 {
-    font-size: 1rem !important;
-    min-height: 2.4rem !important;
-  }
-
-  .listing-card-price,
-  .property-card-price,
-  .offplan-card-price {
-    font-size: 1.2rem !important;
-  }
-
-  .listing-card-details,
-  .property-card-details {
-    font-size: 11px !important;
-    gap: 8px 12px !important;
-  }
-
-  .listing-card-actions .btn,
-  .property-card-actions .btn {
-    font-size: 10px !important;
-    padding: 8px 10px !important;
-  }
 
   /* Blog Mobile Styles */
   .blog-grid {
@@ -376,42 +332,9 @@
   .blog-detail-body {
     font-size: 0.85rem !important;
   }
-
-  .listing-card,
-  .property-card,
-  .offplan-card,
-  .community-card,
-  .blog-card {
-    min-height: 380px !important;
-  }
-
-  .listing-card-body h3,
-  .property-card-body h3,
-  .offplan-card-body h3 {
-    font-size: 0.9rem !important;
-    min-height: 2.2rem !important;
-  }
-
-  .listing-card-price,
-  .property-card-price,
-  .offplan-card-price {
-    font-size: 1.1rem !important;
-  }
-
-  .listing-card-details,
-  .property-card-details {
-    font-size: 10px !important;
-    gap: 6px 10px !important;
-  }
-
-  .listing-card-actions .btn,
-  .property-card-actions .btn {
-    font-size: 9px !important;
-    padding: 6px 8px !important;
-  }
 }
 
-/* ========== TABLET (601px - 900px) ========== */
+/* ========== TABLET (600px - 900px) ========== */
 @media (min-width: 601px) and (max-width: 900px) {
   .listings-grid,
   .offplan-grid,
@@ -424,14 +347,6 @@
   
   .blog-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  .listing-card,
-  .property-card,
-  .offplan-card,
-  .community-card,
-  .blog-card {
-    min-height: 440px !important;
   }
 }
 
@@ -469,30 +384,4 @@
   .blog-detail-tags h4 {
     font-size: 12px !important;
   }
-
-  .listing-card,
-  .property-card,
-  .offplan-card,
-  .community-card,
-  .blog-card {
-    min-height: 400px !important;
-  }
-}
-
-/* ========== FIX: Card body height consistency ========== */
-.listing-card-body,
-.property-card-body,
-.offplan-card-body,
-.community-card-body,
-.blog-card-body {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.listing-card-actions,
-.property-card-actions,
-.community-card-actions,
-.blog-card-footer {
-  margin-top: auto;
 }
