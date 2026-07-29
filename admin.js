@@ -55,13 +55,6 @@ function showToast(message, type = 'success') {
 }
 
 // ============= IMAGE COMPRESSION =============
-// Standardizes every upload to a consistent, HD-quality resolution
-// (max 1920px on the long edge, ~1080p-class) so listing/blog photos
-// are uniformly sharp regardless of what the agent originally uploaded.
-// The display grid (style.css .listing-card-image / .property-image /
-// .blog-card-image) then crops every photo to the same aspect-ratio box
-// with object-fit:cover, so images line up identically across cards
-// no matter their original size or orientation.
 function compressImageToBlob(file, maxWidth = 1920) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -72,7 +65,6 @@ function compressImageToBlob(file, maxWidth = 1920) {
                 let width = img.width;
                 let height = img.height;
 
-                // Only downscale — never upscale small source images (that would blur them further)
                 if (width > maxWidth) {
                     height = Math.round((height * maxWidth) / width);
                     width = maxWidth;
@@ -99,7 +91,6 @@ async function setupImageInput(inputId, isMultiple = false) {
     const input = document.getElementById(inputId);
     if (!input) return;
     
-    // Remove existing event listeners
     const newInput = input.cloneNode(true);
     input.parentNode.replaceChild(newInput, input);
     
@@ -119,7 +110,6 @@ async function setupImageInput(inputId, isMultiple = false) {
         
         for (const file of files) {
             try {
-                // Check file size (max 5MB)
                 if (file.size > 5 * 1024 * 1024) {
                     showToast('File too large. Please use images under 5MB.', 'error');
                     continue;
@@ -138,7 +128,6 @@ async function setupImageInput(inputId, isMultiple = false) {
                 
                 console.log('Uploading file:', file.name, 'Size:', compressedBlob.size);
                 
-                // Use fetch with timeout
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000);
                 
@@ -542,13 +531,16 @@ function renderCommunitiesTable() {
     tbody.innerHTML = '';
     
     if (!communitiesData || communitiesData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No communities found. Click "Add New Community" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No communities found. Click "Add New Community" to create one.</td></tr>';
         return;
     }
     
     communitiesData.forEach(community => {
         const tr = document.createElement('tr');
+        const imageUrl = community.image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community';
+        
         tr.innerHTML = `
+            <td><img src="${imageUrl}" alt="${community.name}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${community.name}</strong></td>
             <td>${community.communityType}</td>
             <td>${community.avgApartmentPrice}</td>
@@ -879,7 +871,8 @@ async function saveCommunity(formData) {
         nearbyLandmarks: (formData.get('nearbyLandmarks') || '').split(',').map(l => l.trim()).filter(l => l),
         metroStation: formData.get('metroStation') || '',
         communityType: formData.get('communityType') || 'Family',
-        popular: formData.get('popular') === 'true'
+        popular: formData.get('popular') === 'true',
+        image: formData.get('image_hidden') || ''
     };
     Object.keys(community).forEach(key => { if (community[key] === undefined) community[key] = null; });
     
@@ -899,6 +892,7 @@ function buildCommunityForm(community = null) {
     const fields = [
         { type: 'text', name: 'name', label: 'Name', value: community?.name || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: community?.slug || '' },
+        { type: 'file', name: 'image', label: 'Upload Community Image', value: community?.image || '', multiple: false },
         { type: 'textarea', name: 'description', label: 'Description', value: community?.description || '' },
         { type: 'text', name: 'lifestyle', label: 'Lifestyle', value: community?.lifestyle || '' },
         { type: 'text', name: 'avgApartmentPrice', label: 'Avg Apartment Price', value: community?.avgApartmentPrice || '' },
@@ -1514,11 +1508,11 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
-    // Setup image inputs
     setTimeout(() => {
         setupImageInput('edit-images', true);
         setupImageInput('edit-image', false);
         setupImageInput('edit-featured_image', false);
+        setupImageInput('edit-image', false); // For communities
     }, 100);
     
     if (editingType === 'blog') {
