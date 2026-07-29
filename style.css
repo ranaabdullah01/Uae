@@ -1836,6 +1836,14 @@ footer::before {
 #main-header.scrolled .hamburger span { background: var(--emerald-deep) !important; }
 
 #home.section { padding-top: 0 !important; }
+#listings.section,
+#offplan.section,
+#communities.section,
+#blog.section,
+#about.section,
+#contact.section,
+#valuation.section,
+#goldenvisa.section { padding-top: 0 !important; }
 
 .hero {
     min-height: 100vh !important;
