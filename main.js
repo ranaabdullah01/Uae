@@ -50,10 +50,6 @@ let currentBlogPost = null;
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
 
 // ============= URL ROUTING =============
-// Auto-detects whether the site is served from a GitHub Pages project folder
-// (username.github.io/Uae) or from a domain root (custom domain / user.github.io).
-// This means BASE_PATH updates itself automatically once a custom domain is connected
-// later - no code change needed.
 const BASE_PATH = (() => {
     if (location.hostname.endsWith('.github.io')) {
         const seg = location.pathname.split('/').filter(Boolean)[0];
@@ -91,7 +87,6 @@ function handleRoute() {
         window.viewBlogPost(slug, { push: false });
     } else if (section === 'listings' && slug) {
         navigateTo('listings', { push: false });
-        // Show detail page
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
         if (listing) {
             document.getElementById('listings-grid').style.display = 'none';
@@ -99,7 +94,6 @@ function handleRoute() {
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
         } else {
-            // If listing not found, show the grid
             window.showListingList({ push: false });
         }
     } else if (section === 'listings') {
@@ -228,7 +222,6 @@ function updateAllSections() {
     renderBlogGrid();
     populateCommunityFilter();
     
-    // Check if we need to show a listing detail page from URL
     const { section, slug } = parseCurrentRoute();
     if (section === 'listings' && slug) {
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
@@ -438,13 +431,11 @@ window.viewListingPage = function(id, opts = {}) {
         return;
     }
     
-    // Hide listings grid, show detail
     document.getElementById('listings-grid').style.display = 'none';
     const detailContainer = document.getElementById('listing-detail');
     detailContainer.style.display = 'block';
     document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
     
-    // Navigate to listing page
     if (push) {
         const path = buildPath('listings', listing.id);
         if (location.pathname !== path) {
@@ -456,10 +447,8 @@ window.viewListingPage = function(id, opts = {}) {
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById('listings')?.classList.add('active');
     
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Update active nav
     document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
         el.classList.remove('active');
         if (el.dataset.section === 'listings') el.classList.add('active');
@@ -656,20 +645,29 @@ function renderCommunities(communitiesData, container) {
             ? community.highlights.split(',')
             : (Array.isArray(community.highlights) ? community.highlights : []);
         
+        const imageUrl = community.image || 'https://via.placeholder.com/800x600/0A1628/C9A84C?text=Community';
+        
         card.innerHTML = `
-            <h3>${community.name}</h3>
-            <div class="community-type">${community.communityType} ${community.popular ? '⭐ Popular' : ''}</div>
-            <div class="community-prices">
-                ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
-                ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
-                <span>Yield: <strong>${community.avgRentalYield}</strong></span>
+            <div class="community-card-image">
+                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
+                ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
             </div>
-            <div class="community-highlights">
-                ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
-            </div>
-            <div class="community-actions">
-                <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
+            <div class="community-card-body">
+                <h3>${community.name}</h3>
+                <div class="community-type">${community.communityType}</div>
+                <div class="community-prices">
+                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
+                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
+                    <span>Yield: <strong>${community.avgRentalYield}</strong></span>
+                </div>
+                ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
+                <div class="community-highlights">
+                    ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
+                </div>
+                <div class="community-actions">
+                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
+                </div>
             </div>
         `;
         container.appendChild(card);
@@ -790,7 +788,6 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
     
     currentBlogPost = post;
 
-    // Make sure we're on the blog section (without resetting to the grid view)
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById('blog')?.classList.add('active');
     document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
@@ -803,7 +800,6 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
     const detailContainer = document.getElementById('blog-detail');
     detailContainer.style.display = 'block';
 
-    // Update the URL FIRST so share buttons below pick up the correct link
     if (push) {
         const slugOrId = post.slug || post.id;
         const path = buildPath('blog', slugOrId);
@@ -954,7 +950,6 @@ function populateCommunityFilter() {
 // ============= VIEW LISTING DETAIL (LEGACY MODAL SUPPORT) =============
 
 window.viewListing = function(id, opts = {}) {
-    // Redirect to the page version
     window.viewListingPage(id, opts);
 };
 
@@ -1095,14 +1090,12 @@ function navigateTo(sectionId, opts = {}) {
     currentSection = sectionId;
 
     if (sectionId === 'blog') {
-        // Reset to the grid view unless a specific post is being deep-linked
         document.getElementById('blog-grid').style.display = 'grid';
         document.getElementById('blog-detail').style.display = 'none';
         currentBlogPost = null;
     }
     
     if (sectionId === 'listings') {
-        // Check if we should show detail or grid
         const { section, slug: routeSlug } = parseCurrentRoute();
         if (routeSlug && section === 'listings') {
             const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
