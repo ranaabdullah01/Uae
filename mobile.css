@@ -144,8 +144,9 @@
     justify-content: flex-start !important;
     gap: 10px !important;
     padding: 84px 20px 44px !important;
-    background: #0B3B2E !important;
-    background: linear-gradient(180deg, #0B3B2E 0%, #072720 100%) !important;
+    background: transparent !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     transform: translateX(-100%) !important;
     transition: transform .34s cubic-bezier(.22,1,.36,1) !important;
     overflow-y: auto !important;
