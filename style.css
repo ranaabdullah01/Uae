@@ -1507,6 +1507,143 @@ nav .nav-container {
 .share-btn.linkedin { background: #0A66C2; }
 .share-btn.whatsapp { background: #25D366; }
 
+/* ================ COMMUNITY CARD ================ */
+
+.community-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.community-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+    border-color: rgba(176, 138, 62, 0.4);
+}
+
+.community-card-image {
+    position: relative;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: var(--cream-warm);
+}
+
+.community-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .8s var(--ease);
+}
+
+.community-card:hover .community-card-image img {
+    transform: scale(1.08);
+}
+
+.community-badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    z-index: 2;
+    background: var(--brass);
+    color: var(--emerald-deep);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+}
+
+.community-card-body {
+    padding: 24px 24px 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+.community-card-body h3 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--emerald-deep);
+    margin: 0;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.community-type {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--brass);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.community-prices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    color: var(--ink-soft);
+    padding: 8px 0;
+}
+
+.community-prices strong {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    color: var(--emerald-deep);
+}
+
+.community-lifestyle {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.community-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 4px 0;
+}
+
+.highlight-tag {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--cream-warm);
+    border-radius: 100px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    color: var(--ink-soft);
+}
+
+.community-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: auto;
+    padding-top: 10px;
+}
+
+.community-actions .btn {
+    flex: 1;
+    min-width: 120px;
+}
+
 /* ================ FOOTER ================ */
 footer {
     background: var(--emerald-deep);
