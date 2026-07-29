@@ -1,5 +1,5 @@
 // ================================================
-// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG)
+// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG & LISTING PAGES)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -91,7 +91,19 @@ function handleRoute() {
         window.viewBlogPost(slug, { push: false });
     } else if (section === 'listings' && slug) {
         navigateTo('listings', { push: false });
-        window.viewListing(slug, { push: false });
+        // Show detail page
+        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        if (listing) {
+            document.getElementById('listings-grid').style.display = 'none';
+            document.getElementById('listing-detail').style.display = 'block';
+            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+            document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+        } else {
+            // If listing not found, show the grid
+            window.showListingList({ push: false });
+        }
+    } else if (section === 'listings') {
+        window.showListingList({ push: false });
     } else {
         navigateTo(section, { push: false });
     }
@@ -215,6 +227,18 @@ function updateAllSections() {
     renderAboutPage();
     renderBlogGrid();
     populateCommunityFilter();
+    
+    // Check if we need to show a listing detail page from URL
+    const { section, slug } = parseCurrentRoute();
+    if (section === 'listings' && slug) {
+        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        if (listing) {
+            document.getElementById('listings-grid').style.display = 'none';
+            document.getElementById('listing-detail').style.display = 'block';
+            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+            document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+        }
+    }
 }
 
 // ============= CONFIG FUNCTIONS =============
@@ -280,7 +304,7 @@ function updateConfigInDOM() {
     
     const address = profile.address || config.address || 'Dubai, UAE';
     const phone = profile.phone || config.phone || '+971501234567';
-    const email = profile.email || config.email || 'info@akwebservices.com';
+    const email = profile.email || config.email || 'info@agentwebstudio.com';
     const whatsapp = profile.whatsapp || config.whatsapp || '+971501234567';
     
     document.getElementById('office-address').textContent = address;
@@ -322,7 +346,7 @@ function updateConfigInDOM() {
         floatBtn.href = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`;
     }
     
-    document.title = profile.siteName || config.siteName || 'AK Web Services - Luxury Real Estate Dubai';
+    document.title = profile.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
 }
 
 // ============= RENDER FUNCTIONS =============
@@ -391,7 +415,7 @@ function createListingCard(listing) {
                 <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
             </div>
             <div class="listing-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewListing('${listing.id}')">View Details</button>
+                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
                 <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
             </div>
         </div>
@@ -402,6 +426,145 @@ function createListingCard(listing) {
 function getWhatsAppNumber() {
     const number = config.whatsapp || '+971501234567';
     return number.replace(/[^0-9]/g, '');
+}
+
+// ============= VIEW LISTING DETAIL (PAGE) =============
+
+window.viewListingPage = function(id, opts = {}) {
+    const { push = true } = opts;
+    const listing = listings.find(l => l.id == id || String(l.id) === String(id));
+    if (!listing) {
+        showToast('Listing not found.', 'error');
+        return;
+    }
+    
+    // Hide listings grid, show detail
+    document.getElementById('listings-grid').style.display = 'none';
+    const detailContainer = document.getElementById('listing-detail');
+    detailContainer.style.display = 'block';
+    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+    
+    // Navigate to listing page
+    if (push) {
+        const path = buildPath('listings', listing.id);
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: listing.id }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.getElementById('listings')?.classList.add('active');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Update active nav
+    document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === 'listings') el.classList.add('active');
+    });
+};
+
+window.showListingList = function(opts = {}) {
+    const { push = true } = opts;
+    document.getElementById('listings-grid').style.display = 'grid';
+    document.getElementById('listing-detail').style.display = 'none';
+    document.getElementById('listing-detail-content').innerHTML = '';
+    
+    if (push) {
+        const path = buildPath('listings');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: null }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
+};
+
+function renderListingDetail(listing) {
+    const images = listing.images && typeof listing.images === 'string' 
+        ? listing.images.split(',') 
+        : (Array.isArray(listing.images) ? listing.images : []);
+    
+    const features = listing.features && typeof listing.features === 'string'
+        ? listing.features.split(',')
+        : (Array.isArray(listing.features) ? listing.features : []);
+    
+    let gallery = '';
+    if (images.length > 0) {
+        gallery = `
+            <div class="listing-detail-gallery">
+                <div class="gallery-main">
+                    <img src="${images[0].trim()}" alt="${listing.title}" id="gallery-main-image">
+                </div>
+                ${images.length > 1 ? `
+                    <div class="gallery-thumbs">
+                        ${images.map(img => `
+                            <img src="${img.trim()}" alt="${listing.title}" onclick="document.getElementById('gallery-main-image').src=this.src" class="thumb">
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+    
+    return `
+        <div class="listing-detail-page">
+            ${gallery}
+            <div class="listing-detail-page-header">
+                <h1 class="listing-detail-page-title">${listing.title}</h1>
+                <div class="listing-detail-page-price">AED ${formatPrice(listing.price)}</div>
+                <div class="listing-detail-page-meta">
+                    <span><i class="fas fa-map-marker-alt"></i> ${listing.community}</span>
+                    <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
+                    <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
+                    <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
+                    <span><i class="fas fa-tag"></i> ${listing.type}</span>
+                    <span><i class="fas fa-circle"></i> ${listing.status.replace('-', ' ')}</span>
+                </div>
+            </div>
+            
+            <div class="listing-detail-page-body">
+                <div class="listing-detail-page-description">
+                    <h3>Description</h3>
+                    <p>${listing.description}</p>
+                </div>
+                
+                ${features.length > 0 ? `
+                    <div class="listing-detail-page-features">
+                        <h3>Features & Amenities</h3>
+                        <div class="features-grid">
+                            ${features.map(f => `<span class="feature-tag"><i class="fas fa-check"></i> ${f.trim()}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="listing-detail-page-specs">
+                    <h3>Property Details</h3>
+                    <div class="specs-grid">
+                        <div class="spec-item"><span>Type</span><strong>${listing.type}</strong></div>
+                        <div class="spec-item"><span>Status</span><strong>${listing.status.replace('-', ' ')}</strong></div>
+                        <div class="spec-item"><span>Community</span><strong>${listing.community}</strong></div>
+                        <div class="spec-item"><span>Bedrooms</span><strong>${listing.bedrooms}</strong></div>
+                        <div class="spec-item"><span>Bathrooms</span><strong>${listing.bathrooms}</strong></div>
+                        <div class="spec-item"><span>Size</span><strong>${listing.sqft} sqft</strong></div>
+                        <div class="spec-item"><span>Floor</span><strong>${listing.floor || 'N/A'}</strong></div>
+                        <div class="spec-item"><span>View</span><strong>${listing.view || 'N/A'}</strong></div>
+                        <div class="spec-item"><span>Furnishing</span><strong>${listing.furnishing || 'N/A'}</strong></div>
+                        <div class="spec-item"><span>Parking</span><strong>${listing.parking}</strong></div>
+                        ${listing.permit ? `<div class="spec-item"><span>Permit</span><strong>${listing.permit}</strong></div>` : ''}
+                    </div>
+                </div>
+                
+                <div class="listing-detail-page-actions">
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
+                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
+                    <button class="btn btn-secondary" onclick="window.showListingList()">Back to Properties</button>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 function renderFeaturedOffplan() {
@@ -649,7 +812,7 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
         }
         updateCanonical(path);
     }
-    document.title = post.title + ' | ' + (config.siteName || 'AK Web Services');
+    document.title = post.title + ' | ' + (config.siteName || 'Agent Web Studio');
     
     const content = document.getElementById('blog-detail-content');
     const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -698,7 +861,7 @@ window.showBlogList = function(opts = {}) {
     document.getElementById('blog-grid').style.display = 'grid';
     document.getElementById('blog-detail').style.display = 'none';
     currentBlogPost = null;
-    document.title = 'Blog | ' + (config.siteName || 'AK Web Services');
+    document.title = 'Blog | ' + (config.siteName || 'Agent Web Studio');
 
     if (push) {
         const path = buildPath('blog');
@@ -788,87 +951,19 @@ function populateCommunityFilter() {
     }
 }
 
-// ============= VIEW LISTING DETAIL =============
+// ============= VIEW LISTING DETAIL (LEGACY MODAL SUPPORT) =============
 
 window.viewListing = function(id, opts = {}) {
-    const { push = true } = opts;
-    const listing = listings.find(l => l.id == id);
-    if (!listing) return;
-    
-    currentListingId = id;
-    const modal = document.getElementById('modal');
-    const modalBody = document.getElementById('modal-body');
-    const modalTitle = document.getElementById('modal-title');
-    
-    modalTitle.textContent = listing.title;
-    
-    const images = listing.images && typeof listing.images === 'string' 
-        ? listing.images.split(',') 
-        : (Array.isArray(listing.images) ? listing.images : []);
-    
-    let gallery = '';
-    if (images.length > 0) {
-        gallery = `<div class="gallery" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px;">`;
-        images.forEach(img => {
-            gallery += `<img src="${img.trim()}" alt="${listing.title}" style="width:100%;height:200px;object-fit:cover;border-radius:8px;">`;
-        });
-        gallery += `</div>`;
-    }
-    
-    const features = listing.features && typeof listing.features === 'string'
-        ? listing.features.split(',')
-        : (Array.isArray(listing.features) ? listing.features : []);
-    
-    modalBody.innerHTML = `
-        <div class="listing-detail-modal">
-            ${gallery}
-            <div class="detail-info" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-                <div><strong>Price:</strong> AED ${formatPrice(listing.price)}</div>
-                <div><strong>Type:</strong> ${listing.type}</div>
-                <div><strong>Status:</strong> ${listing.status.replace('-', ' ')}</div>
-                <div><strong>Community:</strong> ${listing.community}</div>
-                <div><strong>Bedrooms:</strong> ${listing.bedrooms}</div>
-                <div><strong>Bathrooms:</strong> ${listing.bathrooms}</div>
-                <div><strong>Size:</strong> ${listing.sqft} sqft</div>
-                <div><strong>Floor:</strong> ${listing.floor || 'N/A'}</div>
-                <div><strong>View:</strong> ${listing.view || 'N/A'}</div>
-                <div><strong>Furnishing:</strong> ${listing.furnishing || 'N/A'}</div>
-                <div><strong>Parking:</strong> ${listing.parking}</div>
-                <div><strong>Permit:</strong> ${listing.permit || 'N/A'}</div>
-            </div>
-            <div style="margin-top:16px;">
-                <p><strong>Description:</strong></p>
-                <p>${listing.description}</p>
-            </div>
-            ${features.length > 0 ? `
-                <div style="margin-top:12px;">
-                    <p><strong>Features:</strong></p>
-                    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-                        ${features.map(f => `<span style="background:var(--light-grey);padding:4px 12px;border-radius:4px;">${f.trim()}</span>`).join('')}
-                    </div>
-                </div>
-            ` : ''}
-            <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
-                <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
-                <button class="btn btn-secondary" onclick="window.closeModal()">Close</button>
-            </div>
-        </div>
-    `;
-    
-    modal.style.display = 'flex';
+    // Redirect to the page version
+    window.viewListingPage(id, opts);
+};
 
-    if (push) {
-        const path = buildPath('listings', listing.id);
-        if (location.pathname !== path) {
-            history.pushState({ section: 'listings', slug: listing.id }, '', path);
-        }
-        updateCanonical(path);
-    }
+window.closeModal = function() {
+    document.getElementById('modal').style.display = 'none';
+    currentListingId = null;
 };
 
 window.scheduleViewing = function(property) {
-    closeModal();
     navigateTo('contact');
     setTimeout(() => {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -879,19 +974,6 @@ window.scheduleViewing = function(property) {
         const propertyInput = document.getElementById('view-property');
         if (propertyInput) propertyInput.value = property;
     }, 100);
-};
-
-window.closeModal = function() {
-    document.getElementById('modal').style.display = 'none';
-
-    if (currentListingId !== null && currentSection === 'listings') {
-        const path = buildPath('listings');
-        if (location.pathname !== path) {
-            history.pushState({ section: 'listings', slug: null }, '', path);
-        }
-        updateCanonical(path);
-    }
-    currentListingId = null;
 };
 
 // ============= ROI CALCULATOR =============
@@ -933,7 +1015,7 @@ function submitForm(formId, endpoint, successMessage) {
         e.preventDefault();
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
-        data.site_id = 'akwebservices';
+        data.site_id = 'agentwebstudio';
         
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn ? submitBtn.textContent : 'Submit';
@@ -1019,18 +1101,38 @@ function navigateTo(sectionId, opts = {}) {
         currentBlogPost = null;
     }
     
+    if (sectionId === 'listings') {
+        // Check if we should show detail or grid
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        if (routeSlug && section === 'listings') {
+            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
+            if (listing) {
+                document.getElementById('listings-grid').style.display = 'none';
+                document.getElementById('listing-detail').style.display = 'block';
+                document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+            } else {
+                document.getElementById('listings-grid').style.display = 'grid';
+                document.getElementById('listing-detail').style.display = 'none';
+            }
+        } else {
+            document.getElementById('listings-grid').style.display = 'grid';
+            document.getElementById('listing-detail').style.display = 'none';
+        }
+    }
+    
     const sectionNames = {
-        home: config.siteName || 'AK Web Services - Luxury Real Estate Dubai',
-        listings: 'Properties | ' + (config.siteName || 'AK Web Services'),
-        offplan: 'Off-Plan Projects | ' + (config.siteName || 'AK Web Services'),
-        communities: 'Communities | ' + (config.siteName || 'AK Web Services'),
-        about: 'About | ' + (config.siteName || 'AK Web Services'),
-        contact: 'Contact | ' + (config.siteName || 'AK Web Services'),
-        valuation: 'Valuation | ' + (config.siteName || 'AK Web Services'),
-        goldenvisa: 'Golden Visa | ' + (config.siteName || 'AK Web Services'),
-        blog: 'Blog | ' + (config.siteName || 'AK Web Services')
+        home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+        listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
+        offplan: 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio'),
+        communities: 'Communities | ' + (config.siteName || 'Agent Web Studio'),
+        about: 'About | ' + (config.siteName || 'Agent Web Studio'),
+        contact: 'Contact | ' + (config.siteName || 'Agent Web Studio'),
+        valuation: 'Valuation | ' + (config.siteName || 'Agent Web Studio'),
+        goldenvisa: 'Golden Visa | ' + (config.siteName || 'Agent Web Studio'),
+        blog: 'Blog | ' + (config.siteName || 'Agent Web Studio')
     };
-    document.title = sectionNames[sectionId] || config.siteName || 'AK Web Services';
+    document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
     
     if (sectionId === 'listings') {
         populateCommunityFilter();
@@ -1180,6 +1282,8 @@ window.filterListings = filterListings;
 window.filterByCommunity = filterByCommunity;
 window.navigateTo = navigateTo;
 window.viewListing = window.viewListing;
+window.viewListingPage = window.viewListingPage;
+window.showListingList = window.showListingList;
 window.scheduleViewing = window.scheduleViewing;
 window.closeModal = window.closeModal;
 window.toggleMobileMenu = toggleMobileMenu;
@@ -1188,3 +1292,4 @@ window.CONFIG = CONFIG;
 window.viewBlogPost = window.viewBlogPost;
 window.showBlogList = window.showBlogList;
 window.loadBlog = loadBlog;
+window.renderListingDetail = renderListingDetail;
