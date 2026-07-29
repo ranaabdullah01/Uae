@@ -393,6 +393,7 @@ async function loadCommunities() {
         const data = await response.json();
         if (data.success) {
             communitiesData = data.communities;
+            console.log('Loaded communities:', communitiesData);
             renderCommunitiesTable();
             updateSidebarBadges();
             updateStats();
@@ -537,14 +538,15 @@ function renderCommunitiesTable() {
     
     communitiesData.forEach(community => {
         const tr = document.createElement('tr');
-        const imageUrl = community.image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community';
+        // Check both 'image' and 'images' fields
+        const imageUrl = community.image || community.images || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community';
         
         tr.innerHTML = `
-            <td><img src="${imageUrl}" alt="${community.name}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
+            <td><img src="${imageUrl}" alt="${community.name}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" onerror="this.src='https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community'"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${community.name}</strong></td>
-            <td>${community.communityType}</td>
-            <td>${community.avgApartmentPrice}</td>
-            <td>${community.avgVillaPrice}</td>
+            <td>${community.communityType || 'N/A'}</td>
+            <td>${community.avgApartmentPrice || 'N/A'}</td>
+            <td>${community.avgVillaPrice || 'N/A'}</td>
             <td>${community.popular ? '⭐' : ''}</td>
             <td class="actions">
                 <button class="btn btn-primary btn-sm" onclick="window.editCommunity('${community.id}')">Edit</button>
@@ -856,6 +858,10 @@ window.deleteCommunity = async function(id) {
 };
 
 async function saveCommunity(formData) {
+    // Get the image from hidden field
+    const imageValue = formData.get('image_hidden') || '';
+    console.log('Saving community with image:', imageValue);
+    
     const community = {
         id: editingId || null,
         name: formData.get('name') || '',
@@ -872,23 +878,45 @@ async function saveCommunity(formData) {
         metroStation: formData.get('metroStation') || '',
         communityType: formData.get('communityType') || 'Family',
         popular: formData.get('popular') === 'true',
-        image: formData.get('image_hidden') || ''
+        image: imageValue
     };
+    
     Object.keys(community).forEach(key => { if (community[key] === undefined) community[key] = null; });
     
+    console.log('Community data being saved:', community);
+    
     try {
-        const response = await fetch(`${API_BASE}/api/communities`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(community) });
+        const response = await fetch(`${API_BASE}/api/communities`, { 
+            method: 'POST', 
+            headers: getAuthHeaders(), 
+            body: JSON.stringify(community) 
+        });
         const data = await response.json();
+        console.log('Save response:', data);
+        
         if (data.success) {
-            closeModal(); await loadCommunities(); updateStats(); updateSidebarBadges();
+            closeModal(); 
+            await loadCommunities(); 
+            updateStats(); 
+            updateSidebarBadges();
             showToast('✅ Community saved successfully!', 'success');
             editingId = null; editingType = null;
-        } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
-    } catch (error) { console.error('Save error:', error); showToast('❌ Error saving community.', 'error'); }
+        } else { 
+            showToast('❌ Failed to save: ' + data.message, 'error'); 
+        }
+    } catch (error) { 
+        console.error('Save error:', error); 
+        showToast('❌ Error saving community.', 'error'); 
+    }
 }
 
 function buildCommunityForm(community = null) {
     const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
+    
+    // Log the community data to debug
+    console.log('Building community form with:', community);
+    console.log('Community image:', community?.image);
+    
     const fields = [
         { type: 'text', name: 'name', label: 'Name', value: community?.name || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: community?.slug || '' },
@@ -1097,10 +1125,15 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         } else if (f.type === 'checkbox') {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
-            html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
-            html += `<input type="hidden" id="hidden-${f.name}" name="${f.name}_hidden" value="${f.value || ''}">`;
+            // For file inputs, use the field name directly
+            const fieldName = f.name;
+            html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
+            html += `<input type="hidden" id="hidden-${fieldName}" name="${fieldName}_hidden" value="${f.value || ''}">`;
             if (f.value) {
+                html += `<div style="margin-top:8px;">`;
+                html += `<img src="${f.value}" alt="Current image" style="max-width:150px;max-height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">`;
                 html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Current image will be kept unless you upload a new one.</small>`;
+                html += `</div>`;
             }
         } else if (f.type === 'quill') {
             html += `<div id="quill-editor-container" style="min-height:300px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--line);"></div>`;
@@ -1508,11 +1541,16 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
+    // Setup image inputs - IMPORTANT: For communities, the input name is 'image'
     setTimeout(() => {
-        setupImageInput('edit-images', true);
-        setupImageInput('edit-image', false);
-        setupImageInput('edit-featured_image', false);
-        setupImageInput('edit-image', false); // For communities
+        setupImageInput('edit-images', true);  // For listings
+        setupImageInput('edit-image', false);  // For offplan and communities
+        setupImageInput('edit-featured_image', false); // For blog
+        // Also try with 'edit-image' for communities specifically
+        const communityImageInput = document.getElementById('edit-image');
+        if (communityImageInput) {
+            setupImageInput('edit-image', false);
+        }
     }, 100);
     
     if (editingType === 'blog') {
