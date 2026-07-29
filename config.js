@@ -14,31 +14,31 @@ export const CONFIG = {
     specialties: "Luxury Properties, Off-Plan Investments, Golden Visa, Property Valuation, Portfolio Management",
 
     // Agency Information
-    agencyName: "AK Web Services",
-    agencyLogo: "https://via.placeholder.com/40x40/C9A84C/FFFFFF?text=AK",
+    agencyName: "Agent Web Studio",
+    agencyLogo: "https://via.placeholder.com/40x40/C9A84C/FFFFFF?text=AW",
     address: "Dubai, UAE",
     rernaNumber: "123456",
     phone: "+971501234567",
     whatsapp: "+971501234567",
-    email: "info@akwebservices.com",
+    email: "info@agentwebstudio.com",
     whatsappGreeting: "Hello! I'm interested in your real estate services.",
 
     // Social Links
     social: {
-        facebook: "https://facebook.com/akwebservices",
-        instagram: "https://instagram.com/akwebservices",
-        linkedin: "https://linkedin.com/company/akwebservices",
-        youtube: "https://youtube.com/akwebservices"
+        facebook: "https://facebook.com/agentwebstudio",
+        instagram: "https://instagram.com/agentwebstudio",
+        linkedin: "https://linkedin.com/company/agentwebstudio",
+        youtube: "https://youtube.com/agentwebstudio"
     },
 
     // Portal URLs
-    propertyFinderURL: "https://propertyfinder.ae/agents/ak-web-services",
-    bayutURL: "https://bayut.com/agents/ak-web-services",
+    propertyFinderURL: "https://propertyfinder.ae/agents/agent-web-studio",
+    bayutURL: "https://bayut.com/agents/agent-web-studio",
 
     // Site Settings
     workerURL: "https://ranabullah01.ranabullah01.workers.dev",
-    siteName: "AK Web Services - Luxury Real Estate Dubai",
-    siteDescription: "Premium Dubai real estate services. Buy, rent, and invest in luxury properties with AK Web Services.",
+    siteName: "Agent Web Studio - Luxury Real Estate Dubai",
+    siteDescription: "Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio.",
     gaTrackingID: "UA-XXXXXXXXX-X",
 
     // Stats (update these as needed)
