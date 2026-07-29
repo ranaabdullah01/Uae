@@ -488,58 +488,74 @@ nav .nav-container {
     display: flex; gap: 16px; flex-wrap: wrap;
 }
 
-/* Inner hero banners */
+/* ================ INNER PAGE HERO BANNERS ================ */
 .listings-hero, .offplan-hero, .about-hero, .contact-hero,
-.communities-hero, .goldenvisa-hero, .blog-hero {
-    background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+.communities-hero, .goldenvisa-hero, .blog-hero, .valuation-hero {
     padding: 100px 0 90px;
     text-align: center;
     position: relative;
     overflow: hidden;
     animation: pageHeroZoom 12s ease-out forwards;
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
+/* Properties Page */
 .listings-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Properties.webp') center/cover no-repeat !important;
 }
+
+/* Off-Plan Page */
 .offplan-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Off-plan.webp') center/cover no-repeat !important;
 }
+
+/* Communities Page */
 .communities-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Community.webp') center/cover no-repeat !important;
 }
+
+/* About Page */
 .about-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/About%20Page.webp') center/cover no-repeat !important;
 }
+
+/* Contact Page */
 .contact-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Contact%20us.webp') center/cover no-repeat !important;
 }
-.valuation-hero {
-    background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
-}
+
+/* Golden Visa Page */
 .goldenvisa-hero {
     background: linear-gradient(rgba(10,22,40,0.8), rgba(10,22,40,0.9)),
-        url('https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Golden%20Visa.webp') center/cover no-repeat !important;
 }
+
+/* Blog Page */
 .blog-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
-        url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Blog.webp') center/cover no-repeat !important;
+}
+
+/* Valuation Page */
+.valuation-hero {
+    background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
+        url('https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Pages/Valuation.webp') center/cover no-repeat !important;
 }
 
 @keyframes pageHeroZoom {
-    from { background-size: 110% auto; }
-    to   { background-size: 100% auto; }
+    from { background-size: 110% auto !important; }
+    to   { background-size: 100% auto !important; }
 }
 
 .listings-hero h1, .offplan-hero h1, .about-hero h1, .contact-hero h1,
-.communities-hero h1, .goldenvisa-hero h1, .blog-hero h1 {
+.communities-hero h1, .goldenvisa-hero h1, .blog-hero h1, .valuation-hero h1 {
     font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
     font-weight: 800;
     color: var(--cream);
@@ -547,7 +563,7 @@ nav .nav-container {
     z-index: 1;
 }
 .listings-hero p, .offplan-hero p, .about-hero p, .contact-hero p,
-.communities-hero p, .goldenvisa-hero p, .blog-hero p {
+.communities-hero p, .goldenvisa-hero p, .blog-hero p, .valuation-hero p {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
     color: rgba(247, 243, 234, 0.75);
@@ -1691,7 +1707,9 @@ footer::before {
     }
 
     .listings-hero, .offplan-hero, .about-hero, .contact-hero,
-    .communities-hero, .goldenvisa-hero, .blog-hero { padding: 70px 0 60px; }
+    .communities-hero, .goldenvisa-hero, .blog-hero, .valuation-hero { 
+        padding: 70px 0 60px; 
+    }
 
     .listings-grid, .offplan-grid, .communities-grid, .sales-grid, .blog-grid {
         grid-template-columns: 1fr;
