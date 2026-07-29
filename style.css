@@ -1969,6 +1969,11 @@ footer::before {
         box-shadow: none !important;
     }
     #main-header .nav-links-wrapper.active { transform: translateX(0) !important; }
+    #main-header.scrolled .nav-links-wrapper {
+        background: rgba(251,249,244,0.98) !important;
+        backdrop-filter: blur(14px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+    }
     #main-header .nav-menu {
         width: 100% !important;
         flex-direction: column !important;
@@ -1984,6 +1989,11 @@ footer::before {
         border: 1px solid rgba(247,243,234,0.10) !important;
         text-align: left !important;
         font-size: 14px !important;
+    }
+    #main-header.scrolled .nav-menu a {
+        color: var(--emerald-deep) !important;
+        background: rgba(11,59,46,0.05) !important;
+        border-color: rgba(11,59,46,0.12) !important;
     }
 
     .hero {
