@@ -493,11 +493,11 @@ nav .nav-container {
 .communities-hero, .goldenvisa-hero, .blog-hero, .valuation-hero {
     background: linear-gradient(rgba(10,22,40,0.75), rgba(10,22,40,0.85)),
         url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat !important;
-    min-height: 100vh;
+    min-height: 60vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 132px 0 82px;
+    padding: 140px 0 60px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -1696,8 +1696,8 @@ footer::before {
 
     .listings-hero, .offplan-hero, .about-hero, .contact-hero,
     .communities-hero, .goldenvisa-hero, .blog-hero, .valuation-hero {
-        min-height: 100svh;
-        padding: 108px 0 54px;
+        min-height: 55vh;
+        padding: 118px 0 44px;
     }
 
     .listings-grid, .offplan-grid, .communities-grid, .sales-grid, .blog-grid {
