@@ -1646,6 +1646,238 @@ footer::before {
 }
 .lightbox.open, .property-modal.open { display: flex; }
 
+/* ================ LISTING DETAIL PAGE ================ */
+
+#listing-detail {
+    padding: 40px 0 80px;
+}
+
+.listing-detail-page {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.listing-detail-gallery {
+    margin-bottom: 40px;
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.gallery-main {
+    position: relative;
+    aspect-ratio: 16/9;
+    background: var(--cream-warm);
+    overflow: hidden;
+}
+
+.gallery-main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s var(--ease);
+}
+
+.gallery-main img:hover {
+    transform: scale(1.02);
+}
+
+.gallery-thumbs {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.gallery-thumbs .thumb {
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: var(--transition);
+}
+
+.gallery-thumbs .thumb:hover {
+    border-color: var(--brass);
+    transform: scale(1.03);
+}
+
+.listing-detail-page-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--line);
+}
+
+.listing-detail-page-title {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    color: var(--emerald-deep);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.listing-detail-page-price {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--brass-dark);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.listing-detail-page-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.listing-detail-page-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.listing-detail-page-meta i {
+    color: var(--brass);
+    width: 16px;
+}
+
+.listing-detail-page-body {
+    display: grid;
+    gap: 40px;
+}
+
+.listing-detail-page-description h3,
+.listing-detail-page-features h3,
+.listing-detail-page-specs h3 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--emerald-deep);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.listing-detail-page-description p {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--ink-soft);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.feature-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: var(--cream-warm);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--ink);
+}
+
+.feature-tag i {
+    color: var(--brass);
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.spec-item {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 16px;
+    background: var(--paper);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--line);
+}
+
+.spec-item span {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+}
+
+.spec-item strong {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--emerald-deep);
+    margin-top: 4px;
+    letter-spacing: -0.01em;
+}
+
+.listing-detail-page-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    margin-top: 12px;
+}
+
+.listing-detail-page-actions .btn {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* ================ LISTING DETAIL MOBILE ================ */
+
+@media (max-width: 768px) {
+    .listing-detail-gallery .gallery-thumbs {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+    
+    .listing-detail-page-meta {
+        font-size: 12px;
+        gap: 10px 16px;
+    }
+    
+    .listing-detail-page-price {
+        font-size: 1.6rem;
+    }
+    
+    .features-grid,
+    .specs-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .listing-detail-page-actions {
+        flex-direction: column;
+    }
+    
+    .listing-detail-page-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-grid,
+    .specs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ================ RESPONSIVE ================ */
 @media (max-width: 1024px) {
     .about-snippet-content { grid-template-columns: 1fr; text-align: center; padding: 0 30px; }
