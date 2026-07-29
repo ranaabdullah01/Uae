@@ -1,5 +1,6 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL
+// Typography: Plus Jakarta Sans for headings, Inter for body
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -482,7 +483,7 @@ function renderListingsTable() {
     tbody.innerHTML = '';
     
     if (!listingsData || listingsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">No listings found. Click "Add New Listing" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No listings found. Click "Add New Listing" to create one.</td></tr>';
         return;
     }
     
@@ -493,8 +494,8 @@ function renderListingsTable() {
         
         tr.innerHTML = `
             <td><img src="${firstImage}" alt="${listing.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
-            <td><strong>${listing.title}</strong></td>
-            <td>AED ${formatPrice(listing.price)}</td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${listing.title}</strong></td>
+            <td style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">AED ${formatPrice(listing.price)}</td>
             <td>${listing.community}</td>
             <td><span class="table-status ${listing.status}">${listing.status.replace('-', ' ')}</span></td>
             <td>${listing.featured ? '⭐' : ''}</td>
@@ -513,17 +514,17 @@ function renderOffplanTable() {
     tbody.innerHTML = '';
     
     if (!offplanData || offplanData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;">No off-plan projects found. Click "Add New Project" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No off-plan projects found. Click "Add New Project" to create one.</td></tr>';
         return;
     }
     
     offplanData.forEach(project => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${project.projectName}</strong></td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${project.projectName}</strong></td>
             <td>${project.developer}</td>
             <td>${project.community}</td>
-            <td>AED ${formatPrice(project.startingPrice)}</td>
+            <td style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">AED ${formatPrice(project.startingPrice)}</td>
             <td>${project.goldenVisaEligible ? '✅' : '❌'}</td>
             <td>${project.featured ? '⭐' : ''}</td>
             <td class="actions">
@@ -541,14 +542,14 @@ function renderCommunitiesTable() {
     tbody.innerHTML = '';
     
     if (!communitiesData || communitiesData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;">No communities found. Click "Add New Community" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No communities found. Click "Add New Community" to create one.</td></tr>';
         return;
     }
     
     communitiesData.forEach(community => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
-            <td><strong>${community.name}</strong></td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${community.name}</strong></td>
             <td>${community.communityType}</td>
             <td>${community.avgApartmentPrice}</td>
             <td>${community.avgVillaPrice}</td>
@@ -568,7 +569,7 @@ function renderBlogTable() {
     tbody.innerHTML = '';
     
     if (!blogData || blogData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;">No blog posts found. Click "Add New Post" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No blog posts found. Click "Add New Post" to create one.</td></tr>';
         return;
     }
     
@@ -580,7 +581,7 @@ function renderBlogTable() {
         
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${post.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
-            <td><strong>${post.title}</strong></td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${post.title}</strong></td>
             <td>${post.category || 'Uncategorized'}</td>
             <td><span class="table-status ${statusClass}">${statusText}</span></td>
             <td>${post.featured ? '⭐' : ''}</td>
@@ -630,7 +631,7 @@ function renderLeadsTable() {
     tbody.innerHTML = '';
     
     if (!leadsData || leadsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;">No leads found.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No leads found.</td></tr>';
         return;
     }
     
@@ -642,7 +643,7 @@ function renderLeadsTable() {
         
         tr.innerHTML = `
             <td>${formatDate(lead.created_at || lead.createdAt)}</td>
-            <td>${lead.name || 'N/A'}</td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${lead.name || 'N/A'}</strong></td>
             <td>${lead.phone || 'N/A'}</td>
             <td>${lead.email || 'N/A'}</td>
             <td><span class="table-status ${lead.type || 'new'}">${lead.type || 'N/A'}</span></td>
@@ -660,7 +661,7 @@ function renderLeadsTable() {
 function showError(elementId, message) {
     const element = document.getElementById(elementId);
     if (element) {
-        element.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#DC3545;">${message}</td></tr>`;
+        element.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#DC3545;font-family:Inter, sans-serif;">${message}</td></tr>`;
     }
 }
 
@@ -1091,27 +1092,27 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
     
     fields.forEach(f => {
         html += `<div class="form-group">`;
-        html += `<label for="edit-${f.name}">${f.label}</label>`;
+        html += `<label for="edit-${f.name}" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.08em;">${f.label}</label>`;
         
         if (f.type === 'select') {
-            html += `<select id="edit-${f.name}" name="${f.name}">`;
+            html += `<select id="edit-${f.name}" name="${f.name}" style="font-family:Inter, sans-serif;">`;
             f.options.forEach(opt => { html += `<option value="${opt}" ${f.value === opt ? 'selected' : ''}>${opt}</option>`; });
             html += `</select>`;
         } else if (f.type === 'textarea') {
-            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="${f.rows || 3}">${f.value || ''}</textarea>`;
+            html += `<textarea id="edit-${f.name}" name="${f.name}" rows="${f.rows || 3}" style="font-family:Inter, sans-serif;">${f.value || ''}</textarea>`;
         } else if (f.type === 'checkbox') {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
-            html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''}>`;
+            html += `<input type="file" id="edit-${f.name}" name="${f.name}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="hidden-${f.name}" name="${f.name}_hidden" value="${f.value || ''}">`;
             if (f.value) {
-                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);">Current image will be kept unless you upload a new one.</small>`;
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Current image will be kept unless you upload a new one.</small>`;
             }
         } else if (f.type === 'quill') {
             html += `<div id="quill-editor-container" style="min-height:300px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--line);"></div>`;
             html += `<input type="hidden" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
         } else {
-            html += `<input type="${f.type}" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}">`;
+            html += `<input type="${f.type}" id="edit-${f.name}" name="${f.name}" value="${f.value || ''}" style="font-family:Inter, sans-serif;">`;
         }
         html += `</div>`;
     });
@@ -1316,8 +1317,8 @@ window.viewLeadDetails = function(id) {
                     <div class="lead-info-item">
                         <div class="lead-info-icon">${getIconForField(label)}</div>
                         <div class="lead-info-content">
-                            <span class="lead-info-label">${label}</span>
-                            <span class="lead-info-value">${value}</span>
+                            <span class="lead-info-label" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.04em;">${label}</span>
+                            <span class="lead-info-value" style="font-family:Inter, sans-serif;font-weight:500;">${value}</span>
                         </div>
                     </div>
                 `).join('')}
@@ -1341,12 +1342,12 @@ window.viewLeadDetails = function(id) {
     if (hasExtra) {
         extraDetailsHtml = `
             <div class="lead-extra-section">
-                <h4 class="lead-extra-title">📋 Submitted Details</h4>
+                <h4 class="lead-extra-title" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">📋 Submitted Details</h4>
                 <div class="lead-extra-grid">
                     ${Object.entries(extraData).map(([label, value]) => `
                         <div class="lead-extra-item">
-                            <span class="lead-extra-label">${label}</span>
-                            <span class="lead-extra-value">${value}</span>
+                            <span class="lead-extra-label" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.04em;">${label}</span>
+                            <span class="lead-extra-value" style="font-family:Inter, sans-serif;font-weight:500;">${value}</span>
                         </div>
                     `).join('')}
                 </div>
@@ -1359,10 +1360,10 @@ window.viewLeadDetails = function(id) {
     modalBody.innerHTML = `
         <div class="lead-detail-container">
             <div class="lead-detail-header">
-                <div class="lead-avatar">${lead.name ? lead.name.charAt(0).toUpperCase() : '?'}</div>
+                <div class="lead-avatar" style="font-family:Plus Jakarta Sans, sans-serif;font-weight:800;letter-spacing:-0.02em;">${lead.name ? lead.name.charAt(0).toUpperCase() : '?'}</div>
                 <div class="lead-header-info">
-                    <h3 class="lead-header-name">${formatLabel(lead.name)}</h3>
-                    <span class="lead-type-badge ${lead.type || 'general'}">${lead.type || 'General'}</span>
+                    <h3 class="lead-header-name" style="font-family:Inter, sans-serif;font-weight:600;">${formatLabel(lead.name)}</h3>
+                    <span class="lead-type-badge ${lead.type || 'general'}" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.04em;">${lead.type || 'General'}</span>
                 </div>
             </div>
             
@@ -1370,9 +1371,9 @@ window.viewLeadDetails = function(id) {
             ${extraDetailsHtml}
             
             <div class="lead-detail-footer">
-                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${leadId}')">✅ Mark as Contacted</button>` : ''}
-                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp">💬 WhatsApp</a>` : ''}
-                <button class="btn btn-secondary" onclick="window.closeModal()">Close</button>
+                ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${leadId}')" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">✅ Mark as Contacted</button>` : ''}
+                ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">💬 WhatsApp</a>` : ''}
+                <button class="btn btn-secondary" onclick="window.closeModal()" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">Close</button>
             </div>
         </div>
     `;
