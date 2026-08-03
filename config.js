@@ -10,12 +10,12 @@ export const CONFIG = {
     experience: "12",
     bio: "With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.",
     languages: "English, Arabic, Urdu, Hindi",
-    photo: "https://via.placeholder.com/400x400/0A1628/C9A84C?text=Agent",
+    photo: "https://placehold.co/400x400/0A1628/C9A84C?text=Agent",
     specialties: "Luxury Properties, Off-Plan Investments, Golden Visa, Property Valuation, Portfolio Management",
 
     // Agency Information
     agencyName: "Agent Web Studio",
-    agencyLogo: "https://via.placeholder.com/40x40/C9A84C/FFFFFF?text=AW",
+    agencyLogo: "https://placehold.co/40x40/C9A84C/FFFFFF?text=AW",
     address: "Dubai, UAE",
     rernaNumber: "123456",
     phone: "+971501234567",
