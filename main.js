@@ -290,7 +290,7 @@ function updateConfigInDOM() {
         });
     }
     
-    const photo = profile.photo || config.photo || 'https://via.placeholder.com/400x400/0A1628/C9A84C?text=Agent';
+    const photo = profile.photo || config.photo || 'https://placehold.co/400x400/0A1628/C9A84C?text=Agent';
     document.querySelectorAll('#agent-photo-home, #agent-photo-about').forEach(el => {
         if (el) el.src = photo;
     });
@@ -387,7 +387,7 @@ function createListingCard(listing) {
     const images = listing.images && typeof listing.images === 'string' 
         ? listing.images.split(',') 
         : (Array.isArray(listing.images) ? listing.images : []);
-    const firstImage = images.length > 0 ? images[0] : 'https://via.placeholder.com/800x600/0A1628/C9A84C?text=Property';
+    const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/800x600/0A1628/C9A84C?text=Property';
     
     card.innerHTML = `
         <div class="listing-card-image">
@@ -599,7 +599,7 @@ function createOffplanCard(project) {
     
     card.innerHTML = `
         <div class="offplan-card-image">
-            <img src="${project.image || 'https://via.placeholder.com/800x600/0A1628/C9A84C?text=Off-Plan'}" alt="${project.projectName}" loading="lazy">
+            <img src="${project.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan'}" alt="${project.projectName}" loading="lazy">
         </div>
         <div class="offplan-card-body">
             <h3>${project.projectName}</h3>
@@ -645,7 +645,7 @@ function renderCommunities(communitiesData, container) {
             ? community.highlights.split(',')
             : (Array.isArray(community.highlights) ? community.highlights : []);
         
-        const imageUrl = community.image || 'https://via.placeholder.com/800x600/0A1628/C9A84C?text=Community';
+        const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
         
         card.innerHTML = `
             <div class="community-card-image">
@@ -751,7 +751,7 @@ function renderBlogGrid() {
         const card = document.createElement('div');
         card.className = 'blog-card';
         
-        const imageUrl = post.featured_image || 'https://via.placeholder.com/800x400/0A1628/C9A84C?text=Blog';
+        const imageUrl = post.featured_image || 'https://placehold.co/800x400/0A1628/C9A84C?text=Blog';
         const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
         
         card.innerHTML = `
