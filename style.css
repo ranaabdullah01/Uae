@@ -872,25 +872,65 @@ nav .nav-container {
 /* ================ PORTALS ================ */
 .portal-section { padding: 70px 0; text-align: center; }
 .portal-section h2 { margin-bottom: 30px; }
+
 .portal-buttons {
-    display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
 }
+
 .portal-btn {
-    padding: 18px 40px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
     background: var(--white);
-    border: 1.5px solid var(--line);
+    border: 2px solid var(--line);
     border-radius: var(--radius);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
+    font-size: 14px;
     color: var(--emerald);
     box-shadow: var(--shadow-sm);
     transition: var(--transition);
+    text-decoration: none;
+    cursor: pointer;
 }
+
+.portal-btn .portal-icon {
+    height: 28px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+}
+
 .portal-btn:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow);
     border-color: var(--brass);
     color: var(--brass-dark);
+}
+
+/* Portal-specific colors */
+.portal-btn.propertyfinder {
+    border-color: #2A4C7D;
+}
+
+.portal-btn.propertyfinder:hover {
+    background: #2A4C7D;
+    color: white;
+    border-color: #2A4C7D;
+}
+
+.portal-btn.bayut {
+    border-color: #008C45;
+}
+
+.portal-btn.bayut:hover {
+    background: #008C45;
+    color: white;
+    border-color: #008C45;
 }
 
 /* ================ ROI CALCULATOR ================ */
@@ -2126,6 +2166,7 @@ footer::before {
     .whatsapp-buttons { flex-direction: column; }
     .whatsapp-buttons .btn { width: 100%; }
     .portal-buttons { flex-direction: column; align-items: stretch; }
+    .portal-btn { justify-content: center; }
 
     .goldenvisa-highlight { padding: 60px 24px; margin: 40px 0; }
 
