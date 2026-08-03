@@ -498,19 +498,23 @@ function renderListingsTable() {
     });
 }
 
+// ============= RENDER OFFPLAN TABLE WITH IMAGE =============
 function renderOffplanTable() {
     const tbody = document.getElementById('offplan-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
     
     if (!offplanData || offplanData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No off-plan projects found. Click "Add New Project" to create one.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No off-plan projects found. Click "Add New Project" to create one.</td></tr>';
         return;
     }
     
     offplanData.forEach(project => {
         const tr = document.createElement('tr');
+        const imageUrl = project.image || 'https://placehold.co/60x60/0A1628/C9A84C?text=No+Image';
+        
         tr.innerHTML = `
+            <td><img src="${imageUrl}" alt="${project.projectName}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" onerror="this.onerror=null;this.src='https://placehold.co/60x60/0A1628/C9A84C?text=No+Image'"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${project.projectName}</strong></td>
             <td>${project.developer}</td>
             <td>${project.community}</td>
@@ -538,7 +542,6 @@ function renderCommunitiesTable() {
     
     communitiesData.forEach(community => {
         const tr = document.createElement('tr');
-        // Check both 'image' and 'images' fields
         const imageUrl = community.image || community.images || 'https://placehold.co/60x60/0A1628/C9A84C?text=Community';
         
         tr.innerHTML = `
@@ -858,7 +861,6 @@ window.deleteCommunity = async function(id) {
 };
 
 async function saveCommunity(formData) {
-    // Get the image from hidden field
     const imageValue = formData.get('image_hidden') || '';
     console.log('Saving community with image:', imageValue);
     
@@ -913,7 +915,6 @@ async function saveCommunity(formData) {
 function buildCommunityForm(community = null) {
     const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
     
-    // Log the community data to debug
     console.log('Building community form with:', community);
     console.log('Community image:', community?.image);
     
@@ -1125,7 +1126,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         } else if (f.type === 'checkbox') {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
-            // For file inputs, use the field name directly
             const fieldName = f.name;
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="hidden-${fieldName}" name="${fieldName}_hidden" value="${f.value || ''}">`;
@@ -1541,12 +1541,10 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
-    // Setup image inputs - IMPORTANT: For communities, the input name is 'image'
     setTimeout(() => {
-        setupImageInput('edit-images', true);  // For listings
-        setupImageInput('edit-image', false);  // For offplan and communities
-        setupImageInput('edit-featured_image', false); // For blog
-        // Also try with 'edit-image' for communities specifically
+        setupImageInput('edit-images', true);
+        setupImageInput('edit-image', false);
+        setupImageInput('edit-featured_image', false);
         const communityImageInput = document.getElementById('edit-image');
         if (communityImageInput) {
             setupImageInput('edit-image', false);
