@@ -1,11 +1,5 @@
-// ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL
-// Typography: Plus Jakarta Sans for headings, Inter for body
-// ================================================
-
 import { CONFIG } from './config.js';
 
-// ============= STATE =============
 let currentUser = null;
 let currentTab = 'dashboard';
 let leadsData = [];
@@ -17,12 +11,9 @@ let communitiesData = [];
 let blogData = [];
 let profileData = {};
 let sidebarCollapsed = false;
-
-// ============= QUILL EDITOR REFERENCE =============
 let quillEditor = null;
 let quillInitialized = false;
 
-// ============= DOM REFS =============
 const loginScreen = document.getElementById('login-screen');
 const adminDashboard = document.getElementById('admin-dashboard');
 const loginForm = document.getElementById('login-form');
@@ -32,29 +23,21 @@ const passwordInput = document.getElementById('admin-password');
 const sidebar = document.getElementById('admin-sidebar');
 const sidebarToggle = document.getElementById('sidebar-toggle');
 
-// ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
 
-// ============= TOAST NOTIFICATION =============
 function showToast(message, type = 'success') {
     const container = document.getElementById('toast-container');
-    if (!container) {
-        console.log(message);
-        return;
-    }
-    
+    if (!container) { console.log(message); return; }
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
     container.appendChild(toast);
-    
     setTimeout(() => {
         toast.classList.add('fadeout');
         setTimeout(() => toast.remove(), 300);
     }, 3500);
 }
 
-// ============= IMAGE COMPRESSION =============
 function compressImageToBlob(file, maxWidth = 1920) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -64,21 +47,17 @@ function compressImageToBlob(file, maxWidth = 1920) {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-
                 if (width > maxWidth) {
                     height = Math.round((height * maxWidth) / width);
                     width = maxWidth;
                 }
-
                 canvas.width = width;
                 canvas.height = height;
                 const ctx = canvas.getContext('2d');
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, width, height);
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, 'image/jpeg', 0.85);
+                canvas.toBlob((blob) => { resolve(blob); }, 'image/jpeg', 0.85);
             };
             img.src = e.target.result;
         };
@@ -86,84 +65,45 @@ function compressImageToBlob(file, maxWidth = 1920) {
     });
 }
 
-// ============= FIXED IMAGE UPLOAD =============
 async function setupImageInput(inputId, isMultiple = false) {
     const input = document.getElementById(inputId);
     if (!input) return;
-    
     const newInput = input.cloneNode(true);
     input.parentNode.replaceChild(newInput, input);
-    
     newInput.addEventListener('change', async (e) => {
         const files = Array.from(e.target.files);
         if (files.length === 0) return;
-        
         const hiddenInput = document.getElementById(`hidden-${newInput.name}`);
-        if (!hiddenInput) {
-            console.error('Hidden input not found for:', newInput.name);
-            showToast('Error: Hidden input not found.', 'error');
-            return;
-        }
-        
+        if (!hiddenInput) { showToast('Error: Hidden input not found.', 'error'); return; }
         const uploadedUrls = [];
         showToast('Uploading image(s)...', 'info');
-        
         for (const file of files) {
             try {
-                if (file.size > 5 * 1024 * 1024) {
-                    showToast('File too large. Please use images under 5MB.', 'error');
-                    continue;
-                }
-                
+                if (file.size > 5 * 1024 * 1024) { showToast('File too large. Please use images under 5MB.', 'error'); continue; }
                 const compressedBlob = await compressImageToBlob(file, 1920);
-                
                 const formData = new FormData();
                 formData.append('file', compressedBlob, file.name);
-                
                 const token = localStorage.getItem('ak_admin_token');
-                if (!token) {
-                    showToast('Please login again.', 'error');
-                    return;
-                }
-                
-                console.log('Uploading file:', file.name, 'Size:', compressedBlob.size);
-                
+                if (!token) { showToast('Please login again.', 'error'); return; }
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000);
-                
                 const response = await fetch(`${API_BASE}/api/upload`, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    },
+                    headers: { 'Authorization': `Bearer ${token}` },
                     body: formData,
                     signal: controller.signal
                 });
-                
                 clearTimeout(timeoutId);
-                
                 const data = await response.json();
-                console.log('Upload response:', data);
-                
-                if (!response.ok) {
-                    throw new Error(data.message || `HTTP ${response.status}`);
-                }
-                
-                if (data.success && data.url) {
-                    uploadedUrls.push(data.url);
-                } else {
-                    showToast('Upload failed: ' + (data.message || 'Unknown error'), 'error');
-                }
+                if (!response.ok) { throw new Error(data.message || `HTTP ${response.status}`); }
+                if (data.success && data.url) { uploadedUrls.push(data.url); }
+                else { showToast('Upload failed: ' + (data.message || 'Unknown error'), 'error'); }
             } catch (err) {
                 console.error('Upload error:', err);
-                if (err.name === 'AbortError') {
-                    showToast('Upload timeout. Please try again.', 'error');
-                } else {
-                    showToast('Upload error: ' + err.message, 'error');
-                }
+                if (err.name === 'AbortError') { showToast('Upload timeout. Please try again.', 'error'); }
+                else { showToast('Upload error: ' + err.message, 'error'); }
             }
         }
-        
         if (uploadedUrls.length > 0) {
             if (isMultiple) {
                 const existing = hiddenInput.value ? hiddenInput.value.split(',') : [];
@@ -176,21 +116,16 @@ async function setupImageInput(inputId, isMultiple = false) {
     });
 }
 
-// ============= AUTHENTICATION =============
-
 async function login(password) {
     try {
         loginError.textContent = 'Logging in...';
         loginBtn.disabled = true;
-        
         const response = await fetch(`${API_BASE}/admin/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ password })
         });
-        
         const data = await response.json();
-        
         if (response.ok && data.success) {
             localStorage.setItem('ak_admin_token', data.token);
             localStorage.setItem('ak_admin_user', JSON.stringify(data.user));
@@ -216,7 +151,6 @@ async function login(password) {
 function checkAuth() {
     const token = localStorage.getItem('ak_admin_token');
     const user = localStorage.getItem('ak_admin_user');
-    
     if (token && user) {
         verifyToken(token).then(isValid => {
             if (isValid) {
@@ -242,20 +176,12 @@ async function verifyToken(token) {
         });
         const data = await response.json();
         return data.success === true;
-    } catch (error) {
-        console.error('Token verification error:', error);
-        return false;
-    }
+    } catch (error) { console.error('Token verification error:', error); return false; }
 }
 
 function logout() {
     const token = localStorage.getItem('ak_admin_token');
-    if (token) {
-        fetch(`${API_BASE}/admin/logout`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
-        }).catch(() => {});
-    }
+    if (token) { fetch(`${API_BASE}/admin/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}` } }).catch(() => {}); }
     localStorage.removeItem('ak_admin_token');
     localStorage.removeItem('ak_admin_user');
     currentUser = null;
@@ -276,57 +202,35 @@ function showLogin() {
 
 function getAuthHeaders() {
     const token = localStorage.getItem('ak_admin_token');
-    return {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-    };
+    return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
 }
-
-// ============= SIDEBAR FUNCTIONS =============
 
 function toggleSidebar() {
     sidebarCollapsed = !sidebarCollapsed;
-    if (window.innerWidth <= 1024) {
-        sidebar.classList.toggle('open');
-    } else {
-        sidebar.classList.toggle('collapsed');
-    }
+    if (window.innerWidth <= 1024) { sidebar.classList.toggle('open'); }
+    else { sidebar.classList.toggle('collapsed'); }
     localStorage.setItem('ak_sidebar_collapsed', sidebarCollapsed ? 'true' : 'false');
 }
 
 function closeSidebar() {
-    if (window.innerWidth <= 1024) {
-        sidebar.classList.remove('open');
-    }
+    if (window.innerWidth <= 1024) { sidebar.classList.remove('open'); }
 }
 
 function navigateTab(tab) {
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
         link.classList.toggle('active', link.dataset.tab === tab);
     });
-    
     document.querySelectorAll('.tab-content').forEach(el => {
         el.classList.toggle('active', el.id === `tab-${tab}`);
     });
-    
     const statsSection = document.getElementById('dashboard-stats');
-    if (statsSection) {
-        statsSection.style.display = tab === 'dashboard' ? 'block' : 'none';
-    }
-    
+    if (statsSection) { statsSection.style.display = tab === 'dashboard' ? 'block' : 'none'; }
     const titles = {
-        dashboard: 'Dashboard',
-        listings: 'Listings',
-        offplan: 'Off-Plan Projects',
-        communities: 'Communities',
-        blog: 'Blog',
-        leads: 'Leads',
-        profile: 'Profile'
+        dashboard: 'Dashboard', listings: 'Listings', offplan: 'Off-Plan Projects',
+        communities: 'Communities', blog: 'Blog', leads: 'Leads', profile: 'Profile'
     };
     document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
-    
     currentTab = tab;
-    
     if (tab === 'leads') loadLeads();
     if (tab === 'listings') loadListings();
     if (tab === 'offplan') loadOffplan();
@@ -334,13 +238,10 @@ function navigateTab(tab) {
     if (tab === 'blog') loadBlog();
     if (tab === 'profile') loadProfile();
     if (tab === 'dashboard') updateStats();
-    
     closeSidebar();
 }
 
 window.navigateTab = navigateTab;
-
-// ============= LOAD DATA FROM API =============
 
 async function loadAllData() {
     await Promise.all([
@@ -359,102 +260,51 @@ async function loadListings() {
     try {
         const response = await fetch(`${API_BASE}/api/listings?t=${Date.now()}`);
         const data = await response.json();
-        if (data.success) {
-            listingsData = data.listings;
-            renderListingsTable();
-            updateSidebarBadges();
-            updateStats();
-        }
-    } catch (error) {
-        console.error('Error loading listings:', error);
-        showError('listings-table-body', 'Failed to load listings');
-    }
+        if (data.success) { listingsData = data.listings; renderListingsTable(); updateSidebarBadges(); updateStats(); }
+    } catch (error) { console.error('Error loading listings:', error); showError('listings-table-body', 'Failed to load listings'); }
 }
 
 async function loadOffplan() {
     try {
         const response = await fetch(`${API_BASE}/api/offplan?t=${Date.now()}`);
         const data = await response.json();
-        if (data.success) {
-            offplanData = data.projects;
-            renderOffplanTable();
-            updateSidebarBadges();
-            updateStats();
-        }
-    } catch (error) {
-        console.error('Error loading offplan:', error);
-        showError('offplan-table-body', 'Failed to load off-plan projects');
-    }
+        if (data.success) { offplanData = data.projects; renderOffplanTable(); updateSidebarBadges(); updateStats(); }
+    } catch (error) { console.error('Error loading offplan:', error); showError('offplan-table-body', 'Failed to load off-plan projects'); }
 }
 
 async function loadCommunities() {
     try {
         const response = await fetch(`${API_BASE}/api/communities?t=${Date.now()}`);
         const data = await response.json();
-        if (data.success) {
-            communitiesData = data.communities;
-            console.log('Loaded communities:', communitiesData);
-            renderCommunitiesTable();
-            updateSidebarBadges();
-            updateStats();
-        }
-    } catch (error) {
-        console.error('Error loading communities:', error);
-        showError('communities-table-body', 'Failed to load communities');
-    }
+        if (data.success) { communitiesData = data.communities; renderCommunitiesTable(); updateSidebarBadges(); updateStats(); }
+    } catch (error) { console.error('Error loading communities:', error); showError('communities-table-body', 'Failed to load communities'); }
 }
 
 async function loadBlog() {
     try {
         const response = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
         const data = await response.json();
-        if (data.success) {
-            blogData = data.posts;
-            renderBlogTable();
-            updateSidebarBadges();
-            updateStats();
-        }
-    } catch (error) {
-        console.error('Error loading blog:', error);
-        showError('blog-table-body', 'Failed to load blog posts');
-    }
+        if (data.success) { blogData = data.posts; renderBlogTable(); updateSidebarBadges(); updateStats(); }
+    } catch (error) { console.error('Error loading blog:', error); showError('blog-table-body', 'Failed to load blog posts'); }
 }
 
 async function loadProfile() {
     try {
         const response = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
         const data = await response.json();
-        if (data.success) {
-            profileData = data.profile;
-            renderProfileForm();
-        }
-    } catch (error) {
-        console.error('Error loading profile:', error);
-    }
+        if (data.success) { profileData = data.profile; renderProfileForm(); }
+    } catch (error) { console.error('Error loading profile:', error); }
 }
 
 async function loadLeads() {
     try {
         const token = localStorage.getItem('ak_admin_token');
         if (!token) return;
-        
-        const response = await fetch(`${API_BASE}/admin/leads`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const response = await fetch(`${API_BASE}/admin/leads`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await response.json();
-        if (data.success) {
-            leadsData = data.leads || [];
-            renderLeadsTable();
-            updateStats();
-            updateSidebarBadges();
-        }
-    } catch (error) {
-        console.error('Error loading leads:', error);
-        showError('leads-table-body', 'Failed to load leads');
-    }
+        if (data.success) { leadsData = data.leads || []; renderLeadsTable(); updateStats(); updateSidebarBadges(); }
+    } catch (error) { console.error('Error loading leads:', error); showError('leads-table-body', 'Failed to load leads'); }
 }
-
-// ============= UPDATE SIDEBAR BADGES =============
 
 function updateSidebarBadges() {
     document.getElementById('sidebar-listings-count').textContent = listingsData.length || 0;
@@ -465,23 +315,18 @@ function updateSidebarBadges() {
     if (blogBadge) blogBadge.textContent = blogData.length || 0;
 }
 
-// ============= RENDER TABLES =============
-
 function renderListingsTable() {
     const tbody = document.getElementById('listings-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    
     if (!listingsData || listingsData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No listings found. Click "Add New Listing" to create one.</td></tr>';
         return;
     }
-    
     listingsData.forEach(listing => {
         const tr = document.createElement('tr');
         const images = listing.images && typeof listing.images === 'string' ? listing.images.split(',') : (listing.images || []);
         const firstImage = Array.isArray(images) && images.length > 0 ? images[0] : 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Property';
-        
         tr.innerHTML = `
             <td><img src="${firstImage}" alt="${listing.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${listing.title}</strong></td>
@@ -502,12 +347,10 @@ function renderOffplanTable() {
     const tbody = document.getElementById('offplan-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    
     if (!offplanData || offplanData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No off-plan projects found. Click "Add New Project" to create one.</td></tr>';
         return;
     }
-    
     offplanData.forEach(project => {
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -530,17 +373,13 @@ function renderCommunitiesTable() {
     const tbody = document.getElementById('communities-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    
     if (!communitiesData || communitiesData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No communities found. Click "Add New Community" to create one.</td></tr>';
         return;
     }
-    
     communitiesData.forEach(community => {
         const tr = document.createElement('tr');
-        // Check both 'image' and 'images' fields
-        const imageUrl = community.image || community.images || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community';
-        
+        const imageUrl = community.image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community';
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${community.name}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" onerror="this.src='https://via.placeholder.com/60x60/0A1628/C9A84C?text=Community'"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${community.name}</strong></td>
@@ -561,18 +400,15 @@ function renderBlogTable() {
     const tbody = document.getElementById('blog-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    
     if (!blogData || blogData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No blog posts found. Click "Add New Post" to create one.</td></tr>';
         return;
     }
-    
     blogData.forEach(post => {
         const tr = document.createElement('tr');
         const statusClass = post.status === 'published' ? 'published' : 'draft';
         const statusText = post.status === 'published' ? 'Published' : 'Draft';
         const imageUrl = post.featured_image || 'https://via.placeholder.com/60x60/0A1628/C9A84C?text=Blog';
-        
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${post.title}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${post.title}</strong></td>
@@ -623,18 +459,15 @@ function renderLeadsTable() {
     const tbody = document.getElementById('leads-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    
     if (!leadsData || leadsData.length === 0) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No leads found.</td></tr>';
         return;
     }
-    
     leadsData.forEach(lead => {
         const tr = document.createElement('tr');
         const statusClass = lead.contacted ? 'contacted' : 'new';
         const statusText = lead.contacted ? 'Contacted' : 'Pending';
         const leadId = lead.unique_id || lead.id;
-        
         tr.innerHTML = `
             <td>${formatDate(lead.created_at || lead.createdAt)}</td>
             <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${lead.name || 'N/A'}</strong></td>
@@ -659,8 +492,6 @@ function showError(elementId, message) {
     }
 }
 
-// ============= STATS =============
-
 function updateStats() {
     const activeListings = listingsData.filter(l => l.status === 'for-sale' || l.status === 'for-rent').length;
     document.getElementById('active-listings').textContent = activeListings;
@@ -668,15 +499,12 @@ function updateStats() {
     document.getElementById('communities-count').textContent = communitiesData.length;
     document.getElementById('blog-count').textContent = blogData.length || 0;
     document.getElementById('total-leads').textContent = leadsData.length || 0;
-    
     if (leadsData.length > 0) {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         document.getElementById('leads-today').textContent = leadsData.filter(l => new Date(l.created_at || l.createdAt) >= today).length;
     }
 }
-
-// ============= CRUD - LISTINGS =============
 
 window.editListing = function(id) {
     const listing = listingsData.find(l => l.id == id);
@@ -691,10 +519,8 @@ window.deleteListing = async function(id) {
     try {
         const response = await fetch(`${API_BASE}/api/listings/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
         const data = await response.json();
-        if (data.success) {
-            await loadListings(); updateStats(); updateSidebarBadges();
-            showToast('Listing deleted successfully!', 'success');
-        } else { showToast('Failed to delete: ' + data.message, 'error'); }
+        if (data.success) { await loadListings(); updateStats(); updateSidebarBadges(); showToast('Listing deleted successfully!', 'success'); }
+        else { showToast('Failed to delete: ' + data.message, 'error'); }
     } catch (error) { console.error('Delete error:', error); showToast('Error deleting listing.', 'error'); }
 };
 
@@ -722,7 +548,6 @@ async function saveListing(formData) {
         featured: formData.get('featured') === 'true'
     };
     Object.keys(listing).forEach(key => { if (listing[key] === undefined) listing[key] = null; });
-    
     try {
         const response = await fetch(`${API_BASE}/api/listings`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(listing) });
         const data = await response.json();
@@ -759,8 +584,6 @@ function buildListingForm(listing = null) {
     ];
     return buildFormHTML('listing-form', fields);
 }
-
-// ============= CRUD - OFFPLAN =============
 
 window.editOffplan = function(id) {
     const project = offplanData.find(p => p.id == id);
@@ -803,7 +626,6 @@ async function saveOffplan(formData) {
         featured: formData.get('featured') === 'true'
     };
     Object.keys(project).forEach(key => { if (project[key] === undefined) project[key] = null; });
-    
     try {
         const response = await fetch(`${API_BASE}/api/offplan`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(project) });
         const data = await response.json();
@@ -837,8 +659,6 @@ function buildOffplanForm(project = null) {
     return buildFormHTML('offplan-form', fields);
 }
 
-// ============= CRUD - COMMUNITIES =============
-
 window.editCommunity = function(id) {
     const community = communitiesData.find(c => c.id == id);
     if (!community) return;
@@ -858,10 +678,8 @@ window.deleteCommunity = async function(id) {
 };
 
 async function saveCommunity(formData) {
-    // Get the image from hidden field
     const imageValue = formData.get('image_hidden') || '';
     console.log('Saving community with image:', imageValue);
-    
     const community = {
         id: editingId || null,
         name: formData.get('name') || '',
@@ -880,43 +698,36 @@ async function saveCommunity(formData) {
         popular: formData.get('popular') === 'true',
         image: imageValue
     };
-    
     Object.keys(community).forEach(key => { if (community[key] === undefined) community[key] = null; });
-    
     console.log('Community data being saved:', community);
-    
     try {
-        const response = await fetch(`${API_BASE}/api/communities`, { 
-            method: 'POST', 
-            headers: getAuthHeaders(), 
-            body: JSON.stringify(community) 
+        const response = await fetch(`${API_BASE}/api/communities`, {
+            method: 'POST',
+            headers: getAuthHeaders(),
+            body: JSON.stringify(community)
         });
         const data = await response.json();
         console.log('Save response:', data);
-        
         if (data.success) {
-            closeModal(); 
-            await loadCommunities(); 
-            updateStats(); 
+            closeModal();
+            await loadCommunities();
+            updateStats();
             updateSidebarBadges();
             showToast('✅ Community saved successfully!', 'success');
             editingId = null; editingType = null;
-        } else { 
-            showToast('❌ Failed to save: ' + data.message, 'error'); 
+        } else {
+            showToast('❌ Failed to save: ' + data.message, 'error');
         }
-    } catch (error) { 
-        console.error('Save error:', error); 
-        showToast('❌ Error saving community.', 'error'); 
+    } catch (error) {
+        console.error('Save error:', error);
+        showToast('❌ Error saving community.', 'error');
     }
 }
 
 function buildCommunityForm(community = null) {
     const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
-    
-    // Log the community data to debug
     console.log('Building community form with:', community);
     console.log('Community image:', community?.image);
-    
     const fields = [
         { type: 'text', name: 'name', label: 'Name', value: community?.name || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: community?.slug || '' },
@@ -937,23 +748,12 @@ function buildCommunityForm(community = null) {
     return buildFormHTML('community-form', fields);
 }
 
-// ============= CRUD - BLOG WITH QUILL =============
-
 window.editBlog = function(id) {
     console.log('Edit blog called with ID:', id);
     console.log('Current blogData:', blogData);
-    
     let post = blogData.find(p => p.id == id);
-    if (!post) {
-        post = blogData.find(p => String(p.id) === String(id));
-    }
-    
-    if (!post) {
-        showToast('Blog post not found. Please refresh and try again.', 'error');
-        console.error('Post not found for ID:', id);
-        return;
-    }
-    
+    if (!post) { post = blogData.find(p => String(p.id) === String(id)); }
+    if (!post) { showToast('Blog post not found. Please refresh and try again.', 'error'); console.error('Post not found for ID:', id); return; }
     console.log('Found post:', post);
     editingId = id;
     editingType = 'blog';
@@ -965,10 +765,8 @@ window.deleteBlog = async function(id) {
     try {
         const response = await fetch(`${API_BASE}/api/blog/${id}`, { method: 'DELETE', headers: getAuthHeaders() });
         const data = await response.json();
-        if (data.success) {
-            await loadBlog(); updateStats(); updateSidebarBadges();
-            showToast('Blog post deleted successfully!', 'success');
-        } else { showToast('Failed to delete: ' + data.message, 'error'); }
+        if (data.success) { await loadBlog(); updateStats(); updateSidebarBadges(); showToast('Blog post deleted successfully!', 'success'); }
+        else { showToast('Failed to delete: ' + data.message, 'error'); }
     } catch (error) { console.error('Delete error:', error); showToast('Error deleting blog post.', 'error'); }
 };
 
@@ -979,13 +777,8 @@ window.publishBlog = async function(id) {
         const data = await response.json();
         if (data.success) {
             const post = blogData.find(p => p.id == id);
-            if (post) {
-                post.status = 'published';
-                post.published_at = new Date().toISOString();
-            }
-            renderBlogTable();
-            updateStats();
-            updateSidebarBadges();
+            if (post) { post.status = 'published'; post.published_at = new Date().toISOString(); }
+            renderBlogTable(); updateStats(); updateSidebarBadges();
             showToast('✅ Blog post published successfully!', 'success');
             await loadBlog();
         } else { showToast('Failed to publish: ' + data.message, 'error'); }
@@ -994,15 +787,10 @@ window.publishBlog = async function(id) {
 
 async function saveBlog(formData) {
     let content = '';
-    if (quillEditor && quillInitialized) {
-        content = quillEditor.root.innerHTML;
-    } else {
-        content = formData.get('content') || '';
-    }
-    
+    if (quillEditor && quillInitialized) { content = quillEditor.root.innerHTML; }
+    else { content = formData.get('content') || ''; }
     const status = formData.get('status') || 'draft';
     const isPublishing = status === 'published';
-    
     const post = {
         id: editingId || null,
         title: formData.get('title') || '',
@@ -1016,82 +804,40 @@ async function saveBlog(formData) {
         status: status,
         featured: formData.get('featured') === 'true'
     };
-    
-    Object.keys(post).forEach(key => { 
-        if (post[key] === undefined || post[key] === null) {
-            post[key] = ''; 
-        }
-    });
-    
+    Object.keys(post).forEach(key => { if (post[key] === undefined || post[key] === null) { post[key] = ''; } });
     const saveBtn = document.getElementById('modal-save');
-    if (saveBtn) {
-        saveBtn.disabled = true;
-        saveBtn.textContent = isPublishing ? 'Publishing...' : 'Saving...';
-    }
-    
+    if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = isPublishing ? 'Publishing...' : 'Saving...'; }
     try {
-        const response = await fetch(`${API_BASE}/api/blog`, { 
-            method: 'POST', 
-            headers: getAuthHeaders(), 
-            body: JSON.stringify(post) 
-        });
-        
+        const response = await fetch(`${API_BASE}/api/blog`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(post) });
         const data = await response.json();
-        
         if (data.success) {
             cleanupQuill();
-            
             if (editingId) {
                 const existingPost = blogData.find(p => p.id == editingId);
                 if (existingPost) {
                     Object.assign(existingPost, post);
-                    if (isPublishing) {
-                        existingPost.status = 'published';
-                        existingPost.published_at = new Date().toISOString();
-                    }
+                    if (isPublishing) { existingPost.status = 'published'; existingPost.published_at = new Date().toISOString(); }
                 }
             } else {
-                const newPost = {
-                    ...post,
-                    id: Date.now(),
-                    created_at: new Date().toISOString(),
-                    views: 0
-                };
+                const newPost = { ...post, id: Date.now(), created_at: new Date().toISOString(), views: 0 };
                 blogData.unshift(newPost);
             }
-            
-            renderBlogTable();
-            updateStats();
-            updateSidebarBadges();
-            closeModal();
-            
+            renderBlogTable(); updateStats(); updateSidebarBadges(); closeModal();
             const message = isPublishing ? '✅ Blog post published successfully!' : '✅ Blog post saved as draft!';
             showToast(message, 'success');
-            
-            editingId = null; 
-            editingType = null;
-            
+            editingId = null; editingType = null;
             await loadBlog();
-        } else { 
-            showToast('❌ Failed to save: ' + (data.message || 'Unknown error'), 'error'); 
-        }
-    } catch (error) { 
-        console.error('Save error:', error); 
-        showToast('❌ Error saving blog post: ' + error.message, 'error'); 
-    } finally {
-        if (saveBtn) {
-            saveBtn.disabled = false;
-            saveBtn.textContent = isPublishing ? 'Publish' : 'Save as Draft';
-        }
+        } else { showToast('❌ Failed to save: ' + (data.message || 'Unknown error'), 'error'); }
+    } catch (error) { console.error('Save error:', error); showToast('❌ Error saving blog post: ' + error.message, 'error'); }
+    finally {
+        if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = isPublishing ? 'Publish' : 'Save as Draft'; }
     }
 }
 
 function buildBlogForm(post = null) {
     const contentValue = post?.content || '';
     const statusValue = post?.status || 'draft';
-    
     console.log('Building blog form with post:', post);
-    
     const fields = [
         { type: 'text', name: 'title', label: 'Title', value: post?.title || '' },
         { type: 'text', name: 'slug', label: 'Slug (URL)', value: post?.slug || '' },
@@ -1107,15 +853,11 @@ function buildBlogForm(post = null) {
     return buildFormHTML('blog-form', fields, true);
 }
 
-// ============= HELPER FOR FORM HTML =============
-
 function buildFormHTML(formId, fields, isBlogForm = false) {
     let html = `<form id="${formId}">`;
-    
     fields.forEach(f => {
         html += `<div class="form-group">`;
         html += `<label for="edit-${f.name}" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.08em;">${f.label}</label>`;
-        
         if (f.type === 'select') {
             html += `<select id="edit-${f.name}" name="${f.name}" style="font-family:Inter, sans-serif;">`;
             f.options.forEach(opt => { html += `<option value="${opt}" ${f.value === opt ? 'selected' : ''}>${opt}</option>`; });
@@ -1125,7 +867,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         } else if (f.type === 'checkbox') {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
-            // For file inputs, use the field name directly
             const fieldName = f.name;
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="hidden-${fieldName}" name="${fieldName}_hidden" value="${f.value || ''}">`;
@@ -1144,45 +885,26 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         html += `</div>`;
     });
     html += '</form>';
-    
     return html;
 }
-
-// ============= QUILL EDITOR FUNCTIONS =============
 
 function cleanupQuill() {
     try {
         if (quillEditor) {
-            if (typeof quillEditor.destroy === 'function') {
-                quillEditor.destroy();
-            }
+            if (typeof quillEditor.destroy === 'function') { quillEditor.destroy(); }
             const container = document.getElementById('quill-editor-container');
-            if (container) {
-                container.innerHTML = '';
-            }
+            if (container) { container.innerHTML = ''; }
         }
-    } catch (e) {
-        console.log('Quill cleanup warning:', e.message);
-    }
+    } catch (e) { console.log('Quill cleanup warning:', e.message); }
     quillEditor = null;
     quillInitialized = false;
 }
 
 function initializeQuill(content) {
     cleanupQuill();
-    
     const container = document.getElementById('quill-editor-container');
-    if (!container) {
-        console.log('Quill container not found');
-        return;
-    }
-    
-    if (typeof Quill === 'undefined') {
-        console.error('Quill library not loaded');
-        showToast('Editor not loaded. Please refresh.', 'error');
-        return;
-    }
-    
+    if (!container) { console.log('Quill container not found'); return; }
+    if (typeof Quill === 'undefined') { console.error('Quill library not loaded'); showToast('Editor not loaded. Please refresh.', 'error'); return; }
     const toolbarOptions = [
         ['bold', 'italic', 'underline', 'strike'],
         ['blockquote', 'code-block'],
@@ -1199,35 +921,23 @@ function initializeQuill(content) {
         ['clean'],
         ['link', 'image', 'video']
     ];
-    
     try {
         quillEditor = new Quill(container, {
             theme: 'snow',
-            modules: {
-                toolbar: toolbarOptions
-            },
+            modules: { toolbar: toolbarOptions },
             placeholder: 'Write your blog post content here...'
         });
-        
-        if (content) {
-            quillEditor.root.innerHTML = content;
-        }
-        
+        if (content) { quillEditor.root.innerHTML = content; }
         quillInitialized = true;
-        
         quillEditor.on('text-change', function() {
             const hiddenInput = document.getElementById('edit-content');
-            if (hiddenInput) {
-                hiddenInput.value = quillEditor.root.innerHTML;
-            }
+            if (hiddenInput) { hiddenInput.value = quillEditor.root.innerHTML; }
         });
     } catch (e) {
         console.error('Error initializing Quill:', e);
         showToast('Error loading editor. Please refresh and try again.', 'error');
     }
 }
-
-// ============= PROFILE SAVE =============
 
 async function saveProfile(formData) {
     const config = {
@@ -1258,85 +968,51 @@ async function saveProfile(formData) {
         siteDescription: formData.get('siteDescription') || '',
         photo: formData.get('photo') || ''
     };
-    
     try {
         const response = await fetch(`${API_BASE}/api/agent-profile`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(config) });
         const data = await response.json();
-        if (data.success) {
-            showToast('✅ Profile saved successfully! Changes are live.', 'success');
-            await loadProfile();
-        } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
+        if (data.success) { showToast('✅ Profile saved successfully! Changes are live.', 'success'); await loadProfile(); }
+        else { showToast('❌ Failed to save: ' + data.message, 'error'); }
     } catch (error) { console.error('Save error:', error); showToast('❌ Error saving profile.', 'error'); }
 }
 
-// ============= LEAD MANAGEMENT =============
-
 window.viewLeadDetails = function(id) {
     const lead = leadsData.find(l => l.unique_id === id || l.id === id);
-    if (!lead) {
-        showToast('Lead not found.', 'error');
-        return;
-    }
-    
+    if (!lead) { showToast('Lead not found.', 'error'); return; }
     const modal = document.getElementById('modal');
     const modalTitle = document.getElementById('modal-title');
     const modalBody = document.getElementById('modal-body');
     const modalFooter = document.getElementById('modal-footer');
-    
     modalTitle.textContent = `Lead Details`;
     modalFooter.style.display = 'none';
-    
     const formatLabel = (val) => val ? val : 'N/A';
-    
     const fieldLabels = {
-        name: 'Full Name',
-        phone: 'Phone',
-        email: 'Email',
-        created_at: 'Received',
-        createdAt: 'Received',
-        type: 'Lead Type',
-        contacted: 'Status',
-        propertyType: 'Property Type',
-        community: 'Community',
-        bedrooms: 'Bedrooms',
-        size: 'Size (sqft)',
-        yearBuilt: 'Year Built',
-        address: 'Address',
-        features: 'Features',
-        subject: 'Subject',
-        message: 'Message',
-        property: 'Property',
-        date: 'Preferred Date',
-        time: 'Preferred Time',
-        budget: 'Budget Range',
-        site_id: 'Site ID'
+        name: 'Full Name', phone: 'Phone', email: 'Email',
+        created_at: 'Received', createdAt: 'Received',
+        type: 'Lead Type', contacted: 'Status',
+        propertyType: 'Property Type', community: 'Community',
+        bedrooms: 'Bedrooms', size: 'Size (sqft)',
+        yearBuilt: 'Year Built', address: 'Address',
+        features: 'Features', subject: 'Subject',
+        message: 'Message', property: 'Property',
+        date: 'Preferred Date', time: 'Preferred Time',
+        budget: 'Budget Range', site_id: 'Site ID'
     };
-    
     const mainFields = ['name', 'phone', 'email', 'created_at', 'createdAt', 'type', 'contacted'];
     let mainInfoHtml = '';
     const mainData = {};
-    
     mainFields.forEach(key => {
         if (lead[key] !== undefined && lead[key] !== null && lead[key] !== '') {
             let value = lead[key];
-            if (key === 'contacted') {
-                value = value ? 'Contacted ✅' : 'Pending ⏳';
-            } else if (key === 'type') {
-                const typeLabels = {
-                    'contact': '📋 Contact',
-                    'valuation': '📊 Valuation',
-                    'viewing': '👁️ Viewing',
-                    'goldenvisa': '🏆 Golden Visa'
-                };
+            if (key === 'contacted') { value = value ? 'Contacted ✅' : 'Pending ⏳'; }
+            else if (key === 'type') {
+                const typeLabels = { 'contact': '📋 Contact', 'valuation': '📊 Valuation', 'viewing': '👁️ Viewing', 'goldenvisa': '🏆 Golden Visa' };
                 value = typeLabels[value] || value;
-            } else if (key === 'created_at' || key === 'createdAt') {
-                value = formatDate(value);
-            }
+            } else if (key === 'created_at' || key === 'createdAt') { value = formatDate(value); }
             const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
             mainData[label] = value;
         }
     });
-    
     if (Object.keys(mainData).length > 0) {
         mainInfoHtml = `
             <div class="lead-info-grid">
@@ -1352,12 +1028,10 @@ window.viewLeadDetails = function(id) {
             </div>
         `;
     }
-    
     const extraFields = ['propertyType', 'community', 'bedrooms', 'size', 'yearBuilt', 'address', 'features', 'subject', 'message', 'property', 'date', 'time', 'budget'];
     let extraDetailsHtml = '';
     let hasExtra = false;
     const extraData = {};
-    
     extraFields.forEach(key => {
         if (lead[key] !== undefined && lead[key] !== null && lead[key] !== '') {
             const label = fieldLabels[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
@@ -1365,7 +1039,6 @@ window.viewLeadDetails = function(id) {
             hasExtra = true;
         }
     });
-    
     if (hasExtra) {
         extraDetailsHtml = `
             <div class="lead-extra-section">
@@ -1381,9 +1054,7 @@ window.viewLeadDetails = function(id) {
             </div>
         `;
     }
-    
     const leadId = lead.unique_id || lead.id;
-    
     modalBody.innerHTML = `
         <div class="lead-detail-container">
             <div class="lead-detail-header">
@@ -1393,10 +1064,8 @@ window.viewLeadDetails = function(id) {
                     <span class="lead-type-badge ${lead.type || 'general'}" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.04em;">${lead.type || 'General'}</span>
                 </div>
             </div>
-            
             ${mainInfoHtml}
             ${extraDetailsHtml}
-            
             <div class="lead-detail-footer">
                 ${!lead.contacted ? `<button class="btn btn-success" onclick="window.markLeadContacted('${leadId}')" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">✅ Mark as Contacted</button>` : ''}
                 ${lead.phone ? `<a href="https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn btn-whatsapp" style="font-family:Inter, sans-serif;font-weight:600;letter-spacing:0.02em;">💬 WhatsApp</a>` : ''}
@@ -1404,92 +1073,45 @@ window.viewLeadDetails = function(id) {
             </div>
         </div>
     `;
-    
     modal.style.display = 'flex';
 };
 
 function getIconForField(label) {
-    const iconMap = {
-        'Full Name': '👤',
-        'Phone': '📞',
-        'Email': '✉️',
-        'Received': '📅',
-        'Status': '🔄',
-        'Lead Type': '📌'
-    };
+    const iconMap = { 'Full Name': '👤', 'Phone': '📞', 'Email': '✉️', 'Received': '📅', 'Status': '🔄', 'Lead Type': '📌' };
     return iconMap[label] || '📄';
 }
 
 window.markLeadContacted = async function(id) {
     const lead = leadsData.find(l => l.unique_id === id || l.id === id);
-    if (!lead) {
-        showToast('Lead not found.', 'error');
-        return;
-    }
-    
+    if (!lead) { showToast('Lead not found.', 'error'); return; }
     try {
         const token = localStorage.getItem('ak_admin_token');
-        if (!token) {
-            showToast('Please login again.', 'error');
-            return;
-        }
-        
+        if (!token) { showToast('Please login again.', 'error'); return; }
         const sourceTable = lead.source_table || getSourceTableForLead(lead);
         const originalId = lead.original_id || lead.id;
-        
         const response = await fetch(`${API_BASE}/admin/leads/${originalId}/contacted`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify({ 
-                contacted: 1,
-                source_table: sourceTable,
-                original_id: originalId
-            })
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ contacted: 1, source_table: sourceTable, original_id: originalId })
         });
-        
         const data = await response.json();
-        
         lead.contacted = 1;
-        renderLeadsTable();
-        updateStats();
-        updateSidebarBadges();
-        closeModal();
-        
-        if (data.success) {
-            showToast('✅ Lead marked as contacted successfully!', 'success');
-        } else {
-            showToast('⚠️ Status updated in UI. Syncing with server...', 'warning');
-        }
-        
+        renderLeadsTable(); updateStats(); updateSidebarBadges(); closeModal();
+        if (data.success) { showToast('✅ Lead marked as contacted successfully!', 'success'); }
+        else { showToast('⚠️ Status updated in UI. Syncing with server...', 'warning'); }
         await loadLeads();
-        
     } catch (error) {
         console.error('Error marking lead as contacted:', error);
         lead.contacted = 1;
-        renderLeadsTable();
-        updateStats();
-        updateSidebarBadges();
-        closeModal();
+        renderLeadsTable(); updateStats(); updateSidebarBadges(); closeModal();
         showToast('⚠️ Status updated locally. Will sync with server.', 'warning');
-        try {
-            await loadLeads();
-        } catch (e) {
-            console.error('Background refresh failed:', e);
-        }
+        try { await loadLeads(); } catch (e) { console.error('Background refresh failed:', e); }
     }
 };
 
 function getSourceTableForLead(lead) {
     if (!lead || !lead.type) return 'contacts';
-    const typeMap = {
-        'contact': 'contacts',
-        'valuation': 'valuations',
-        'viewing': 'viewings',
-        'goldenvisa': 'goldenvisa_leads'
-    };
+    const typeMap = { 'contact': 'contacts', 'valuation': 'valuations', 'viewing': 'viewings', 'goldenvisa': 'goldenvisa_leads' };
     return typeMap[lead.type] || 'contacts';
 }
 
@@ -1512,15 +1134,12 @@ function filterLeads() {
     renderLeadsTable(filtered);
 }
 
-// ============= MODAL FUNCTIONS =============
-
 function openModal(title, bodyHTML) {
     const modal = document.getElementById('modal');
     document.getElementById('modal-title').textContent = title;
     document.getElementById('modal-body').innerHTML = bodyHTML;
     document.getElementById('modal-footer').style.display = 'flex';
     modal.style.display = 'flex';
-    
     if (editingType === 'blog') {
         const saveBtn = document.getElementById('modal-save');
         const statusSelect = document.getElementById('edit-status');
@@ -1533,26 +1152,18 @@ function openModal(title, bodyHTML) {
             if (statusSelect) {
                 statusSelect.addEventListener('change', function() {
                     const saveBtn = document.getElementById('modal-save');
-                    if (saveBtn) {
-                        saveBtn.textContent = this.value === 'published' ? 'Publish' : 'Save as Draft';
-                    }
+                    if (saveBtn) { saveBtn.textContent = this.value === 'published' ? 'Publish' : 'Save as Draft'; }
                 });
             }
         }, 100);
     }
-    
-    // Setup image inputs - IMPORTANT: For communities, the input name is 'image'
     setTimeout(() => {
-        setupImageInput('edit-images', true);  // For listings
-        setupImageInput('edit-image', false);  // For offplan and communities
-        setupImageInput('edit-featured_image', false); // For blog
-        // Also try with 'edit-image' for communities specifically
+        setupImageInput('edit-images', true);
+        setupImageInput('edit-image', false);
+        setupImageInput('edit-featured_image', false);
         const communityImageInput = document.getElementById('edit-image');
-        if (communityImageInput) {
-            setupImageInput('edit-image', false);
-        }
+        if (communityImageInput) { setupImageInput('edit-image', false); }
     }, 100);
-    
     if (editingType === 'blog') {
         setTimeout(() => {
             const container = document.getElementById('quill-editor-container');
@@ -1563,7 +1174,6 @@ function openModal(title, bodyHTML) {
             }
         }, 300);
     }
-    
     document.getElementById('modal-save').onclick = function() {
         const form = document.querySelector('#modal-body form');
         if (!form) { showToast('Form not found', 'error'); return; }
@@ -1578,11 +1188,9 @@ function openModal(title, bodyHTML) {
 window.closeModal = function() {
     cleanupQuill();
     document.getElementById('modal').style.display = 'none';
-    editingId = null; 
+    editingId = null;
     editingType = null;
 };
-
-// ============= UTILITY =============
 
 function formatPrice(price) {
     if (!price) return '0';
@@ -1599,25 +1207,16 @@ function formatDate(date) {
     } catch (e) { return 'N/A'; }
 }
 
-// ============= EVENT LISTENERS =============
-
 document.addEventListener('DOMContentLoaded', function() {
     checkAuth();
-    
     const collapsed = localStorage.getItem('ak_sidebar_collapsed') === 'true';
-    if (collapsed && window.innerWidth > 1024) {
-        sidebar.classList.add('collapsed');
-        sidebarCollapsed = true;
-    }
-    
+    if (collapsed && window.innerWidth > 1024) { sidebar.classList.add('collapsed'); sidebarCollapsed = true; }
     if (loginForm) loginForm.addEventListener('submit', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (loginBtn) loginBtn.addEventListener('click', async function(e) { e.preventDefault(); await login(document.getElementById('admin-password').value); });
     if (passwordInput) passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); loginForm.dispatchEvent(new Event('submit')); } });
-    
     document.querySelectorAll('#logout-btn, #logout-btn-sidebar').forEach(btn => {
         btn.addEventListener('click', function(e) { e.preventDefault(); if (confirm('Are you sure you want to logout?')) logout(); });
     });
-    
     document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
@@ -1625,35 +1224,23 @@ document.addEventListener('DOMContentLoaded', function() {
             if (tab) navigateTab(tab);
         });
     });
-    
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', toggleSidebar);
-    }
-    
+    if (sidebarToggle) { sidebarToggle.addEventListener('click', toggleSidebar); }
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 1024 && sidebar.classList.contains('open')) {
-            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
-                closeSidebar();
-            }
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) { closeSidebar(); }
         }
     });
-    
     document.getElementById('add-listing-btn')?.addEventListener('click', () => { editingId = null; editingType = 'listing'; openModal('Add New Listing', buildListingForm()); });
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     document.getElementById('add-blog-btn')?.addEventListener('click', () => { editingId = null; editingType = 'blog'; openModal('Add New Blog Post', buildBlogForm()); });
-    
     document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
-    
     document.getElementById('filter-leads-btn')?.addEventListener('click', filterLeads);
     document.getElementById('export-leads-btn')?.addEventListener('click', exportCSV);
-    
     document.getElementById('modal-close')?.addEventListener('click', closeModal);
     document.getElementById('modal-cancel')?.addEventListener('click', closeModal);
     document.getElementById('modal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
-    
     setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
     setInterval(() => { if (currentUser && currentTab === 'dashboard') { updateStats(); } }, 30000);
-    
     navigateTab('dashboard');
 });
