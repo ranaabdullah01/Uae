@@ -244,245 +244,33 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn-outline:hover { background: var(--emerald); color: var(--cream); }
 
-/* ============================================================
-   HEADER / NAV - DESKTOP GLASSMORPHISM (900px+)
-   ============================================================ */
-@media (min-width: 901px) {
-  #main-header {
-      position: fixed !important;
-      top: 20px !important;
-      left: 50% !important;
-      transform: translateX(-50%) !important;
-      z-index: 1000 !important;
-      width: auto !important;
-      max-width: 95% !important;
-      background: rgba(255, 255, 255, 0.10) !important;
-      backdrop-filter: blur(18px) !important;
-      -webkit-backdrop-filter: blur(18px) !important;
-      border: 1px solid rgba(255, 255, 255, 0.25) !important;
-      border-radius: 9999px !important;
-      box-shadow: 
-          0 8px 32px rgba(0, 0, 0, 0.15),
-          inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
-      padding: 8px 12px !important;
-      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
-  }
-
-  #main-header.scrolled {
-      background: rgba(255, 255, 255, 0.85) !important;
-      backdrop-filter: blur(18px) saturate(180%) !important;
-      -webkit-backdrop-filter: blur(18px) saturate(180%) !important;
-      border: 1px solid rgba(255, 255, 255, 0.5) !important;
-      box-shadow: 
-          0 8px 40px rgba(0, 0, 0, 0.12),
-          inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
-  }
-
-  #main-header.scrolled .nav-menu a {
-      color: var(--ink) !important;
-  }
-
-  #main-header.scrolled .nav-menu a.active {
-      background: var(--emerald) !important;
-      color: var(--cream) !important;
-  }
-
-  #main-header.scrolled .nav-menu a:hover:not(.active) {
-      background: rgba(11, 59, 46, 0.06) !important;
-      color: var(--emerald) !important;
-  }
-
-  #main-header.scrolled .mobile-logo-main {
-      color: var(--emerald-deep) !important;
-  }
-
-  #main-header.scrolled .mobile-logo-sub {
-      color: var(--brass) !important;
-  }
-
-  /* Navigation container */
-  nav .nav-container {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 !important;
-      min-height: 52px !important;
-      gap: 8px !important;
-  }
-
-  /* Logo - Left aligned */
-  .logo {
-      display: flex !important;
-      align-items: center !important;
-      flex-shrink: 0 !important;
-      margin-right: 12px !important;
-  }
-
-  .logo a {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-  }
-
-  .logo img {
-      width: 42px;
-      height: 42px;
-      border-radius: 0;
-      border: none;
-      padding: 0;
-      background: transparent;
-      object-fit: contain;
-  }
-
-  .logo-text {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.1;
-  }
-
-  .logo-main {
-      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-weight: 800;
-      font-size: 16px;
-      color: var(--cream);
-      letter-spacing: -0.02em;
-      transition: color 0.3s ease;
-  }
-
-  .logo-sub {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-weight: 500;
-      font-size: 8px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: 1px;
-      transition: color 0.3s ease;
-  }
-
-  #main-header.scrolled .logo-main {
-      color: var(--emerald-deep);
-  }
-
-  #main-header.scrolled .logo-sub {
-      color: var(--brass);
-  }
-
-  /* Navigation Links Wrapper */
-  .nav-links-wrapper {
-      display: flex;
-      align-items: center;
-      flex: 1;
-      justify-content: flex-start;
-      gap: 4px;
-  }
-
-  /* Navigation Menu - Horizontal pill items */
-  .nav-menu {
-      list-style: none;
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      margin: 0;
-      padding: 0;
-  }
-
-  .nav-menu li {
-      display: flex;
-      align-items: center;
-  }
-
-  .nav-menu a {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-weight: 500;
-      font-size: 13px;
-      letter-spacing: 0.03em;
-      color: rgba(255, 255, 255, 0.85);
-      padding: 8px 18px;
-      border-radius: 9999px;
-      transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-      position: relative;
-      white-space: nowrap;
-      text-decoration: none;
-  }
-
-  .nav-menu a::after {
-      display: none;
-  }
-
-  .nav-menu a:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: var(--cream);
-      transform: translateY(-1px);
-  }
-
-  .nav-menu a.active {
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--emerald-deep);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .nav-menu a.active:hover {
-      background: rgba(255, 255, 255, 0.95);
-      color: var(--emerald-deep);
-      transform: translateY(-1px);
-  }
-
-  /* Mobile Logo - hidden on desktop */
-  .mobile-logo {
-      display: none !important;
-  }
-
-  /* Hamburger - hidden on desktop */
-  .hamburger {
-      display: none !important;
-  }
-}
-
-/* ============================================================
-   HEADER / NAV - MOBILE (handled by mobile.css)
-   These are base styles that mobile.css will override
-   ============================================================ */
+/* ================ HEADER / NAV ================ */
 #main-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
     background: rgba(251, 249, 244, 0.85);
     backdrop-filter: saturate(160%) blur(14px);
     -webkit-backdrop-filter: saturate(160%) blur(14px);
     border-bottom: 1px solid var(--line);
     transition: var(--transition);
 }
-
 #main-header.scrolled {
     background: rgba(251, 249, 244, 0.98);
     box-shadow: var(--shadow-sm);
 }
-
 nav .nav-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-top: 14px; padding-bottom: 14px;
 }
-
 .nav-links-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 40px;
-    flex: 1;
+    display: flex; align-items: center; gap: 40px; flex: 1;
     justify-content: space-between;
 }
-
 .nav-menu {
     list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 30px;
+    display: flex; align-items: center; gap: 30px;
 }
-
 .nav-menu a {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 500;
@@ -493,27 +281,17 @@ nav .nav-container {
     position: relative;
     padding: 8px 0;
 }
-
 .nav-menu a::after {
     content: '';
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    width: 0;
-    height: 1.5px;
+    position: absolute; left: 0; bottom: 0;
+    width: 0; height: 1.5px;
     background: var(--brass);
     transition: width .35s var(--ease);
 }
+.nav-menu a:hover { color: var(--emerald); }
+.nav-menu a:hover::after { width: 100%; }
 
-.nav-menu a:hover {
-    color: var(--emerald);
-}
-
-.nav-menu a:hover::after {
-    width: 100%;
-}
-
-/* Logo */
+/* ================ LOGO ================ */
 .logo a {
     display: flex;
     align-items: center;
@@ -615,66 +393,113 @@ nav .nav-container {
     color: var(--brass);
 }
 
-.hamburger {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
+.hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ================ SECTIONS ================ */
+.section { display: none; padding: 80px 0; }
+.section.active { display: block; animation: fadeIn .5s var(--ease); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+.section-header {
+    display: flex; justify-content: space-between; align-items: end;
+    margin-bottom: 40px; gap: 20px; flex-wrap: wrap;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+}
+.section-header h2 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+.view-all {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brass);
+    display: inline-flex;
+    gap: 8px;
+}
+.view-all:hover { color: var(--emerald); gap: 14px; }
+
+/* ================ HERO ================ */
+.hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex; align-items: center;
+    background:
+        radial-gradient(1200px 600px at 80% 20%, rgba(176,138,62,0.15), transparent 60%),
+        radial-gradient(900px 500px at 15% 90%, rgba(11,59,46,0.10), transparent 60%),
+        linear-gradient(160deg, var(--paper) 0%, var(--cream) 100%);
+    overflow: hidden;
+    padding: 100px 0 80px;
+}
+.hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+        linear-gradient(var(--emerald) 1px, transparent 1px),
+        linear-gradient(90deg, var(--emerald) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.025;
+    pointer-events: none;
+}
+.hero-content { position: relative; z-index: 2; width: 100%; }
+.hero-badge { margin-bottom: 28px; }
+.rerna-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 18px;
+    background: rgba(11, 59, 46, 0.05);
+    border: 1px solid rgba(11, 59, 46, 0.15);
+    border-radius: 100px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--emerald);
+}
+.rerna-badge strong {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    color: var(--brass);
+    letter-spacing: 0.02em;
 }
 
-.hamburger span {
-    display: block;
-    width: 24px;
-    height: 2px;
-    border-radius: 2px;
-    background: var(--cream);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+.hero-title {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    max-width: 900px;
+    margin-bottom: 24px;
 }
-
-.hamburger.active span:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
+.hero-subtitle {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.5vw, 1.2rem);
+    color: var(--ink-soft);
+    max-width: 620px;
+    margin-bottom: 44px;
+    line-height: 1.6;
 }
-
-.hamburger.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger.active span:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
+.hero-buttons {
+    display: flex; gap: 16px; flex-wrap: wrap;
 }
 
 /* ============================================================
-   HERO SECTION - HOMEPAGE ONLY
+   HERO IMAGE FIX - ONLY ON HOMEPAGE
    ============================================================ */
 #home .hero {
-    min-height: 100vh !important;
-    padding: 132px 0 82px !important;
-    position: relative !important;
-    overflow: hidden !important;
     background:
-        linear-gradient(90deg, rgba(7,39,32,0.76) 0%, rgba(7,39,32,0.52) 48%, rgba(7,39,32,0.22) 100%),
-        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=82') center/cover no-repeat !important;
-}
-
-#home .hero::before {
-    content: '' !important;
-    position: absolute !important;
-    inset: 0 !important;
-    z-index: 2 !important;
-    opacity: 0.12 !important;
-    pointer-events: none !important;
-    background-image:
-        linear-gradient(rgba(247,243,234,0.28) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(247,243,234,0.22) 1px, transparent 1px) !important;
-    background-size: 82px 82px !important;
-    animation: none !important;
+        radial-gradient(1200px 600px at 80% 20%, rgba(176,138,62,0.15), transparent 60%),
+        radial-gradient(900px 500px at 15% 90%, rgba(11,59,46,0.10), transparent 60%),
+        linear-gradient(160deg, var(--paper) 0%, var(--cream) 100%);
 }
 
 #home .hero-slideshow {
@@ -684,7 +509,6 @@ nav .nav-container {
     overflow: hidden !important;
     pointer-events: none !important;
 }
-
 #home .hero-slideshow::after {
     content: '';
     position: absolute;
@@ -692,7 +516,6 @@ nav .nav-container {
     z-index: 2;
     background: linear-gradient(90deg, rgba(7,39,32,0.76) 0%, rgba(7,39,32,0.50) 48%, rgba(7,39,32,0.20) 100%);
 }
-
 #home .hero-slide {
     position: absolute !important;
     inset: 0 !important;
@@ -704,13 +527,11 @@ nav .nav-container {
     animation: heroFade 10s infinite ease-in-out;
     will-change: opacity, transform;
 }
-
 #home .hero-slide:nth-child(1) { animation-delay: 0s; }
 #home .hero-slide:nth-child(2) { animation-delay: 2s; }
 #home .hero-slide:nth-child(3) { animation-delay: 4s; }
 #home .hero-slide:nth-child(4) { animation-delay: 6s; }
 #home .hero-slide:nth-child(5) { animation-delay: 8s; }
-
 @keyframes heroFade {
     0%   { opacity: 0; transform: scale(1.05); }
     6%   { opacity: 1; }
@@ -719,17 +540,9 @@ nav .nav-container {
     100% { opacity: 0; transform: scale(1.05); }
 }
 
-#home .hero-content {
-    position: relative !important;
-    z-index: 3 !important;
-    width: 100% !important;
-}
-
 #home .hero-title,
 #home .hero-subtitle { color: var(--cream) !important; }
-
 #home .hero-title .gold-text { color: var(--brass-light) !important; }
-
 #home .hero-badge .rerna-badge {
     background: rgba(247,243,234,0.16) !important;
     border-color: rgba(247,243,234,0.38) !important;
@@ -738,7 +551,7 @@ nav .nav-container {
 }
 
 /* ============================================================
-   PAGE HEROES - CLEAN SOLID BACKGROUNDS
+   PAGE HEROES - CLEAN BACKGROUNDS WITHOUT IMAGES
    ============================================================ */
 .listings-hero,
 .offplan-hero,
@@ -774,7 +587,6 @@ nav .nav-container {
     z-index: 1;
     letter-spacing: -0.02em;
 }
-
 .listings-hero p,
 .offplan-hero p,
 .about-hero p,
@@ -791,35 +603,6 @@ nav .nav-container {
     position: relative;
     z-index: 1;
 }
-
-/* ================ SECTIONS ================ */
-.section { display: none; padding: 80px 0; }
-.section.active { display: block; animation: fadeIn .5s var(--ease); }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
-.section-header {
-    display: flex; justify-content: space-between; align-items: end;
-    margin-bottom: 40px; gap: 20px; flex-wrap: wrap;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--line);
-}
-.section-header h2 {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 700;
-    margin: 0;
-    letter-spacing: -0.02em;
-}
-.view-all {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--brass);
-    display: inline-flex;
-    gap: 8px;
-}
-.view-all:hover { color: var(--emerald); gap: 14px; }
 
 /* ================ FEATURED / GRIDS ================ */
 .featured-section { 
@@ -2581,8 +2364,40 @@ footer::before {
 }
 
 /* ============================================================
-   SAFE FIX PACK — Desktop glassmorphism (already handled above)
+   SAFE FIX PACK — restore hero images only on homepage + transparent header
    ============================================================ */
+
+#main-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: transparent !important;
+    border-bottom: 1px solid rgba(247,243,234,0.16) !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+#main-header .nav-menu a,
+#main-header .logo-main { color: var(--cream) !important; }
+#main-header .logo-sub { color: var(--brass-light) !important; }
+#main-header .nav-menu a:hover { color: var(--brass-light) !important; }
+#main-header .hamburger span { background: var(--cream) !important; }
+
+#main-header.scrolled {
+    background: rgba(251,249,244,0.98) !important;
+    border-bottom: 1px solid var(--line) !important;
+    box-shadow: var(--shadow-sm) !important;
+    backdrop-filter: saturate(160%) blur(14px) !important;
+    -webkit-backdrop-filter: saturate(160%) blur(14px) !important;
+}
+#main-header.scrolled .nav-menu a,
+#main-header.scrolled .logo-main { color: var(--ink) !important; }
+#main-header.scrolled .logo-sub { color: var(--brass) !important; }
+#main-header.scrolled .nav-menu a:hover { color: var(--emerald) !important; }
+#main-header.scrolled .hamburger span { background: var(--emerald-deep) !important; }
 
 #home.section { padding-top: 0 !important; }
 #listings.section,
@@ -2726,4 +2541,103 @@ footer::before {
     margin-top: 12px;
     position: relative;
     z-index: 1;
+}
+
+@media (max-width: 900px) {
+    #main-header nav .nav-container {
+        min-height: 64px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        justify-content: flex-end !important;
+    }
+
+    #main-header::after {
+        display: none !important;
+        content: none !important;
+    }
+
+    #main-header .hamburger {
+        display: flex !important;
+        position: relative !important;
+        z-index: 1003 !important;
+        width: 42px !important;
+        height: 42px !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 5px !important;
+    }
+
+    #main-header .nav-links-wrapper {
+        position: fixed !important;
+        top: 64px !important;
+        left: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 1001 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        gap: 10px !important;
+        padding: 24px 20px 44px !important;
+        background: transparent !important;
+        backdrop-filter: blur(10px) !important;
+        -webkit-backdrop-filter: blur(10px) !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.34s var(--ease) !important;
+        overflow-y: auto !important;
+        border-bottom: 0 !important;
+        box-shadow: none !important;
+    }
+    #main-header .nav-links-wrapper.active { transform: translateX(0) !important; }
+    #main-header.scrolled .nav-links-wrapper {
+        background: rgba(251,249,244,0.98) !important;
+        backdrop-filter: blur(14px) saturate(160%) !important;
+        -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+    }
+    #main-header .nav-menu {
+        width: 100% !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+    #main-header .nav-menu a {
+        display: block !important;
+        padding: 14px 16px !important;
+        border-radius: 12px !important;
+        color: var(--cream) !important;
+        background: rgba(247,243,234,0.06) !important;
+        border: 1px solid rgba(247,243,234,0.10) !important;
+        text-align: left !important;
+        font-size: 14px !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.04em !important;
+        text-transform: uppercase !important;
+    }
+    #main-header.scrolled .nav-menu a {
+        color: var(--emerald-deep) !important;
+        background: rgba(11,59,46,0.05) !important;
+        border-color: rgba(11,59,46,0.12) !important;
+    }
+
+    #home .hero {
+        min-height: 100svh !important;
+        padding: 108px 0 54px !important;
+        align-items: center !important;
+        background-position: center !important;
+    }
+    #home .hero-slideshow::after {
+        background: linear-gradient(180deg, rgba(7,39,32,0.70) 0%, rgba(7,39,32,0.60) 48%, rgba(7,39,32,0.40) 100%) !important;
+    }
+    #home .hero-title { font-size: clamp(2.8rem, 8vw, 3.5rem) !important; }
+    #home .hero-subtitle { font-size: 1rem !important; line-height: 1.55 !important; margin-bottom: 28px !important; }
+    #home .hero-buttons { flex-direction: column !important; align-items: stretch !important; gap: 12px !important; }
+    #home .hero-buttons .btn { width: 100% !important; }
+    
+    .listings-hero, .offplan-hero, .about-hero, .contact-hero,
+    .communities-hero, .goldenvisa-hero, .blog-hero, .valuation-hero {
+        min-height: 30vh;
+        padding: 80px 0 40px;
+    }
 }
