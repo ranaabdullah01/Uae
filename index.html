@@ -70,108 +70,128 @@
                 display: none !important;
             }
 
-            /* new floating navigation – positioned absolute over hero */
+            /* new floating navigation – fixed position over hero */
             .floating-nav {
-                position: absolute;
-                top: 24px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                padding: 6px 12px;
-                border-radius: 999px;
-                background: rgba(255, 255, 255, 0.10);
-                backdrop-filter: blur(18px);
-                -webkit-backdrop-filter: blur(18px);
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-                transition: all 0.3s ease;
-                pointer-events: auto;
+                position: fixed !important;
+                top: 20px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                z-index: 1000 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 4px !important;
+                padding: 6px 12px !important;
+                border-radius: 999px !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                backdrop-filter: blur(18px) !important;
+                -webkit-backdrop-filter: blur(18px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.20) !important;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10) !important;
+                transition: all 0.3s ease !important;
+                pointer-events: auto !important;
+            }
+
+            .floating-nav.scrolled {
+                background: rgba(255, 255, 255, 0.92) !important;
+                border-color: rgba(0, 0, 0, 0.06) !important;
+                box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15) !important;
+            }
+
+            .floating-nav.scrolled a {
+                color: #1D1D1D !important;
+            }
+
+            .floating-nav.scrolled a:hover {
+                background: rgba(0, 0, 0, 0.06) !important;
+                color: #0B3B2E !important;
+            }
+
+            .floating-nav.scrolled a.active {
+                background: #0B3B2E !important;
+                color: #fff !important;
             }
 
             .floating-nav a {
-                font-family: 'Inter', -apple-system, sans-serif;
-                font-weight: 500;
-                font-size: 13px;
-                letter-spacing: 0.02em;
-                padding: 8px 16px;
-                border-radius: 999px;
-                color: rgba(255, 255, 255, 0.85);
-                transition: all 0.2s ease;
-                text-decoration: none;
-                white-space: nowrap;
+                font-family: 'Inter', -apple-system, sans-serif !important;
+                font-weight: 500 !important;
+                font-size: 13px !important;
+                letter-spacing: 0.02em !important;
+                padding: 8px 16px !important;
+                border-radius: 999px !important;
+                color: rgba(255, 255, 255, 0.85) !important;
+                transition: all 0.2s ease !important;
+                text-decoration: none !important;
+                white-space: nowrap !important;
             }
 
             .floating-nav a:hover {
-                background: rgba(255, 255, 255, 0.18);
-                color: #fff;
+                background: rgba(255, 255, 255, 0.18) !important;
+                color: #fff !important;
             }
 
             .floating-nav a.active {
-                background: #ffffff;
-                color: #111111;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                background: #ffffff !important;
+                color: #111111 !important;
+                font-weight: 600 !important;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
             }
 
             .floating-nav a.active:hover {
-                background: #ffffff;
-                color: #111111;
+                background: #ffffff !important;
+                color: #111111 !important;
             }
 
-            /* left logo – outside the pill, on the far left */
+            /* left logo – fixed position on the far left */
             .floating-logo {
-                position: absolute;
-                top: 20px;
-                left: 32px;
-                z-index: 1001;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                pointer-events: auto;
+                position: fixed !important;
+                top: 18px !important;
+                left: 32px !important;
+                z-index: 1001 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                pointer-events: auto !important;
             }
 
             .floating-logo a {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                text-decoration: none;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
+                text-decoration: none !important;
             }
 
             .floating-logo img {
-                width: 46px;
-                height: 46px;
-                object-fit: contain;
-                border-radius: 0;
-                background: transparent;
+                width: 46px !important;
+                height: 46px !important;
+                object-fit: contain !important;
+                border-radius: 0 !important;
+                background: transparent !important;
             }
 
             .floating-logo-text {
-                display: flex;
-                flex-direction: column;
-                line-height: 1.1;
+                display: flex !important;
+                flex-direction: column !important;
+                line-height: 1.1 !important;
             }
 
             .floating-logo-main {
-                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-                font-weight: 800;
-                font-size: 18px;
-                color: #ffffff;
-                letter-spacing: -0.02em;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+                font-weight: 800 !important;
+                font-size: 18px !important;
+                color: #ffffff !important;
+                letter-spacing: -0.02em !important;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
             }
 
             .floating-logo-sub {
-                font-family: 'Inter', -apple-system, sans-serif;
-                font-weight: 500;
-                font-size: 9px;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: rgba(255, 255, 255, 0.7);
-                margin-top: 1px;
-                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+                font-family: 'Inter', -apple-system, sans-serif !important;
+                font-weight: 500 !important;
+                font-size: 9px !important;
+                letter-spacing: 0.15em !important;
+                text-transform: uppercase !important;
+                color: rgba(255, 255, 255, 0.7) !important;
+                margin-top: 1px !important;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
             }
 
             /* reposition mobile hamburger off screen on desktop */
@@ -565,7 +585,7 @@
                     </ul>
                 </div>
 
-                <!-- Mobile Hamburger -->
+                <!-- Mobile Hamburger - RIGHT SIDE -->
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -1350,6 +1370,24 @@
     <script>
         (function() {
             document.addEventListener('DOMContentLoaded', function() {
+                // Fix floating nav scroll behavior
+                const floatingNav = document.getElementById('floating-nav');
+                if (floatingNav) {
+                    window.addEventListener('scroll', function() {
+                        if (window.scrollY > 80) {
+                            floatingNav.classList.add('scrolled');
+                        } else {
+                            floatingNav.classList.remove('scrolled');
+                        }
+                    });
+                    
+                    // Initial check
+                    if (window.scrollY > 80) {
+                        floatingNav.classList.add('scrolled');
+                    }
+                }
+                
+                // Hero search button
                 const heroSearchBtn = document.getElementById('hero-search-btn');
                 if (heroSearchBtn) {
                     heroSearchBtn.addEventListener('click', function(e) {
