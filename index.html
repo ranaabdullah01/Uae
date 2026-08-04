@@ -64,21 +64,9 @@
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
     </div>
 
-    <!-- =============== HEADER - GLASSMORPHISM FLOATING =============== -->
     <header id="main-header">
         <nav>
             <div class="container nav-container">
-                <!-- Desktop Logo (left) -->
-                <div class="logo">
-                    <a href="#home" data-section="home">
-                        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-                        <div class="logo-text">
-                            <span class="logo-main">Agent Web Studio</span>
-                            <span class="logo-sub">Websites That Sell Homes</span>
-                        </div>
-                    </a>
-                </div>
-
                 <!-- Mobile Logo (shown on mobile only) -->
                 <div class="mobile-logo">
                     <a href="#home" data-section="home">
@@ -90,26 +78,38 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
+                <!-- Left Navigation -->
                 <div id="nav-menu" class="nav-links-wrapper">
-                    <ul class="nav-menu">
-                        <li><a href="#home" data-section="home" class="active">Home</a></li>
+                    <ul class="nav-menu nav-left">
                         <li><a href="#listings" data-section="listings">Properties</a></li>
                         <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
                         <li><a href="#valuation" data-section="valuation">Valuation</a></li>
+                    </ul>
+                    
+                    <!-- Center Logo (Desktop) -->
+                    <div class="logo">
+                        <a href="#home" data-section="home">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+                            <div class="logo-text">
+                                <span class="logo-main">Agent Web Studio</span>
+                                <span class="logo-sub">Websites That Sell Homes</span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Right Navigation -->
+                    <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities">Communities</a></li>
                         <li><a href="#about" data-section="about">About</a></li>
                         <li><a href="#blog" data-section="blog">Blog</a></li>
-                        <li><a href="#contact" data-section="contact">Contact</a></li>
+                        <li><a href="#contact" data-section="contact">Contact Us</a></li>
                         <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
                     </ul>
                 </div>
 
                 <!-- Mobile Hamburger -->
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span></span><span></span><span></span>
                 </button>
             </div>
         </nav>
@@ -159,21 +159,6 @@
                     </div>
                     <div class="offplan-grid" id="featured-offplan"></div>
                 </section>
-
-                <!-- Divider -->
-                <div class="featured-section-divider"></div>
-
-                <!-- Golden Visa Highlight -->
-                <section class="goldenvisa-highlight">
-                    <div class="gv-highlight-content">
-                        <h2>Golden Visa Opportunity</h2>
-                        <p>Invest AED 2M+ in Dubai property and qualify for the UAE Golden Visa. 10-year renewable residency for you and your family.</p>
-                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
-                    </div>
-                </section>
-
-                <!-- Divider -->
-                <div class="featured-section-divider"></div>
 
                 <!-- Communities Preview -->
                 <section class="featured-section">
@@ -237,6 +222,15 @@
                         </div>
                         <button id="calc-roi-btn" class="btn btn-primary">Calculate ROI</button>
                         <div class="calc-results" id="calc-results"></div>
+                    </div>
+                </section>
+
+                <!-- Golden Visa Highlight -->
+                <section class="goldenvisa-highlight">
+                    <div class="gv-highlight-content">
+                        <h2>Golden Visa Opportunity</h2>
+                        <p>Invest AED 2M+ in Dubai property and qualify for the UAE Golden Visa. 10-year renewable residency for you and your family.</p>
+                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
                     </div>
                 </section>
 
