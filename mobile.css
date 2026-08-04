@@ -5,23 +5,17 @@
    ============================================================ */
 
 @media (max-width: 900px) {
-  /* ========== MOBILE HEADER - ORIGINAL STYLE (NON-BLURRY) ========== */
   #main-header {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 1000 !important;
-    background: var(--emerald-deep) !important;
+    background: transparent !important;
     border-bottom: 1px solid rgba(247,243,234,.14) !important;
     box-shadow: none !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
-    border-radius: 0 !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-    transform: none !important;
   }
 
   #main-header.scrolled {
@@ -108,7 +102,6 @@
     content: none !important;
   }
 
-  /* ========== HAMBURGER MENU ========== */
   #main-header .hamburger {
     display: inline-flex !important;
     position: relative !important;
@@ -138,7 +131,6 @@
   #main-header .hamburger.active span:nth-child(2) { opacity: 0 !important; }
   #main-header .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg) !important; }
 
-  /* ========== NAVIGATION OVERLAY - ORIGINAL STYLE ========== */
   #main-header .nav-links-wrapper {
     position: fixed !important;
     top: 0 !important;
@@ -155,9 +147,9 @@
     justify-content: flex-start !important;
     gap: 10px !important;
     padding: 84px 20px 44px !important;
-    background: var(--emerald-deep) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    background: transparent !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
     transform: translateX(-100%) !important;
     transition: transform .34s cubic-bezier(.22,1,.36,1) !important;
     overflow-y: auto !important;
@@ -167,9 +159,9 @@
     visibility: visible !important;
   }
   #main-header.scrolled .nav-links-wrapper {
-    background: var(--paper) !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    background: rgba(251,249,244,.98) !important;
+    backdrop-filter: blur(14px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
   }
   #main-header .nav-links-wrapper.active,
   #main-header .nav-links-wrapper.open,
@@ -178,7 +170,7 @@
   #main-header:has(.nav-links-wrapper.active),
   #main-header:has(.nav-links-wrapper.open),
   #main-header:has(.nav-links-wrapper.is-open) {
-    background: var(--emerald-deep) !important;
+    background: transparent !important;
     border-bottom: 0 !important;
     box-shadow: none !important;
   }
@@ -193,7 +185,6 @@
     background: #0B3B2E !important;
   }
 
-  /* ========== NAVIGATION LINKS - ORIGINAL STYLE ========== */
   #main-header .nav-menu {
     width: 100% !important;
     margin: 0 !important;
@@ -238,9 +229,8 @@
     border-color: rgba(176,138,62,.32) !important;
   }
 
-  /* ========== HERO SECTION ========== */
   #home.section { padding-top: 0 !important; }
-  .hero {
+  #home .hero {
     min-height: 100svh !important;
     padding: 108px 0 54px !important;
     display: flex !important;
@@ -272,14 +262,29 @@
     width: 100% !important;
     min-width: 0 !important;
   }
-  .hero-slideshow::after {
+  #home .hero-slideshow::after {
     background: linear-gradient(180deg, rgba(7,39,32,.70) 0%, rgba(7,39,32,.60) 50%, rgba(7,39,32,.42) 100%) !important;
   }
 
-  /* ========== GENERAL MOBILE STYLES ========== */
   .container { padding-left: 18px !important; padding-right: 18px !important; }
   .section { padding: 48px 0 !important; }
   .featured-section { padding: 48px 0 !important; }
+  
+  /* Homepage featured section spacing on mobile */
+  #home .featured-section {
+    padding: 40px 0 !important;
+  }
+  #home .featured-section:first-of-type {
+    padding-top: 60px !important;
+  }
+  #home .featured-section:last-of-type {
+    padding-bottom: 60px !important;
+  }
+  .featured-section-divider {
+    margin: 5px auto !important;
+    max-width: 120px !important;
+  }
+  
   .listings-grid,
   .offplan-grid,
   .communities-grid,
@@ -297,7 +302,7 @@
   form select,
   form textarea { font-size: 16px !important; }
 
-  /* ========== BLOG MOBILE STYLES ========== */
+  /* Blog Mobile Styles */
   .blog-grid {
     grid-template-columns: 1fr !important;
     gap: 18px !important;
@@ -344,7 +349,7 @@
     padding: 70px 0 60px !important;
   }
 
-  /* ========== PAGE HEROES ========== */
+  /* Page heroes - clean solid backgrounds on mobile */
   .listings-hero,
   .offplan-hero,
   .about-hero,
@@ -356,7 +361,7 @@
     min-height: 30vh !important;
     padding: 80px 0 40px !important;
   }
-
+  
   .goldenvisa-highlight { 
     padding: 60px 24px !important; 
     margin: 40px 0 !important; 
