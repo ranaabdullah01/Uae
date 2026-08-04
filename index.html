@@ -2,9 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- GitHub Pages SPA routing fix: decodes the redirect from 404.html back into
-         a real URL via history.replaceState BEFORE main.js reads location.pathname.
-         Must stay first in <head>. See: https://github.com/rafgraph/spa-github-pages -->
+    <!-- GitHub Pages SPA routing fix -->
     <script type="text/javascript">
         (function(l) {
             if (l.search[1] === '/') {
@@ -491,6 +489,61 @@
                 padding: 24px 18px;
             }
         }
+
+        /* Mobile navigation fix: menu on right side */
+        @media (max-width: 900px) {
+            #main-header .nav-container {
+                justify-content: flex-end !important;
+            }
+            #main-header .mobile-logo {
+                margin-right: auto;
+            }
+            #main-header .nav-links-wrapper {
+                left: auto !important;
+                right: 0 !important;
+                transform: translateX(100%) !important;
+                transition: transform 0.34s cubic-bezier(.22,1,.36,1) !important;
+                width: 80% !important;
+                max-width: 320px !important;
+                border-radius: 0 0 0 20px !important;
+                background: rgba(251,249,244,0.98) !important;
+                backdrop-filter: blur(14px) saturate(160%) !important;
+                -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+                box-shadow: -8px 0 40px rgba(0,0,0,0.12) !important;
+            }
+            #main-header .nav-links-wrapper.active {
+                transform: translateX(0) !important;
+            }
+            #main-header .nav-menu {
+                align-items: stretch !important;
+            }
+            #main-header .nav-menu a {
+                text-align: right !important;
+                padding: 14px 20px !important;
+                border-radius: 12px !important;
+                background: rgba(11,59,46,0.04) !important;
+                border: 1px solid rgba(11,59,46,0.06) !important;
+            }
+            #main-header.scrolled .nav-menu a {
+                color: #0B3B2E !important;
+                background: rgba(11,59,46,0.05) !important;
+                border-color: rgba(11,59,46,0.10) !important;
+            }
+            #main-header:not(.scrolled) .nav-menu a {
+                color: #F7F3EA !important;
+                background: rgba(247,243,234,0.06) !important;
+                border-color: rgba(247,243,234,0.10) !important;
+            }
+            #main-header:not(.scrolled) .nav-links-wrapper {
+                background: rgba(7,39,32,0.92) !important;
+                backdrop-filter: blur(14px) saturate(160%) !important;
+                -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
+            }
+            /* ensure hamburger stays on right */
+            #main-header .hamburger {
+                margin-left: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -542,21 +595,6 @@
                         <li><a href="#listings" data-section="listings">Properties</a></li>
                         <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
                         <li><a href="#valuation" data-section="valuation">Valuation</a></li>
-                    </ul>
-                    
-                    <!-- Center Logo (Desktop) -->
-                    <div class="logo">
-                        <a href="#home" data-section="home">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-                            <div class="logo-text">
-                                <span class="logo-main">Agent Web Studio</span>
-                                <span class="logo-sub">Websites That Sell Homes</span>
-                            </div>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Navigation -->
-                    <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities">Communities</a></li>
                         <li><a href="#about" data-section="about">About</a></li>
                         <li><a href="#blog" data-section="blog">Blog</a></li>
