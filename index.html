@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- GitHub Pages SPA routing fix -->
+    <!-- GitHub Pages SPA routing fix: decodes the redirect from 404.html back into
+         a real URL via history.replaceState BEFORE main.js reads location.pathname.
+         Must stay first in <head>. See: https://github.com/rafgraph/spa-github-pages -->
     <script type="text/javascript">
         (function(l) {
             if (l.search[1] === '/') {
@@ -36,7 +38,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Load existing CSS, then override for desktop and mobile fixes -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="mobile.css">
 
@@ -58,7 +59,7 @@
     </script>
     <style>
         /* ============================================================
-           REDESIGN: DESKTOP HOMEPAGE — glass navigation + hero
+           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
            All existing IDs, classes, JS hooks preserved.
            ============================================================ */
 
@@ -490,196 +491,6 @@
                 padding: 24px 18px;
             }
         }
-
-        /* ============================================================
-           MOBILE FIX: menu slides from RIGHT with no lag
-           Overrides mobile.css to ensure smooth performance
-           ============================================================ */
-        @media (max-width: 900px) {
-            /* Header container: flex with logo left, hamburger right */
-            #main-header .nav-container {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                min-height: 64px !important;
-                padding: 0 18px !important;
-                position: relative !important;
-            }
-
-            /* Mobile logo on left */
-            #main-header .mobile-logo {
-                display: flex !important;
-                align-items: center !important;
-                gap: 8px !important;
-                margin-right: auto !important;
-                flex-shrink: 0 !important;
-                z-index: 1002 !important;
-            }
-
-            /* Hamburger on right */
-            #main-header .hamburger {
-                display: inline-flex !important;
-                position: relative !important;
-                z-index: 1003 !important;
-                width: 42px !important;
-                height: 42px !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: transparent !important;
-                border: 0 !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                gap: 5px !important;
-                cursor: pointer !important;
-                flex-shrink: 0 !important;
-                margin-left: 12px !important;
-            }
-
-            #main-header .hamburger span {
-                display: block !important;
-                width: 26px !important;
-                height: 2px !important;
-                border-radius: 2px !important;
-                background: #F7F3EA !important;
-                transition: transform .28s ease, opacity .28s ease, background .28s ease !important;
-            }
-            #main-header.scrolled .hamburger span {
-                background: #0B3B2E !important;
-            }
-            #main-header .hamburger.active span:nth-child(1) {
-                transform: translateY(7px) rotate(45deg) !important;
-            }
-            #main-header .hamburger.active span:nth-child(2) {
-                opacity: 0 !important;
-            }
-            #main-header .hamburger.active span:nth-child(3) {
-                transform: translateY(-7px) rotate(-45deg) !important;
-            }
-
-            /* Navigation overlay: slides from RIGHT */
-            #main-header .nav-links-wrapper {
-                position: fixed !important;
-                top: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                width: 80% !important;
-                max-width: 340px !important;
-                height: 100vh !important;
-                height: 100dvh !important;
-                z-index: 1001 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: stretch !important;
-                justify-content: flex-start !important;
-                gap: 10px !important;
-                padding: 84px 20px 44px !important;
-                background: rgba(251,249,244,0.98) !important;
-                backdrop-filter: blur(14px) saturate(160%) !important;
-                -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
-                transform: translateX(100%) !important;
-                transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1) !important;
-                overflow-y: auto !important;
-                border: 0 !important;
-                box-shadow: -8px 0 40px rgba(0,0,0,0.12) !important;
-                border-radius: 0 0 0 20px !important;
-                opacity: 1 !important;
-                visibility: visible !important;
-                pointer-events: none !important;
-            }
-
-            #main-header .nav-links-wrapper.active {
-                transform: translateX(0) !important;
-                pointer-events: auto !important;
-            }
-
-            /* When menu is open, ensure proper stacking */
-            #main-header:has(.nav-links-wrapper.active) {
-                background: transparent !important;
-                border-bottom: 0 !important;
-                box-shadow: none !important;
-            }
-
-            /* Menu items: full width, right-aligned text */
-            #main-header .nav-menu {
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: stretch !important;
-                gap: 8px !important;
-                list-style: none !important;
-            }
-
-            #main-header .nav-menu li {
-                width: 100% !important;
-            }
-
-            #main-header .nav-menu li a {
-                display: block !important;
-                padding: 14px 20px !important;
-                border-radius: 12px !important;
-                color: #0B3B2E !important;
-                background: rgba(11,59,46,0.04) !important;
-                border: 1px solid rgba(11,59,46,0.06) !important;
-                text-align: right !important;
-                font-size: 14px !important;
-                font-family: 'Inter', -apple-system, sans-serif !important;
-                font-weight: 500 !important;
-                letter-spacing: 0.04em !important;
-                text-transform: uppercase !important;
-                text-decoration: none !important;
-                transition: all 0.2s ease !important;
-            }
-
-            #main-header .nav-menu li a:hover,
-            #main-header .nav-menu li a.active {
-                color: #B88A3B !important;
-                background: rgba(184,138,59,0.10) !important;
-                border-color: rgba(184,138,59,0.20) !important;
-            }
-
-            /* Scrolled state for mobile menu items */
-            #main-header.scrolled .nav-menu li a {
-                color: #0B3B2E !important;
-                background: rgba(11,59,46,0.04) !important;
-                border-color: rgba(11,59,46,0.06) !important;
-            }
-
-            #main-header.scrolled .nav-menu li a:hover,
-            #main-header.scrolled .nav-menu li a.active {
-                color: #B88A3B !important;
-                background: rgba(184,138,59,0.10) !important;
-                border-color: rgba(184,138,59,0.20) !important;
-            }
-
-            /* When menu is open on non-scrolled state (transparent header) */
-            #main-header:not(.scrolled) .nav-menu li a {
-                color: #F7F3EA !important;
-                background: rgba(247,243,234,0.08) !important;
-                border-color: rgba(247,243,234,0.12) !important;
-            }
-
-            #main-header:not(.scrolled) .nav-menu li a:hover,
-            #main-header:not(.scrolled) .nav-menu li a.active {
-                color: #D4B266 !important;
-                background: rgba(212,178,102,0.15) !important;
-                border-color: rgba(212,178,102,0.25) !important;
-            }
-
-            #main-header:not(.scrolled) .nav-links-wrapper {
-                background: rgba(7,39,32,0.92) !important;
-                backdrop-filter: blur(14px) saturate(160%) !important;
-                -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
-                box-shadow: -8px 0 40px rgba(0,0,0,0.25) !important;
-            }
-
-            /* Ensure body doesn't scroll when menu is open */
-            body.menu-open {
-                overflow: hidden !important;
-            }
-        }
     </style>
 </head>
 <body>
@@ -725,12 +536,27 @@
                     </a>
                 </div>
 
-                <!-- Navigation Menu (slides from right on mobile) -->
+                <!-- Left Navigation -->
                 <div id="nav-menu" class="nav-links-wrapper">
-                    <ul class="nav-menu">
+                    <ul class="nav-menu nav-left">
                         <li><a href="#listings" data-section="listings">Properties</a></li>
                         <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
                         <li><a href="#valuation" data-section="valuation">Valuation</a></li>
+                    </ul>
+                    
+                    <!-- Center Logo (Desktop) -->
+                    <div class="logo">
+                        <a href="#home" data-section="home">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+                            <div class="logo-text">
+                                <span class="logo-main">Agent Web Studio</span>
+                                <span class="logo-sub">Websites That Sell Homes</span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <!-- Right Navigation -->
+                    <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities">Communities</a></li>
                         <li><a href="#about" data-section="about">About</a></li>
                         <li><a href="#blog" data-section="blog">Blog</a></li>
@@ -1527,6 +1353,7 @@
                 const heroSearchBtn = document.getElementById('hero-search-btn');
                 if (heroSearchBtn) {
                     heroSearchBtn.addEventListener('click', function(e) {
+                        // copy values from hero filters to the listings filter bar
                         const heroType = document.getElementById('filter-type');
                         const heroCommunity = document.getElementById('filter-community');
                         const heroPrice = document.getElementById('filter-price');
@@ -1545,43 +1372,13 @@
                         if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
                         if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
 
+                        // trigger filter
                         if (typeof window.filterListings === 'function') {
                             window.filterListings();
                         }
+                        // navigate to listings section
                         if (typeof window.navigateTo === 'function') {
                             window.navigateTo('listings');
-                        }
-                    });
-                }
-
-                // Mobile menu toggle with body class to prevent scroll
-                const hamburger = document.getElementById('hamburger');
-                const navMenu = document.getElementById('nav-menu');
-                if (hamburger && navMenu) {
-                    hamburger.addEventListener('click', function(e) {
-                        e.stopPropagation();
-                        this.classList.toggle('active');
-                        navMenu.classList.toggle('active');
-                        document.body.classList.toggle('menu-open');
-                    });
-
-                    // Close menu when a link is clicked
-                    navMenu.querySelectorAll('a').forEach(function(link) {
-                        link.addEventListener('click', function() {
-                            hamburger.classList.remove('active');
-                            navMenu.classList.remove('active');
-                            document.body.classList.remove('menu-open');
-                        });
-                    });
-
-                    // Close menu when clicking outside
-                    document.addEventListener('click', function(e) {
-                        if (navMenu.classList.contains('active')) {
-                            if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-                                hamburger.classList.remove('active');
-                                navMenu.classList.remove('active');
-                                document.body.classList.remove('menu-open');
-                            }
                         }
                     });
                 }
