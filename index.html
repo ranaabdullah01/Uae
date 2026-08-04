@@ -57,6 +57,441 @@
         "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
     }
     </script>
+    <style>
+        /* ============================================================
+           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
+           All existing IDs, classes, JS hooks preserved.
+           ============================================================ */
+
+        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
+        @media (min-width: 901px) {
+            /* hide the old sticky header completely */
+            #main-header {
+                display: none !important;
+            }
+
+            /* new floating navigation – positioned absolute over hero */
+            .floating-nav {
+                position: absolute;
+                top: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.10);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                pointer-events: auto;
+            }
+
+            .floating-nav a {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 13px;
+                letter-spacing: 0.02em;
+                padding: 8px 16px;
+                border-radius: 999px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: all 0.2s ease;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .floating-nav a:hover {
+                background: rgba(255, 255, 255, 0.18);
+                color: #fff;
+            }
+
+            .floating-nav a.active {
+                background: #ffffff;
+                color: #111111;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .floating-nav a.active:hover {
+                background: #ffffff;
+                color: #111111;
+            }
+
+            /* left logo – outside the pill, on the far left */
+            .floating-logo {
+                position: absolute;
+                top: 20px;
+                left: 32px;
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                pointer-events: auto;
+            }
+
+            .floating-logo a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+            }
+
+            .floating-logo img {
+                width: 46px;
+                height: 46px;
+                object-fit: contain;
+                border-radius: 0;
+                background: transparent;
+            }
+
+            .floating-logo-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.1;
+            }
+
+            .floating-logo-main {
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+                font-weight: 800;
+                font-size: 18px;
+                color: #ffffff;
+                letter-spacing: -0.02em;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+
+            .floating-logo-sub {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 9px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 1px;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            }
+
+            /* reposition mobile hamburger off screen on desktop */
+            .hamburger {
+                display: none !important;
+            }
+        }
+
+        /* ---------- HERO OVERRIDES ---------- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 !important;
+            background: #0B2E26;
+            overflow: hidden;
+        }
+
+        /* slideshow as full background */
+        #home .hero-slideshow {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }
+
+        #home .hero-slide {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 1 !important;
+            background-size: cover !important;
+            background-position: center !important;
+            opacity: 0;
+            transform: scale(1.04);
+            animation: heroFade 10s infinite ease-in-out;
+            will-change: opacity, transform;
+        }
+
+        #home .hero-slide:nth-child(1) { animation-delay: 0s; }
+        #home .hero-slide:nth-child(2) { animation-delay: 2s; }
+        #home .hero-slide:nth-child(3) { animation-delay: 4s; }
+        #home .hero-slide:nth-child(4) { animation-delay: 6s; }
+        #home .hero-slide:nth-child(5) { animation-delay: 8s; }
+
+        @keyframes heroFade {
+            0%   { opacity: 0; transform: scale(1.05); }
+            6%   { opacity: 1; }
+            22%  { opacity: 1; transform: scale(1.10); }
+            30%  { opacity: 0; }
+            100% { opacity: 0; transform: scale(1.05); }
+        }
+
+        /* dark overlay */
+        #home .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 100%);
+            pointer-events: none;
+        }
+
+        #home .hero-content {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            padding: 120px 32px 80px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        /* left hero text */
+        .hero-text-wrap {
+            flex: 1 1 460px;
+            max-width: 640px;
+        }
+
+        .hero-pills {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .hero-pill {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 11px;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .hero-title {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            font-weight: 800;
+            font-size: clamp(3.6rem, 7vw, 5.2rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .hero-title .gold-text {
+            color: #B88A3B;
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1.15rem;
+            color: rgba(255, 255, 255, 0.75);
+            max-width: 540px;
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-buttons .btn {
+            min-width: 170px;
+            padding: 14px 34px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+        }
+
+        .hero-buttons .btn-primary {
+            background: #ffffff;
+            color: #0B2E26;
+            border-color: #ffffff;
+        }
+        .hero-buttons .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+        }
+
+        .hero-buttons .btn-whatsapp {
+            background: rgba(37, 211, 102, 0.25);
+            border-color: rgba(37, 211, 102, 0.4);
+            color: #fff;
+        }
+        .hero-buttons .btn-whatsapp:hover {
+            background: #25D366;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(37, 211, 102, 0.3);
+        }
+        .hero-buttons .btn-whatsapp i {
+            margin-right: 8px;
+        }
+
+        /* search card – right side */
+        .hero-search-card {
+            flex: 0 0 380px;
+            max-width: 440px;
+            background: #ffffff;
+            border-radius: 28px;
+            padding: 32px 30px 30px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
+            backdrop-filter: blur(2px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .hero-search-card h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #1D1D1D;
+            margin: 0 0 4px 0;
+            letter-spacing: -0.01em;
+        }
+        .hero-search-card p {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 20px 0;
+        }
+
+        .search-row {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .search-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .search-field label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            color: #1D1D1D;
+            opacity: 0.7;
+        }
+        .search-field select,
+        .search-field input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #E8E8E6;
+            border-radius: 14px;
+            background: #F8F8F6;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #1D1D1D;
+            transition: all 0.2s ease;
+            appearance: none;
+        }
+        .search-field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231D1D1D' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 40px;
+        }
+        .search-field select:focus,
+        .search-field input:focus {
+            outline: none;
+            border-color: #B88A3B;
+            box-shadow: 0 0 0 3px rgba(184, 138, 59, 0.12);
+            background: #ffffff;
+        }
+
+        .search-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 999px;
+            background: #0B2E26;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .search-btn:hover {
+            background: #1A4A3F;
+            box-shadow: 0 8px 24px rgba(11, 46, 38, 0.25);
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1100px) {
+            .hero-search-card {
+                flex: 0 0 320px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .floating-nav,
+            .floating-logo {
+                display: none !important;
+            }
+            /* restore old header for mobile */
+            #main-header {
+                display: flex !important;
+            }
+            .hero-search-card {
+                flex: 1 1 100%;
+                max-width: 100%;
+                margin-top: 20px;
+            }
+            .hero-content {
+                flex-direction: column;
+                padding: 100px 20px 60px;
+            }
+            .hero-title {
+                font-size: clamp(2.8rem, 10vw, 3.6rem) !important;
+            }
+            .hero-text-wrap {
+                flex: 1 1 100%;
+                max-width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-row-2 {
+                grid-template-columns: 1fr;
+            }
+            .hero-search-card {
+                padding: 24px 18px;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- =============== PRELOADER =============== -->
@@ -64,6 +499,29 @@
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
     </div>
 
+    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
+    <div class="floating-logo" id="floating-logo">
+        <a href="#home" data-section="home">
+            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+            <div class="floating-logo-text">
+                <span class="floating-logo-main">Agent Web Studio</span>
+                <span class="floating-logo-sub">Websites That Sell Homes</span>
+            </div>
+        </a>
+    </div>
+
+    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
+        <a href="#listings" data-section="listings">Properties</a>
+        <a href="#offplan" data-section="offplan">Off-Plan</a>
+        <a href="#valuation" data-section="valuation">Valuation</a>
+        <a href="#communities" data-section="communities">Communities</a>
+        <a href="#about" data-section="about">About</a>
+        <a href="#blog" data-section="blog">Blog</a>
+        <a href="#contact" data-section="contact">Contact Us</a>
+        <a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a>
+    </nav>
+
+    <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
     <header id="main-header">
         <nav>
             <div class="container nav-container">
@@ -78,7 +536,7 @@
                     </a>
                 </div>
 
-                <!-- Desktop Navigation -->
+                <!-- Left Navigation -->
                 <div id="nav-menu" class="nav-links-wrapper">
                     <ul class="nav-menu nav-left">
                         <li><a href="#listings" data-section="listings">Properties</a></li>
@@ -102,8 +560,8 @@
                         <li><a href="#communities" data-section="communities">Communities</a></li>
                         <li><a href="#about" data-section="about">About</a></li>
                         <li><a href="#blog" data-section="blog">Blog</a></li>
+                        <li><a href="#contact" data-section="contact">Contact Us</a></li>
                         <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
-                        <li><a href="#contact" data-section="contact" class="btn-contact">Contact Us</a></li>
                     </ul>
                 </div>
 
@@ -116,9 +574,10 @@
     </header>
 
     <main id="main-content">
-        <!-- HOME SECTION -->
+        <!-- HOME SECTION — REDESIGNED DESKTOP HERO -->
         <section id="home" class="section active">
             <div class="hero">
+                <!-- slideshow (kept exactly as before) -->
                 <div class="hero-slideshow" aria-hidden="true">
                     <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')"></div>
                     <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80')"></div>
@@ -126,21 +585,87 @@
                     <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=80')"></div>
                     <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1920&q=80')"></div>
                 </div>
+
                 <div class="hero-content">
-                    <div class="container">
-                        <div class="hero-badge">
-                            <span class="rerna-badge">RERA BRN: <strong id="rerna-number">123456</strong></span>
+                    <div class="hero-text-wrap">
+                        <div class="hero-pills">
+                            <span class="hero-pill">Luxury Homes</span>
+                            <span class="hero-pill">Off Plan</span>
+                            <span class="hero-pill">Investment</span>
                         </div>
                         <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
                         <p class="hero-subtitle" id="agent-tagline">Luxury Properties | Off-Plan Investments | Golden Visa Experts</p>
                         <div class="hero-buttons">
                             <a href="#listings" class="btn btn-primary" data-section="listings">View Properties</a>
-                            <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp">WhatsApp</a>
+                            <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
                         </div>
+                    </div>
+
+                    <!-- SEARCH CARD – integrated into hero -->
+                    <div class="hero-search-card" id="hero-search-card">
+                        <h3>Find your property</h3>
+                        <p>Search among 100+ luxury listings</p>
+                        <form id="hero-search-form" onsubmit="return false;">
+                            <div class="search-row">
+                                <div class="search-field">
+                                    <label for="filter-type">Property Type</label>
+                                    <select id="filter-type" name="type">
+                                        <option value="all">All Types</option>
+                                        <option value="Apartment">Apartment</option>
+                                        <option value="Villa">Villa</option>
+                                        <option value="Penthouse">Penthouse</option>
+                                        <option value="Studio">Studio</option>
+                                        <option value="Townhouse">Townhouse</option>
+                                    </select>
+                                </div>
+                                <div class="search-field">
+                                    <label for="filter-community">Community</label>
+                                    <select id="filter-community" name="community">
+                                        <option value="all">All Communities</option>
+                                    </select>
+                                </div>
+                                <div class="search-row-2">
+                                    <div class="search-field">
+                                        <label for="filter-price">Price Range</label>
+                                        <select id="filter-price" name="price">
+                                            <option value="all">Any Price</option>
+                                            <option value="500k">Under AED 500K</option>
+                                            <option value="1m">AED 500K – 1M</option>
+                                            <option value="2m">AED 1M – 2M</option>
+                                            <option value="5m">AED 2M – 5M</option>
+                                            <option value="10m">AED 5M – 10M</option>
+                                            <option value="10m+">AED 10M+</option>
+                                        </select>
+                                    </div>
+                                    <div class="search-field">
+                                        <label for="filter-bedrooms">Bedrooms</label>
+                                        <select id="filter-bedrooms" name="bedrooms">
+                                            <option value="all">Any</option>
+                                            <option value="1">1</option>
+                                            <option value="2">2</option>
+                                            <option value="3">3</option>
+                                            <option value="4">4</option>
+                                            <option value="5">5+</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="search-field">
+                                    <label for="filter-status">Status</label>
+                                    <select id="filter-status" name="status">
+                                        <option value="all">All Status</option>
+                                        <option value="for-sale">For Sale</option>
+                                        <option value="for-rent">For Rent</option>
+                                        <option value="sold">Sold</option>
+                                    </select>
+                                </div>
+                                <button type="button" class="search-btn" id="hero-search-btn">Search Properties</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
 
+            <!-- ========== REST OF HOMEPAGE (unchanged) ========== -->
             <div class="container">
                 <!-- Featured Listings -->
                 <section class="featured-section">
@@ -247,6 +772,7 @@
             </div>
         </section>
 
+        <!-- ========== OTHER SECTIONS (unchanged) ========== -->
         <!-- LISTINGS SECTION -->
         <section id="listings" class="section">
             <div class="listings-hero">
@@ -257,7 +783,7 @@
             </div>
             <div class="container">
                 <div class="filter-bar">
-                    <select id="filter-type">
+                    <select id="filter-type-listings">
                         <option value="all">All Types</option>
                         <option value="Apartment">Apartment</option>
                         <option value="Villa">Villa</option>
@@ -265,7 +791,7 @@
                         <option value="Studio">Studio</option>
                         <option value="Townhouse">Townhouse</option>
                     </select>
-                    <select id="filter-bedrooms">
+                    <select id="filter-bedrooms-listings">
                         <option value="all">Any Bedrooms</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
@@ -273,7 +799,7 @@
                         <option value="4">4</option>
                         <option value="5">5+</option>
                     </select>
-                    <select id="filter-price">
+                    <select id="filter-price-listings">
                         <option value="all">Any Price</option>
                         <option value="500k">Under AED 500K</option>
                         <option value="1m">AED 500K - 1M</option>
@@ -282,10 +808,10 @@
                         <option value="10m">AED 5M - 10M</option>
                         <option value="10m+">AED 10M+</option>
                     </select>
-                    <select id="filter-community">
+                    <select id="filter-community-listings">
                         <option value="all">All Communities</option>
                     </select>
-                    <select id="filter-status">
+                    <select id="filter-status-listings">
                         <option value="all">All Status</option>
                         <option value="for-sale">For Sale</option>
                         <option value="for-rent">For Rent</option>
@@ -384,10 +910,7 @@
                 </div>
             </div>
             <div class="container">
-                <!-- Blog Grid -->
                 <div class="blog-grid" id="blog-grid"></div>
-                
-                <!-- Blog Detail (hidden by default) -->
                 <div id="blog-detail" style="display:none;">
                     <button class="btn btn-secondary" onclick="window.showBlogList()">← Back to Blog</button>
                     <div id="blog-detail-content"></div>
@@ -822,5 +1345,45 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
+
+    <!-- small inline to sync hero search with existing filter logic -->
+    <script>
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                const heroSearchBtn = document.getElementById('hero-search-btn');
+                if (heroSearchBtn) {
+                    heroSearchBtn.addEventListener('click', function(e) {
+                        // copy values from hero filters to the listings filter bar
+                        const heroType = document.getElementById('filter-type');
+                        const heroCommunity = document.getElementById('filter-community');
+                        const heroPrice = document.getElementById('filter-price');
+                        const heroBedrooms = document.getElementById('filter-bedrooms');
+                        const heroStatus = document.getElementById('filter-status');
+
+                        const listingType = document.getElementById('filter-type-listings');
+                        const listingCommunity = document.getElementById('filter-community-listings');
+                        const listingPrice = document.getElementById('filter-price-listings');
+                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
+                        const listingStatus = document.getElementById('filter-status-listings');
+
+                        if (heroType && listingType) listingType.value = heroType.value;
+                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
+                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
+                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
+                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
+
+                        // trigger filter
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                        // navigate to listings section
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo('listings');
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
