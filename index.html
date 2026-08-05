@@ -233,36 +233,13 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
-            gap: 24px;
+            gap: 20px;
         }
 
         /* ---- Hero Text ---- */
         .hero-text-wrap {
             max-width: 820px;
             margin: 0 auto;
-        }
-
-        .hero-pills {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .hero-pill {
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.20);
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 11px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.85);
         }
 
         .hero-title {
@@ -272,7 +249,7 @@
             line-height: 1.05;
             letter-spacing: -0.02em;
             color: #ffffff;
-            margin-bottom: 12px;
+            margin-bottom: 24px;
             text-align: center;
         }
         .hero-title .gold-text {
@@ -286,7 +263,7 @@
             font-size: 1.15rem;
             color: rgba(255, 255, 255, 0.75);
             max-width: 600px;
-            margin: 0 auto 4px;
+            margin: 0 auto 8px;
             line-height: 1.6;
             text-align: center;
         }
@@ -297,7 +274,7 @@
             gap: 16px;
             flex-wrap: wrap;
             justify-content: center;
-            margin: 4px 0 6px;
+            margin: 8px 0 6px;
         }
 
         .hero-buttons .btn {
@@ -474,6 +451,10 @@
             }
             .hero-title {
                 font-size: clamp(2.8rem, 10vw, 3.6rem) !important;
+                margin-bottom: 16px !important;
+            }
+            .hero-subtitle {
+                font-size: 1rem !important;
             }
             .glass-search-bar {
                 border-radius: 28px;
@@ -521,10 +502,6 @@
             .glass-search-bar .search-field input {
                 font-size: 14px;
                 padding: 6px 2px;
-            }
-            .hero-pill {
-                font-size: 9px;
-                padding: 4px 12px;
             }
             .hero-buttons .btn {
                 min-width: 120px;
@@ -626,15 +603,10 @@
                 </div>
 
                 <div class="hero-content">
-                    <!-- Hero Text -->
+                    <!-- Hero Text - Removed pills, only heading and subtitle -->
                     <div class="hero-text-wrap">
-                        <div class="hero-pills">
-                            <span class="hero-pill">Luxury Homes</span>
-                            <span class="hero-pill">Off Plan</span>
-                            <span class="hero-pill">Investment</span>
-                        </div>
                         <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
-                        <p class="hero-subtitle" id="agent-tagline">Luxury Properties | Off-Plan Investments | Golden Visa Experts</p>
+                        <p class="hero-subtitle" id="agent-tagline">Luxury Real Estate Specialist | Off-Plan Investments | Golden Visa Experts</p>
                         
                         <!-- Buttons -->
                         <div class="hero-buttons">
