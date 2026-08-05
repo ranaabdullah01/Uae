@@ -24,6 +24,17 @@
     --whatsapp:       #25D366;
     --whatsapp-dark:  #1DA851;
 
+    /* Card specific */
+    --card-bg:        #1C1C1C;
+    --card-border:    rgba(255,255,255,0.08);
+    --card-shadow:    0 20px 60px rgba(0,0,0,0.18);
+    --card-shadow-hover: 0 30px 80px rgba(0,0,0,0.25);
+    --gold:           #B88A3B;
+    --gold-hover:     #B88A3B;
+    --text-primary:   #FFFFFF;
+    --text-secondary: #C7C7C7;
+    --text-muted:     #BBBBBB;
+
     /* Aliases kept for backwards compat with JS/inline styles */
     --navy: var(--emerald);
     --navy-light: var(--emerald-soft);
@@ -1306,7 +1317,360 @@ nav .nav-container {
     gap: 28px;
 }
 
-/* ================ PROPERTY CARD ================ */
+/* ============================================================
+   UNIVERSAL LUXURY CARD — single reusable component
+   ============================================================ */
+
+/* ---- CARD CONTAINER ---- */
+.luxury-card {
+    background: #1C1C1C;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    transition: all 300ms ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.luxury-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+}
+
+/* ---- IMAGE WRAPPER ---- */
+.luxury-card-image {
+    position: relative;
+    height: 280px;
+    overflow: hidden;
+    background: #2a2a2a;
+    border-radius: 14px 14px 0 0;
+    flex-shrink: 0;
+}
+
+.luxury-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 600ms ease;
+}
+
+.luxury-card:hover .luxury-card-image img {
+    transform: scale(1.04);
+}
+
+/* ---- BADGES (top-left) ---- */
+.card-badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(184, 138, 59, 0.92);
+    color: #1C1C1C;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+    pointer-events: none;
+}
+
+.card-badge.featured {
+    background: rgba(184, 138, 59, 0.92);
+    color: #1C1C1C;
+}
+
+.card-badge.new {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.card-badge.hot {
+    background: #D43F34;
+    color: #fff;
+}
+
+.card-badge.luxury {
+    background: #B88A3B;
+    color: #1C1C1C;
+}
+
+.card-badge.community {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.card-badge.investment {
+    background: #2A7D5C;
+    color: #fff;
+}
+
+.card-badge.popular {
+    background: rgba(184, 138, 59, 0.85);
+    color: #1C1C1C;
+}
+
+/* ---- FAVORITE HEART (top-right) ---- */
+.card-favorite {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 300ms ease;
+    z-index: 2;
+    text-decoration: none;
+}
+
+.card-favorite:hover {
+    background: rgba(184, 138, 59, 0.3);
+    color: #B88A3B;
+    border-color: #B88A3B;
+}
+
+.card-favorite i {
+    pointer-events: none;
+}
+
+/* ---- CARD BODY ---- */
+.luxury-card-body {
+    padding: 24px 24px 20px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.luxury-card-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.2;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    letter-spacing: -0.02em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.luxury-card-location {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 14px;
+    color: #C7C7C7;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.luxury-card-location i {
+    color: #B88A3B;
+    font-size: 13px;
+}
+
+/* ---- DETAILS ROW ---- */
+.luxury-card-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 20px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: #C7C7C7;
+}
+
+.detail-item i {
+    color: #B88A3B;
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+}
+
+.detail-item strong {
+    font-weight: 500;
+    color: #FFFFFF;
+}
+
+.detail-item .meta-label {
+    color: #888;
+    font-weight: 400;
+}
+
+/* ---- PRICE ROW ---- */
+.luxury-card-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4px;
+    flex-wrap: wrap;
+}
+
+.price-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.price-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #BBBBBB;
+}
+
+.price-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    color: #B88A3B;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* ---- CARD BUTTON (bottom-right) ---- */
+.luxury-card-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    background: transparent;
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    transition: all 300ms ease;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-top: 6px;
+}
+
+.luxury-card-btn:hover {
+    background: #B88A3B;
+    color: #1C1C1C;
+    border-color: #B88A3B;
+    box-shadow: 0 6px 20px rgba(184, 138, 59, 0.25);
+}
+
+.luxury-card-btn i {
+    font-size: 14px;
+    transition: transform 300ms ease;
+}
+
+.luxury-card-btn:hover i {
+    transform: translateX(4px);
+}
+
+/* ---- FOOTER (price + button alignment) ---- */
+.luxury-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    gap: 12px;
+}
+
+/* ---- RESPONSIVE FOR LUXURY CARDS ---- */
+@media (max-width: 1024px) {
+    .luxury-card-image {
+        height: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .luxury-card-image {
+        height: 220px;
+    }
+
+    .luxury-card-title {
+        font-size: 18px;
+    }
+
+    .price-value {
+        font-size: 20px;
+    }
+
+    .luxury-card-body {
+        padding: 20px 20px 18px;
+    }
+
+    .luxury-card-btn {
+        padding: 8px 18px;
+        font-size: 12px;
+    }
+
+    .luxury-card-details {
+        gap: 10px 14px;
+        font-size: 12px;
+    }
+
+    .detail-item {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .luxury-card-image {
+        height: 200px;
+    }
+
+    .luxury-card-title {
+        font-size: 16px;
+    }
+
+    .price-value {
+        font-size: 18px;
+    }
+
+    .luxury-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .luxury-card-btn {
+        justify-content: center;
+        width: 100%;
+    }
+}
+
+/* Legacy card styles - kept for backward compatibility */
+/* These will be replaced by luxury-card over time */
 .property-card, .listing-card, .offplan-card, .community-card, .sale-card {
     background: var(--white);
     border-radius: var(--radius);
@@ -1325,7 +1689,7 @@ nav .nav-container {
     border-color: rgba(176, 138, 62, 0.4);
 }
 
-/* ---- Image box ---- */
+/* ---- Image box (legacy) ---- */
 .property-image, .listing-card-image, .offplan-image, .offplan-card-image,
 .community-image, .sale-image {
     position: relative;
@@ -1348,7 +1712,7 @@ nav .nav-container {
 .offplan-card:hover .offplan-card-image img,
 .community-card:hover .community-image img { transform: scale(1.08); }
 
-/* ---- Badges ---- */
+/* ---- Badges (legacy) ---- */
 .listing-card-badges {
     position: absolute; top: 14px; left: 14px; right: 14px;
     display: flex; gap: 8px; flex-wrap: wrap;
@@ -1372,7 +1736,7 @@ nav .nav-container {
 .status-badge.sold, .badge-status { background: var(--ink); color: var(--cream); }
 .status-badge.for-rent, .badge-type { background: var(--emerald); color: var(--cream); }
 
-/* ---- Body ---- */
+/* ---- Body (legacy) ---- */
 .property-info, .offplan-info, .community-info, .sale-info,
 .property-content, .offplan-content, .community-content,
 .listing-card-body, .offplan-card-body {
@@ -1447,7 +1811,7 @@ nav .nav-container {
     line-height: 1.5;
 }
 
-/* ---- Action row ---- */
+/* ---- Action row (legacy) ---- */
 .property-actions, .listing-card-actions, .offplan-card-actions,
 .community-actions {
     display: flex; gap: 10px; flex-wrap: wrap;
