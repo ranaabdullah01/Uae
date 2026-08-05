@@ -57,23 +57,22 @@
         "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
     }
     </script>
-
     <style>
         /* ============================================================
-           REDESIGN: DESKTOP NAVIGATION (SOLID AFTER SCROLL) + LUXURY CARDS
+           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
            All existing IDs, classes, JS hooks preserved.
            ============================================================ */
 
-        /* ---------- DESKTOP NAVIGATION ---------- */
+        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
         @media (min-width: 901px) {
             /* hide the old sticky header completely */
             #main-header {
                 display: none !important;
             }
 
-            /* floating nav – initially overlays hero, glass effect */
+            /* new floating navigation – positioned absolute over hero */
             .floating-nav {
-                position: fixed;
+                position: absolute;
                 top: 24px;
                 left: 50%;
                 transform: translateX(-50%);
@@ -81,19 +80,15 @@
                 display: flex;
                 align-items: center;
                 gap: 6px;
-                padding: 8px 18px;
-                border-radius: 100px;        /* fully rounded pill initially */
-                background: rgba(255, 255, 255, 0.12);
+                padding: 6px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.10);
                 backdrop-filter: blur(18px);
                 -webkit-backdrop-filter: blur(18px);
                 border: 1px solid rgba(255, 255, 255, 0.25);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
                 transition: all 0.3s ease;
                 pointer-events: auto;
-                width: auto;
-                max-width: 90vw;
-                overflow-x: auto;
-                white-space: nowrap;
             }
 
             .floating-nav a {
@@ -102,7 +97,7 @@
                 font-size: 13px;
                 letter-spacing: 0.02em;
                 padding: 8px 16px;
-                border-radius: 100px;
+                border-radius: 999px;
                 color: rgba(255, 255, 255, 0.85);
                 transition: all 0.2s ease;
                 text-decoration: none;
@@ -126,44 +121,9 @@
                 color: #111111;
             }
 
-            /* when scrolled – solid white header, no glass, no pill */
-            body.scrolled .floating-nav {
-                background: #ffffff !important;
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-                border: none !important;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
-                border-radius: 0 !important;
-                top: 0 !important;
-                padding: 0 24px !important;
-                height: 68px !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                left: 0 !important;
-                transform: none !important;
-                border-bottom: 1px solid rgba(0,0,0,0.04) !important;
-                overflow-x: visible !important;
-                white-space: normal !important;
-            }
-
-            body.scrolled .floating-nav a {
-                color: #1C1C1C !important;
-            }
-
-            body.scrolled .floating-nav a:hover {
-                background: rgba(0,0,0,0.04) !important;
-                color: #000 !important;
-            }
-
-            body.scrolled .floating-nav a.active {
-                background: #1C1C1C !important;
-                color: #ffffff !important;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
-            }
-
             /* left logo – outside the pill, on the far left */
             .floating-logo {
-                position: fixed;
+                position: absolute;
                 top: 20px;
                 left: 32px;
                 z-index: 1001;
@@ -171,7 +131,6 @@
                 align-items: center;
                 gap: 10px;
                 pointer-events: auto;
-                transition: all 0.3s ease;
             }
 
             .floating-logo a {
@@ -202,7 +161,6 @@
                 color: #ffffff;
                 letter-spacing: -0.02em;
                 text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                transition: color 0.3s ease;
             }
 
             .floating-logo-sub {
@@ -214,21 +172,6 @@
                 color: rgba(255, 255, 255, 0.7);
                 margin-top: 1px;
                 text-shadow: 0 1px 4px rgba(0,0,0,0.15);
-                transition: color 0.3s ease;
-            }
-
-            body.scrolled .floating-logo {
-                top: 10px;
-            }
-
-            body.scrolled .floating-logo-main {
-                color: #1C1C1C;
-                text-shadow: none;
-            }
-
-            body.scrolled .floating-logo-sub {
-                color: #888;
-                text-shadow: none;
             }
 
             /* reposition mobile hamburger off screen on desktop */
@@ -237,265 +180,7 @@
             }
         }
 
-        /* ---------- LUXURY PROPERTY CARDS ---------- */
-        .listing-card {
-            background: #1C1C1C;
-            border-radius: 12px !important;
-            overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            border: none !important;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-            color: #ffffff;
-        }
-
-        .listing-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-            border-color: transparent;
-        }
-
-        .listing-card-image {
-            position: relative;
-            aspect-ratio: 4/3;
-            width: 100%;
-            height: 280px;
-            overflow: hidden;
-            background: #2a2a2a;
-            border-radius: 12px 12px 0 0 !important;
-        }
-
-        .listing-card-image img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center;
-            transition: transform 0.6s ease;
-        }
-
-        .listing-card:hover .listing-card-image img {
-            transform: scale(1.04);
-        }
-
-        /* favorite heart icon */
-        .listing-card-favorite {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            z-index: 5;
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(4px);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #ffffff;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        .listing-card-favorite:hover {
-            background: rgba(184, 138, 59, 0.8);
-            color: #fff;
-            transform: scale(1.1);
-        }
-
-        .listing-card-badges {
-            position: absolute;
-            top: 14px;
-            left: 14px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            font-family: 'Inter', -apple-system, sans-serif;
-            font-weight: 600;
-            font-size: 10px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            border-radius: 100px;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-            white-space: nowrap;
-            z-index: 2;
-        }
-
-        .badge-featured {
-            background: #B88A3B;
-            color: #1C1C1C;
-        }
-
-        .badge-status {
-            background: rgba(255,255,255,0.15);
-            color: #ffffff;
-            backdrop-filter: blur(4px);
-        }
-
-        .badge-type {
-            background: rgba(255,255,255,0.10);
-            color: #ffffff;
-            backdrop-filter: blur(4px);
-        }
-
-        .listing-card-body {
-            padding: 20px 20px 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex: 1 1 auto;
-            background: #1C1C1C;
-            border-radius: 0 0 12px 12px;
-        }
-
-        .listing-card-body h3 {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            font-weight: 700;
-            font-size: 1.15rem;
-            color: #ffffff;
-            margin: 0 0 2px;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 2.6em;
-        }
-
-        .listing-card-location {
-            font-family: 'Inter', -apple-system, sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: rgba(255,255,255,0.65);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 0.02em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 4px;
-        }
-
-        .listing-card-details {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            font-family: 'Inter', -apple-system, sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-            padding: 8px 0 6px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .listing-card-details span {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 400;
-            white-space: nowrap;
-        }
-
-        .listing-card-details i {
-            color: #B88A3B;
-            font-size: 13px;
-            width: 16px;
-            text-align: center;
-        }
-
-        .listing-card-price {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: #B88A3B;
-            margin: 4px 0 6px;
-            letter-spacing: -0.02em;
-        }
-
-        .listing-card-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: auto;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.06);
-        }
-
-        .listing-card-actions .btn {
-            flex: 1 1 auto;
-            min-width: 0;
-            padding: 10px 16px;
-            font-size: 12px;
-            border-radius: 100px;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .listing-card-actions .btn-secondary {
-            background: rgba(255,255,255,0.08);
-            color: #ffffff;
-            border: 1px solid rgba(255,255,255,0.10);
-        }
-
-        .listing-card-actions .btn-secondary:hover {
-            background: rgba(255,255,255,0.16);
-            transform: translateY(-2px);
-        }
-
-        .listing-card-actions .btn-whatsapp {
-            background: #25D366;
-            color: #ffffff;
-            border: none;
-        }
-
-        .listing-card-actions .btn-whatsapp:hover {
-            background: #1DA851;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(37,211,102,0.25);
-        }
-
-        /* ---------- LISTINGS GRID ---------- */
-        .listings-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 32px 28px;
-            margin-top: 8px;
-        }
-
-        @media (max-width: 1100px) {
-            .listings-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 28px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .listings-grid {
-                grid-template-columns: 1fr;
-                gap: 24px;
-            }
-            .listing-card-image {
-                height: 220px;
-            }
-        }
-
-        /* ---------- HERO OVERRIDES (keep slideshow, dark overlay) ---------- */
+        /* ---------- HERO OVERRIDES ---------- */
         .hero {
             position: relative;
             min-height: 100vh;
@@ -796,10 +481,6 @@
                 flex: 1 1 100%;
                 max-width: 100%;
             }
-            /* ensure mobile header shows */
-            #main-header {
-                display: flex !important;
-            }
         }
 
         @media (max-width: 480px) {
@@ -810,8 +491,6 @@
                 padding: 24px 18px;
             }
         }
-
-        /* ---- keep all other existing styles from style.css ---- */
     </style>
 </head>
 <body>
@@ -886,7 +565,7 @@
                     </ul>
                 </div>
 
-                <!-- Mobile Hamburger - RIGHT SIDE (fixed in mobile.css) -->
+                <!-- Mobile Hamburger - RIGHT SIDE -->
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -1671,25 +1350,10 @@
     <script>
         (function() {
             document.addEventListener('DOMContentLoaded', function() {
-                // --- Desktop nav scroll behavior ---
-                const floatingNav = document.getElementById('floating-nav');
-                const floatingLogo = document.getElementById('floating-logo');
-                let lastScroll = 0;
-
-                window.addEventListener('scroll', function() {
-                    const scrollY = window.scrollY;
-                    if (scrollY > 80) {
-                        document.body.classList.add('scrolled');
-                    } else {
-                        document.body.classList.remove('scrolled');
-                    }
-                    lastScroll = scrollY;
-                }, { passive: true });
-
-                // --- Hero search bridge ---
                 const heroSearchBtn = document.getElementById('hero-search-btn');
                 if (heroSearchBtn) {
                     heroSearchBtn.addEventListener('click', function(e) {
+                        // copy values from hero filters to the listings filter bar
                         const heroType = document.getElementById('filter-type');
                         const heroCommunity = document.getElementById('filter-community');
                         const heroPrice = document.getElementById('filter-price');
@@ -1708,9 +1372,11 @@
                         if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
                         if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
 
+                        // trigger filter
                         if (typeof window.filterListings === 'function') {
                             window.filterListings();
                         }
+                        // navigate to listings section
                         if (typeof window.navigateTo === 'function') {
                             window.navigateTo('listings');
                         }
