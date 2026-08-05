@@ -5,7 +5,7 @@
 export const CONFIG = {
     // Agent Information
     agentName: "Ahmed Khan",
-    agentTitle: "Luxury Real Estate Specialist",
+    agentTitle: "LUXURY REAL ESTATE | OFF-PLAN INVESTMENTS | GOLDEN VISA EXPERTS",
     rernaBRN: "123456",
     experience: "12",
     bio: "With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.",
