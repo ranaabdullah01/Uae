@@ -246,6 +246,17 @@
     border-color: rgba(176,138,62,.30) !important;
   }
 
+  /* ========== HIDE FLOATING NAV ON MOBILE ========== */
+  .floating-nav,
+  .floating-logo {
+    display: none !important;
+  }
+
+  /* Show main header on mobile */
+  #main-header {
+    display: flex !important;
+  }
+
   /* Fix hero section for mobile - reduce animation lag */
   #home .hero {
     min-height: 100svh !important;
@@ -395,17 +406,6 @@
   
   .blog-hero {
     padding: 70px 0 60px !important;
-  }
-
-  /* Hide floating nav on mobile */
-  .floating-nav,
-  .floating-logo {
-    display: none !important;
-  }
-
-  /* Show main header on mobile */
-  #main-header {
-    display: flex !important;
   }
 
   /* Fix hero pills on mobile */
