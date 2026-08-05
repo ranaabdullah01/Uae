@@ -59,181 +59,124 @@
     </script>
     <style>
         /* ============================================================
-           ORIGINAL NAVIGATION — Non-floating, sticky header
+           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
+           All existing IDs, classes, JS hooks preserved.
            ============================================================ */
 
+        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
         @media (min-width: 901px) {
-            /* Show the original header on desktop */
+            /* hide the old sticky header completely */
             #main-header {
-                display: flex !important;
-                position: sticky !important;
-                top: 0 !important;
-                z-index: 100 !important;
-                background: rgba(251, 249, 244, 0.85) !important;
-                backdrop-filter: saturate(160%) blur(14px) !important;
-                -webkit-backdrop-filter: saturate(160%) blur(14px) !important;
-                border-bottom: 1px solid var(--line) !important;
-                transition: var(--transition) !important;
-            }
-
-            #main-header.scrolled {
-                background: rgba(251, 249, 244, 0.98) !important;
-                box-shadow: var(--shadow-sm) !important;
-            }
-
-            #main-header .logo {
-                display: flex !important;
-            }
-
-            #main-header .logo-main {
-                color: var(--emerald-deep) !important;
-            }
-
-            #main-header .logo-sub {
-                color: var(--brass) !important;
-            }
-
-            #main-header .nav-menu a {
-                color: var(--ink) !important;
-            }
-
-            #main-header .nav-menu a:hover {
-                color: var(--emerald) !important;
-            }
-
-            #main-header .hamburger {
                 display: none !important;
             }
 
-            /* Hide the floating nav elements */
-            .floating-nav,
+            /* new floating navigation – positioned absolute over hero */
+            .floating-nav {
+                position: absolute;
+                top: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.10);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                pointer-events: auto;
+            }
+
+            .floating-nav a {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 13px;
+                letter-spacing: 0.02em;
+                padding: 8px 16px;
+                border-radius: 999px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: all 0.2s ease;
+                text-decoration: none;
+                white-space: nowrap;
+            }
+
+            .floating-nav a:hover {
+                background: rgba(255, 255, 255, 0.18);
+                color: #fff;
+            }
+
+            .floating-nav a.active {
+                background: #ffffff;
+                color: #111111;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .floating-nav a.active:hover {
+                background: #ffffff;
+                color: #111111;
+            }
+
+            /* left logo – outside the pill, on the far left */
             .floating-logo {
+                position: absolute;
+                top: 20px;
+                left: 32px;
+                z-index: 1001;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                pointer-events: auto;
+            }
+
+            .floating-logo a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+            }
+
+            .floating-logo img {
+                width: 46px;
+                height: 46px;
+                object-fit: contain;
+                border-radius: 0;
+                background: transparent;
+            }
+
+            .floating-logo-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.1;
+            }
+
+            .floating-logo-main {
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+                font-weight: 800;
+                font-size: 18px;
+                color: #ffffff;
+                letter-spacing: -0.02em;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            }
+
+            .floating-logo-sub {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 9px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 1px;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            }
+
+            /* reposition mobile hamburger off screen on desktop */
+            .hamburger {
                 display: none !important;
-            }
-
-            /* Restore original nav container layout */
-            #main-header nav .nav-container {
-                display: flex !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                padding-top: 14px !important;
-                padding-bottom: 14px !important;
-                min-height: auto !important;
-            }
-
-            .nav-links-wrapper {
-                display: flex !important;
-                align-items: center !important;
-                gap: 40px !important;
-                flex: 1 !important;
-                justify-content: space-between !important;
-                position: static !important;
-                transform: none !important;
-                background: transparent !important;
-                backdrop-filter: none !important;
-                padding: 0 !important;
-                width: auto !important;
-                height: auto !important;
-            }
-
-            .nav-menu {
-                display: flex !important;
-                align-items: center !important;
-                gap: 30px !important;
-                list-style: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-            }
-
-            .nav-menu a {
-                font-family: 'Inter', -apple-system, sans-serif !important;
-                font-weight: 500 !important;
-                font-size: 13px !important;
-                letter-spacing: 0.04em !important;
-                text-transform: uppercase !important;
-                color: var(--ink) !important;
-                position: relative !important;
-                padding: 8px 0 !important;
-                text-decoration: none !important;
-            }
-
-            .nav-menu a::after {
-                content: '';
-                position: absolute !important;
-                left: 0 !important;
-                bottom: 0 !important;
-                width: 0 !important;
-                height: 1.5px !important;
-                background: var(--brass) !important;
-                transition: width .35s var(--ease) !important;
-            }
-
-            .nav-menu a:hover::after {
-                width: 100% !important;
-            }
-
-            .nav-menu a.active {
-                color: var(--emerald) !important;
-            }
-
-            .nav-menu a.active::after {
-                width: 100% !important;
-            }
-
-            /* Mobile logo hidden on desktop */
-            .mobile-logo {
-                display: none !important;
-            }
-
-            /* Restore desktop logo */
-            .logo {
-                display: flex !important;
-            }
-
-            .logo a {
-                display: flex !important;
-                align-items: center !important;
-                gap: 12px !important;
-                text-decoration: none !important;
-            }
-
-            .logo img {
-                width: 50px !important;
-                height: 50px !important;
-                border-radius: 0 !important;
-                border: none !important;
-                padding: 0 !important;
-                background: transparent !important;
-                object-fit: contain !important;
-            }
-
-            .logo-text {
-                display: flex !important;
-                flex-direction: column !important;
-                line-height: 1.1 !important;
-            }
-
-            .logo-main {
-                font-family: 'Plus Jakarta Sans', sans-serif !important;
-                font-weight: 800 !important;
-                font-size: 18px !important;
-                color: var(--emerald-deep) !important;
-                letter-spacing: -0.02em !important;
-            }
-
-            .logo-sub {
-                font-family: 'Inter', sans-serif !important;
-                font-weight: 500 !important;
-                font-size: 9px !important;
-                letter-spacing: 0.15em !important;
-                text-transform: uppercase !important;
-                color: var(--brass) !important;
-                margin-top: 1px !important;
-            }
-
-            /* Hero section - no extra padding for floating nav */
-            .hero {
-                padding-top: 0 !important;
             }
         }
 
@@ -514,6 +457,14 @@
         }
 
         @media (max-width: 900px) {
+            .floating-nav,
+            .floating-logo {
+                display: none !important;
+            }
+            /* restore old header for mobile */
+            #main-header {
+                display: flex !important;
+            }
             .hero-search-card {
                 flex: 1 1 100%;
                 max-width: 100%;
@@ -548,7 +499,29 @@
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
     </div>
 
-    <!-- =============== ORIGINAL HEADER (Sticky, Non-Floating) =============== -->
+    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
+    <div class="floating-logo" id="floating-logo">
+        <a href="#home" data-section="home">
+            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+            <div class="floating-logo-text">
+                <span class="floating-logo-main">Agent Web Studio</span>
+                <span class="floating-logo-sub">Websites That Sell Homes</span>
+            </div>
+        </a>
+    </div>
+
+    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
+        <a href="#listings" data-section="listings">Properties</a>
+        <a href="#offplan" data-section="offplan">Off-Plan</a>
+        <a href="#valuation" data-section="valuation">Valuation</a>
+        <a href="#communities" data-section="communities">Communities</a>
+        <a href="#about" data-section="about">About</a>
+        <a href="#blog" data-section="blog">Blog</a>
+        <a href="#contact" data-section="contact">Contact Us</a>
+        <a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a>
+    </nav>
+
+    <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
     <header id="main-header">
         <nav>
             <div class="container nav-container">
