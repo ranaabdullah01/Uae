@@ -243,8 +243,11 @@ function updateConfigInDOM() {
         if (el) el.textContent = profile.agentName || config.agentName || 'Ahmed Khan';
     });
     
+    // Only update tagline if it doesn't have data-custom attribute
     const titleEl = document.getElementById('agent-tagline');
-    if (titleEl) titleEl.textContent = profile.agentTitle || config.agentTitle || 'Luxury Real Estate Specialist';
+    if (titleEl && !titleEl.dataset.custom) {
+        titleEl.textContent = profile.agentTitle || config.agentTitle || 'Luxury Real Estate Specialist';
+    }
     
     document.querySelectorAll('#rerna-number, #rerna-number-about, #footer-rerna').forEach(el => {
         if (el) el.textContent = profile.rernaBRN || config.rernaBRN || '123456';
