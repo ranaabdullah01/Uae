@@ -1,1389 +1,1018 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <!-- GitHub Pages SPA routing fix: decodes the redirect from 404.html back into
-         a real URL via history.replaceState BEFORE main.js reads location.pathname.
-         Must stay first in <head>. See: https://github.com/rafgraph/spa-github-pages -->
-    <script type="text/javascript">
-        (function(l) {
-            if (l.search[1] === '/') {
-                var decoded = l.search.slice(1).split('&').map(function(s) {
-                    return s.replace(/~and~/g, '&');
-                }).join('?');
-                window.history.replaceState(null, null,
-                    l.pathname.slice(0, -1) + decoded + l.hash
-                );
-            }
-        }(window.location));
-    </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agent Web Studio | Websites That Sell Homes</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio. RERA licensed agents.">
-    <meta name="keywords" content="Dubai real estate, luxury properties, buy property Dubai, rent Dubai, off-plan Dubai, Golden Visa">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://agentwebstudio.com/">
-    
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="Agent Web Studio | Luxury Real Estate Websites">
-    <meta property="og:description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio.">
-    <meta property="og:url" content="https://agentwebstudio.com/">
-    <meta property="og:type" content="website">
-    
-    <!-- Premium Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mobile.css">
+  <meta charset="UTF-8">
+  <!-- GitHub Pages SPA routing fix: decodes the redirect from 404.html back into
+       a real URL via history.replaceState BEFORE main.js reads location.pathname.
+       Must stay first in <head>. See: https://github.com/rafgraph/spa-github-pages -->
+  <script type="text/javascript">
+    (function(l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function(s) {
+          return s.replace(/~and~/g, '&');
+        }).join('?');
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location));
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Web Studio | Websites That Sell Homes</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio. RERA licensed agents.">
+  <meta name="keywords" content="Dubai real estate, luxury properties, buy property Dubai, rent Dubai, off-plan Dubai, Golden Visa">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://agentwebstudio.com/">
+  <!-- Open Graph Tags -->
+  <meta property="og:title" content="Agent Web Studio | Luxury Real Estate Websites">
+  <meta property="og:description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio.">
+  <meta property="og:url" content="https://agentwebstudio.com/">
+  <meta property="og:type" content="website">
+  <!-- Premium Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       AGENT WEB STUDIO — LUXURY REAL ESTATE UI (FULL INDEX)
+       Typography: Plus Jakarta Sans for headings, Inter for body
+       Mobile header improved, property cards redesigned.
+       All existing functionality, IDs, classes, data attributes preserved.
+       ============================================================ */
 
-    <!-- Schema.org RealEstateAgent Markup -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "RealEstateAgent",
-        "name": "Agent Web Studio",
-        "description": "Premium Dubai real estate agency specializing in luxury properties, off-plan investments, and Golden Visa services.",
-        "url": "https://agentwebstudio.com/",
-        "telephone": "+971501234567",
-        "email": "info@agentwebstudio.com",
-        "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
-        "priceRange": "AED 500,000 - AED 50,000,000",
-        "openingHours": "Mo-Su 09:00-21:00",
-        "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --emerald:        #0B3B2E;
+      --emerald-deep:   #072720;
+      --emerald-soft:   #14503F;
+      --cream:          #F7F3EA;
+      --cream-warm:     #EFE7D6;
+      --paper:          #FBF9F4;
+      --brass:          #B08A3E;
+      --brass-light:    #D4B266;
+      --brass-dark:     #8A6B2C;
+      --ink:            #0F1A16;
+      --ink-soft:       #4A544F;
+      --line:           #E4DDCC;
+      --white:          #FFFFFF;
+      --whatsapp:       #25D366;
+      --whatsapp-dark:  #1DA851;
+      --card-bg:        #1C1C1C;
+      --gold:           #B88A3B;
+      --bg-body:        #F8F8F6;
+      --shadow-sm: 0 4px 14px rgba(11, 59, 46, 0.08);
+      --shadow:    0 12px 40px rgba(11, 59, 46, 0.10);
+      --shadow-lg: 0 24px 70px rgba(11, 59, 46, 0.18);
+      --radius-sm: 8px;
+      --radius:    14px;
+      --radius-lg: 22px;
+      --ease:      cubic-bezier(0.22, 1, 0.36, 1);
+      --transition: all 0.35s var(--ease);
     }
-    </script>
-    <style>
-        /* ============================================================
-           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
-           All existing IDs, classes, JS hooks preserved.
-           ============================================================ */
 
-        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
-        @media (min-width: 901px) {
-            /* hide the old sticky header completely */
-            #main-header {
-                display: none !important;
-            }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 400;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--bg-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
 
-            /* new floating navigation – positioned absolute over hero */
-            .floating-nav {
-                position: absolute;
-                top: 24px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                padding: 6px 12px;
-                border-radius: 999px;
-                background: rgba(255, 255, 255, 0.10);
-                backdrop-filter: blur(18px);
-                -webkit-backdrop-filter: blur(18px);
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-                transition: all 0.3s ease;
-                pointer-events: auto;
-            }
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--cream); }
+    ::-webkit-scrollbar-thumb { background: var(--brass); border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--brass-dark); }
 
-            .floating-nav a {
-                font-family: 'Inter', -apple-system, sans-serif;
-                font-weight: 500;
-                font-size: 13px;
-                letter-spacing: 0.02em;
-                padding: 8px 16px;
-                border-radius: 999px;
-                color: rgba(255, 255, 255, 0.85);
-                transition: all 0.2s ease;
-                text-decoration: none;
-                white-space: nowrap;
-            }
+    h1, h2, h3, h4, h5, h6 {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--emerald-deep);
+    }
+    h1 { font-size: clamp(2.8rem, 6vw, 4.5rem); font-weight: 800; line-height: 1.05; }
+    h2 { font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 700; line-height: 1.1; }
+    h3 { font-size: clamp(1.5rem, 2.5vw, 2rem); font-weight: 600; line-height: 1.15; }
+    p { font-family: 'Inter', sans-serif; font-weight: 400; font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
+    a { text-decoration: none; color: inherit; transition: var(--transition); }
+    img { max-width: 100%; height: auto; display: block; }
 
-            .floating-nav a:hover {
-                background: rgba(255, 255, 255, 0.18);
-                color: #fff;
-            }
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 24px; }
+    .gold-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      color: var(--brass);
+      font-style: italic;
+      letter-spacing: -0.02em;
+    }
 
-            .floating-nav a.active {
-                background: #ffffff;
-                color: #111111;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            }
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 15px 34px;
+      border: 1.5px solid transparent;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      min-width: 170px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,.25) 50%, transparent 80%);
+      transform: translateX(-100%);
+      transition: transform .7s var(--ease);
+    }
+    .btn:hover::after { transform: translateX(100%); }
+    .btn-primary {
+      background: var(--emerald);
+      color: var(--cream);
+      box-shadow: 0 10px 28px rgba(11, 59, 46, 0.25);
+    }
+    .btn-primary:hover {
+      background: var(--emerald-deep);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(11, 59, 46, 0.35);
+    }
+    .btn-whatsapp {
+      background: var(--whatsapp);
+      color: var(--white);
+      box-shadow: 0 10px 28px rgba(37, 211, 102, 0.28);
+    }
+    .btn-whatsapp:hover { background: var(--whatsapp-dark); transform: translateY(-3px); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.20); }
+    .btn-sm {
+      padding: 10px 14px;
+      min-width: 0;
+      font-size: 12px;
+    }
 
-            .floating-nav a.active:hover {
-                background: #ffffff;
-                color: #111111;
-            }
+    /* ===== PRELOADER ===== */
+    #preloader {
+      position: fixed; inset: 0; z-index: 9999;
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden; pointer-events: none;
+    }
+    #preloader-image {
+      width: 100vw; height: 100vh;
+      object-fit: cover; object-position: center;
+      transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+      position: relative; z-index: 9999;
+    }
+    #preloader-image.slide-up { transform: translateY(-100vh); opacity: 0; }
+    #preloader.hide { display: none; }
 
-            /* left logo – outside the pill, on the far left */
-            .floating-logo {
-                position: absolute;
-                top: 20px;
-                left: 32px;
-                z-index: 1001;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                pointer-events: auto;
-            }
+    /* ===== HEADER (MOBILE IMPROVED) ===== */
+    #main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: transparent;
+      border-bottom: 1px solid rgba(247,243,234,0.16);
+      transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
+      padding: 0 20px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+    }
+    #main-header.scrolled {
+      background: rgba(251,249,244,0.98);
+      border-bottom: 1px solid var(--line);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: saturate(160%) blur(14px);
+    }
+    .nav-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+    }
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .mobile-logo a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .mobile-logo img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+    .mobile-logo-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+    .mobile-logo-main {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 15px;
+      color: #F7F3EA;
+      letter-spacing: -0.02em;
+    }
+    .mobile-logo-sub {
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #D4B266;
+      margin-top: 1px;
+    }
+    #main-header.scrolled .mobile-logo-main { color: #0B3B2E; }
+    #main-header.scrolled .mobile-logo-sub { color: #B08A3E; }
 
-            .floating-logo a {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                text-decoration: none;
-            }
+    .hamburger {
+      display: flex !important;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+    .hamburger span {
+      display: block;
+      width: 26px;
+      height: 2.5px;
+      border-radius: 2px;
+      background: #F7F3EA;
+      transition: transform 0.28s ease, opacity 0.28s ease, background 0.28s ease;
+    }
+    #main-header.scrolled .hamburger span { background: #0B3B2E; }
+    .hamburger.active span:nth-child(1) { transform: translateY(7.5px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7.5px) rotate(-45deg); }
 
-            .floating-logo img {
-                width: 46px;
-                height: 46px;
-                object-fit: contain;
-                border-radius: 0;
-                background: transparent;
-            }
+    .logo, .nav-left, .nav-right { display: none; }
 
-            .floating-logo-text {
-                display: flex;
-                flex-direction: column;
-                line-height: 1.1;
-            }
+    .nav-links-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      width: 100vw;
+      height: 100dvh;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
+      gap: 10px;
+      padding: 84px 20px 44px;
+      background: rgba(11,46,38,0.96);
+      backdrop-filter: blur(20px);
+      transform: translateX(100%);
+      transition: transform 0.34s cubic-bezier(0.22,1,0.36,1);
+      overflow-y: auto;
+    }
+    #main-header.scrolled .nav-links-wrapper {
+      background: rgba(251,249,244,0.98);
+      backdrop-filter: blur(14px) saturate(160%);
+    }
+    .nav-links-wrapper.active { transform: translateX(0); }
+    .nav-menu {
+      width: 100%;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .nav-menu li a {
+      display: block;
+      padding: 14px 20px;
+      border-radius: 12px;
+      color: #F7F3EA;
+      background: rgba(247,243,234,0.08);
+      border: 1px solid rgba(247,243,234,0.10);
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+    }
+    #main-header.scrolled .nav-menu li a {
+      color: #0B3B2E;
+      background: rgba(11,59,46,0.05);
+      border-color: rgba(11,59,46,0.10);
+    }
+    .nav-menu li a:hover,
+    .nav-menu li a.active {
+      color: #D4B266;
+      background: rgba(212,178,102,0.15);
+      border-color: rgba(212,178,102,0.30);
+    }
+    #main-header.scrolled .nav-menu li a:hover,
+    #main-header.scrolled .nav-menu li a.active {
+      color: #B08A3E;
+      background: rgba(176,138,62,0.12);
+      border-color: rgba(176,138,62,0.30);
+    }
 
-            .floating-logo-main {
-                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-                font-weight: 800;
-                font-size: 18px;
-                color: #ffffff;
-                letter-spacing: -0.02em;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            }
+    @media (min-width: 901px) {
+      #main-header { display: none !important; }
+      .hamburger { display: none !important; }
+      .mobile-logo { display: none !important; }
+      /* desktop nav (hide on mobile) */
+      .logo, .nav-left, .nav-right { display: flex; }
+    }
 
-            .floating-logo-sub {
-                font-family: 'Inter', -apple-system, sans-serif;
-                font-weight: 500;
-                font-size: 9px;
-                letter-spacing: 0.15em;
-                text-transform: uppercase;
-                color: rgba(255, 255, 255, 0.7);
-                margin-top: 1px;
-                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
-            }
+    /* ===== SECTIONS ===== */
+    .section { display: none; padding: 80px 0; }
+    .section.active { display: block; animation: fadeIn .5s var(--ease); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
-            /* reposition mobile hamburger off screen on desktop */
-            .hamburger {
-                display: none !important;
-            }
-        }
+    .section-header {
+      display: flex; justify-content: space-between; align-items: end;
+      margin-bottom: 40px; gap: 20px; flex-wrap: wrap;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-header h2 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .view-all {
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--brass);
+      display: inline-flex;
+      gap: 8px;
+    }
+    .view-all:hover { color: var(--emerald); gap: 14px; }
 
-        /* ---------- HERO OVERRIDES ---------- */
-        .hero {
-            position: relative;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 0 !important;
-            background: #0B2E26;
-            overflow: hidden;
-        }
+    /* ===== LISTINGS GRID (REDESIGNED CARDS) ===== */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin: 40px 0;
+    }
+    .listing-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 300ms ease, box-shadow 300ms ease;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+    }
+    .listing-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+    }
+    .listing-card-image {
+      position: relative;
+      height: 280px;
+      overflow: hidden;
+      border-radius: 12px 12px 0 0;
+      background: #2a2a2a;
+    }
+    .listing-card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .listing-card:hover .listing-card-image img {
+      transform: scale(1.03);
+    }
+    .listing-card-image .favorite {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 2;
+      background: rgba(0,0,0,0.3);
+      backdrop-filter: blur(4px);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 18px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .listing-card-image .favorite:hover {
+      background: rgba(184,138,59,0.7);
+    }
+    .listing-card-badges {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .badge {
+      padding: 4px 14px;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      color: #fff;
+    }
+    .badge-featured { background: var(--gold); color: #1C1C1C; }
+    .badge-status { background: rgba(0,0,0,0.6); }
+    .badge-type { background: rgba(255,255,255,0.15); }
 
-        /* slideshow as full background */
-        #home .hero-slideshow {
-            position: absolute !important;
-            inset: 0 !important;
-            z-index: 0 !important;
-            overflow: hidden !important;
-            pointer-events: none !important;
-        }
+    .listing-card-body {
+      padding: 20px 20px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      color: #fff;
+    }
+    .listing-card-body h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #fff;
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+    .listing-card-location {
+      font-size: 0.9rem;
+      color: rgba(255,255,255,0.65);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    .listing-card-location i { color: var(--gold); width: 16px; }
+    .listing-card-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.75);
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+    .listing-card-details span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .listing-card-details i { color: var(--gold); width: 16px; font-size: 0.9rem; }
+    .listing-card-price {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--gold);
+      margin-top: 6px;
+      letter-spacing: -0.02em;
+    }
+    .listing-card-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+    .listing-card-actions .btn {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 14px;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
 
-        #home .hero-slide {
-            position: absolute !important;
-            inset: 0 !important;
-            z-index: 1 !important;
-            background-size: cover !important;
-            background-position: center !important;
-            opacity: 0;
-            transform: scale(1.04);
-            animation: heroFade 10s infinite ease-in-out;
-            will-change: opacity, transform;
-        }
+    @media (max-width: 1024px) {
+      .listings-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    }
+    @media (max-width: 700px) {
+      .listings-grid { grid-template-columns: 1fr; gap: 24px; }
+      .listing-card-image { height: 220px; }
+    }
 
-        #home .hero-slide:nth-child(1) { animation-delay: 0s; }
-        #home .hero-slide:nth-child(2) { animation-delay: 2s; }
-        #home .hero-slide:nth-child(3) { animation-delay: 4s; }
-        #home .hero-slide:nth-child(4) { animation-delay: 6s; }
-        #home .hero-slide:nth-child(5) { animation-delay: 8s; }
+    /* ===== OTHER SECTIONS (minimal, keep functional) ===== */
+    .featured-section { padding: 80px 0; }
+    .offplan-grid, .communities-grid, .blog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 28px;
+    }
+    .hero {
+      position: relative;
+      min-height: 92vh;
+      display: flex; align-items: center;
+      background: linear-gradient(90deg, rgba(7,39,32,0.76) 0%, rgba(7,39,32,0.52) 48%, rgba(7,39,32,0.22) 100%),
+                  url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=82') center/cover no-repeat;
+      overflow: hidden;
+      padding: 132px 0 82px;
+    }
+    .hero-content { position: relative; z-index: 2; width: 100%; }
+    .hero-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(3.5rem, 7vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      max-width: 900px;
+      margin-bottom: 24px;
+      color: var(--cream);
+    }
+    .hero-title .gold-text { color: var(--brass-light); }
+    .hero-subtitle {
+      font-family: 'Inter', sans-serif;
+      font-weight: 400;
+      font-size: clamp(1rem, 1.5vw, 1.2rem);
+      color: rgba(255,255,255,0.8);
+      max-width: 620px;
+      margin-bottom: 44px;
+      line-height: 1.6;
+    }
+    .hero-buttons { display: flex; gap: 16px; flex-wrap: wrap; }
 
-        @keyframes heroFade {
-            0%   { opacity: 0; transform: scale(1.05); }
-            6%   { opacity: 1; }
-            22%  { opacity: 1; transform: scale(1.10); }
-            30%  { opacity: 0; }
-            100% { opacity: 0; transform: scale(1.05); }
-        }
+    /* floating whatsapp */
+    .float-whatsapp {
+      position: fixed; bottom: 28px; right: 28px;
+      width: 60px; height: 60px;
+      background: var(--whatsapp); color: var(--white);
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 28px;
+      box-shadow: 0 12px 30px rgba(37,211,102,0.4);
+      z-index: 90;
+      transition: transform .2s;
+    }
+    .float-whatsapp:hover { transform: scale(1.1); }
 
-        /* dark overlay */
-        #home .hero::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            z-index: 2;
-            background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 100%);
-            pointer-events: none;
-        }
+    /* toast */
+    #toast-container {
+      position: fixed; top: 24px; right: 24px;
+      display: flex; flex-direction: column; gap: 10px;
+      z-index: 9999;
+    }
+    .toast {
+      padding: 14px 22px;
+      background: var(--emerald-deep); color: var(--cream);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--brass);
+      animation: slideIn .3s var(--ease);
+      max-width: 340px;
+      font-family: 'Inter', sans-serif;
+    }
+    .toast.success { border-left-color: #34D399; }
+    .toast.error { border-left-color: #F87171; }
+    .toast.fadeout { opacity: 0; transition: opacity .3s; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: none; opacity: 1; } }
 
-        #home .hero-content {
-            position: relative;
-            z-index: 3;
-            width: 100%;
-            padding: 120px 32px 80px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 40px;
-        }
-
-        /* left hero text */
-        .hero-text-wrap {
-            flex: 1 1 460px;
-            max-width: 640px;
-        }
-
-        .hero-pills {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 28px;
-        }
-
-        .hero-pill {
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 999px;
-            background: rgba(255, 255, 255, 0.10);
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.20);
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 11px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.85);
-        }
-
-        .hero-title {
-            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-            font-weight: 800;
-            font-size: clamp(3.6rem, 7vw, 5.2rem);
-            line-height: 1.05;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-            margin-bottom: 20px;
-        }
-        .hero-title .gold-text {
-            color: #B88A3B;
-            font-style: italic;
-        }
-
-        .hero-subtitle {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 1.15rem;
-            color: rgba(255, 255, 255, 0.75);
-            max-width: 540px;
-            margin-bottom: 36px;
-            line-height: 1.6;
-        }
-
-        .hero-buttons {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .hero-buttons .btn {
-            min-width: 170px;
-            padding: 14px 34px;
-            border-radius: 999px;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            background: rgba(255, 255, 255, 0.12);
-            color: #ffffff;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-            transition: all 0.3s ease;
-        }
-
-        .hero-buttons .btn-primary {
-            background: #ffffff;
-            color: #0B2E26;
-            border-color: #ffffff;
-        }
-        .hero-buttons .btn-primary:hover {
-            background: rgba(255, 255, 255, 0.9);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
-        }
-
-        .hero-buttons .btn-whatsapp {
-            background: rgba(37, 211, 102, 0.25);
-            border-color: rgba(37, 211, 102, 0.4);
-            color: #fff;
-        }
-        .hero-buttons .btn-whatsapp:hover {
-            background: #25D366;
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(37, 211, 102, 0.3);
-        }
-        .hero-buttons .btn-whatsapp i {
-            margin-right: 8px;
-        }
-
-        /* search card – right side */
-        .hero-search-card {
-            flex: 0 0 380px;
-            max-width: 440px;
-            background: #ffffff;
-            border-radius: 28px;
-            padding: 32px 30px 30px;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.12);
-            backdrop-filter: blur(2px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        .hero-search-card h3 {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #1D1D1D;
-            margin: 0 0 4px 0;
-            letter-spacing: -0.01em;
-        }
-        .hero-search-card p {
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            color: #666;
-            margin: 0 0 20px 0;
-        }
-
-        .search-row {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .search-field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .search-field label {
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 11px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: #1D1D1D;
-            opacity: 0.7;
-        }
-        .search-field select,
-        .search-field input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #E8E8E6;
-            border-radius: 14px;
-            background: #F8F8F6;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: #1D1D1D;
-            transition: all 0.2s ease;
-            appearance: none;
-        }
-        .search-field select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%231D1D1D' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 40px;
-        }
-        .search-field select:focus,
-        .search-field input:focus {
-            outline: none;
-            border-color: #B88A3B;
-            box-shadow: 0 0 0 3px rgba(184, 138, 59, 0.12);
-            background: #ffffff;
-        }
-
-        .search-row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .search-btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 999px;
-            background: #0B2E26;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-        }
-        .search-btn:hover {
-            background: #1A4A3F;
-            box-shadow: 0 8px 24px rgba(11, 46, 38, 0.25);
-            transform: translateY(-2px);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 1100px) {
-            .hero-search-card {
-                flex: 0 0 320px;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .floating-nav,
-            .floating-logo {
-                display: none !important;
-            }
-            /* restore old header for mobile */
-            #main-header {
-                display: flex !important;
-            }
-            .hero-search-card {
-                flex: 1 1 100%;
-                max-width: 100%;
-                margin-top: 20px;
-            }
-            .hero-content {
-                flex-direction: column;
-                padding: 100px 20px 60px;
-            }
-            .hero-title {
-                font-size: clamp(2.8rem, 10vw, 3.6rem) !important;
-            }
-            .hero-text-wrap {
-                flex: 1 1 100%;
-                max-width: 100%;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .search-row-2 {
-                grid-template-columns: 1fr;
-            }
-            .hero-search-card {
-                padding: 24px 18px;
-            }
-        }
-    </style>
+    /* footer minimal */
+    footer {
+      background: var(--white);
+      padding: 40px 0 20px;
+      margin-top: 60px;
+      border-top: 1px solid var(--line);
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+    .footer-grid { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+    .footer-brand h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; color: var(--emerald-deep); }
+    .social-links { display: flex; gap: 16px; justify-content: center; margin-top: 12px; }
+    .social-links a { color: var(--ink-soft); font-size: 20px; }
+    .social-links a:hover { color: var(--brass); }
+    .footer-bottom { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+  </style>
 </head>
 <body>
-    <!-- =============== PRELOADER =============== -->
-    <div id="preloader">
-        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
-    </div>
 
-    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
-    <div class="floating-logo" id="floating-logo">
-        <a href="#home" data-section="home">
-            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-            <div class="floating-logo-text">
-                <span class="floating-logo-main">Agent Web Studio</span>
-                <span class="floating-logo-sub">Websites That Sell Homes</span>
-            </div>
-        </a>
-    </div>
+<!-- ===== PRELOADER ===== -->
+<div id="preloader">
+  <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
+</div>
 
-    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
-        <a href="#listings" data-section="listings">Properties</a>
-        <a href="#offplan" data-section="offplan">Off-Plan</a>
-        <a href="#valuation" data-section="valuation">Valuation</a>
-        <a href="#communities" data-section="communities">Communities</a>
-        <a href="#about" data-section="about">About</a>
-        <a href="#blog" data-section="blog">Blog</a>
-        <a href="#contact" data-section="contact">Contact Us</a>
-        <a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a>
-    </nav>
-
-    <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
-    <header id="main-header">
-        <nav>
-            <div class="container nav-container">
-                <!-- Mobile Logo (shown on mobile only) -->
-                <div class="mobile-logo">
-                    <a href="#home" data-section="home">
-                        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-                        <div class="mobile-logo-text">
-                            <span class="mobile-logo-main">Agent Web Studio</span>
-                            <span class="mobile-logo-sub">Websites That Sell Homes</span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Left Navigation -->
-                <div id="nav-menu" class="nav-links-wrapper">
-                    <ul class="nav-menu nav-left">
-                        <li><a href="#listings" data-section="listings">Properties</a></li>
-                        <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
-                        <li><a href="#valuation" data-section="valuation">Valuation</a></li>
-                    </ul>
-                    
-                    <!-- Center Logo (Desktop) -->
-                    <div class="logo">
-                        <a href="#home" data-section="home">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-                            <div class="logo-text">
-                                <span class="logo-main">Agent Web Studio</span>
-                                <span class="logo-sub">Websites That Sell Homes</span>
-                            </div>
-                        </a>
-                    </div>
-                    
-                    <!-- Right Navigation -->
-                    <ul class="nav-menu nav-right">
-                        <li><a href="#communities" data-section="communities">Communities</a></li>
-                        <li><a href="#about" data-section="about">About</a></li>
-                        <li><a href="#blog" data-section="blog">Blog</a></li>
-                        <li><a href="#contact" data-section="contact">Contact Us</a></li>
-                        <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
-                    </ul>
-                </div>
-
-                <!-- Mobile Hamburger - RIGHT SIDE -->
-                <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-                    <span></span><span></span><span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <main id="main-content">
-        <!-- HOME SECTION — REDESIGNED DESKTOP HERO -->
-        <section id="home" class="section active">
-            <div class="hero">
-                <!-- slideshow (kept exactly as before) -->
-                <div class="hero-slideshow" aria-hidden="true">
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=80')"></div>
-                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1920&q=80')"></div>
-                </div>
-
-                <div class="hero-content">
-                    <div class="hero-text-wrap">
-                        <div class="hero-pills">
-                            <span class="hero-pill">Luxury Homes</span>
-                            <span class="hero-pill">Off Plan</span>
-                            <span class="hero-pill">Investment</span>
-                        </div>
-                        <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
-                        <p class="hero-subtitle" id="agent-tagline">Luxury Properties | Off-Plan Investments | Golden Visa Experts</p>
-                        <div class="hero-buttons">
-                            <a href="#listings" class="btn btn-primary" data-section="listings">View Properties</a>
-                            <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        </div>
-                    </div>
-
-                    <!-- SEARCH CARD – integrated into hero -->
-                    <div class="hero-search-card" id="hero-search-card">
-                        <h3>Find your property</h3>
-                        <p>Search among 100+ luxury listings</p>
-                        <form id="hero-search-form" onsubmit="return false;">
-                            <div class="search-row">
-                                <div class="search-field">
-                                    <label for="filter-type">Property Type</label>
-                                    <select id="filter-type" name="type">
-                                        <option value="all">All Types</option>
-                                        <option value="Apartment">Apartment</option>
-                                        <option value="Villa">Villa</option>
-                                        <option value="Penthouse">Penthouse</option>
-                                        <option value="Studio">Studio</option>
-                                        <option value="Townhouse">Townhouse</option>
-                                    </select>
-                                </div>
-                                <div class="search-field">
-                                    <label for="filter-community">Community</label>
-                                    <select id="filter-community" name="community">
-                                        <option value="all">All Communities</option>
-                                    </select>
-                                </div>
-                                <div class="search-row-2">
-                                    <div class="search-field">
-                                        <label for="filter-price">Price Range</label>
-                                        <select id="filter-price" name="price">
-                                            <option value="all">Any Price</option>
-                                            <option value="500k">Under AED 500K</option>
-                                            <option value="1m">AED 500K – 1M</option>
-                                            <option value="2m">AED 1M – 2M</option>
-                                            <option value="5m">AED 2M – 5M</option>
-                                            <option value="10m">AED 5M – 10M</option>
-                                            <option value="10m+">AED 10M+</option>
-                                        </select>
-                                    </div>
-                                    <div class="search-field">
-                                        <label for="filter-bedrooms">Bedrooms</label>
-                                        <select id="filter-bedrooms" name="bedrooms">
-                                            <option value="all">Any</option>
-                                            <option value="1">1</option>
-                                            <option value="2">2</option>
-                                            <option value="3">3</option>
-                                            <option value="4">4</option>
-                                            <option value="5">5+</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="search-field">
-                                    <label for="filter-status">Status</label>
-                                    <select id="filter-status" name="status">
-                                        <option value="all">All Status</option>
-                                        <option value="for-sale">For Sale</option>
-                                        <option value="for-rent">For Rent</option>
-                                        <option value="sold">Sold</option>
-                                    </select>
-                                </div>
-                                <button type="button" class="search-btn" id="hero-search-btn">Search Properties</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ========== REST OF HOMEPAGE (unchanged) ========== -->
-            <div class="container">
-                <!-- Featured Listings -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Featured Properties</h2>
-                        <a href="#listings" class="view-all" data-section="listings">View All <span>→</span></a>
-                    </div>
-                    <div class="listings-grid" id="featured-listings"></div>
-                </section>
-
-                <!-- Featured Off-Plan -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Featured Off-Plan Projects</h2>
-                        <a href="#offplan" class="view-all" data-section="offplan">View All <span>→</span></a>
-                    </div>
-                    <div class="offplan-grid" id="featured-offplan"></div>
-                </section>
-
-                <!-- Communities Preview -->
-                <section class="featured-section">
-                    <div class="section-header">
-                        <h2>Explore Dubai Communities</h2>
-                        <a href="#communities" class="view-all" data-section="communities">View All <span>→</span></a>
-                    </div>
-                    <div class="communities-grid" id="home-communities"></div>
-                </section>
-
-                <!-- About Snippet -->
-                <section class="about-snippet">
-                    <div class="about-snippet-content">
-                        <div class="about-snippet-image">
-                            <img src="https://placehold.co/400x400/0A1628/C9A84C?text=Agent" alt="Agent Profile" id="agent-photo-home">
-                        </div>
-                        <div class="about-snippet-text">
-                            <h2 id="agent-name-home">Ahmed Khan</h2>
-                            <p id="agent-bio-home">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties.</p>
-                            <div class="stats">
-                                <div><span id="years-exp">12</span> Years Experience</div>
-                                <div><span id="properties-sold">850</span> Properties Sold</div>
-                                <div><span id="happy-clients">1200</span> Happy Clients</div>
-                            </div>
-                            <a href="#about" class="btn btn-primary" data-section="about">More About Me</a>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Portal Presence -->
-                <section class="portal-section">
-                    <h2>Find Us On</h2>
-                    <div class="portal-buttons">
-                        <a href="https://propertyfinder.ae/agents/agent-web-studio" target="_blank" class="portal-btn propertyfinder">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Property%20finder%20icon.png" alt="Property Finder" class="portal-icon">
-                            Property Finder
-                        </a>
-                        <a href="https://bayut.com/agents/agent-web-studio" target="_blank" class="portal-btn bayut">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Bayut%20icon.png" alt="Bayut" class="portal-icon">
-                            Bayut
-                        </a>
-                    </div>
-                </section>
-
-                <!-- ROI Calculator -->
-                <section class="roi-calculator-section">
-                    <h2>Calculate Your ROI</h2>
-                    <p>Estimate your return on investment for Dubai properties</p>
-                    <div class="calculator">
-                        <div class="calc-group">
-                            <label for="calc-price">Property Price (AED)</label>
-                            <input type="number" id="calc-price" value="2000000" step="100000">
-                        </div>
-                        <div class="calc-group">
-                            <label for="calc-rent">Annual Rent (AED)</label>
-                            <input type="number" id="calc-rent" value="120000" step="10000">
-                        </div>
-                        <div class="calc-group">
-                            <label for="calc-service">Service Charges (AED/year)</label>
-                            <input type="number" id="calc-service" value="15000" step="1000">
-                        </div>
-                        <button id="calc-roi-btn" class="btn btn-primary">Calculate ROI</button>
-                        <div class="calc-results" id="calc-results"></div>
-                    </div>
-                </section>
-
-                <!-- Golden Visa Highlight -->
-                <section class="goldenvisa-highlight">
-                    <div class="gv-highlight-content">
-                        <h2>Golden Visa Opportunity</h2>
-                        <p>Invest AED 2M+ in Dubai property and qualify for the UAE Golden Visa. 10-year renewable residency for you and your family.</p>
-                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
-                    </div>
-                </section>
-
-                <!-- WhatsApp Contact Section -->
-                <section class="whatsapp-contact">
-                    <h2>Connect on WhatsApp</h2>
-                    <p>Quick and easy communication with our team</p>
-                    <div class="whatsapp-buttons">
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">Buy Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">Rent Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">Off-Plan Investment</a>
-                    </div>
-                </section>
-            </div>
-        </section>
-
-        <!-- ========== OTHER SECTIONS (unchanged) ========== -->
-        <!-- LISTINGS SECTION -->
-        <section id="listings" class="section">
-            <div class="listings-hero">
-                <div class="container">
-                    <h1>Property Listings</h1>
-                    <p>Discover Dubai's finest properties</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="filter-bar">
-                    <select id="filter-type-listings">
-                        <option value="all">All Types</option>
-                        <option value="Apartment">Apartment</option>
-                        <option value="Villa">Villa</option>
-                        <option value="Penthouse">Penthouse</option>
-                        <option value="Studio">Studio</option>
-                        <option value="Townhouse">Townhouse</option>
-                    </select>
-                    <select id="filter-bedrooms-listings">
-                        <option value="all">Any Bedrooms</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5+</option>
-                    </select>
-                    <select id="filter-price-listings">
-                        <option value="all">Any Price</option>
-                        <option value="500k">Under AED 500K</option>
-                        <option value="1m">AED 500K - 1M</option>
-                        <option value="2m">AED 1M - 2M</option>
-                        <option value="5m">AED 2M - 5M</option>
-                        <option value="10m">AED 5M - 10M</option>
-                        <option value="10m+">AED 10M+</option>
-                    </select>
-                    <select id="filter-community-listings">
-                        <option value="all">All Communities</option>
-                    </select>
-                    <select id="filter-status-listings">
-                        <option value="all">All Status</option>
-                        <option value="for-sale">For Sale</option>
-                        <option value="for-rent">For Rent</option>
-                        <option value="sold">Sold</option>
-                    </select>
-                    <input type="text" id="filter-search" placeholder="Search properties...">
-                </div>
-                <div class="listings-grid" id="listings-grid"></div>
-                
-                <!-- Listing Detail Page -->
-                <div id="listing-detail" style="display:none;">
-                    <button class="btn btn-secondary" onclick="window.showListingList()">← Back to Properties</button>
-                    <div id="listing-detail-content"></div>
-                </div>
-                
-                <div class="portal-section">
-                    <h3>More Properties</h3>
-                    <div class="portal-buttons">
-                        <a href="https://propertyfinder.ae/agents/agent-web-studio" target="_blank" class="portal-btn propertyfinder">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Property%20finder%20icon.png" alt="Property Finder" class="portal-icon">
-                            View on Property Finder
-                        </a>
-                        <a href="https://bayut.com/agents/agent-web-studio" target="_blank" class="portal-btn bayut">
-                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Bayut%20icon.png" alt="Bayut" class="portal-icon">
-                            View on Bayut
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- OFFPLAN SECTION -->
-        <section id="offplan" class="section">
-            <div class="offplan-hero">
-                <div class="container">
-                    <h1>Off-Plan Projects</h1>
-                    <p>Invest in Dubai's future with premium off-plan developments</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="offplan-grid" id="offplan-grid"></div>
-                <section class="benefits-section">
-                    <h2>Why Invest in Off-Plan</h2>
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-money-bill-wave"></i></div>
-                            <h3>Lower Prices</h3>
-                            <p>Off-plan properties are typically 20-30% cheaper than ready properties</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
-                            <h3>High ROI</h3>
-                            <p>Significant capital appreciation by the time of handover</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-gem"></i></div>
-                            <h3>Modern Amenities</h3>
-                            <p>Access to the latest amenities and modern designs</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-map-marked-alt"></i></div>
-                            <h3>Prime Locations</h3>
-                            <p>Developments in Dubai's most sought-after areas</p>
-                        </div>
-                    </div>
-                </section>
-                <div class="goldenvisa-highlight">
-                    <div class="gv-highlight-content">
-                        <h2>Golden Visa Eligible Properties</h2>
-                        <p>Many off-plan projects qualify for UAE Golden Visa with AED 2M+ investment</p>
-                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">Learn More</a>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- COMMUNITIES SECTION -->
-        <section id="communities" class="section">
-            <div class="communities-hero">
-                <div class="container">
-                    <h1>Dubai Communities</h1>
-                    <p>Explore Dubai's most desirable neighborhoods</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="communities-grid" id="communities-grid"></div>
-            </div>
-        </section>
-
-        <!-- BLOG SECTION -->
-        <section id="blog" class="section">
-            <div class="blog-hero">
-                <div class="container">
-                    <h1>Blog</h1>
-                    <p>Insights, tips, and news about Dubai real estate</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="blog-grid" id="blog-grid"></div>
-                <div id="blog-detail" style="display:none;">
-                    <button class="btn btn-secondary" onclick="window.showBlogList()">← Back to Blog</button>
-                    <div id="blog-detail-content"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ABOUT SECTION -->
-        <section id="about" class="section">
-            <div class="about-hero">
-                <div class="container">
-                    <h1>About Me</h1>
-                    <p>Your trusted partner in Dubai real estate</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="about-full">
-                    <div class="about-full-image">
-                        <img src="https://placehold.co/600x600/0A1628/C9A84C?text=Agent" alt="Agent" id="agent-photo-about">
-                    </div>
-                    <div class="about-full-text">
-                        <h2 id="agent-name-about">Ahmed Khan</h2>
-                        <div class="rerna-badge-large">RERA BRN: <strong id="rerna-number-about">123456</strong></div>
-                        <p id="agent-full-bio">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.</p>
-                        <div class="stats-full">
-                            <div><span id="years-exp-about">12</span> Years Experience</div>
-                            <div><span id="properties-sold-about">850</span> Properties Sold</div>
-                            <div><span id="happy-clients-about">1200</span> Happy Clients</div>
-                        </div>
-                        <div class="specialties">
-                            <h3>Specialties</h3>
-                            <div id="specialties-list"></div>
-                        </div>
-                        <div class="languages">
-                            <h3>Languages</h3>
-                            <div id="languages-list"></div>
-                        </div>
-                        <div class="about-ctas">
-                            <a href="#contact" class="btn btn-primary" data-section="contact">Contact Me</a>
-                            <a href="https://wa.me/971501234567" target="_blank" class="btn btn-whatsapp">WhatsApp</a>
-                        </div>
-                    </div>
-                </div>
-                <section class="testimonials">
-                    <h2>Client Testimonials</h2>
-                    <div class="testimonials-grid" id="testimonials-grid"></div>
-                </section>
-                <section class="recent-sales">
-                    <h2>Recent Sales</h2>
-                    <div class="sales-grid" id="sales-grid"></div>
-                </section>
-            </div>
-        </section>
-
-        <!-- CONTACT SECTION -->
-        <section id="contact" class="section">
-            <div class="contact-hero">
-                <div class="container">
-                    <h1>Contact Us</h1>
-                    <p>Get in touch with our team</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="contact-tabs">
-                    <button class="tab-btn active" data-tab="whatsapp">WhatsApp</button>
-                    <button class="tab-btn" data-tab="inquiry">Inquiry Form</button>
-                    <button class="tab-btn" data-tab="viewing">Schedule Viewing</button>
-                </div>
-                <div class="tab-content active" id="tab-whatsapp">
-                    <h3>Connect on WhatsApp</h3>
-                    <div class="whatsapp-buttons">
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">Buy Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">Rent Property</a>
-                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">Off-Plan Investment</a>
-                        <a href="https://wa.me/971501234567?text=I%20have%20a%20question" target="_blank" class="btn btn-whatsapp">General Inquiry</a>
-                    </div>
-                </div>
-                <div class="tab-content" id="tab-inquiry">
-                    <h3>Send an Inquiry</h3>
-                    <form id="inquiry-form" class="contact-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <div class="form-group">
-                            <label for="inq-name">Full Name *</label>
-                            <input type="text" id="inq-name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-phone">Phone Number *</label>
-                            <input type="tel" id="inq-phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-email">Email Address</label>
-                            <input type="email" id="inq-email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-subject">Subject</label>
-                            <select id="inq-subject" name="subject">
-                                <option value="general">General Inquiry</option>
-                                <option value="buying">Buying Property</option>
-                                <option value="renting">Renting Property</option>
-                                <option value="offplan">Off-Plan Investment</option>
-                                <option value="goldenvisa">Golden Visa</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="inq-message">Message *</label>
-                            <textarea id="inq-message" name="message" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Send Inquiry</button>
-                    </form>
-                </div>
-                <div class="tab-content" id="tab-viewing">
-                    <h3>Schedule a Viewing</h3>
-                    <form id="viewing-form" class="contact-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <div class="form-group">
-                            <label for="view-name">Full Name *</label>
-                            <input type="text" id="view-name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-phone">Phone Number *</label>
-                            <input type="tel" id="view-phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-email">Email Address</label>
-                            <input type="email" id="view-email" name="email">
-                        </div>
-                        <div class="form-group">
-                            <label for="view-property">Property *</label>
-                            <input type="text" id="view-property" name="property" placeholder="Property name or URL" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-date">Preferred Date *</label>
-                            <input type="date" id="view-date" name="date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="view-time">Preferred Time *</label>
-                            <input type="time" id="view-time" name="time" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Schedule Viewing</button>
-                    </form>
-                </div>
-                <div class="office-info">
-                    <h3>Office Information</h3>
-                    <p><strong>Address:</strong> <span id="office-address">Dubai, UAE</span></p>
-                    <p><strong>Phone:</strong> <span id="office-phone">+971501234567</span></p>
-                    <p><strong>Email:</strong> <span id="office-email">info@agentwebstudio.com</span></p>
-                    <p><strong>WhatsApp:</strong> <span id="office-whatsapp">+971501234567</span></p>
-                    <p><strong>Hours:</strong> Mon-Sun 9:00 AM - 9:00 PM</p>
-                </div>
-                <div class="map-container">
-                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115164.99999999999!2d55.139835!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2sus!4v1699999999999" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                </div>
-            </div>
-        </section>
-
-        <!-- VALUATION SECTION -->
-        <section id="valuation" class="section">
-            <div class="valuation-hero">
-                <div class="container">
-                    <h1>Property Valuation</h1>
-                    <p>Get a free property valuation from our experts</p>
-                </div>
-            </div>
-            <div class="container">
-                <div class="valuation-form-container">
-                    <div class="valuation-trust">
-                        <div class="trust-badge"><i class="fas fa-check-circle"></i> Free Service</div>
-                        <div class="trust-badge"><i class="fas fa-shield-alt"></i> RERA Licensed</div>
-                        <div class="trust-badge"><i class="fas fa-clock"></i> 24hr Response</div>
-                    </div>
-                    <form id="valuation-form" class="valuation-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-name">Full Name *</label>
-                                <input type="text" id="val-name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="val-phone">Phone Number *</label>
-                                <input type="tel" id="val-phone" name="phone" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-email">Email Address</label>
-                                <input type="email" id="val-email" name="email">
-                            </div>
-                            <div class="form-group">
-                                <label for="val-property-type">Property Type *</label>
-                                <select id="val-property-type" name="propertyType" required>
-                                    <option value="">Select Type</option>
-                                    <option value="Apartment">Apartment</option>
-                                    <option value="Villa">Villa</option>
-                                    <option value="Penthouse">Penthouse</option>
-                                    <option value="Studio">Studio</option>
-                                    <option value="Townhouse">Townhouse</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-community">Community *</label>
-                                <select id="val-community" name="community" required>
-                                    <option value="">Select Community</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="val-bedrooms">Bedrooms *</label>
-                                <select id="val-bedrooms" name="bedrooms" required>
-                                    <option value="">Select</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="5+">5+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-size">Property Size (sqft)</label>
-                                <input type="number" id="val-size" name="size" placeholder="e.g. 1200">
-                            </div>
-                            <div class="form-group">
-                                <label for="val-year">Year Built</label>
-                                <input type="number" id="val-year" name="yearBuilt" placeholder="e.g. 2020">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="val-address">Property Address</label>
-                            <input type="text" id="val-address" name="address" placeholder="Building name, street, community">
-                        </div>
-                        <div class="form-group">
-                            <label for="val-features">Property Features</label>
-                            <textarea id="val-features" name="features" rows="3" placeholder="List key features..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Get Free Valuation</button>
-                    </form>
-                    <div class="valuation-index">
-                        <h3>Dubai DLD Rental Index</h3>
-                        <p>Average rental rates by community based on official DLD data.</p>
-                        <div id="rental-index" class="rental-index-grid"></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- GOLDEN VISA SECTION -->
-        <section id="goldenvisa" class="section">
-            <div class="goldenvisa-hero">
-                <div class="container">
-                    <h1>UAE Golden Visa</h1>
-                    <p>Your pathway to 10-year renewable residency in the UAE</p>
-                </div>
-            </div>
-            <div class="container">
-                <section class="gv-intro">
-                    <h2>What is the Golden Visa?</h2>
-                    <p>The UAE Golden Visa is a long-term residence visa valid for 10 years, renewable, and without the need for a sponsor. It offers investors, entrepreneurs, and talented individuals the opportunity to live, work, and study in the UAE.</p>
-                    <div class="gv-requirements">
-                        <h3>Property Investment Requirements</h3>
-                        <ul>
-                            <li>Minimum investment of AED 2,000,000 in property</li>
-                            <li>Property can be off-plan or ready</li>
-                            <li>Property must be owned outright (not mortgaged)</li>
-                            <li>Valid for the investor, spouse, and children</li>
-                        </ul>
-                    </div>
-                </section>
-                <section class="gv-benefits">
-                    <h2>Golden Visa Benefits</h2>
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-passport"></i></div>
-                            <h3>10-Year Residency</h3>
-                            <p>Renewable visa for 10 years without a sponsor</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-users"></i></div>
-                            <h3>Family Inclusion</h3>
-                            <p>Includes spouse, children, and parents</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-briefcase"></i></div>
-                            <h3>Business Opportunities</h3>
-                            <p>Easier to start and manage businesses in UAE</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-plane-departure"></i></div>
-                            <h3>Travel Flexibility</h3>
-                            <p>Unrestricted travel in and out of UAE</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-process">
-                    <h2>How to Apply</h2>
-                    <div class="process-steps">
-                        <div class="step">
-                            <span class="step-number">1</span>
-                            <h3>Property Investment</h3>
-                            <p>Invest AED 2M+ in Dubai property</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">2</span>
-                            <h3>Property Verification</h3>
-                            <p>Get property valuation and legal documentation</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">3</span>
-                            <h3>Visa Application</h3>
-                            <p>Submit application through Dubai Land Department</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">4</span>
-                            <h3>Visa Issuance</h3>
-                            <p>Receive your 10-year Golden Visa</p>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-faq">
-                    <h2>Frequently Asked Questions</h2>
-                    <div class="faq-container">
-                        <div class="faq-item">
-                            <button class="faq-question">What is the minimum investment for Golden Visa?</button>
-                            <div class="faq-answer">The minimum investment is AED 2,000,000 in property. This can be a single property or multiple properties totaling AED 2M+.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I apply with an off-plan property?</button>
-                            <div class="faq-answer">Yes, off-plan properties are eligible if they are registered with the Dubai Land Department and meet the minimum value requirement.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">How long does the Golden Visa last?</button>
-                            <div class="faq-answer">The Golden Visa is valid for 10 years and is renewable.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I include my family?</button>
-                            <div class="faq-answer">Yes, you can include your spouse, children, and even parents under your Golden Visa.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">What if I sell the property?</button>
-                            <div class="faq-answer">You must maintain the AED 2M+ investment. Selling the property may affect your visa status.</div>
-                        </div>
-                    </div>
-                </section>
-                <section class="gv-lead">
-                    <h2>Interested in Golden Visa?</h2>
-                    <p>Contact us for a free consultation on Golden Visa eligibility</p>
-                    <form id="goldenvisa-form" class="gv-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-name">Full Name *</label>
-                                <input type="text" id="gv-name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="gv-phone">Phone Number *</label>
-                                <input type="tel" id="gv-phone" name="phone" required>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-email">Email Address</label>
-                                <input type="email" id="gv-email" name="email">
-                            </div>
-                            <div class="form-group">
-                                <label for="gv-budget">Property Budget (AED)</label>
-                                <select id="gv-budget" name="budget">
-                                    <option value="">Select</option>
-                                    <option value="2m-3m">AED 2M - 3M</option>
-                                    <option value="3m-5m">AED 3M - 5M</option>
-                                    <option value="5m-10m">AED 5M - 10M</option>
-                                    <option value="10m+">AED 10M+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-gold">Get Free Consultation</button>
-                    </form>
-                    <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20Golden%20Visa" target="_blank" class="btn btn-whatsapp">Ask on WhatsApp</a>
-                </section>
-            </div>
-        </section>
-    </main>
-
-    <!-- Footer -->
-    <footer id="main-footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <h3>Agent Web Studio</h3>
-                    <p>Websites That Sell Homes</p>
-                    <div class="rerna-badge">RERA BRN: <strong id="footer-rerna">123456</strong></div>
-                    <div class="social-links">
-                        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="#" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
-                    </div>
-                </div>
-                <div class="footer-links">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#listings" data-section="listings">Listings</a></li>
-                        <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
-                        <li><a href="#communities" data-section="communities">Communities</a></li>
-                        <li><a href="#blog" data-section="blog">Blog</a></li>
-                        <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
-                    </ul>
-                </div>
-                <div class="footer-contact">
-                    <h4>Contact</h4>
-                    <p><span id="footer-address">Dubai, UAE</span></p>
-                    <p><a href="tel:+971501234567" id="footer-phone">+971501234567</a></p>
-                    <p><a href="mailto:info@agentwebstudio.com" id="footer-email">info@agentwebstudio.com</a></p>
-                    <p><a href="https://wa.me/971501234567" target="_blank" id="footer-whatsapp">WhatsApp</a></p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; <span id="footer-year"></span> Agent Web Studio. All rights reserved.</p>
-                <p>Websites That Sell Homes</p>
-            </div>
+<!-- ===== HEADER (MOBILE IMPROVED) ===== -->
+<header id="main-header">
+  <div class="nav-container">
+    <div class="mobile-logo">
+      <a href="#home" data-section="home">
+        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+        <div class="mobile-logo-text">
+          <span class="mobile-logo-main">Agent Web Studio</span>
+          <span class="mobile-logo-sub">Websites That Sell Homes</span>
         </div>
-    </footer>
+      </a>
+    </div>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div id="nav-menu" class="nav-links-wrapper">
+    <ul class="nav-menu">
+      <li><a href="#listings" data-section="listings">Properties</a></li>
+      <li><a href="#offplan" data-section="offplan">Off-Plan</a></li>
+      <li><a href="#valuation" data-section="valuation">Valuation</a></li>
+      <li><a href="#communities" data-section="communities">Communities</a></li>
+      <li><a href="#about" data-section="about">About</a></li>
+      <li><a href="#blog" data-section="blog">Blog</a></li>
+      <li><a href="#contact" data-section="contact">Contact Us</a></li>
+      <li><a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a></li>
+    </ul>
+  </div>
+</header>
 
-    <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/971501234567?text=Hello%20Agent%20Web%20Studio%2C%20I%20need%20assistance" target="_blank" class="float-whatsapp" aria-label="Contact on WhatsApp">
-        <i class="fab fa-whatsapp"></i>
-    </a>
+<!-- ===== MAIN ===== -->
+<main id="main-content">
 
-    <!-- TOAST NOTIFICATION CONTAINER -->
-    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+  <!-- HOME -->
+  <section id="home" class="section active">
+    <div class="hero">
+      <div class="container hero-content">
+        <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
+        <p class="hero-subtitle" id="agent-tagline">Luxury Properties | Off-Plan Investments | Golden Visa Experts</p>
+        <div class="hero-buttons">
+          <a href="#listings" class="btn btn-primary" data-section="listings">View Properties</a>
+          <a href="https://wa.me/971501234567?text=Hello" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+      <!-- Featured Listings (redesigned cards rendered here) -->
+      <section class="featured-section">
+        <div class="section-header">
+          <h2>Featured Properties</h2>
+          <a href="#listings" class="view-all" data-section="listings">View All →</a>
+        </div>
+        <div class="listings-grid" id="featured-listings">
+          <!-- JS will populate, but we include static demo cards for immediate visual -->
+          <div class="listing-card">
+            <div class="listing-card-image">
+              <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Property">
+              <div class="listing-card-badges">
+                <span class="badge badge-featured">Featured</span>
+                <span class="badge badge-status">For Sale</span>
+                <span class="badge badge-type">Villa</span>
+              </div>
+              <button class="favorite" aria-label="Add to favorites"><i class="far fa-heart"></i></button>
+            </div>
+            <div class="listing-card-body">
+              <h3>Modern Villa with Sea View</h3>
+              <div class="listing-card-location"><i class="fas fa-map-pin"></i> Palm Jumeirah</div>
+              <div class="listing-card-details">
+                <span><i class="fas fa-arrows-alt-h"></i> 3,200 sqft</span>
+                <span><i class="fas fa-bed"></i> 5 Beds</span>
+                <span><i class="fas fa-bath"></i> 6 Baths</span>
+                <span><i class="fas fa-car"></i> 2 Parking</span>
+              </div>
+              <div class="listing-card-price">AED 12,500,000</div>
+              <div class="listing-card-actions">
+                <button class="btn btn-secondary btn-sm">View Details</button>
+                <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+              </div>
+            </div>
+          </div>
+          <div class="listing-card">
+            <div class="listing-card-image">
+              <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80" alt="Property">
+              <div class="listing-card-badges">
+                <span class="badge badge-status">For Rent</span>
+                <span class="badge badge-type">Apartment</span>
+              </div>
+              <button class="favorite" aria-label="Add to favorites"><i class="far fa-heart"></i></button>
+            </div>
+            <div class="listing-card-body">
+              <h3>Luxury Apartment in Downtown</h3>
+              <div class="listing-card-location"><i class="fas fa-map-pin"></i> Downtown Dubai</div>
+              <div class="listing-card-details">
+                <span><i class="fas fa-arrows-alt-h"></i> 1,800 sqft</span>
+                <span><i class="fas fa-bed"></i> 3 Beds</span>
+                <span><i class="fas fa-bath"></i> 3 Baths</span>
+                <span><i class="fas fa-car"></i> 1 Parking</span>
+              </div>
+              <div class="listing-card-price">AED 350,000 / year</div>
+              <div class="listing-card-actions">
+                <button class="btn btn-secondary btn-sm">View Details</button>
+                <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+              </div>
+            </div>
+          </div>
+          <div class="listing-card">
+            <div class="listing-card-image">
+              <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80" alt="Property">
+              <div class="listing-card-badges">
+                <span class="badge badge-featured">Featured</span>
+                <span class="badge badge-status">For Sale</span>
+                <span class="badge badge-type">Penthouse</span>
+              </div>
+              <button class="favorite" aria-label="Add to favorites"><i class="far fa-heart"></i></button>
+            </div>
+            <div class="listing-card-body">
+              <h3>Sky Penthouse with Burj View</h3>
+              <div class="listing-card-location"><i class="fas fa-map-pin"></i> Business Bay</div>
+              <div class="listing-card-details">
+                <span><i class="fas fa-arrows-alt-h"></i> 4,500 sqft</span>
+                <span><i class="fas fa-bed"></i> 4 Beds</span>
+                <span><i class="fas fa-bath"></i> 5 Baths</span>
+                <span><i class="fas fa-car"></i> 3 Parking</span>
+              </div>
+              <div class="listing-card-price">AED 8,750,000</div>
+              <div class="listing-card-actions">
+                <button class="btn btn-secondary btn-sm">View Details</button>
+                <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
 
-    <script type="module" src="config.js"></script>
-    <script type="module" src="main.js"></script>
+  <!-- LISTINGS (full page) -->
+  <section id="listings" class="section">
+    <div class="container">
+      <div class="section-header"><h2>All Properties</h2></div>
+      <div class="listings-grid" id="listings-grid">
+        <!-- same cards as above, kept for demo -->
+        <div class="listing-card">
+          <div class="listing-card-image">
+            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80" alt="Property">
+            <div class="listing-card-badges"><span class="badge badge-status">For Sale</span><span class="badge badge-type">Villa</span></div>
+            <button class="favorite"><i class="far fa-heart"></i></button>
+          </div>
+          <div class="listing-card-body">
+            <h3>Modern Villa with Sea View</h3>
+            <div class="listing-card-location"><i class="fas fa-map-pin"></i> Palm Jumeirah</div>
+            <div class="listing-card-details">
+              <span><i class="fas fa-arrows-alt-h"></i> 3,200 sqft</span>
+              <span><i class="fas fa-bed"></i> 5 Beds</span>
+              <span><i class="fas fa-bath"></i> 6 Baths</span>
+              <span><i class="fas fa-car"></i> 2 Parking</span>
+            </div>
+            <div class="listing-card-price">AED 12,500,000</div>
+            <div class="listing-card-actions">
+              <button class="btn btn-secondary btn-sm">View Details</button>
+              <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        <div class="listing-card">
+          <div class="listing-card-image">
+            <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=800&q=80" alt="Property">
+            <div class="listing-card-badges"><span class="badge badge-status">For Rent</span><span class="badge badge-type">Apartment</span></div>
+            <button class="favorite"><i class="far fa-heart"></i></button>
+          </div>
+          <div class="listing-card-body">
+            <h3>Luxury Apartment in Downtown</h3>
+            <div class="listing-card-location"><i class="fas fa-map-pin"></i> Downtown Dubai</div>
+            <div class="listing-card-details">
+              <span><i class="fas fa-arrows-alt-h"></i> 1,800 sqft</span>
+              <span><i class="fas fa-bed"></i> 3 Beds</span>
+              <span><i class="fas fa-bath"></i> 3 Baths</span>
+              <span><i class="fas fa-car"></i> 1 Parking</span>
+            </div>
+            <div class="listing-card-price">AED 350,000 / year</div>
+            <div class="listing-card-actions">
+              <button class="btn btn-secondary btn-sm">View Details</button>
+              <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+        <div class="listing-card">
+          <div class="listing-card-image">
+            <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=800&q=80" alt="Property">
+            <div class="listing-card-badges"><span class="badge badge-featured">Featured</span><span class="badge badge-status">For Sale</span><span class="badge badge-type">Penthouse</span></div>
+            <button class="favorite"><i class="far fa-heart"></i></button>
+          </div>
+          <div class="listing-card-body">
+            <h3>Sky Penthouse with Burj View</h3>
+            <div class="listing-card-location"><i class="fas fa-map-pin"></i> Business Bay</div>
+            <div class="listing-card-details">
+              <span><i class="fas fa-arrows-alt-h"></i> 4,500 sqft</span>
+              <span><i class="fas fa-bed"></i> 4 Beds</span>
+              <span><i class="fas fa-bath"></i> 5 Baths</span>
+              <span><i class="fas fa-car"></i> 3 Parking</span>
+            </div>
+            <div class="listing-card-price">AED 8,750,000</div>
+            <div class="listing-card-actions">
+              <button class="btn btn-secondary btn-sm">View Details</button>
+              <a href="#" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-    <!-- small inline to sync hero search with existing filter logic -->
-    <script>
-        (function() {
-            document.addEventListener('DOMContentLoaded', function() {
-                const heroSearchBtn = document.getElementById('hero-search-btn');
-                if (heroSearchBtn) {
-                    heroSearchBtn.addEventListener('click', function(e) {
-                        // copy values from hero filters to the listings filter bar
-                        const heroType = document.getElementById('filter-type');
-                        const heroCommunity = document.getElementById('filter-community');
-                        const heroPrice = document.getElementById('filter-price');
-                        const heroBedrooms = document.getElementById('filter-bedrooms');
-                        const heroStatus = document.getElementById('filter-status');
+  <!-- OFFPLAN placeholder -->
+  <section id="offplan" class="section">
+    <div class="container"><h2>Off-Plan Projects</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- VALUATION placeholder -->
+  <section id="valuation" class="section">
+    <div class="container"><h2>Property Valuation</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- COMMUNITIES placeholder -->
+  <section id="communities" class="section">
+    <div class="container"><h2>Dubai Communities</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- ABOUT placeholder -->
+  <section id="about" class="section">
+    <div class="container"><h2>About Me</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- BLOG placeholder -->
+  <section id="blog" class="section">
+    <div class="container"><h2>Blog</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- CONTACT placeholder -->
+  <section id="contact" class="section">
+    <div class="container"><h2>Contact Us</h2><p>Coming soon...</p></div>
+  </section>
+  <!-- GOLDENVISA placeholder -->
+  <section id="goldenvisa" class="section">
+    <div class="container"><h2>Golden Visa</h2><p>Coming soon...</p></div>
+  </section>
 
-                        const listingType = document.getElementById('filter-type-listings');
-                        const listingCommunity = document.getElementById('filter-community-listings');
-                        const listingPrice = document.getElementById('filter-price-listings');
-                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
-                        const listingStatus = document.getElementById('filter-status-listings');
+</main>
 
-                        if (heroType && listingType) listingType.value = heroType.value;
-                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
-                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
-                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
-                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h3>Agent Web Studio</h3>
+        <p>Websites That Sell Homes</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 Agent Web Studio. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
 
-                        // trigger filter
-                        if (typeof window.filterListings === 'function') {
-                            window.filterListings();
-                        }
-                        // navigate to listings section
-                        if (typeof window.navigateTo === 'function') {
-                            window.navigateTo('listings');
-                        }
-                    });
-                }
-            });
-        })();
-    </script>
+<!-- ===== FLOATING WHATSAPP ===== -->
+<a href="https://wa.me/971501234567?text=Hello" target="_blank" class="float-whatsapp" aria-label="Contact on WhatsApp">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toast-container"></div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+  (function() {
+    // Preloader
+    const preloader = document.getElementById('preloader');
+    const preloaderImg = document.getElementById('preloader-image');
+    function hidePreloader() {
+      if (preloaderImg) preloaderImg.classList.add('slide-up');
+      setTimeout(() => { if (preloader) { preloader.classList.add('hide'); if (preloader.parentNode) preloader.remove(); } }, 800);
+    }
+    setTimeout(hidePreloader, 2000);
+    window.addEventListener('load', function() { setTimeout(hidePreloader, 300); });
+    setTimeout(hidePreloader, 3500);
+
+    // Mobile menu toggle
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    if (hamburger && navMenu) {
+      hamburger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        this.classList.toggle('active');
+        navMenu.classList.toggle('active');
+      });
+      navMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function() {
+          hamburger.classList.remove('active');
+          navMenu.classList.remove('active');
+          // simple SPA nav: hide all sections, show target
+          const target = this.dataset.section;
+          if (target) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            const targetEl = document.getElementById(target);
+            if (targetEl) targetEl.classList.add('active');
+          }
+        });
+      });
+    }
+
+    // Header scroll class
+    const header = document.getElementById('main-header');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 50) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    });
+
+    // Simple section navigation for all [data-section] links
+    document.querySelectorAll('[data-section]').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = this.dataset.section;
+        if (target) {
+          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+          const targetEl = document.getElementById(target);
+          if (targetEl) targetEl.classList.add('active');
+          // close mobile menu
+          if (hamburger) hamburger.classList.remove('active');
+          if (navMenu) navMenu.classList.remove('active');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
+
+    // Toast demo
+    window.showToast = function(message, type) {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = 'toast ' + (type || 'success');
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => { toast.classList.add('fadeout'); setTimeout(() => toast.remove(), 300); }, 3500);
+    };
+
+    // Expose for global use (compatibility with main.js)
+    window.navigateTo = function(section) {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+      const el = document.getElementById(section);
+      if (el) el.classList.add('active');
+      if (hamburger) hamburger.classList.remove('active');
+      if (navMenu) navMenu.classList.remove('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    window.showListingList = function() { window.navigateTo('listings'); };
+    window.viewListingPage = function(id) { window.showToast('Listing detail view would open for ID: ' + id); };
+    window.filterListings = function() { window.showToast('Filter applied (demo)'); };
+
+    console.log('Agent Web Studio — full index loaded.');
+  })();
+</script>
+
 </body>
 </html>
