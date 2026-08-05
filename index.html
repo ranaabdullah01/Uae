@@ -59,144 +59,181 @@
     </script>
     <style>
         /* ============================================================
-           REDESIGN: DESKTOP HOMEPAGE ONLY — glass navigation + hero
-           All existing IDs, classes, JS hooks preserved.
+           ORIGINAL NAVIGATION — Non-floating, sticky header
            ============================================================ */
 
-        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
         @media (min-width: 901px) {
-            /* hide the old sticky header completely */
+            /* Show the original header on desktop */
             #main-header {
+                display: flex !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 100 !important;
+                background: rgba(251, 249, 244, 0.85) !important;
+                backdrop-filter: saturate(160%) blur(14px) !important;
+                -webkit-backdrop-filter: saturate(160%) blur(14px) !important;
+                border-bottom: 1px solid var(--line) !important;
+                transition: var(--transition) !important;
+            }
+
+            #main-header.scrolled {
+                background: rgba(251, 249, 244, 0.98) !important;
+                box-shadow: var(--shadow-sm) !important;
+            }
+
+            #main-header .logo {
+                display: flex !important;
+            }
+
+            #main-header .logo-main {
+                color: var(--emerald-deep) !important;
+            }
+
+            #main-header .logo-sub {
+                color: var(--brass) !important;
+            }
+
+            #main-header .nav-menu a {
+                color: var(--ink) !important;
+            }
+
+            #main-header .nav-menu a:hover {
+                color: var(--emerald) !important;
+            }
+
+            #main-header .hamburger {
                 display: none !important;
             }
 
-            /* new floating navigation – fixed position over hero */
-            .floating-nav {
-                position: fixed !important;
-                top: 20px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                z-index: 1000 !important;
+            /* Hide the floating nav elements */
+            .floating-nav,
+            .floating-logo {
+                display: none !important;
+            }
+
+            /* Restore original nav container layout */
+            #main-header nav .nav-container {
                 display: flex !important;
                 align-items: center !important;
-                gap: 4px !important;
-                padding: 6px 12px !important;
-                border-radius: 999px !important;
-                background: rgba(255, 255, 255, 0.12) !important;
-                backdrop-filter: blur(18px) !important;
-                -webkit-backdrop-filter: blur(18px) !important;
-                border: 1px solid rgba(255, 255, 255, 0.20) !important;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10) !important;
-                transition: all 0.3s ease !important;
-                pointer-events: auto !important;
+                justify-content: space-between !important;
+                padding-top: 14px !important;
+                padding-bottom: 14px !important;
+                min-height: auto !important;
             }
 
-            .floating-nav.scrolled {
-                background: rgba(255, 255, 255, 0.92) !important;
-                border-color: rgba(0, 0, 0, 0.06) !important;
-                box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15) !important;
+            .nav-links-wrapper {
+                display: flex !important;
+                align-items: center !important;
+                gap: 40px !important;
+                flex: 1 !important;
+                justify-content: space-between !important;
+                position: static !important;
+                transform: none !important;
+                background: transparent !important;
+                backdrop-filter: none !important;
+                padding: 0 !important;
+                width: auto !important;
+                height: auto !important;
             }
 
-            .floating-nav.scrolled a {
-                color: #1D1D1D !important;
+            .nav-menu {
+                display: flex !important;
+                align-items: center !important;
+                gap: 30px !important;
+                list-style: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
-            .floating-nav.scrolled a:hover {
-                background: rgba(0, 0, 0, 0.06) !important;
-                color: #0B3B2E !important;
-            }
-
-            .floating-nav.scrolled a.active {
-                background: #0B3B2E !important;
-                color: #fff !important;
-            }
-
-            .floating-nav a {
+            .nav-menu a {
                 font-family: 'Inter', -apple-system, sans-serif !important;
                 font-weight: 500 !important;
                 font-size: 13px !important;
-                letter-spacing: 0.02em !important;
-                padding: 8px 16px !important;
-                border-radius: 999px !important;
-                color: rgba(255, 255, 255, 0.85) !important;
-                transition: all 0.2s ease !important;
-                text-decoration: none !important;
-                white-space: nowrap !important;
-            }
-
-            .floating-nav a:hover {
-                background: rgba(255, 255, 255, 0.18) !important;
-                color: #fff !important;
-            }
-
-            .floating-nav a.active {
-                background: #ffffff !important;
-                color: #111111 !important;
-                font-weight: 600 !important;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-            }
-
-            .floating-nav a.active:hover {
-                background: #ffffff !important;
-                color: #111111 !important;
-            }
-
-            /* left logo – fixed position on the far left */
-            .floating-logo {
-                position: fixed !important;
-                top: 18px !important;
-                left: 32px !important;
-                z-index: 1001 !important;
-                display: flex !important;
-                align-items: center !important;
-                gap: 10px !important;
-                pointer-events: auto !important;
-            }
-
-            .floating-logo a {
-                display: flex !important;
-                align-items: center !important;
-                gap: 10px !important;
+                letter-spacing: 0.04em !important;
+                text-transform: uppercase !important;
+                color: var(--ink) !important;
+                position: relative !important;
+                padding: 8px 0 !important;
                 text-decoration: none !important;
             }
 
-            .floating-logo img {
-                width: 46px !important;
-                height: 46px !important;
-                object-fit: contain !important;
+            .nav-menu a::after {
+                content: '';
+                position: absolute !important;
+                left: 0 !important;
+                bottom: 0 !important;
+                width: 0 !important;
+                height: 1.5px !important;
+                background: var(--brass) !important;
+                transition: width .35s var(--ease) !important;
+            }
+
+            .nav-menu a:hover::after {
+                width: 100% !important;
+            }
+
+            .nav-menu a.active {
+                color: var(--emerald) !important;
+            }
+
+            .nav-menu a.active::after {
+                width: 100% !important;
+            }
+
+            /* Mobile logo hidden on desktop */
+            .mobile-logo {
+                display: none !important;
+            }
+
+            /* Restore desktop logo */
+            .logo {
+                display: flex !important;
+            }
+
+            .logo a {
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
+                text-decoration: none !important;
+            }
+
+            .logo img {
+                width: 50px !important;
+                height: 50px !important;
                 border-radius: 0 !important;
+                border: none !important;
+                padding: 0 !important;
                 background: transparent !important;
+                object-fit: contain !important;
             }
 
-            .floating-logo-text {
+            .logo-text {
                 display: flex !important;
                 flex-direction: column !important;
                 line-height: 1.1 !important;
             }
 
-            .floating-logo-main {
-                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif !important;
+            .logo-main {
+                font-family: 'Plus Jakarta Sans', sans-serif !important;
                 font-weight: 800 !important;
                 font-size: 18px !important;
-                color: #ffffff !important;
+                color: var(--emerald-deep) !important;
                 letter-spacing: -0.02em !important;
-                text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
             }
 
-            .floating-logo-sub {
-                font-family: 'Inter', -apple-system, sans-serif !important;
+            .logo-sub {
+                font-family: 'Inter', sans-serif !important;
                 font-weight: 500 !important;
                 font-size: 9px !important;
                 letter-spacing: 0.15em !important;
                 text-transform: uppercase !important;
-                color: rgba(255, 255, 255, 0.7) !important;
+                color: var(--brass) !important;
                 margin-top: 1px !important;
-                text-shadow: 0 1px 4px rgba(0,0,0,0.15) !important;
             }
 
-            /* reposition mobile hamburger off screen on desktop */
-            .hamburger {
-                display: none !important;
+            /* Hero section - no extra padding for floating nav */
+            .hero {
+                padding-top: 0 !important;
             }
         }
 
@@ -477,14 +514,6 @@
         }
 
         @media (max-width: 900px) {
-            .floating-nav,
-            .floating-logo {
-                display: none !important;
-            }
-            /* restore old header for mobile */
-            #main-header {
-                display: flex !important;
-            }
             .hero-search-card {
                 flex: 1 1 100%;
                 max-width: 100%;
@@ -519,29 +548,7 @@
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
     </div>
 
-    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
-    <div class="floating-logo" id="floating-logo">
-        <a href="#home" data-section="home">
-            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-            <div class="floating-logo-text">
-                <span class="floating-logo-main">Agent Web Studio</span>
-                <span class="floating-logo-sub">Websites That Sell Homes</span>
-            </div>
-        </a>
-    </div>
-
-    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
-        <a href="#listings" data-section="listings">Properties</a>
-        <a href="#offplan" data-section="offplan">Off-Plan</a>
-        <a href="#valuation" data-section="valuation">Valuation</a>
-        <a href="#communities" data-section="communities">Communities</a>
-        <a href="#about" data-section="about">About</a>
-        <a href="#blog" data-section="blog">Blog</a>
-        <a href="#contact" data-section="contact">Contact Us</a>
-        <a href="#goldenvisa" data-section="goldenvisa">Golden Visa</a>
-    </nav>
-
-    <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
+    <!-- =============== ORIGINAL HEADER (Sticky, Non-Floating) =============== -->
     <header id="main-header">
         <nav>
             <div class="container nav-container">
@@ -1370,24 +1377,6 @@
     <script>
         (function() {
             document.addEventListener('DOMContentLoaded', function() {
-                // Fix floating nav scroll behavior
-                const floatingNav = document.getElementById('floating-nav');
-                if (floatingNav) {
-                    window.addEventListener('scroll', function() {
-                        if (window.scrollY > 80) {
-                            floatingNav.classList.add('scrolled');
-                        } else {
-                            floatingNav.classList.remove('scrolled');
-                        }
-                    });
-                    
-                    // Initial check
-                    if (window.scrollY > 80) {
-                        floatingNav.classList.add('scrolled');
-                    }
-                }
-                
-                // Hero search button
                 const heroSearchBtn = document.getElementById('hero-search-btn');
                 if (heroSearchBtn) {
                     heroSearchBtn.addEventListener('click', function(e) {
