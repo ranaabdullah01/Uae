@@ -382,38 +382,207 @@ function renderListings(listingsData, container) {
 
 function createListingCard(listing) {
     const card = document.createElement('div');
-    card.className = 'listing-card';
+    card.className = 'luxury-card';
     
     const images = listing.images && typeof listing.images === 'string' 
         ? listing.images.split(',') 
         : (Array.isArray(listing.images) ? listing.images : []);
-    const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/800x600/0A1628/C9A84C?text=Property';
+    const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/800x600/2a2a2a/B88A3B?text=Property';
+    
+    // Determine badge type
+    let badgeClass = 'featured';
+    let badgeText = 'Featured';
+    if (listing.featured) {
+        badgeClass = 'featured';
+        badgeText = 'Featured';
+    } else if (listing.status === 'for-sale') {
+        badgeClass = 'hot';
+        badgeText = 'Hot Deal';
+    } else if (listing.status === 'for-rent') {
+        badgeClass = 'new';
+        badgeText = 'For Rent';
+    } else if (listing.status === 'sold') {
+        badgeClass = 'community';
+        badgeText = 'Sold';
+    }
     
     card.innerHTML = `
-        <div class="listing-card-image">
+        <div class="luxury-card-image">
             <img src="${firstImage}" alt="${listing.title}" loading="lazy">
-            <div class="listing-card-badges">
-                ${listing.featured ? '<span class="badge badge-featured">Featured</span>' : ''}
-                <span class="badge badge-status">${listing.status.replace('-', ' ')}</span>
-                <span class="badge badge-type">${listing.type}</span>
-            </div>
+            <span class="card-badge ${badgeClass}">${badgeText}</span>
+            <a href="#" class="card-favorite" onclick="event.preventDefault();"><i class="far fa-heart"></i></a>
         </div>
-        <div class="listing-card-body">
-            <h3>${listing.title}</h3>
-            <div class="listing-card-price">AED ${formatPrice(listing.price)}</div>
-            <div class="listing-card-details">
-                <span><i class="fas fa-map-marker-alt"></i> ${listing.community}</span>
-                <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
-                <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
-                <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
+        <div class="luxury-card-body">
+            <h3 class="luxury-card-title">${listing.title}</h3>
+            <div class="luxury-card-location">
+                <i class="fas fa-map-pin"></i> ${listing.community}
             </div>
-            <div class="listing-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+            <div class="luxury-card-details">
+                <span class="detail-item"><i class="fas fa-ruler-combined"></i> ${listing.sqft} <strong>sqft</strong></span>
+                <span class="detail-item"><i class="fas fa-bed"></i> ${listing.bedrooms} <strong>bed</strong></span>
+                <span class="detail-item"><i class="fas fa-bath"></i> ${listing.bathrooms} <strong>bath</strong></span>
+                <span class="detail-item"><i class="fas fa-car"></i> ${listing.parking || 1} <strong>park</strong></span>
+            </div>
+            <div class="luxury-card-footer">
+                <div class="price-block">
+                    <span class="price-label">Starting From</span>
+                    <span class="price-value">AED ${formatPrice(listing.price)}</span>
+                </div>
+                <a href="#" class="luxury-card-btn" onclick="window.viewListingPage('${listing.id}'); return false;">View Details <i class="fas fa-arrow-right"></i></a>
             </div>
         </div>
     `;
     return card;
+}
+
+function renderFeaturedOffplan() {
+    const container = document.getElementById('featured-offplan');
+    if (!container) return;
+    
+    const featured = offplan.filter(p => p.featured).slice(0, 2);
+    container.innerHTML = '';
+    
+    if (featured.length === 0) {
+        container.innerHTML = '<p class="no-results">No featured off-plan projects found.</p>';
+        return;
+    }
+    
+    featured.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
+}
+
+function renderOffplanPage() {
+    const container = document.getElementById('offplan-grid');
+    if (!container) return;
+    
+    container.innerHTML = '';
+    
+    if (offplan.length === 0) {
+        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
+        return;
+    }
+    
+    offplan.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
+}
+
+function createOffplanCard(project) {
+    const card = document.createElement('div');
+    card.className = 'luxury-card';
+    
+    const types = project.types && typeof project.types === 'string' 
+        ? project.types.split(',') 
+        : (Array.isArray(project.types) ? project.types : []);
+    
+    const imageUrl = project.image || 'https://placehold.co/800x600/2a2a2a/B88A3B?text=Off-Plan';
+    
+    let badgeClass = 'investment';
+    let badgeText = 'Investment';
+    if (project.goldenVisaEligible) {
+        badgeClass = 'luxury';
+        badgeText = 'Golden Visa';
+    } else if (project.featured) {
+        badgeClass = 'featured';
+        badgeText = 'Featured';
+    }
+    
+    card.innerHTML = `
+        <div class="luxury-card-image">
+            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
+            <span class="card-badge ${badgeClass}">${badgeText}</span>
+            <a href="#" class="card-favorite" onclick="event.preventDefault();"><i class="far fa-heart"></i></a>
+        </div>
+        <div class="luxury-card-body">
+            <h3 class="luxury-card-title">${project.projectName}</h3>
+            <div class="luxury-card-location">
+                <i class="fas fa-map-pin"></i> ${project.community}
+            </div>
+            <div class="luxury-card-details">
+                <span class="detail-item"><i class="fas fa-building"></i> <strong>${project.developer}</strong> <span class="meta-label">Developer</span></span>
+                <span class="detail-item"><i class="far fa-calendar-alt"></i> <strong>${project.handoverDate || 'TBA'}</strong> <span class="meta-label">Completion</span></span>
+                <span class="detail-item"><i class="fas fa-percent"></i> <strong>${project.paymentPlan?.display || 'Flexible'}</strong> <span class="meta-label">Payment</span></span>
+            </div>
+            <div class="luxury-card-footer">
+                <div class="price-block">
+                    <span class="price-label">Starting From</span>
+                    <span class="price-value">AED ${formatPrice(project.startingPrice)}</span>
+                </div>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="luxury-card-btn">View Project <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    `;
+    return card;
+}
+
+function renderHomeCommunities() {
+    const container = document.getElementById('home-communities');
+    if (!container) return;
+    renderCommunities(communities.slice(0, 4), container);
+}
+
+function renderCommunitiesPage() {
+    const container = document.getElementById('communities-grid');
+    if (!container) return;
+    renderCommunities(communities, container);
+}
+
+function renderCommunities(communitiesData, container) {
+    container.innerHTML = '';
+    
+    if (communitiesData.length === 0) {
+        container.innerHTML = '<p class="no-results">No communities found.</p>';
+        return;
+    }
+    
+    communitiesData.forEach(community => {
+        const card = document.createElement('div');
+        card.className = 'luxury-card';
+        
+        const highlights = community.highlights && typeof community.highlights === 'string'
+            ? community.highlights.split(',')
+            : (Array.isArray(community.highlights) ? community.highlights : []);
+        
+        const imageUrl = community.image || 'https://placehold.co/800x600/2a2a2a/B88A3B?text=Community';
+        
+        let badgeClass = 'community';
+        let badgeText = 'Community';
+        if (community.popular) {
+            badgeClass = 'popular';
+            badgeText = 'Popular';
+        }
+        
+        // Count properties in this community
+        const propertyCount = listings.filter(l => l.community === community.name).length;
+        
+        card.innerHTML = `
+            <div class="luxury-card-image">
+                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
+                <span class="card-badge ${badgeClass}">${badgeText}</span>
+                <a href="#" class="card-favorite" onclick="event.preventDefault();"><i class="far fa-heart"></i></a>
+            </div>
+            <div class="luxury-card-body">
+                <h3 class="luxury-card-title">${community.name}</h3>
+                <div class="luxury-card-location">
+                    <i class="fas fa-map-pin"></i> ${community.communityType || 'Dubai'}
+                </div>
+                <div class="luxury-card-details">
+                    <span class="detail-item"><i class="fas fa-home"></i> ${propertyCount} <strong>properties</strong></span>
+                    <span class="detail-item"><i class="fas fa-layer-group"></i> ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? 'Apartments' : 'Villas'} <strong>${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? 'Available' : 'Premium'}</strong></span>
+                    <span class="detail-item"><i class="fas fa-tag"></i> <strong>${community.communityType || 'Luxury'}</strong> <span class="meta-label">Type</span></span>
+                </div>
+                <div class="luxury-card-footer">
+                    <div class="price-block">
+                        <span class="price-label">Avg. Price</span>
+                        <span class="price-value">AED ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? community.avgApartmentPrice : community.avgVillaPrice || 'Contact'}</span>
+                    </div>
+                    <a href="#listings" class="luxury-card-btn" onclick="window.filterByCommunity('${community.name}'); return false;">Explore <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
 function getWhatsAppNumber() {
@@ -556,124 +725,6 @@ function renderListingDetail(listing) {
     `;
 }
 
-function renderFeaturedOffplan() {
-    const container = document.getElementById('featured-offplan');
-    if (!container) return;
-    
-    const featured = offplan.filter(p => p.featured).slice(0, 2);
-    container.innerHTML = '';
-    
-    if (featured.length === 0) {
-        container.innerHTML = '<p class="no-results">No featured off-plan projects found.</p>';
-        return;
-    }
-    
-    featured.forEach(project => {
-        container.appendChild(createOffplanCard(project));
-    });
-}
-
-function renderOffplanPage() {
-    const container = document.getElementById('offplan-grid');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    if (offplan.length === 0) {
-        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
-        return;
-    }
-    
-    offplan.forEach(project => {
-        container.appendChild(createOffplanCard(project));
-    });
-}
-
-function createOffplanCard(project) {
-    const card = document.createElement('div');
-    card.className = 'offplan-card';
-    
-    const types = project.types && typeof project.types === 'string' 
-        ? project.types.split(',') 
-        : (Array.isArray(project.types) ? project.types : []);
-    
-    card.innerHTML = `
-        <div class="offplan-card-image">
-            <img src="${project.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan'}" alt="${project.projectName}" loading="lazy">
-        </div>
-        <div class="offplan-card-body">
-            <h3>${project.projectName}</h3>
-            <div class="offplan-card-developer">${project.developer}</div>
-            <div class="offplan-card-price">From AED ${formatPrice(project.startingPrice)}</div>
-            <div class="offplan-card-details">
-                ${project.community} | ${project.handoverDate} | ${types.join(', ')}
-                ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
-            </div>
-            <div class="offplan-card-actions">
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Register Interest</a>
-            </div>
-        </div>
-    `;
-    return card;
-}
-
-function renderHomeCommunities() {
-    const container = document.getElementById('home-communities');
-    if (!container) return;
-    renderCommunities(communities.slice(0, 4), container);
-}
-
-function renderCommunitiesPage() {
-    const container = document.getElementById('communities-grid');
-    if (!container) return;
-    renderCommunities(communities, container);
-}
-
-function renderCommunities(communitiesData, container) {
-    container.innerHTML = '';
-    
-    if (communitiesData.length === 0) {
-        container.innerHTML = '<p class="no-results">No communities found.</p>';
-        return;
-    }
-    
-    communitiesData.forEach(community => {
-        const card = document.createElement('div');
-        card.className = 'community-card';
-        
-        const highlights = community.highlights && typeof community.highlights === 'string'
-            ? community.highlights.split(',')
-            : (Array.isArray(community.highlights) ? community.highlights : []);
-        
-        const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
-        
-        card.innerHTML = `
-            <div class="community-card-image">
-                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
-                ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
-            </div>
-            <div class="community-card-body">
-                <h3>${community.name}</h3>
-                <div class="community-type">${community.communityType}</div>
-                <div class="community-prices">
-                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
-                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
-                    <span>Yield: <strong>${community.avgRentalYield}</strong></span>
-                </div>
-                ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
-                <div class="community-highlights">
-                    ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
-                </div>
-                <div class="community-actions">
-                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
-                </div>
-            </div>
-        `;
-        container.appendChild(card);
-    });
-}
-
 function renderAboutPage() {
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
@@ -751,7 +802,7 @@ function renderBlogGrid() {
         const card = document.createElement('div');
         card.className = 'blog-card';
         
-        const imageUrl = post.featured_image || 'https://placehold.co/800x400/0A1628/C9A84C?text=Blog';
+        const imageUrl = post.featured_image || 'https://placehold.co/800x400/2a2a2a/B88A3B?text=Blog';
         const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
         
         card.innerHTML = `
