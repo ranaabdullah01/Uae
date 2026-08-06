@@ -880,6 +880,11 @@ function updateNavActive(section) {
     document.querySelectorAll('.nav-menu a').forEach(link => {
         link.classList.toggle('active', link.dataset.section === section);
     });
+    
+    // Update footer links
+    document.querySelectorAll('.footer-links a').forEach(link => {
+        link.classList.toggle('active', link.dataset.section === section);
+    });
 }
 
 // ============= FILTER FUNCTIONS =============
@@ -960,6 +965,7 @@ function populateCommunityFilter() {
         valSelect.value = currentVal;
     }
 
+    // Populate hero search community dropdown
     const heroCommunitySelect = document.getElementById('filter-community-hero');
     if (heroCommunitySelect) {
         const currentHeroVal = heroCommunitySelect.value;
@@ -1261,21 +1267,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     submitForm('valuation-form', 'leads/valuation', 'Thank you! Your valuation request has been submitted. We will get back to you within 24 hours.');
     submitForm('goldenvisa-form', 'leads/goldenvisa', 'Thank you! Your Golden Visa consultation request has been submitted. We will contact you shortly.');
     
+    // Filter bar selects
+    document.querySelectorAll('.filter-bar select').forEach(el => {
+        el.addEventListener('change', filterListings);
+    });
+    
     // Search button listener
     const searchBtn = document.getElementById('filter-search-btn');
     if (searchBtn) {
         searchBtn.addEventListener('click', filterListings);
     }
+    
+    // Search input Enter key
     const searchInput = document.getElementById('filter-search');
     if (searchInput) {
         searchInput.addEventListener('keyup', function(e) {
             if (e.key === 'Enter') filterListings();
         });
     }
-    
-    document.querySelectorAll('.filter-bar select').forEach(el => {
-        el.addEventListener('change', filterListings);
-    });
     
     document.getElementById('modal-close')?.addEventListener('click', () => window.closeModal());
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
