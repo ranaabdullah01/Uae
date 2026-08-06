@@ -98,7 +98,6 @@
                 text-decoration: none;
                 white-space: nowrap;
                 text-transform: uppercase;
-                position: relative;
             }
 
             .floating-nav a:hover {
@@ -1375,5 +1374,63 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
+
+    <!-- Inline script to sync hero search with listings -->
+    <script>
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                const heroSearchBtn = document.getElementById('hero-search-btn');
+                if (heroSearchBtn) {
+                    heroSearchBtn.addEventListener('click', function(e) {
+                        const heroType = document.getElementById('filter-type-hero');
+                        const heroCommunity = document.getElementById('filter-community-hero');
+                        const heroPrice = document.getElementById('filter-price-hero');
+                        const heroBedrooms = document.getElementById('filter-bedrooms-hero');
+                        const heroStatus = document.getElementById('filter-status-hero');
+
+                        const listingType = document.getElementById('filter-type-listings');
+                        const listingCommunity = document.getElementById('filter-community-listings');
+                        const listingPrice = document.getElementById('filter-price-listings');
+                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
+                        const listingStatus = document.getElementById('filter-status-listings');
+
+                        if (heroType && listingType) listingType.value = heroType.value;
+                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
+                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
+                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
+                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
+
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo('listings');
+                        }
+                    });
+                }
+
+                // Search button listener
+                const searchBtn = document.getElementById('filter-search-btn');
+                if (searchBtn) {
+                    searchBtn.addEventListener('click', function() {
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                    });
+                }
+
+                const searchInput = document.getElementById('filter-search');
+                if (searchInput) {
+                    searchInput.addEventListener('keyup', function(e) {
+                        if (e.key === 'Enter') {
+                            if (typeof window.filterListings === 'function') {
+                                window.filterListings();
+                            }
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
