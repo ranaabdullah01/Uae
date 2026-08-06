@@ -386,6 +386,7 @@ function renderListings(listingsData, container) {
 function createListingCard(listing) {
     const card = document.createElement('div');
     card.className = 'listing-card';
+    card.style.cursor = 'pointer';
     
     const images = listing.images && typeof listing.images === 'string' 
         ? listing.images.split(',') 
@@ -411,11 +412,19 @@ function createListingCard(listing) {
                 <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
             </div>
             <div class="listing-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">VIEW DETAILS</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WHATSAPP</a>
+                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
             </div>
         </div>
     `;
+
+    // Make the whole card clickable, but let the WhatsApp link and
+    // the View Details button keep their own behavior (no double-navigation).
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('a, button')) return;
+        window.viewListingPage(listing.id);
+    });
+
     return card;
 }
 
@@ -452,8 +461,11 @@ window.viewListingPage = function(id, opts = {}) {
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
     
-    // Update navigation active state
-    updateNavActive('listings');
+    document.querySelectorAll('.floating-nav a, .nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === 'listings') el.classList.add('active');
+    });
+    moveNavIndicator('listings');
 };
 
 window.showListingList = function(opts = {}) {
@@ -548,9 +560,9 @@ function renderListingDetail(listing) {
                 </div>
                 
                 <div class="listing-detail-page-actions">
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">INQUIRE ON WHATSAPP</a>
-                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">SCHEDULE VIEWING</button>
-                    <button class="btn btn-secondary" onclick="window.showListingList()">BACK TO PROPERTIES</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
+                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
+                    <button class="btn btn-secondary" onclick="window.showListingList()">Back to Properties</button>
                 </div>
             </div>
         </div>
@@ -611,7 +623,7 @@ function createOffplanCard(project) {
                 ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
             </div>
             <div class="offplan-card-actions">
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">REGISTER INTEREST</a>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Register Interest</a>
             </div>
         </div>
     `;
@@ -666,8 +678,8 @@ function renderCommunities(communitiesData, container) {
                     ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
                 </div>
                 <div class="community-actions">
-                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">VIEW PROPERTIES</a>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">ASK ABOUT</a>
+                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
                 </div>
             </div>
         `;
@@ -771,7 +783,7 @@ function renderBlogGrid() {
                     <div class="blog-tags">
                         ${tags.slice(0, 3).map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">READ MORE</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">Read More</button>
                 </div>
             </div>
         `;
@@ -791,6 +803,10 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
 
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById('blog')?.classList.add('active');
+    document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === 'blog') el.classList.add('active');
+    });
     currentSection = 'blog';
     
     document.getElementById('blog-grid').style.display = 'none';
@@ -806,9 +822,6 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
         updateCanonical(path);
     }
     document.title = post.title + ' | ' + (config.siteName || 'Agent Web Studio');
-    
-    // Update navigation active state
-    updateNavActive('blog');
     
     const content = document.getElementById('blog-detail-content');
     const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -868,25 +881,6 @@ window.showBlogList = function(opts = {}) {
     }
 };
 
-// ============= NAVIGATION ACTIVE STATE =============
-
-function updateNavActive(section) {
-    // Update floating nav
-    document.querySelectorAll('.floating-nav a').forEach(link => {
-        link.classList.toggle('active', link.dataset.section === section);
-    });
-    
-    // Update mobile nav
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.classList.toggle('active', link.dataset.section === section);
-    });
-    
-    // Update footer links
-    document.querySelectorAll('.footer-links a').forEach(link => {
-        link.classList.toggle('active', link.dataset.section === section);
-    });
-}
-
 // ============= FILTER FUNCTIONS =============
 
 function filterListings() {
@@ -942,7 +936,7 @@ function populateCommunityFilter() {
     const filterSelect = document.getElementById('filter-community-listings');
     if (filterSelect) {
         const currentValue = filterSelect.value;
-        filterSelect.innerHTML = '<option value="all">ALL COMMUNITIES</option>';
+        filterSelect.innerHTML = '<option value="all">All Communities</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -955,7 +949,7 @@ function populateCommunityFilter() {
     const valSelect = document.getElementById('val-community');
     if (valSelect) {
         const currentVal = valSelect.value;
-        valSelect.innerHTML = '<option value="">SELECT COMMUNITY</option>';
+        valSelect.innerHTML = '<option value="">Select Community</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -969,7 +963,7 @@ function populateCommunityFilter() {
     const heroCommunitySelect = document.getElementById('filter-community-hero');
     if (heroCommunitySelect) {
         const currentHeroVal = heroCommunitySelect.value;
-        heroCommunitySelect.innerHTML = '<option value="all">ALL COMMUNITIES</option>';
+        heroCommunitySelect.innerHTML = '<option value="all">All Communities</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -1107,6 +1101,28 @@ function formatDate(date) {
     }
 }
 
+// ============= SLIDING NAV INDICATOR =============
+
+function moveNavIndicator(sectionId) {
+    const nav = document.getElementById('floating-nav');
+    const indicator = document.getElementById('nav-indicator');
+    if (!nav || !indicator) return;
+
+    const activeLink = nav.querySelector(`a[data-section="${sectionId}"]`);
+    if (!activeLink) {
+        indicator.classList.remove('visible');
+        return;
+    }
+
+    indicator.style.left = activeLink.offsetLeft + 'px';
+    indicator.style.width = activeLink.offsetWidth + 'px';
+    indicator.classList.add('visible');
+}
+
+window.addEventListener('resize', function() {
+    moveNavIndicator(currentSection);
+});
+
 // ============= SPA NAVIGATION =============
 
 function navigateTo(sectionId, opts = {}) {
@@ -1115,8 +1131,11 @@ function navigateTo(sectionId, opts = {}) {
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById(sectionId)?.classList.add('active');
     
-    // Update navigation active state
-    updateNavActive(sectionId);
+    document.querySelectorAll('.floating-nav a, .nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === sectionId) el.classList.add('active');
+    });
+    moveNavIndicator(sectionId);
     
     currentSection = sectionId;
 
@@ -1267,24 +1286,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     submitForm('valuation-form', 'leads/valuation', 'Thank you! Your valuation request has been submitted. We will get back to you within 24 hours.');
     submitForm('goldenvisa-form', 'leads/goldenvisa', 'Thank you! Your Golden Visa consultation request has been submitted. We will contact you shortly.');
     
-    // Filter bar selects
-    document.querySelectorAll('.filter-bar select').forEach(el => {
+    document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
         el.addEventListener('change', filterListings);
+        el.addEventListener('keyup', function(e) { if (e.key === 'Enter') filterListings(); });
     });
-    
-    // Search button listener
-    const searchBtn = document.getElementById('filter-search-btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', filterListings);
-    }
-    
-    // Search input Enter key
-    const searchInput = document.getElementById('filter-search');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') filterListings();
-        });
-    }
+    document.getElementById('filter-search-btn')?.addEventListener('click', filterListings);
     
     document.getElementById('modal-close')?.addEventListener('click', () => window.closeModal());
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
@@ -1331,4 +1337,3 @@ window.viewBlogPost = window.viewBlogPost;
 window.showBlogList = window.showBlogList;
 window.loadBlog = loadBlog;
 window.renderListingDetail = renderListingDetail;
-window.updateNavActive = updateNavActive;
