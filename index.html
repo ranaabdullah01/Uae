@@ -87,6 +87,8 @@
             }
 
             .floating-nav a {
+                position: relative;
+                z-index: 1;
                 font-family: 'Inter', -apple-system, sans-serif;
                 font-weight: 500;
                 font-size: 13px;
@@ -94,7 +96,7 @@
                 padding: 8px 16px;
                 border-radius: 999px;
                 color: rgba(255, 255, 255, 0.85);
-                transition: all 0.2s ease;
+                transition: color 0.2s ease, background 0.2s ease;
                 text-decoration: none;
                 white-space: nowrap;
                 text-transform: uppercase;
@@ -106,15 +108,35 @@
             }
 
             .floating-nav a.active {
-                background: #ffffff;
                 color: #111111;
                 font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             }
 
             .floating-nav a.active:hover {
-                background: #ffffff;
+                background: transparent;
                 color: #111111;
+            }
+
+            /* Sliding active indicator */
+            .nav-indicator {
+                position: absolute;
+                top: 6px;
+                bottom: 6px;
+                left: 0;
+                width: 0;
+                border-radius: 999px;
+                background: #ffffff;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                opacity: 0;
+                z-index: 0;
+                pointer-events: none;
+                transition: left 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+                            width 0.35s cubic-bezier(0.65, 0, 0.35, 1),
+                            opacity 0.2s ease;
+            }
+
+            .nav-indicator.visible {
+                opacity: 1;
             }
 
             .floating-logo {
@@ -538,7 +560,7 @@
     </div>
 
     <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
-        <a href="#home" data-section="home" class="active">HOME</a>
+        <span class="nav-indicator" id="nav-indicator" aria-hidden="true"></span>
         <a href="#listings" data-section="listings">PROPERTIES</a>
         <a href="#offplan" data-section="offplan">OFF-PLAN</a>
         <a href="#valuation" data-section="valuation">VALUATION</a>
@@ -565,7 +587,6 @@
 
                 <div id="nav-menu" class="nav-links-wrapper">
                     <ul class="nav-menu nav-left">
-                        <li><a href="#home" data-section="home" class="active">HOME</a></li>
                         <li><a href="#listings" data-section="listings">PROPERTIES</a></li>
                         <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
                         <li><a href="#valuation" data-section="valuation">VALUATION</a></li>
@@ -690,7 +711,7 @@
                 </div>
             </div>
 
-            <!-- ========== REST OF HOMEPAGE ========== -->
+            <!-- ========== REST OF HOMEPAGE (unchanged) ========== -->
             <div class="container">
                 <!-- Featured Listings -->
                 <section class="featured-section">
@@ -797,7 +818,8 @@
             </div>
         </section>
 
-        <!-- ========== LISTINGS SECTION ========== -->
+        <!-- ========== OTHER SECTIONS (unchanged) ========== -->
+        <!-- LISTINGS SECTION -->
         <section id="listings" class="section">
             <div class="listings-hero">
                 <div class="container">
@@ -806,7 +828,6 @@
                 </div>
             </div>
             <div class="container">
-                <!-- FILTER BAR WITH SEARCH BUTTON -->
                 <div class="filter-bar">
                     <select id="filter-type-listings">
                         <option value="all">ALL TYPES</option>
@@ -842,24 +863,20 @@
                         <option value="for-rent">FOR RENT</option>
                         <option value="sold">SOLD</option>
                     </select>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="flex:1; padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px;">
-                        <button id="search-btn" class="btn btn-primary" style="padding:12px 24px; min-width:auto; white-space:nowrap;">
+                    <div class="filter-search-group">
+                        <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES...">
+                        <button type="button" id="filter-search-btn" class="filter-search-btn" aria-label="Search properties">
                             <i class="fas fa-search"></i> SEARCH
                         </button>
                     </div>
                 </div>
-
-                <!-- Listings Grid -->
                 <div class="listings-grid" id="listings-grid"></div>
-
-                <!-- Listing Detail View -->
+                
                 <div id="listing-detail" style="display:none;">
                     <button class="btn btn-secondary" onclick="window.showListingList()">← BACK TO PROPERTIES</button>
                     <div id="listing-detail-content"></div>
                 </div>
-
-                <!-- Portal Section -->
+                
                 <div class="portal-section">
                     <h3>MORE PROPERTIES</h3>
                     <div class="portal-buttons">
@@ -876,7 +893,7 @@
             </div>
         </section>
 
-        <!-- ========== OFFPLAN SECTION ========== -->
+        <!-- OFFPLAN SECTION -->
         <section id="offplan" class="section">
             <div class="offplan-hero">
                 <div class="container">
@@ -921,7 +938,7 @@
             </div>
         </section>
 
-        <!-- ========== COMMUNITIES SECTION ========== -->
+        <!-- COMMUNITIES SECTION -->
         <section id="communities" class="section">
             <div class="communities-hero">
                 <div class="container">
@@ -934,7 +951,7 @@
             </div>
         </section>
 
-        <!-- ========== BLOG SECTION ========== -->
+        <!-- BLOG SECTION -->
         <section id="blog" class="section">
             <div class="blog-hero">
                 <div class="container">
@@ -951,7 +968,7 @@
             </div>
         </section>
 
-        <!-- ========== ABOUT SECTION ========== -->
+        <!-- ABOUT SECTION -->
         <section id="about" class="section">
             <div class="about-hero">
                 <div class="container">
@@ -998,7 +1015,7 @@
             </div>
         </section>
 
-        <!-- ========== CONTACT SECTION ========== -->
+        <!-- CONTACT SECTION -->
         <section id="contact" class="section">
             <div class="contact-hero">
                 <div class="container">
@@ -1099,7 +1116,7 @@
             </div>
         </section>
 
-        <!-- ========== VALUATION SECTION ========== -->
+        <!-- VALUATION SECTION -->
         <section id="valuation" class="section">
             <div class="valuation-hero">
                 <div class="container">
@@ -1192,7 +1209,7 @@
             </div>
         </section>
 
-        <!-- ========== GOLDEN VISA SECTION ========== -->
+        <!-- GOLDEN VISA SECTION -->
         <section id="goldenvisa" class="section">
             <div class="goldenvisa-hero">
                 <div class="container">
@@ -1346,7 +1363,6 @@
                 <div class="footer-links">
                     <h4>QUICK LINKS</h4>
                     <ul>
-                        <li><a href="#home" data-section="home">HOME</a></li>
                         <li><a href="#listings" data-section="listings">LISTINGS</a></li>
                         <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
                         <li><a href="#communities" data-section="communities">COMMUNITIES</a></li>
