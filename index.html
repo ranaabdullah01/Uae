@@ -87,8 +87,6 @@
             }
 
             .floating-nav a {
-                position: relative;
-                z-index: 1;
                 font-family: 'Inter', -apple-system, sans-serif;
                 font-weight: 500;
                 font-size: 13px;
@@ -96,10 +94,11 @@
                 padding: 8px 16px;
                 border-radius: 999px;
                 color: rgba(255, 255, 255, 0.85);
-                transition: color 0.2s ease, background 0.2s ease;
+                transition: all 0.2s ease;
                 text-decoration: none;
                 white-space: nowrap;
                 text-transform: uppercase;
+                position: relative;
             }
 
             .floating-nav a:hover {
@@ -108,35 +107,15 @@
             }
 
             .floating-nav a.active {
+                background: #ffffff;
                 color: #111111;
                 font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             }
 
             .floating-nav a.active:hover {
-                background: transparent;
-                color: #111111;
-            }
-
-            /* Sliding active indicator */
-            .nav-indicator {
-                position: absolute;
-                top: 6px;
-                bottom: 6px;
-                left: 0;
-                width: 0;
-                border-radius: 999px;
                 background: #ffffff;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-                opacity: 0;
-                z-index: 0;
-                pointer-events: none;
-                transition: left 0.35s cubic-bezier(0.65, 0, 0.35, 1),
-                            width 0.35s cubic-bezier(0.65, 0, 0.35, 1),
-                            opacity 0.2s ease;
-            }
-
-            .nav-indicator.visible {
-                opacity: 1;
+                color: #111111;
             }
 
             .floating-logo {
@@ -560,7 +539,7 @@
     </div>
 
     <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
-        <span class="nav-indicator" id="nav-indicator" aria-hidden="true"></span>
+        <a href="#home" data-section="home" class="active">HOME</a>
         <a href="#listings" data-section="listings">PROPERTIES</a>
         <a href="#offplan" data-section="offplan">OFF-PLAN</a>
         <a href="#valuation" data-section="valuation">VALUATION</a>
@@ -587,6 +566,7 @@
 
                 <div id="nav-menu" class="nav-links-wrapper">
                     <ul class="nav-menu nav-left">
+                        <li><a href="#home" data-section="home" class="active">HOME</a></li>
                         <li><a href="#listings" data-section="listings">PROPERTIES</a></li>
                         <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
                         <li><a href="#valuation" data-section="valuation">VALUATION</a></li>
@@ -711,7 +691,7 @@
                 </div>
             </div>
 
-            <!-- ========== REST OF HOMEPAGE (unchanged) ========== -->
+            <!-- ========== REST OF HOMEPAGE ========== -->
             <div class="container">
                 <!-- Featured Listings -->
                 <section class="featured-section">
@@ -818,8 +798,7 @@
             </div>
         </section>
 
-        <!-- ========== OTHER SECTIONS (unchanged) ========== -->
-        <!-- LISTINGS SECTION -->
+        <!-- ========== LISTINGS SECTION ========== -->
         <section id="listings" class="section">
             <div class="listings-hero">
                 <div class="container">
@@ -863,9 +842,9 @@
                         <option value="for-rent">FOR RENT</option>
                         <option value="sold">SOLD</option>
                     </select>
-                    <div class="filter-search-group">
-                        <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES...">
-                        <button type="button" id="filter-search-btn" class="filter-search-btn" aria-label="Search properties">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="flex:1; padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px;">
+                        <button id="filter-search-btn" class="btn btn-primary" style="padding:12px 24px; white-space:nowrap;">
                             <i class="fas fa-search"></i> SEARCH
                         </button>
                     </div>
@@ -1363,6 +1342,7 @@
                 <div class="footer-links">
                     <h4>QUICK LINKS</h4>
                     <ul>
+                        <li><a href="#home" data-section="home">HOME</a></li>
                         <li><a href="#listings" data-section="listings">LISTINGS</a></li>
                         <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
                         <li><a href="#communities" data-section="communities">COMMUNITIES</a></li>
@@ -1395,42 +1375,5 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
-
-    <!-- Inline script to sync hero search with listings -->
-    <script>
-        (function() {
-            document.addEventListener('DOMContentLoaded', function() {
-                const heroSearchBtn = document.getElementById('hero-search-btn');
-                if (heroSearchBtn) {
-                    heroSearchBtn.addEventListener('click', function(e) {
-                        const heroType = document.getElementById('filter-type-hero');
-                        const heroCommunity = document.getElementById('filter-community-hero');
-                        const heroPrice = document.getElementById('filter-price-hero');
-                        const heroBedrooms = document.getElementById('filter-bedrooms-hero');
-                        const heroStatus = document.getElementById('filter-status-hero');
-
-                        const listingType = document.getElementById('filter-type-listings');
-                        const listingCommunity = document.getElementById('filter-community-listings');
-                        const listingPrice = document.getElementById('filter-price-listings');
-                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
-                        const listingStatus = document.getElementById('filter-status-listings');
-
-                        if (heroType && listingType) listingType.value = heroType.value;
-                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
-                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
-                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
-                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
-
-                        if (typeof window.filterListings === 'function') {
-                            window.filterListings();
-                        }
-                        if (typeof window.navigateTo === 'function') {
-                            window.navigateTo('listings');
-                        }
-                    });
-                }
-            });
-        })();
-    </script>
 </body>
 </html>
