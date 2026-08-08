@@ -524,12 +524,15 @@ function renderListingDetail(listing) {
     
     // If no images, use placeholder
     if (images.length === 0) {
-        images.push('https://placehold.co/800x600/0A1628/C9A84C?text=No+Image');
+        images.push('https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image');
     }
     
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
         : (Array.isArray(listing.features) ? listing.features : []);
+    
+    // Status badge class
+    const statusClass = listing.status || 'for-sale';
     
     // Build gallery with slider controls
     let gallery = `
@@ -559,57 +562,118 @@ function renderListingDetail(listing) {
         </div>
     `;
     
+    // Build specs
+    const specs = [
+        { icon: 'fa-bed', label: 'Bedrooms', value: listing.bedrooms || 'N/A' },
+        { icon: 'fa-bath', label: 'Bathrooms', value: listing.bathrooms || 'N/A' },
+        { icon: 'fa-ruler-combined', label: 'Size', value: listing.sqft ? `${listing.sqft} sqft` : 'N/A' },
+        { icon: 'fa-building', label: 'Type', value: listing.type || 'N/A' },
+        { icon: 'fa-layer-group', label: 'Floor', value: listing.floor || 'N/A' },
+        { icon: 'fa-eye', label: 'View', value: listing.view || 'N/A' },
+        { icon: 'fa-couch', label: 'Furnishing', value: listing.furnishing || 'N/A' },
+        { icon: 'fa-car', label: 'Parking', value: listing.parking || 'N/A' }
+    ];
+    
+    // Build property details
+    const details = [
+        { label: 'Type', value: listing.type || 'N/A' },
+        { label: 'Status', value: listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'N/A' },
+        { label: 'Community', value: listing.community || 'N/A' },
+        { label: 'Bedrooms', value: listing.bedrooms || 'N/A' },
+        { label: 'Bathrooms', value: listing.bathrooms || 'N/A' },
+        { label: 'Size', value: listing.sqft ? `${listing.sqft} sqft` : 'N/A' },
+        { label: 'Floor', value: listing.floor || 'N/A' },
+        { label: 'View', value: listing.view || 'N/A' },
+        { label: 'Furnishing', value: listing.furnishing || 'N/A' },
+        { label: 'Parking', value: listing.parking || 'N/A' }
+    ];
+    
+    if (listing.permit) {
+        details.push({ label: 'Permit', value: listing.permit });
+    }
+    if (listing.building) {
+        details.push({ label: 'Building', value: listing.building });
+    }
+    
     return `
         <div class="listing-detail-page">
             ${gallery}
-            <div class="listing-detail-page-header">
-                <h1 class="listing-detail-page-title">${listing.title}</h1>
-                <div class="listing-detail-page-price">AED ${formatPrice(listing.price)}</div>
-                <div class="listing-detail-page-meta">
-                    <span><i class="fas fa-map-marker-alt"></i> ${listing.community}</span>
-                    <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
-                    <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
-                    <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
-                    <span><i class="fas fa-tag"></i> ${listing.type}</span>
-                    <span><i class="fas fa-circle"></i> ${listing.status.replace('-', ' ')}</span>
+            
+            <div class="listing-detail-header">
+                <h1 class="listing-detail-title">${listing.title}</h1>
+                <div class="listing-detail-location">
+                    <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
+                </div>
+                
+                <div class="listing-detail-price-row">
+                    <span class="listing-detail-price">AED ${formatPrice(listing.price)}</span>
+                    <span class="listing-detail-status-badge ${statusClass}">${listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE'}</span>
+                </div>
+                
+                <div class="listing-detail-specs">
+                    ${specs.map(spec => `
+                        <div class="listing-detail-spec-item">
+                            <div class="spec-icon"><i class="fas ${spec.icon}"></i></div>
+                            <div>
+                                <div class="spec-label">${spec.label}</div>
+                                <div class="spec-value">${spec.value}</div>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             </div>
             
-            <div class="listing-detail-page-body">
-                <div class="listing-detail-page-description">
-                    <h3>Description</h3>
-                    <p>${listing.description}</p>
-                </div>
-                
-                ${features.length > 0 ? `
-                    <div class="listing-detail-page-features">
-                        <h3>Features & Amenities</h3>
-                        <div class="features-grid">
-                            ${features.map(f => `<span class="feature-tag"><i class="fas fa-check"></i> ${f}</span>`).join('')}
+            <div class="listing-detail-grid">
+                <div class="listing-detail-left">
+                    ${listing.description ? `
+                        <div class="listing-detail-card">
+                            <h3 class="listing-detail-card-title">Description</h3>
+                            <p class="listing-detail-description">${listing.description}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${features.length > 0 ? `
+                        <div class="listing-detail-card">
+                            <h3 class="listing-detail-card-title">Features & Amenities</h3>
+                            <div class="listing-detail-features-grid">
+                                ${features.map(f => `
+                                    <span class="listing-detail-feature-item">
+                                        <i class="fas fa-check-circle"></i> ${f}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="listing-detail-card">
+                        <h3 class="listing-detail-card-title">Property Details</h3>
+                        <div class="listing-detail-details-grid">
+                            ${details.map(d => `
+                                <div class="listing-detail-detail-item">
+                                    <span class="detail-label">${d.label}</span>
+                                    <span class="detail-value">${d.value}</span>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
-                ` : ''}
-                
-                <div class="listing-detail-page-specs">
-                    <h3>Property Details</h3>
-                    <div class="specs-grid">
-                        <div class="spec-item"><span>Type</span><strong>${listing.type}</strong></div>
-                        <div class="spec-item"><span>Status</span><strong>${listing.status.replace('-', ' ')}</strong></div>
-                        <div class="spec-item"><span>Community</span><strong>${listing.community}</strong></div>
-                        <div class="spec-item"><span>Bedrooms</span><strong>${listing.bedrooms}</strong></div>
-                        <div class="spec-item"><span>Bathrooms</span><strong>${listing.bathrooms}</strong></div>
-                        <div class="spec-item"><span>Size</span><strong>${listing.sqft} sqft</strong></div>
-                        <div class="spec-item"><span>Floor</span><strong>${listing.floor || 'N/A'}</strong></div>
-                        <div class="spec-item"><span>View</span><strong>${listing.view || 'N/A'}</strong></div>
-                        <div class="spec-item"><span>Furnishing</span><strong>${listing.furnishing || 'N/A'}</strong></div>
-                        <div class="spec-item"><span>Parking</span><strong>${listing.parking}</strong></div>
-                        ${listing.permit ? `<div class="spec-item"><span>Permit</span><strong>${listing.permit}</strong></div>` : ''}
-                    </div>
                 </div>
                 
-                <div class="listing-detail-page-actions">
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
-                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
+                <div class="listing-detail-right">
+                    <div class="listing-detail-actions-card">
+                        <h4 class="action-title">Interested in this property?</h4>
+                        <p class="action-subtitle">Get more details or schedule a viewing</p>
+                        <div class="listing-detail-actions">
+                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
+                            </a>
+                            <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">
+                                <i class="fas fa-calendar-check"></i> Schedule Viewing
+                            </button>
+                            <button class="btn btn-secondary-outline" onclick="window.showListingList()">
+                                <i class="fas fa-arrow-left"></i> Back to Properties
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
