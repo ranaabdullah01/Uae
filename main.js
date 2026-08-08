@@ -411,8 +411,8 @@ function createListingCard(listing) {
                 <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
             </div>
             <div class="listing-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">VIEW DETAILS</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WHATSAPP</a>
+                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
             </div>
         </div>
     `;
@@ -424,7 +424,7 @@ function getWhatsAppNumber() {
     return number.replace(/[^0-9]/g, '');
 }
 
-// ============= VIEW LISTING DETAIL (PAGE) =============
+// ============= VIEW LISTING DETAIL (PAGE) - FIXED =============
 
 window.viewListingPage = function(id, opts = {}) {
     const { push = true } = opts;
@@ -433,12 +433,21 @@ window.viewListingPage = function(id, opts = {}) {
         showToast('Listing not found.', 'error');
         return;
     }
-    
-    document.getElementById('listings-grid').style.display = 'none';
+
+    // Hide grid, show detail
+    const grid = document.getElementById('listings-grid');
     const detailContainer = document.getElementById('listing-detail');
-    detailContainer.style.display = 'block';
-    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+    const content = document.getElementById('listing-detail-content');
     
+    if (grid) grid.style.display = 'none';
+    if (detailContainer) {
+        detailContainer.style.display = 'block';
+        if (content) {
+            content.innerHTML = renderListingDetail(listing);
+        }
+    }
+
+    // Update URL
     if (push) {
         const path = buildPath('listings', listing.id);
         if (location.pathname !== path) {
@@ -446,21 +455,36 @@ window.viewListingPage = function(id, opts = {}) {
         }
         updateCanonical(path);
     }
+    
+    // Update title
     document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+    
+    // Update active section
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById('listings')?.classList.add('active');
+    const listingsSection = document.getElementById('listings');
+    if (listingsSection) listingsSection.classList.add('active');
     
+    // Update navigation active states
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === 'listings') {
+            el.classList.add('active');
+        }
+    });
+    
+    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    // Update navigation active state
-    updateNavActive('listings');
 };
 
 window.showListingList = function(opts = {}) {
     const { push = true } = opts;
-    document.getElementById('listings-grid').style.display = 'grid';
-    document.getElementById('listing-detail').style.display = 'none';
-    document.getElementById('listing-detail-content').innerHTML = '';
+    const grid = document.getElementById('listings-grid');
+    const detail = document.getElementById('listing-detail');
+    const content = document.getElementById('listing-detail-content');
+    
+    if (grid) grid.style.display = 'grid';
+    if (detail) detail.style.display = 'none';
+    if (content) content.innerHTML = '';
     
     if (push) {
         const path = buildPath('listings');
@@ -470,6 +494,9 @@ window.showListingList = function(opts = {}) {
         updateCanonical(path);
     }
     document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
+    
+    // Navigate to listings section
+    navigateTo('listings', { push: false });
 };
 
 function renderListingDetail(listing) {
@@ -548,9 +575,9 @@ function renderListingDetail(listing) {
                 </div>
                 
                 <div class="listing-detail-page-actions">
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">INQUIRE ON WHATSAPP</a>
-                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">SCHEDULE VIEWING</button>
-                    <button class="btn btn-secondary" onclick="window.showListingList()">BACK TO PROPERTIES</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
+                    <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
+                    <button class="btn btn-secondary" onclick="window.showListingList()">Back to Properties</button>
                 </div>
             </div>
         </div>
@@ -611,7 +638,7 @@ function createOffplanCard(project) {
                 ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
             </div>
             <div class="offplan-card-actions">
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">REGISTER INTEREST</a>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Register Interest</a>
             </div>
         </div>
     `;
@@ -666,8 +693,8 @@ function renderCommunities(communitiesData, container) {
                     ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
                 </div>
                 <div class="community-actions">
-                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">VIEW PROPERTIES</a>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">ASK ABOUT</a>
+                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
                 </div>
             </div>
         `;
@@ -771,7 +798,7 @@ function renderBlogGrid() {
                     <div class="blog-tags">
                         ${tags.slice(0, 3).map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">READ MORE</button>
+                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">Read More</button>
                 </div>
             </div>
         `;
@@ -791,6 +818,10 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
 
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById('blog')?.classList.add('active');
+    document.querySelectorAll('.nav-menu a, .footer-links a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === 'blog') el.classList.add('active');
+    });
     currentSection = 'blog';
     
     document.getElementById('blog-grid').style.display = 'none';
@@ -806,9 +837,6 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
         updateCanonical(path);
     }
     document.title = post.title + ' | ' + (config.siteName || 'Agent Web Studio');
-    
-    // Update navigation active state
-    updateNavActive('blog');
     
     const content = document.getElementById('blog-detail-content');
     const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -868,21 +896,7 @@ window.showBlogList = function(opts = {}) {
     }
 };
 
-// ============= NAVIGATION ACTIVE STATE =============
-
-function updateNavActive(section) {
-    // Update floating nav
-    document.querySelectorAll('.floating-nav a').forEach(link => {
-        link.classList.toggle('active', link.dataset.section === section);
-    });
-    
-    // Update mobile nav
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.classList.toggle('active', link.dataset.section === section);
-    });
-}
-
-// ============= FILTER FUNCTIONS =============
+// ============= FILTER FUNCTIONS - WITH SEARCH BUTTON =============
 
 function filterListings() {
     const type = document.getElementById('filter-type-listings')?.value || 'all';
@@ -919,7 +933,30 @@ function filterListings() {
     }
     
     const container = document.getElementById('listings-grid');
-    if (container) renderListings(filtered, container);
+    if (container) {
+        renderListings(filtered, container);
+    }
+}
+
+function initSearchButton() {
+    const searchBtn = document.getElementById('search-btn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            filterListings();
+        });
+    }
+    
+    // Also trigger on Enter key in search input
+    const searchInput = document.getElementById('filter-search');
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                filterListings();
+            }
+        });
+    }
 }
 
 window.filterByCommunity = function(communityName) {
@@ -937,7 +974,7 @@ function populateCommunityFilter() {
     const filterSelect = document.getElementById('filter-community-listings');
     if (filterSelect) {
         const currentValue = filterSelect.value;
-        filterSelect.innerHTML = '<option value="all">ALL COMMUNITIES</option>';
+        filterSelect.innerHTML = '<option value="all">All Communities</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -950,7 +987,7 @@ function populateCommunityFilter() {
     const valSelect = document.getElementById('val-community');
     if (valSelect) {
         const currentVal = valSelect.value;
-        valSelect.innerHTML = '<option value="">SELECT COMMUNITY</option>';
+        valSelect.innerHTML = '<option value="">Select Community</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -960,10 +997,11 @@ function populateCommunityFilter() {
         valSelect.value = currentVal;
     }
 
+    // Populate hero search community dropdown
     const heroCommunitySelect = document.getElementById('filter-community-hero');
     if (heroCommunitySelect) {
         const currentHeroVal = heroCommunitySelect.value;
-        heroCommunitySelect.innerHTML = '<option value="all">ALL COMMUNITIES</option>';
+        heroCommunitySelect.innerHTML = '<option value="all">All Communities</option>';
         communities.forEach(c => {
             const option = document.createElement('option');
             option.value = c.name;
@@ -1101,25 +1139,52 @@ function formatDate(date) {
     }
 }
 
-// ============= SPA NAVIGATION =============
+// ============= SPA NAVIGATION - FIXED VERSION =============
 
 function navigateTo(sectionId, opts = {}) {
     const { push = true, slug = null } = opts;
 
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById(sectionId)?.classList.add('active');
-    
-    // Update navigation active state
-    updateNavActive(sectionId);
-    
+    // Update sections
+    document.querySelectorAll('.section').forEach(el => {
+        el.classList.remove('active');
+    });
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    // Update ALL navigation links (both desktop and mobile)
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+        // Also check href
+        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+            el.classList.add('active');
+        }
+    });
+
+    // Update floating nav active state
+    document.querySelectorAll('.floating-nav a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+    });
+
     currentSection = sectionId;
 
+    // Blog view handling
     if (sectionId === 'blog') {
-        document.getElementById('blog-grid').style.display = 'grid';
-        document.getElementById('blog-detail').style.display = 'none';
+        const grid = document.getElementById('blog-grid');
+        const detail = document.getElementById('blog-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
         currentBlogPost = null;
     }
-    
+
+    // Listings view handling
     if (sectionId === 'listings') {
         const { section, slug: routeSlug } = parseCurrentRoute();
         if (routeSlug && section === 'listings') {
@@ -1129,16 +1194,17 @@ function navigateTo(sectionId, opts = {}) {
                 document.getElementById('listing-detail').style.display = 'block';
                 document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
                 document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-            } else {
-                document.getElementById('listings-grid').style.display = 'grid';
-                document.getElementById('listing-detail').style.display = 'none';
+                return; // Don't proceed with grid view
             }
-        } else {
-            document.getElementById('listings-grid').style.display = 'grid';
-            document.getElementById('listing-detail').style.display = 'none';
         }
+        // Show grid view
+        const grid = document.getElementById('listings-grid');
+        const detail = document.getElementById('listing-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
     }
-    
+
+    // Set page title
     const sectionNames = {
         home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
         listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
@@ -1151,7 +1217,8 @@ function navigateTo(sectionId, opts = {}) {
         blog: 'Blog | ' + (config.siteName || 'Agent Web Studio')
     };
     document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
-    
+
+    // Load data for specific sections
     if (sectionId === 'listings') {
         populateCommunityFilter();
         filterListings();
@@ -1171,6 +1238,7 @@ function navigateTo(sectionId, opts = {}) {
         loadBlog();
     }
 
+    // Update URL
     if (push) {
         const path = buildPath(sectionId, slug);
         if (location.pathname + location.search !== path) {
@@ -1178,6 +1246,12 @@ function navigateTo(sectionId, opts = {}) {
         }
         updateCanonical(path);
     }
+
+    // Close mobile menu
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.getElementById('hamburger');
+    if (navMenu) navMenu.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1256,25 +1330,23 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     initFAQ();
     
+    // Initialize search button
+    initSearchButton();
+    
+    // Also ensure filter changes trigger on change events
+    document.querySelectorAll('.filter-bar select').forEach(el => {
+        el.addEventListener('change', filterListings);
+    });
+    
     submitForm('inquiry-form', 'leads/contact', 'Thank you! Your inquiry has been sent. We will respond within 24 hours.');
     submitForm('viewing-form', 'leads/viewing', 'Thank you! Your viewing request has been submitted. We will confirm the time shortly.');
     submitForm('valuation-form', 'leads/valuation', 'Thank you! Your valuation request has been submitted. We will get back to you within 24 hours.');
     submitForm('goldenvisa-form', 'leads/goldenvisa', 'Thank you! Your Golden Visa consultation request has been submitted. We will contact you shortly.');
     
-    // Search button listener
-    const searchBtn = document.getElementById('filter-search-btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', filterListings);
-    }
-    const searchInput = document.getElementById('filter-search');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') filterListings();
-        });
-    }
-    
-    document.querySelectorAll('.filter-bar select').forEach(el => {
+    // Add filter change events for all filter bars
+    document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
         el.addEventListener('change', filterListings);
+        el.addEventListener('keyup', function(e) { if (e.key === 'Enter') filterListings(); });
     });
     
     document.getElementById('modal-close')?.addEventListener('click', () => window.closeModal());
@@ -1322,4 +1394,3 @@ window.viewBlogPost = window.viewBlogPost;
 window.showBlogList = window.showBlogList;
 window.loadBlog = loadBlog;
 window.renderListingDetail = renderListingDetail;
-window.updateNavActive = updateNavActive;
