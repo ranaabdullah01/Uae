@@ -98,7 +98,6 @@
                 text-decoration: none;
                 white-space: nowrap;
                 text-transform: uppercase;
-                position: relative;
             }
 
             .floating-nav a:hover {
@@ -807,6 +806,7 @@
                 </div>
             </div>
             <div class="container">
+                <!-- FILTER BAR WITH SEARCH BUTTON -->
                 <div class="filter-bar">
                     <select id="filter-type-listings">
                         <option value="all">ALL TYPES</option>
@@ -842,20 +842,24 @@
                         <option value="for-rent">FOR RENT</option>
                         <option value="sold">SOLD</option>
                     </select>
-                    <div style="display:flex; gap:10px; align-items:center;">
+                    <div style="display:flex; gap:8px; align-items:center;">
                         <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="flex:1; padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px;">
-                        <button id="filter-search-btn" class="btn btn-primary" style="padding:12px 24px; white-space:nowrap;">
+                        <button id="search-btn" class="btn btn-primary" style="padding:12px 24px; min-width:auto; white-space:nowrap;">
                             <i class="fas fa-search"></i> SEARCH
                         </button>
                     </div>
                 </div>
+
+                <!-- Listings Grid -->
                 <div class="listings-grid" id="listings-grid"></div>
-                
+
+                <!-- Listing Detail View -->
                 <div id="listing-detail" style="display:none;">
                     <button class="btn btn-secondary" onclick="window.showListingList()">← BACK TO PROPERTIES</button>
                     <div id="listing-detail-content"></div>
                 </div>
-                
+
+                <!-- Portal Section -->
                 <div class="portal-section">
                     <h3>MORE PROPERTIES</h3>
                     <div class="portal-buttons">
@@ -872,7 +876,7 @@
             </div>
         </section>
 
-        <!-- OFFPLAN SECTION -->
+        <!-- ========== OFFPLAN SECTION ========== -->
         <section id="offplan" class="section">
             <div class="offplan-hero">
                 <div class="container">
@@ -917,7 +921,7 @@
             </div>
         </section>
 
-        <!-- COMMUNITIES SECTION -->
+        <!-- ========== COMMUNITIES SECTION ========== -->
         <section id="communities" class="section">
             <div class="communities-hero">
                 <div class="container">
@@ -930,7 +934,7 @@
             </div>
         </section>
 
-        <!-- BLOG SECTION -->
+        <!-- ========== BLOG SECTION ========== -->
         <section id="blog" class="section">
             <div class="blog-hero">
                 <div class="container">
@@ -947,7 +951,7 @@
             </div>
         </section>
 
-        <!-- ABOUT SECTION -->
+        <!-- ========== ABOUT SECTION ========== -->
         <section id="about" class="section">
             <div class="about-hero">
                 <div class="container">
@@ -994,7 +998,7 @@
             </div>
         </section>
 
-        <!-- CONTACT SECTION -->
+        <!-- ========== CONTACT SECTION ========== -->
         <section id="contact" class="section">
             <div class="contact-hero">
                 <div class="container">
@@ -1095,7 +1099,7 @@
             </div>
         </section>
 
-        <!-- VALUATION SECTION -->
+        <!-- ========== VALUATION SECTION ========== -->
         <section id="valuation" class="section">
             <div class="valuation-hero">
                 <div class="container">
@@ -1188,7 +1192,7 @@
             </div>
         </section>
 
-        <!-- GOLDEN VISA SECTION -->
+        <!-- ========== GOLDEN VISA SECTION ========== -->
         <section id="goldenvisa" class="section">
             <div class="goldenvisa-hero">
                 <div class="container">
@@ -1375,5 +1379,42 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
+
+    <!-- Inline script to sync hero search with listings -->
+    <script>
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                const heroSearchBtn = document.getElementById('hero-search-btn');
+                if (heroSearchBtn) {
+                    heroSearchBtn.addEventListener('click', function(e) {
+                        const heroType = document.getElementById('filter-type-hero');
+                        const heroCommunity = document.getElementById('filter-community-hero');
+                        const heroPrice = document.getElementById('filter-price-hero');
+                        const heroBedrooms = document.getElementById('filter-bedrooms-hero');
+                        const heroStatus = document.getElementById('filter-status-hero');
+
+                        const listingType = document.getElementById('filter-type-listings');
+                        const listingCommunity = document.getElementById('filter-community-listings');
+                        const listingPrice = document.getElementById('filter-price-listings');
+                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
+                        const listingStatus = document.getElementById('filter-status-listings');
+
+                        if (heroType && listingType) listingType.value = heroType.value;
+                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
+                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
+                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
+                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
+
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo('listings');
+                        }
+                    });
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
