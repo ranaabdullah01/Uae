@@ -88,13 +88,13 @@ function handleRoute() {
     } else if (section === 'listings' && slug) {
         navigateTo('listings', { push: false });
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        const filterBar = document.getElementById('filter-bar');
         if (listing) {
             document.getElementById('listings-grid').style.display = 'none';
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
             // Hide filter bar on detail view
-            const filterBar = document.getElementById('filter-bar');
             if (filterBar) filterBar.style.display = 'none';
         } else {
             window.showListingList({ push: false });
@@ -226,6 +226,7 @@ function updateAllSections() {
     populateCommunityFilter();
     
     const { section, slug } = parseCurrentRoute();
+    const filterBar = document.getElementById('filter-bar');
     if (section === 'listings' && slug) {
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
         if (listing) {
@@ -234,9 +235,10 @@ function updateAllSections() {
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
             // Hide filter bar on detail view
-            const filterBar = document.getElementById('filter-bar');
             if (filterBar) filterBar.style.display = 'none';
         }
+    } else if (section === 'listings') {
+        if (filterBar) filterBar.style.display = 'grid';
     }
 }
 
@@ -1180,11 +1182,15 @@ function navigateTo(sectionId, opts = {}) {
         if (routeSlug && section === 'listings') {
             const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
             if (listing) {
-                document.getElementById('listings-grid').style.display = 'none';
-                document.getElementById('listing-detail').style.display = 'block';
-                document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+                const grid = document.getElementById('listings-grid');
+                const detail = document.getElementById('listing-detail');
+                if (grid) grid.style.display = 'none';
                 if (filterBar) filterBar.style.display = 'none'; // Hide filter bar on detail
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                }
+                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
                 return; // Don't proceed with grid view
             }
         }
@@ -1343,6 +1349,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
 
     handleRoute();
+
+    // Ensure proper filter bar visibility on initial load
+    const filterBar = document.getElementById('filter-bar');
+    const listingDetail = document.getElementById('listing-detail');
+    if (listingDetail && listingDetail.style.display === 'block') {
+        if (filterBar) filterBar.style.display = 'none';
+    } else {
+        if (filterBar) filterBar.style.display = 'grid';
+    }
 
     const header = document.getElementById('main-header');
     window.addEventListener('scroll', () => {
