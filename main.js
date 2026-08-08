@@ -424,7 +424,7 @@ function getWhatsAppNumber() {
     return number.replace(/[^0-9]/g, '');
 }
 
-// ============= VIEW LISTING DETAIL (PAGE) - FIXED =============
+// ============= VIEW LISTING DETAIL (PAGE) - WITH FILTER BAR VISIBLE =============
 
 window.viewListingPage = function(id, opts = {}) {
     const { push = true } = opts;
@@ -438,8 +438,10 @@ window.viewListingPage = function(id, opts = {}) {
     const grid = document.getElementById('listings-grid');
     const detailContainer = document.getElementById('listing-detail');
     const content = document.getElementById('listing-detail-content');
+    const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'none';
+    if (filterBar) filterBar.style.display = 'grid'; // Keep filter bar visible
     if (detailContainer) {
         detailContainer.style.display = 'block';
         if (content) {
@@ -481,8 +483,10 @@ window.showListingList = function(opts = {}) {
     const grid = document.getElementById('listings-grid');
     const detail = document.getElementById('listing-detail');
     const content = document.getElementById('listing-detail-content');
+    const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'grid';
+    if (filterBar) filterBar.style.display = 'grid'; // Keep filter bar visible
     if (detail) detail.style.display = 'none';
     if (content) content.innerHTML = '';
     
@@ -577,7 +581,6 @@ function renderListingDetail(listing) {
                 <div class="listing-detail-page-actions">
                     <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">Inquire on WhatsApp</a>
                     <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">Schedule Viewing</button>
-                    <button class="btn btn-secondary" onclick="window.showListingList()">Back to Properties</button>
                 </div>
             </div>
         </div>
@@ -896,7 +899,7 @@ window.showBlogList = function(opts = {}) {
     }
 };
 
-// ============= FILTER FUNCTIONS - WITH SEARCH BUTTON =============
+// ============= FILTER FUNCTIONS - NO SEARCH BUTTON =============
 
 function filterListings() {
     const type = document.getElementById('filter-type-listings')?.value || 'all';
@@ -935,27 +938,6 @@ function filterListings() {
     const container = document.getElementById('listings-grid');
     if (container) {
         renderListings(filtered, container);
-    }
-}
-
-function initSearchButton() {
-    const searchBtn = document.getElementById('search-btn');
-    if (searchBtn) {
-        searchBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            filterListings();
-        });
-    }
-    
-    // Also trigger on Enter key in search input
-    const searchInput = document.getElementById('filter-search');
-    if (searchInput) {
-        searchInput.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                filterListings();
-            }
-        });
     }
 }
 
@@ -1200,7 +1182,9 @@ function navigateTo(sectionId, opts = {}) {
         // Show grid view
         const grid = document.getElementById('listings-grid');
         const detail = document.getElementById('listing-detail');
+        const filterBar = document.getElementById('filter-bar');
         if (grid) grid.style.display = 'grid';
+        if (filterBar) filterBar.style.display = 'grid';
         if (detail) detail.style.display = 'none';
     }
 
@@ -1329,14 +1313,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     });
     
     initFAQ();
-    
-    // Initialize search button
-    initSearchButton();
-    
-    // Also ensure filter changes trigger on change events
-    document.querySelectorAll('.filter-bar select').forEach(el => {
-        el.addEventListener('change', filterListings);
-    });
     
     submitForm('inquiry-form', 'leads/contact', 'Thank you! Your inquiry has been sent. We will respond within 24 hours.');
     submitForm('viewing-form', 'leads/viewing', 'Thank you! Your viewing request has been submitted. We will confirm the time shortly.');
