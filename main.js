@@ -96,6 +96,8 @@ function handleRoute() {
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
             // Hide filter bar on detail view
             if (filterBar) filterBar.style.display = 'none';
+            // Initialize gallery after content is rendered
+            setTimeout(initGallery, 100);
         } else {
             window.showListingList({ push: false });
         }
@@ -236,6 +238,8 @@ function updateAllSections() {
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
             // Hide filter bar on detail view
             if (filterBar) filterBar.style.display = 'none';
+            // Initialize gallery after content is rendered
+            setTimeout(initGallery, 100);
         }
     } else if (section === 'listings') {
         if (filterBar) filterBar.style.display = 'grid';
@@ -454,6 +458,8 @@ window.viewListingPage = function(id, opts = {}) {
         detailContainer.style.display = 'block';
         if (content) {
             content.innerHTML = renderListingDetail(listing);
+            // Initialize gallery after content is rendered
+            setTimeout(initGallery, 100);
         }
     }
 
@@ -513,30 +519,45 @@ window.showListingList = function(opts = {}) {
 
 function renderListingDetail(listing) {
     const images = listing.images && typeof listing.images === 'string' 
-        ? listing.images.split(',') 
+        ? listing.images.split(',').map(img => img.trim()).filter(img => img)
         : (Array.isArray(listing.images) ? listing.images : []);
     
+    // If no images, use placeholder
+    if (images.length === 0) {
+        images.push('https://placehold.co/800x600/0A1628/C9A84C?text=No+Image');
+    }
+    
     const features = listing.features && typeof listing.features === 'string'
-        ? listing.features.split(',')
+        ? listing.features.split(',').map(f => f.trim()).filter(f => f)
         : (Array.isArray(listing.features) ? listing.features : []);
     
-    let gallery = '';
-    if (images.length > 0) {
-        gallery = `
-            <div class="listing-detail-gallery">
-                <div class="gallery-main">
-                    <img src="${images[0].trim()}" alt="${listing.title}" id="gallery-main-image">
+    // Build gallery with slider controls
+    let gallery = `
+        <div class="listing-detail-gallery" id="listing-gallery">
+            <div class="gallery-main" id="gallery-main">
+                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image">
+                <div class="gallery-controls">
+                    <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="next-btn" id="gallery-next" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
-                ${images.length > 1 ? `
-                    <div class="gallery-thumbs">
-                        ${images.map(img => `
-                            <img src="${img.trim()}" alt="${listing.title}" onclick="document.getElementById('gallery-main-image').src=this.src" class="thumb">
-                        `).join('')}
-                    </div>
-                ` : ''}
+                <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
-        `;
-    }
+            ${images.length > 1 ? `
+                <div class="gallery-thumbs" id="gallery-thumbs">
+                    ${images.map((img, index) => `
+                        <img src="${img}" alt="${listing.title} - Image ${index + 1}" 
+                             class="thumb ${index === 0 ? 'active' : ''}" 
+                             data-index="${index}"
+                             onclick="window.setGalleryImage(${index})">
+                    `).join('')}
+                </div>
+            ` : ''}
+        </div>
+    `;
     
     return `
         <div class="listing-detail-page">
@@ -564,7 +585,7 @@ function renderListingDetail(listing) {
                     <div class="listing-detail-page-features">
                         <h3>Features & Amenities</h3>
                         <div class="features-grid">
-                            ${features.map(f => `<span class="feature-tag"><i class="fas fa-check"></i> ${f.trim()}</span>`).join('')}
+                            ${features.map(f => `<span class="feature-tag"><i class="fas fa-check"></i> ${f}</span>`).join('')}
                         </div>
                     </div>
                 ` : ''}
@@ -593,6 +614,101 @@ function renderListingDetail(listing) {
             </div>
         </div>
     `;
+}
+
+// ============= GALLERY IMAGE SLIDER FUNCTIONS =============
+
+let currentImageIndex = 0;
+let galleryImages = [];
+
+window.setGalleryImage = function(index) {
+    const images = galleryImages;
+    if (!images || images.length === 0) return;
+    
+    if (index < 0) index = images.length - 1;
+    if (index >= images.length) index = 0;
+    
+    currentImageIndex = index;
+    
+    // Update main image
+    const mainImg = document.getElementById('gallery-main-image');
+    if (mainImg) {
+        mainImg.src = images[index];
+        mainImg.alt = `Image ${index + 1}`;
+    }
+    
+    // Update counter
+    const counter = document.getElementById('gallery-counter');
+    if (counter) {
+        counter.textContent = `${index + 1} / ${images.length}`;
+    }
+    
+    // Update thumbnails
+    document.querySelectorAll('.gallery-thumbs .thumb').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+    });
+};
+
+window.prevImage = function() {
+    window.setGalleryImage(currentImageIndex - 1);
+};
+
+window.nextImage = function() {
+    window.setGalleryImage(currentImageIndex + 1);
+};
+
+function initGallery() {
+    // Get all images from the gallery
+    const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+    if (thumbs.length > 0) {
+        galleryImages = Array.from(thumbs).map(thumb => thumb.src);
+    } else {
+        const mainImg = document.getElementById('gallery-main-image');
+        if (mainImg) {
+            galleryImages = [mainImg.src];
+        }
+    }
+    
+    // Set initial index
+    currentImageIndex = 0;
+    
+    // Update counter
+    const counter = document.getElementById('gallery-counter');
+    if (counter && galleryImages.length > 0) {
+        counter.textContent = `1 / ${galleryImages.length}`;
+    }
+    
+    // Add event listeners for prev/next buttons
+    const prevBtn = document.getElementById('gallery-prev');
+    const nextBtn = document.getElementById('gallery-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.prevImage();
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.nextImage();
+        });
+    }
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        const detailVisible = document.getElementById('listing-detail')?.style.display === 'block';
+        if (!detailVisible) return;
+        
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            window.prevImage();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            window.nextImage();
+        }
+    });
 }
 
 function renderFeaturedOffplan() {
@@ -1189,6 +1305,8 @@ function navigateTo(sectionId, opts = {}) {
                 if (detail) {
                     detail.style.display = 'block';
                     document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                    // Initialize gallery after content is rendered
+                    setTimeout(initGallery, 100);
                 }
                 document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
                 return; // Don't proceed with grid view
@@ -1393,3 +1511,7 @@ window.viewBlogPost = window.viewBlogPost;
 window.showBlogList = window.showBlogList;
 window.loadBlog = loadBlog;
 window.renderListingDetail = renderListingDetail;
+window.setGalleryImage = setGalleryImage;
+window.prevImage = prevImage;
+window.nextImage = nextImage;
+window.initGallery = initGallery;
