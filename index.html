@@ -438,6 +438,49 @@
         }
 
         /* ============================================================
+           LISTING DETAIL - BACK BUTTON SPACING
+           ============================================================ */
+        #listing-detail > .btn-secondary {
+            margin-bottom: 32px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 100px;
+            background: transparent;
+            color: var(--emerald);
+            border: 1.5px solid var(--line);
+            transition: var(--transition);
+        }
+
+        #listing-detail > .btn-secondary:hover {
+            background: var(--cream);
+            border-color: var(--emerald);
+            transform: translateX(-4px);
+        }
+
+        #listing-detail > .btn-secondary::before {
+            content: '←';
+            font-size: 16px;
+            transition: transform 0.3s ease;
+        }
+
+        #listing-detail > .btn-secondary:hover::before {
+            transform: translateX(-4px);
+        }
+
+        .listing-detail-page {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding-top: 12px;
+        }
+
+        /* ============================================================
            RESPONSIVE
            ============================================================ */
         @media (max-width: 1100px) {
@@ -497,6 +540,14 @@
                 width: 100%;
                 max-width: 300px;
             }
+
+            #listing-detail > .btn-secondary {
+                margin-bottom: 24px;
+                padding: 10px 20px;
+                font-size: 12px;
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
@@ -516,6 +567,12 @@
                 padding: 10px 18px;
                 font-size: 11px;
                 max-width: 100%;
+            }
+
+            #listing-detail > .btn-secondary {
+                margin-bottom: 18px;
+                padding: 8px 16px;
+                font-size: 11px;
             }
         }
     </style>
@@ -806,8 +863,8 @@
                 </div>
             </div>
             <div class="container">
-                <!-- FILTER BAR WITH SEARCH BUTTON -->
-                <div class="filter-bar">
+                <!-- FILTER BAR - WITHOUT SEARCH BUTTON, VISIBLE ON ALL LISTINGS VIEWS -->
+                <div class="filter-bar" id="filter-bar">
                     <select id="filter-type-listings">
                         <option value="all">ALL TYPES</option>
                         <option value="Apartment">APARTMENT</option>
@@ -842,12 +899,7 @@
                         <option value="for-rent">FOR RENT</option>
                         <option value="sold">SOLD</option>
                     </select>
-                    <div style="display:flex; gap:8px; align-items:center;">
-                        <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="flex:1; padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px;">
-                        <button id="search-btn" class="btn btn-primary" style="padding:12px 24px; min-width:auto; white-space:nowrap;">
-                            <i class="fas fa-search"></i> SEARCH
-                        </button>
-                    </div>
+                    <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px; width:100%;">
                 </div>
 
                 <!-- Listings Grid -->
@@ -1413,6 +1465,20 @@
                         }
                     });
                 }
+
+                // Auto-filter on any filter change
+                document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
+                    el.addEventListener('change', function() {
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                    });
+                    el.addEventListener('keyup', function(e) {
+                        if (e.key === 'Enter' && typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                    });
+                });
             });
         })();
     </script>
