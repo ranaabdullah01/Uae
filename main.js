@@ -94,9 +94,7 @@ function handleRoute() {
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-            // Hide filter bar on detail view
             if (filterBar) filterBar.style.display = 'none';
-            // Initialize gallery after content is rendered
             setTimeout(initGallery, 100);
         } else {
             window.showListingList({ push: false });
@@ -236,9 +234,7 @@ function updateAllSections() {
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-            // Hide filter bar on detail view
             if (filterBar) filterBar.style.display = 'none';
-            // Initialize gallery after content is rendered
             setTimeout(initGallery, 100);
         }
     } else if (section === 'listings') {
@@ -255,7 +251,6 @@ function updateConfigInDOM() {
         if (el) el.textContent = profile.agentName || config.agentName || 'Ahmed Khan';
     });
     
-    // Only update tagline if it doesn't have data-custom attribute
     const titleEl = document.getElementById('agent-tagline');
     if (titleEl && !titleEl.dataset.custom) {
         titleEl.textContent = profile.agentTitle || config.agentTitle || 'Luxury Real Estate Specialist';
@@ -386,7 +381,7 @@ function renderListings(listingsData, container) {
     container.innerHTML = '';
     
     if (listingsData.length === 0) {
-        container.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-grey);">No properties found matching your criteria.</p>';
+        container.innerHTML = '<p class="no-results"><i class="fas fa-home"></i> No properties found matching your criteria.</p>';
         return;
     }
     
@@ -400,28 +395,37 @@ function createListingCard(listing) {
     card.className = 'listing-card';
     
     const images = listing.images && typeof listing.images === 'string' 
-        ? listing.images.split(',') 
+        ? listing.images.split(',').map(img => img.trim()).filter(img => img)
         : (Array.isArray(listing.images) ? listing.images : []);
     const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/800x600/0A1628/C9A84C?text=Property';
+    
+    const statusClass = listing.status || 'for-sale';
+    const statusDisplay = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
+    const rerna = config.rernaBRN || '123456';
     
     card.innerHTML = `
         <div class="listing-card-image">
             <img src="${firstImage}" alt="${listing.title}" loading="lazy">
             <div class="listing-card-badges">
                 ${listing.featured ? '<span class="badge badge-featured">Featured</span>' : ''}
-                <span class="badge badge-status">${listing.status.replace('-', ' ')}</span>
-                <span class="badge badge-type">${listing.type}</span>
+                <span class="badge badge-status ${statusClass}">${statusDisplay}</span>
+                <span class="badge badge-type">${listing.type || 'Property'}</span>
+            </div>
+            <div class="listing-card-price-tag">
+                <div class="price">AED ${formatPrice(listing.price)}</div>
             </div>
         </div>
         <div class="listing-card-body">
             <h3>${listing.title}</h3>
-            <div class="listing-card-price">AED ${formatPrice(listing.price)}</div>
-            <div class="listing-card-details">
-                <span><i class="fas fa-map-marker-alt"></i> ${listing.community}</span>
-                <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
-                <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
-                <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
+            <div class="listing-card-location">
+                <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
             </div>
+            <div class="listing-card-details">
+                <span><i class="fas fa-bed"></i> ${listing.bedrooms || 0}</span>
+                <span><i class="fas fa-bath"></i> ${listing.bathrooms || 0}</span>
+                <span><i class="fas fa-ruler-combined"></i> ${listing.sqft || 0} sqft</span>
+            </div>
+            <span class="listing-card-rera">RERA BRN: ${rerna}</span>
             <div class="listing-card-actions">
                 <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
                 <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
@@ -446,24 +450,21 @@ window.viewListingPage = function(id, opts = {}) {
         return;
     }
 
-    // Hide grid, show detail
     const grid = document.getElementById('listings-grid');
     const detailContainer = document.getElementById('listing-detail');
     const content = document.getElementById('listing-detail-content');
     const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'none';
-    if (filterBar) filterBar.style.display = 'none'; // HIDE filter bar on detail view
+    if (filterBar) filterBar.style.display = 'none';
     if (detailContainer) {
         detailContainer.style.display = 'block';
         if (content) {
             content.innerHTML = renderListingDetail(listing);
-            // Initialize gallery after content is rendered
             setTimeout(initGallery, 100);
         }
     }
 
-    // Update URL
     if (push) {
         const path = buildPath('listings', listing.id);
         if (location.pathname !== path) {
@@ -472,15 +473,12 @@ window.viewListingPage = function(id, opts = {}) {
         updateCanonical(path);
     }
     
-    // Update title
     document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
     
-    // Update active section
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     const listingsSection = document.getElementById('listings');
     if (listingsSection) listingsSection.classList.add('active');
     
-    // Update navigation active states
     document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
         el.classList.remove('active');
         if (el.dataset && el.dataset.section === 'listings') {
@@ -488,7 +486,6 @@ window.viewListingPage = function(id, opts = {}) {
         }
     });
     
-    // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
@@ -500,7 +497,7 @@ window.showListingList = function(opts = {}) {
     const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'grid';
-    if (filterBar) filterBar.style.display = 'grid'; // SHOW filter bar on list view
+    if (filterBar) filterBar.style.display = 'grid';
     if (detail) detail.style.display = 'none';
     if (content) content.innerHTML = '';
     
@@ -513,7 +510,6 @@ window.showListingList = function(opts = {}) {
     }
     document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
     
-    // Navigate to listings section
     navigateTo('listings', { push: false });
 };
 
@@ -522,7 +518,6 @@ function renderListingDetail(listing) {
         ? listing.images.split(',').map(img => img.trim()).filter(img => img)
         : (Array.isArray(listing.images) ? listing.images : []);
     
-    // If no images, use placeholder
     if (images.length === 0) {
         images.push('https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image');
     }
@@ -531,10 +526,8 @@ function renderListingDetail(listing) {
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
         : (Array.isArray(listing.features) ? listing.features : []);
     
-    // Status badge class
     const statusClass = listing.status || 'for-sale';
     
-    // Build gallery with slider controls
     let gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -562,7 +555,6 @@ function renderListingDetail(listing) {
         </div>
     `;
     
-    // Build specs
     const specs = [
         { icon: 'fa-bed', label: 'Bedrooms', value: listing.bedrooms || 'N/A' },
         { icon: 'fa-bath', label: 'Bathrooms', value: listing.bathrooms || 'N/A' },
@@ -574,7 +566,6 @@ function renderListingDetail(listing) {
         { icon: 'fa-car', label: 'Parking', value: listing.parking || 'N/A' }
     ];
     
-    // Build property details
     const details = [
         { label: 'Type', value: listing.type || 'N/A' },
         { label: 'Status', value: listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'N/A' },
@@ -588,12 +579,8 @@ function renderListingDetail(listing) {
         { label: 'Parking', value: listing.parking || 'N/A' }
     ];
     
-    if (listing.permit) {
-        details.push({ label: 'Permit', value: listing.permit });
-    }
-    if (listing.building) {
-        details.push({ label: 'Building', value: listing.building });
-    }
+    if (listing.permit) details.push({ label: 'Permit', value: listing.permit });
+    if (listing.building) details.push({ label: 'Building', value: listing.building });
     
     return `
         <div class="listing-detail-page">
@@ -694,20 +681,17 @@ window.setGalleryImage = function(index) {
     
     currentImageIndex = index;
     
-    // Update main image
     const mainImg = document.getElementById('gallery-main-image');
     if (mainImg) {
         mainImg.src = images[index];
         mainImg.alt = `Image ${index + 1}`;
     }
     
-    // Update counter
     const counter = document.getElementById('gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
     
-    // Update thumbnails
     document.querySelectorAll('.gallery-thumbs .thumb').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
@@ -722,7 +706,6 @@ window.nextImage = function() {
 };
 
 function initGallery() {
-    // Get all images from the gallery
     const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
     if (thumbs.length > 0) {
         galleryImages = Array.from(thumbs).map(thumb => thumb.src);
@@ -733,16 +716,13 @@ function initGallery() {
         }
     }
     
-    // Set initial index
     currentImageIndex = 0;
     
-    // Update counter
     const counter = document.getElementById('gallery-counter');
     if (counter && galleryImages.length > 0) {
         counter.textContent = `1 / ${galleryImages.length}`;
     }
     
-    // Add event listeners for prev/next buttons
     const prevBtn = document.getElementById('gallery-prev');
     const nextBtn = document.getElementById('gallery-next');
     
@@ -760,7 +740,6 @@ function initGallery() {
         });
     }
     
-    // Keyboard navigation
     document.addEventListener('keydown', function(e) {
         const detailVisible = document.getElementById('listing-detail')?.style.display === 'block';
         if (!detailVisible) return;
@@ -1087,7 +1066,7 @@ window.showBlogList = function(opts = {}) {
     }
 };
 
-// ============= FILTER FUNCTIONS - NO SEARCH BUTTON =============
+// ============= FILTER FUNCTIONS =============
 
 function filterListings() {
     const type = document.getElementById('filter-type-listings')?.value || 'all';
@@ -1167,7 +1146,6 @@ function populateCommunityFilter() {
         valSelect.value = currentVal;
     }
 
-    // Populate hero search community dropdown
     const heroCommunitySelect = document.getElementById('filter-community-hero');
     if (heroCommunitySelect) {
         const currentHeroVal = heroCommunitySelect.value;
@@ -1309,12 +1287,11 @@ function formatDate(date) {
     }
 }
 
-// ============= SPA NAVIGATION - FIXED VERSION =============
+// ============= SPA NAVIGATION =============
 
 function navigateTo(sectionId, opts = {}) {
     const { push = true, slug = null } = opts;
 
-    // Update sections
     document.querySelectorAll('.section').forEach(el => {
         el.classList.remove('active');
     });
@@ -1323,19 +1300,16 @@ function navigateTo(sectionId, opts = {}) {
         targetSection.classList.add('active');
     }
 
-    // Update ALL navigation links (both desktop and mobile)
     document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
         el.classList.remove('active');
         if (el.dataset && el.dataset.section === sectionId) {
             el.classList.add('active');
         }
-        // Also check href
         if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
             el.classList.add('active');
         }
     });
 
-    // Update floating nav active state
     document.querySelectorAll('.floating-nav a').forEach(el => {
         el.classList.remove('active');
         if (el.dataset.section === sectionId) {
@@ -1345,7 +1319,6 @@ function navigateTo(sectionId, opts = {}) {
 
     currentSection = sectionId;
 
-    // Blog view handling
     if (sectionId === 'blog') {
         const grid = document.getElementById('blog-grid');
         const detail = document.getElementById('blog-detail');
@@ -1354,7 +1327,6 @@ function navigateTo(sectionId, opts = {}) {
         currentBlogPost = null;
     }
 
-    // Listings view handling
     if (sectionId === 'listings') {
         const { section, slug: routeSlug } = parseCurrentRoute();
         const filterBar = document.getElementById('filter-bar');
@@ -1365,26 +1337,23 @@ function navigateTo(sectionId, opts = {}) {
                 const grid = document.getElementById('listings-grid');
                 const detail = document.getElementById('listing-detail');
                 if (grid) grid.style.display = 'none';
-                if (filterBar) filterBar.style.display = 'none'; // Hide filter bar on detail
+                if (filterBar) filterBar.style.display = 'none';
                 if (detail) {
                     detail.style.display = 'block';
                     document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                    // Initialize gallery after content is rendered
                     setTimeout(initGallery, 100);
                 }
                 document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-                return; // Don't proceed with grid view
+                return;
             }
         }
-        // Show grid view
         const grid = document.getElementById('listings-grid');
         const detail = document.getElementById('listing-detail');
         if (grid) grid.style.display = 'grid';
-        if (filterBar) filterBar.style.display = 'grid'; // Show filter bar on list view
+        if (filterBar) filterBar.style.display = 'grid';
         if (detail) detail.style.display = 'none';
     }
 
-    // Set page title
     const sectionNames = {
         home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
         listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
@@ -1398,7 +1367,6 @@ function navigateTo(sectionId, opts = {}) {
     };
     document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
 
-    // Load data for specific sections
     if (sectionId === 'listings') {
         populateCommunityFilter();
         filterListings();
@@ -1418,7 +1386,6 @@ function navigateTo(sectionId, opts = {}) {
         loadBlog();
     }
 
-    // Update URL
     if (push) {
         const path = buildPath(sectionId, slug);
         if (location.pathname + location.search !== path) {
@@ -1427,7 +1394,6 @@ function navigateTo(sectionId, opts = {}) {
         updateCanonical(path);
     }
 
-    // Close mobile menu
     const navMenu = document.getElementById('nav-menu');
     const hamburger = document.getElementById('hamburger');
     if (navMenu) navMenu.classList.remove('active');
@@ -1515,8 +1481,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     submitForm('valuation-form', 'leads/valuation', 'Thank you! Your valuation request has been submitted. We will get back to you within 24 hours.');
     submitForm('goldenvisa-form', 'leads/goldenvisa', 'Thank you! Your Golden Visa consultation request has been submitted. We will contact you shortly.');
     
-    // Add filter change events for all filter bars
-    document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
+    document.querySelectorAll('.filter-bar-premium select, .filter-bar-premium input').forEach(el => {
         el.addEventListener('change', filterListings);
         el.addEventListener('keyup', function(e) { if (e.key === 'Enter') filterListings(); });
     });
@@ -1532,7 +1497,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     handleRoute();
 
-    // Ensure proper filter bar visibility on initial load
     const filterBar = document.getElementById('filter-bar');
     const listingDetail = document.getElementById('listing-detail');
     if (listingDetail && listingDetail.style.display === 'block') {
