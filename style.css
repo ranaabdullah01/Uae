@@ -2417,32 +2417,33 @@ nav .nav-container {
 
 /* ============================================================
    LISTING DETAIL PAGE - PREMIUM LUXURY REDESIGN
+   Spacious desktop layout - 1200-1400px container
    Inspired by high-end Dubai real estate websites
    ============================================================ */
 
 #listing-detail {
-    padding: 40px 0 80px;
+    padding: 48px 0 100px;
     background: #F8F8F6;
 }
 
 /* Back button */
 #listing-detail > .btn-secondary {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 14px 32px;
+    padding: 16px 36px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     border-radius: 100px;
     background: var(--brass);
     color: var(--white);
     border: none;
-    box-shadow: 0 4px 14px rgba(176, 138, 62, 0.3);
+    box-shadow: 0 4px 16px rgba(176, 138, 62, 0.3);
     transition: var(--transition);
     cursor: pointer;
 }
@@ -2450,7 +2451,7 @@ nav .nav-container {
 #listing-detail > .btn-secondary:hover {
     background: var(--brass-dark);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(176, 138, 62, 0.4);
+    box-shadow: 0 8px 28px rgba(176, 138, 62, 0.4);
 }
 
 #listing-detail > .btn-secondary:active {
@@ -2462,20 +2463,20 @@ nav .nav-container {
 }
 
 #listing-detail > .btn-secondary i {
-    font-size: 14px;
+    font-size: 15px;
 }
 
 /* ============================================================
-   PREMIUM GALLERY
+   PREMIUM GALLERY - LARGER & MORE PROMINENT
    ============================================================ */
 
 .listing-detail-gallery {
     position: relative;
-    margin-bottom: 40px;
-    border-radius: 20px;
+    margin-bottom: 48px;
+    border-radius: 24px;
     overflow: hidden;
     background: #F0EDE8;
-    box-shadow: 0 8px 40px rgba(11, 59, 46, 0.08);
+    box-shadow: 0 12px 48px rgba(11, 59, 46, 0.10);
 }
 
 .gallery-main {
@@ -2483,6 +2484,7 @@ nav .nav-container {
     aspect-ratio: 16/9;
     background: #F0EDE8;
     overflow: hidden;
+    min-height: 480px;
 }
 
 .gallery-main img {
@@ -2505,22 +2507,22 @@ nav .nav-container {
     transform: translateY(-50%);
     display: flex;
     justify-content: space-between;
-    padding: 0 20px;
+    padding: 0 28px;
     z-index: 5;
     pointer-events: none;
 }
 
 .gallery-controls button {
     pointer-events: auto;
-    width: 52px;
-    height: 52px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.14);
     color: var(--emerald-deep);
-    font-size: 18px;
+    font-size: 20px;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
@@ -2535,8 +2537,8 @@ nav .nav-container {
 
 .gallery-controls button:hover {
     background: var(--white);
-    transform: scale(1.08);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+    transform: scale(1.10);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.20);
 }
 
 .gallery-controls button:active {
@@ -2554,15 +2556,15 @@ nav .nav-container {
 /* Gallery Counter */
 .gallery-counter {
     position: absolute;
-    bottom: 20px;
-    right: 20px;
+    bottom: 24px;
+    right: 24px;
     background: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(8px);
     color: var(--cream);
-    padding: 6px 16px;
+    padding: 8px 20px;
     border-radius: 100px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 500;
     z-index: 5;
     letter-spacing: 0.04em;
@@ -2571,18 +2573,18 @@ nav .nav-container {
 /* Gallery Thumbnails */
 .gallery-thumbs {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px;
-    margin-top: 14px;
-    padding: 0 2px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+    padding: 0 4px;
 }
 
 .gallery-thumbs .thumb {
     aspect-ratio: 16/10;
     object-fit: cover;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
-    border: 2.5px solid transparent;
+    border: 3px solid transparent;
     transition: var(--transition);
 }
 
@@ -2593,25 +2595,25 @@ nav .nav-container {
 
 .gallery-thumbs .thumb.active {
     border-color: var(--brass);
-    box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.25);
+    box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.25);
 }
 
 /* ============================================================
-   PREMIUM PROPERTY HEADER
+   PREMIUM PROPERTY HEADER - LARGER TYPOGRAPHY
    ============================================================ */
 
 .listing-detail-header {
-    margin-bottom: 36px;
-    padding-bottom: 28px;
+    margin-bottom: 44px;
+    padding-bottom: 32px;
     border-bottom: 1px solid #E8E4DD;
 }
 
 .listing-detail-title {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 700;
-    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-size: clamp(2.2rem, 3.8vw, 3.2rem);
     color: var(--emerald-deep);
-    margin: 0 0 8px 0;
+    margin: 0 0 12px 0;
     letter-spacing: -0.02em;
     line-height: 1.1;
 }
@@ -2619,32 +2621,32 @@ nav .nav-container {
 .listing-detail-location {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--ink-soft);
-    margin-bottom: 20px;
+    margin-bottom: 24px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .listing-detail-location i {
     color: var(--brass);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 /* Property Price Row */
 .listing-detail-price-row {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 24px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .listing-detail-price {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 700;
-    font-size: clamp(2rem, 3vw, 2.6rem);
+    font-size: clamp(2.4rem, 3.5vw, 3.2rem);
     color: var(--brass-dark);
     letter-spacing: -0.02em;
 }
@@ -2652,12 +2654,12 @@ nav .nav-container {
 .listing-detail-status-badge {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 18px;
+    gap: 8px;
+    padding: 8px 24px;
     border-radius: 100px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 13px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     background: var(--emerald);
@@ -2679,35 +2681,35 @@ nav .nav-container {
     color: #F7F3EA;
 }
 
-/* Property Specs Grid */
+/* Property Specs Grid - LARGER */
 .listing-detail-specs {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
     background: var(--white);
-    border-radius: 14px;
-    padding: 16px 20px;
+    border-radius: 16px;
+    padding: 20px 28px;
     border: 1px solid #E8E4DD;
-    box-shadow: 0 2px 8px rgba(11, 59, 46, 0.04);
+    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
 }
 
 .listing-detail-spec-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 4px 0;
+    gap: 14px;
+    padding: 6px 0;
 }
 
 .listing-detail-spec-item .spec-icon {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: #F0EDE8;
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--brass);
-    font-size: 14px;
+    font-size: 17px;
     flex-shrink: 0;
 }
 
@@ -2717,86 +2719,86 @@ nav .nav-container {
     font-weight: 500;
     color: var(--ink-soft);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
 }
 
 .listing-detail-spec-item .spec-value {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 15px;
+    font-size: 17px;
     color: var(--emerald-deep);
     letter-spacing: -0.01em;
 }
 
 /* ============================================================
-   PREMIUM TWO-COLUMN LAYOUT
+   PREMIUM TWO-COLUMN LAYOUT - SPACIOUS
    ============================================================ */
 
 .listing-detail-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
-    gap: 40px;
-    margin-top: 8px;
+    gap: 48px;
+    margin-top: 12px;
 }
 
 /* Left Column */
 .listing-detail-left {
     display: flex;
     flex-direction: column;
-    gap: 32px;
+    gap: 36px;
 }
 
 /* Right Column */
 .listing-detail-right {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 28px;
 }
 
 /* ============================================================
-   PREMIUM CONTENT CARDS
+   PREMIUM CONTENT CARDS - SPACIOUS
    ============================================================ */
 
 .listing-detail-card {
     background: var(--white);
-    border-radius: 16px;
-    padding: 28px 32px;
+    border-radius: 18px;
+    padding: 36px 40px;
     border: 1px solid #E8E4DD;
-    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
+    box-shadow: 0 2px 16px rgba(11, 59, 46, 0.04);
     transition: box-shadow 0.3s var(--ease);
 }
 
 .listing-detail-card:hover {
-    box-shadow: 0 8px 30px rgba(11, 59, 46, 0.06);
+    box-shadow: 0 8px 36px rgba(11, 59, 46, 0.07);
 }
 
 .listing-detail-card-title {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     color: var(--emerald-deep);
-    margin: 0 0 16px 0;
+    margin: 0 0 20px 0;
     letter-spacing: -0.02em;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .listing-detail-card-title::before {
     content: '';
     display: inline-block;
-    width: 4px;
-    height: 20px;
+    width: 5px;
+    height: 24px;
     background: var(--brass);
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 /* Description */
 .listing-detail-description {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
-    font-size: 0.95rem;
-    line-height: 1.8;
+    font-size: 1.05rem;
+    line-height: 1.9;
     color: var(--ink-soft);
     margin: 0;
 }
@@ -2804,20 +2806,20 @@ nav .nav-container {
 /* Features Grid */
 .listing-detail-features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
 }
 
 .listing-detail-feature-item {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
+    gap: 12px;
+    padding: 10px 16px;
     background: #F8F8F6;
-    border-radius: 8px;
+    border-radius: 10px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--ink);
     transition: var(--transition);
 }
@@ -2828,7 +2830,7 @@ nav .nav-container {
 
 .listing-detail-feature-item i {
     color: var(--brass);
-    font-size: 12px;
+    font-size: 13px;
     flex-shrink: 0;
 }
 
@@ -2836,14 +2838,14 @@ nav .nav-container {
 .listing-detail-details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px 24px;
+    gap: 16px 32px;
 }
 
 .listing-detail-detail-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 10px 0;
     border-bottom: 1px solid #F0EDE8;
 }
 
@@ -2853,63 +2855,63 @@ nav .nav-container {
 
 .listing-detail-detail-item .detail-label {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 500;
     color: var(--ink-soft);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
 }
 
 .listing-detail-detail-item .detail-value {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--emerald-deep);
 }
 
 /* ============================================================
-   PREMIUM ACTION BUTTONS (Right Column)
+   PREMIUM ACTION BUTTONS (Right Column) - LARGER
    ============================================================ */
 
 .listing-detail-actions-card {
     background: var(--white);
-    border-radius: 16px;
-    padding: 28px 24px;
+    border-radius: 18px;
+    padding: 36px 32px;
     border: 1px solid #E8E4DD;
-    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
+    box-shadow: 0 2px 16px rgba(11, 59, 46, 0.04);
     text-align: center;
     position: sticky;
-    top: 24px;
+    top: 32px;
 }
 
 .listing-detail-actions-card .action-title {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.2rem;
     color: var(--emerald-deep);
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
     letter-spacing: -0.02em;
 }
 
 .listing-detail-actions-card .action-subtitle {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--ink-soft);
-    margin: 0 0 20px 0;
+    margin: 0 0 24px 0;
 }
 
 .listing-detail-actions {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
 }
 
 .listing-detail-actions .btn {
     width: 100%;
-    padding: 16px 24px;
-    font-size: 14px;
-    border-radius: 12px;
+    padding: 18px 24px;
+    font-size: 15px;
+    border-radius: 14px;
     justify-content: center;
     min-width: 0;
 }
@@ -2917,31 +2919,31 @@ nav .nav-container {
 .listing-detail-actions .btn-whatsapp {
     background: #25D366;
     color: var(--white);
-    box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.35);
 }
 
 .listing-detail-actions .btn-whatsapp:hover {
     background: #1DA851;
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+    box-shadow: 0 8px 28px rgba(37, 211, 102, 0.45);
 }
 
 .listing-detail-actions .btn-primary {
     background: var(--emerald);
     color: var(--cream);
-    box-shadow: 0 4px 16px rgba(11, 59, 46, 0.25);
+    box-shadow: 0 4px 20px rgba(11, 59, 46, 0.30);
 }
 
 .listing-detail-actions .btn-primary:hover {
     background: var(--emerald-deep);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(11, 59, 46, 0.35);
+    box-shadow: 0 8px 28px rgba(11, 59, 46, 0.40);
 }
 
 .listing-detail-actions .btn-secondary-outline {
     background: transparent;
     color: var(--emerald);
-    border: 1.5px solid #E8E4DD;
+    border: 2px solid #E8E4DD;
 }
 
 .listing-detail-actions .btn-secondary-outline:hover {
@@ -2951,13 +2953,60 @@ nav .nav-container {
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE - DESKTOP FIRST
    ============================================================ */
 
-@media (max-width: 1024px) {
+/* Large Desktop (1400px+) */
+@media (min-width: 1400px) {
+    #listing-detail .container {
+        max-width: 1360px;
+        padding: 0 32px;
+    }
+
+    .listing-detail-gallery {
+        border-radius: 28px;
+    }
+
+    .gallery-main {
+        min-height: 580px;
+    }
+
+    .gallery-controls {
+        padding: 0 36px;
+    }
+
+    .gallery-controls button {
+        width: 68px;
+        height: 68px;
+        font-size: 24px;
+    }
+
+    .listing-detail-specs {
+        grid-template-columns: repeat(4, 1fr);
+        padding: 24px 32px;
+    }
+
+    .listing-detail-grid {
+        gap: 56px;
+    }
+
+    .listing-detail-card {
+        padding: 40px 48px;
+    }
+}
+
+/* Desktop (1024px - 1399px) */
+@media (min-width: 1024px) and (max-width: 1399px) {
+    .listing-detail-specs {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Tablet (768px - 1023px) */
+@media (max-width: 1023px) {
     .listing-detail-grid {
         grid-template-columns: 1fr;
-        gap: 32px;
+        gap: 36px;
     }
 
     .listing-detail-actions-card {
@@ -2973,24 +3022,37 @@ nav .nav-container {
         flex: 1;
         min-width: 160px;
     }
+
+    .listing-detail-specs {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gallery-main {
+        min-height: 350px;
+    }
 }
 
-@media (max-width: 768px) {
+/* Mobile (below 768px) */
+@media (max-width: 767px) {
     #listing-detail {
         padding: 24px 0 60px;
     }
 
     #listing-detail > .btn-secondary {
-        margin-bottom: 16px;
-        padding: 12px 20px;
+        margin-bottom: 20px;
+        padding: 12px 24px;
         font-size: 12px;
         width: 100%;
         justify-content: center;
     }
 
     .listing-detail-gallery {
-        border-radius: 14px;
+        border-radius: 16px;
         margin-bottom: 28px;
+    }
+
+    .gallery-main {
+        min-height: 240px;
     }
 
     .gallery-controls {
@@ -3011,82 +3073,183 @@ nav .nav-container {
 
     .gallery-counter {
         font-size: 11px;
-        padding: 4px 12px;
+        padding: 4px 14px;
         bottom: 14px;
         right: 14px;
     }
 
     .listing-detail-header {
-        margin-bottom: 24px;
+        margin-bottom: 28px;
         padding-bottom: 20px;
     }
 
-    .listing-detail-specs {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 14px 16px;
-        gap: 8px;
+    .listing-detail-title {
+        font-size: 1.6rem;
     }
 
-    .listing-detail-spec-item .spec-label {
-        font-size: 10px;
-    }
-
-    .listing-detail-spec-item .spec-value {
-        font-size: 13px;
-    }
-
-    .listing-detail-price-row {
-        gap: 12px;
+    .listing-detail-location {
+        font-size: 0.95rem;
+        margin-bottom: 16px;
     }
 
     .listing-detail-price {
         font-size: 1.6rem;
     }
 
-    .listing-detail-card {
-        padding: 20px;
+    .listing-detail-price-row {
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .listing-detail-status-badge {
+        font-size: 11px;
+        padding: 6px 16px;
+    }
+
+    .listing-detail-specs {
+        grid-template-columns: repeat(2, 1fr);
+        padding: 14px 16px;
+        gap: 10px;
         border-radius: 12px;
+    }
+
+    .listing-detail-spec-item {
+        gap: 10px;
+        padding: 4px 0;
+    }
+
+    .listing-detail-spec-item .spec-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 13px;
+    }
+
+    .listing-detail-spec-item .spec-label {
+        font-size: 9px;
+    }
+
+    .listing-detail-spec-item .spec-value {
+        font-size: 14px;
+    }
+
+    .listing-detail-grid {
+        gap: 28px;
+        margin-top: 8px;
+    }
+
+    .listing-detail-left {
+        gap: 28px;
+    }
+
+    .listing-detail-card {
+        padding: 20px 18px;
+        border-radius: 14px;
+    }
+
+    .listing-detail-card-title {
+        font-size: 1.05rem;
+        margin-bottom: 14px;
+    }
+
+    .listing-detail-card-title::before {
+        height: 18px;
+        width: 4px;
+    }
+
+    .listing-detail-description {
+        font-size: 0.92rem;
+        line-height: 1.7;
     }
 
     .listing-detail-features-grid {
         grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .listing-detail-feature-item {
+        padding: 8px 12px;
+        font-size: 12px;
+        border-radius: 8px;
     }
 
     .listing-detail-details-grid {
         grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .listing-detail-detail-item {
+        padding: 8px 0;
+    }
+
+    .listing-detail-detail-item .detail-label {
+        font-size: 11px;
+    }
+
+    .listing-detail-detail-item .detail-value {
+        font-size: 13px;
+    }
+
+    .listing-detail-actions-card {
+        padding: 24px 20px;
+        border-radius: 14px;
+    }
+
+    .listing-detail-actions-card .action-title {
+        font-size: 1rem;
+    }
+
+    .listing-detail-actions-card .action-subtitle {
+        font-size: 13px;
+        margin-bottom: 18px;
     }
 
     .listing-detail-actions {
         flex-direction: column;
+        gap: 12px;
     }
 
     .listing-detail-actions .btn {
         width: 100%;
         min-width: 0;
+        padding: 16px 20px;
+        font-size: 13px;
+        border-radius: 12px;
     }
 
-    .listing-detail-actions-card {
-        padding: 20px;
-        border-radius: 12px;
+    .listing-detail-right {
+        gap: 20px;
     }
 }
 
-@media (max-width: 480px) {
+/* Small Mobile (below 480px) */
+@media (max-width: 479px) {
     #listing-detail > .btn-secondary {
-        margin-bottom: 12px;
+        margin-bottom: 14px;
         padding: 10px 16px;
         font-size: 11px;
     }
 
+    .gallery-main {
+        min-height: 180px;
+    }
+
     .gallery-controls button {
-        width: 34px;
-        height: 34px;
-        font-size: 12px;
+        width: 32px;
+        height: 32px;
+        font-size: 11px;
     }
 
     .gallery-thumbs {
         grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
         gap: 6px;
+    }
+
+    .listing-detail-title {
+        font-size: 1.3rem;
+    }
+
+    .listing-detail-price {
+        font-size: 1.3rem;
     }
 
     .listing-detail-specs {
@@ -3095,14 +3258,14 @@ nav .nav-container {
         padding: 12px 14px;
     }
 
-    .listing-detail-spec-item {
-        gap: 8px;
-    }
-
     .listing-detail-spec-item .spec-icon {
         width: 30px;
         height: 30px;
-        font-size: 12px;
+        font-size: 11px;
+    }
+
+    .listing-detail-spec-item .spec-value {
+        font-size: 13px;
     }
 
     .listing-detail-features-grid {
@@ -3110,11 +3273,7 @@ nav .nav-container {
     }
 
     .listing-detail-card {
-        padding: 16px;
-    }
-
-    .listing-detail-card-title {
-        font-size: 1rem;
+        padding: 16px 14px;
     }
 }
 
@@ -3129,7 +3288,6 @@ nav .nav-container {
         backdrop-filter: blur(8px);
     }
 }
-
 /* ================ FOOTER ================ */
 footer {
     background: var(--white);
