@@ -518,454 +518,6 @@
                 max-width: 100%;
             }
         }
-
-        /* ============================================================
-           PREMIUM LISTINGS UI - Filter Bar & Cards
-           ============================================================ */
-        .filter-bar-premium {
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--line);
-            padding: 20px 24px;
-            margin-bottom: 32px;
-        }
-
-        .filter-top-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-        }
-
-        .filter-search-wrapper {
-            flex: 1;
-            min-width: 200px;
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .filter-search-wrapper i {
-            position: absolute;
-            left: 16px;
-            color: var(--ink-soft);
-            font-size: 14px;
-        }
-
-        .filter-search-wrapper input {
-            width: 100%;
-            padding: 12px 16px 12px 44px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            background: var(--paper);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            font-size: 14px;
-            color: var(--ink);
-            transition: var(--transition);
-        }
-
-        .filter-search-wrapper input:focus {
-            outline: none;
-            border-color: var(--brass);
-            box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.12);
-            background: var(--white);
-        }
-
-        .filter-toggle-group {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .filter-toggle {
-            padding: 8px 18px;
-            border: 1px solid var(--line);
-            border-radius: 100px;
-            background: transparent;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 500;
-            font-size: 12px;
-            color: var(--ink-soft);
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .filter-toggle:hover {
-            border-color: var(--brass);
-            color: var(--emerald);
-        }
-
-        .filter-toggle.active {
-            background: var(--emerald);
-            color: var(--cream);
-            border-color: var(--emerald);
-        }
-
-        .filter-view-toggle {
-            display: flex;
-            gap: 4px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-        }
-
-        .filter-view-toggle .view-btn {
-            padding: 8px 14px;
-            border: none;
-            background: transparent;
-            color: var(--ink-soft);
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 14px;
-        }
-
-        .filter-view-toggle .view-btn:hover {
-            background: var(--cream);
-        }
-
-        .filter-view-toggle .view-btn.active {
-            background: var(--emerald);
-            color: var(--cream);
-        }
-
-        .filter-bottom-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 12px;
-            padding-top: 14px;
-            border-top: 1px solid var(--line);
-        }
-
-        .filter-bottom-row select {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            background: var(--paper);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--ink);
-            transition: var(--transition);
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230B3B2E' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            padding-right: 36px;
-        }
-
-        .filter-bottom-row select:focus {
-            outline: none;
-            border-color: var(--brass);
-            box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.12);
-        }
-
-        /* ---------- Premium Listing Card ---------- */
-        .listing-card {
-            background: var(--white);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--line);
-            transition: var(--transition);
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .listing-card:hover {
-            transform: translateY(-6px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(176, 138, 62, 0.4);
-        }
-
-        .listing-card-image {
-            position: relative;
-            aspect-ratio: 16/11;
-            overflow: hidden;
-            background: var(--cream-warm);
-        }
-
-        .listing-card-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform .8s var(--ease);
-        }
-
-        .listing-card:hover .listing-card-image img {
-            transform: scale(1.06);
-        }
-
-        .listing-card-badges {
-            position: absolute;
-            top: 14px;
-            left: 14px;
-            right: 14px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        .listing-card-badges .badge {
-            display: inline-block;
-            padding: 5px 14px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 10px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            border-radius: 100px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-            white-space: nowrap;
-        }
-
-        .badge-featured {
-            background: var(--brass);
-            color: var(--emerald-deep);
-        }
-
-        .badge-status {
-            background: var(--emerald);
-            color: var(--cream);
-        }
-
-        .badge-status.for-rent {
-            background: #1A5A7A;
-            color: var(--cream);
-        }
-
-        .badge-status.sold {
-            background: #6B7280;
-            color: var(--cream);
-        }
-
-        .badge-type {
-            background: rgba(0,0,0,0.6);
-            color: var(--cream);
-            backdrop-filter: blur(4px);
-        }
-
-        .listing-card-price-tag {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 18px 20px 16px;
-            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
-            z-index: 2;
-        }
-
-        .listing-card-price-tag .price {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 700;
-            font-size: 1.5rem;
-            color: var(--cream);
-            letter-spacing: -0.02em;
-        }
-
-        .listing-card-price-tag .price-sub {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            font-size: 12px;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .listing-card-body {
-            padding: 18px 20px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 1;
-        }
-
-        .listing-card-body h3 {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: var(--emerald-deep);
-            margin: 0;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
-        }
-
-        .listing-card-location {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--ink-soft);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .listing-card-location i {
-            color: var(--brass);
-            font-size: 12px;
-        }
-
-        .listing-card-details {
-            display: flex;
-            gap: 16px;
-            padding-top: 12px;
-            margin-top: 6px;
-            border-top: 1px solid var(--line);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--ink-soft);
-        }
-
-        .listing-card-details span {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .listing-card-details i {
-            color: var(--brass);
-            font-size: 13px;
-        }
-
-        .listing-card-rera {
-            display: inline-block;
-            padding: 3px 10px;
-            background: var(--cream-warm);
-            border-radius: 100px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 9px;
-            color: var(--emerald);
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            margin-top: 4px;
-            align-self: flex-start;
-        }
-
-        .listing-card-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--line);
-        }
-
-        .listing-card-actions .btn {
-            flex: 1;
-            padding: 10px 16px;
-            font-size: 11px;
-            min-width: 0;
-            border-radius: var(--radius-sm);
-        }
-
-        .listing-card-actions .btn-secondary {
-            background: var(--paper);
-            color: var(--emerald);
-            border-color: var(--line);
-        }
-
-        .listing-card-actions .btn-secondary:hover {
-            background: var(--cream);
-            border-color: var(--emerald);
-        }
-
-        .listing-card-actions .btn-whatsapp {
-            background: var(--whatsapp);
-            color: var(--white);
-            border: none;
-        }
-
-        .listing-card-actions .btn-whatsapp:hover {
-            background: var(--whatsapp-dark);
-        }
-
-        /* ---------- Listing Grid Responsive ---------- */
-        .listings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 24px;
-        }
-
-        @media (max-width: 1024px) {
-            .listings-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-                gap: 20px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .listings-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
-            .filter-top-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-search-wrapper {
-                min-width: 0;
-            }
-
-            .filter-toggle-group {
-                justify-content: center;
-            }
-
-            .filter-view-toggle {
-                align-self: center;
-            }
-
-            .filter-bottom-row {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .filter-bottom-row {
-                grid-template-columns: 1fr;
-            }
-
-            .filter-toggle-group {
-                gap: 4px;
-            }
-
-            .filter-toggle {
-                font-size: 10px;
-                padding: 6px 12px;
-            }
-
-            .listing-card-body h3 {
-                font-size: 0.95rem;
-            }
-
-            .listing-card-price-tag .price {
-                font-size: 1.2rem;
-            }
-        }
-
-        /* ---------- No Results ---------- */
-        .no-results {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 60px 20px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 400;
-            color: var(--ink-soft);
-        }
-
-        .no-results i {
-            display: block;
-            font-size: 48px;
-            color: var(--line);
-            margin-bottom: 16px;
-        }
     </style>
 </head>
 <body>
@@ -1249,65 +801,48 @@
         <section id="listings" class="section">
             <div class="listings-hero">
                 <div class="container">
-                    <h1>DUBAI PROPERTIES</h1>
+                    <h1>PROPERTY LISTINGS</h1>
                     <p>Discover Dubai's finest properties</p>
                 </div>
             </div>
             <div class="container">
-                <!-- FILTER BAR - Premium style -->
-                <div class="filter-bar-premium" id="filter-bar" style="display:grid;">
-                    <div class="filter-top-row">
-                        <div class="filter-search-wrapper">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="filter-search" placeholder="Search by location, property, or community...">
-                        </div>
-                        <div class="filter-toggle-group">
-                            <button class="filter-toggle active" data-status="all">All</button>
-                            <button class="filter-toggle" data-status="for-sale">For Sale</button>
-                            <button class="filter-toggle" data-status="for-rent">For Rent</button>
-                            <button class="filter-toggle" data-status="under-1m">Under 1M</button>
-                        </div>
-                        <div class="filter-view-toggle">
-                            <button class="view-btn active" data-view="grid"><i class="fas fa-th"></i></button>
-                            <button class="view-btn" data-view="map"><i class="fas fa-map"></i></button>
-                        </div>
-                    </div>
-                    <div class="filter-bottom-row">
-                        <select id="filter-type-listings">
-                            <option value="all">Property Type</option>
-                            <option value="Apartment">Apartment</option>
-                            <option value="Villa">Villa</option>
-                            <option value="Penthouse">Penthouse</option>
-                            <option value="Studio">Studio</option>
-                            <option value="Townhouse">Townhouse</option>
-                        </select>
-                        <select id="filter-bedrooms-listings">
-                            <option value="all">Bedrooms</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5+</option>
-                        </select>
-                        <select id="filter-price-listings">
-                            <option value="all">Price Range</option>
-                            <option value="500k">Under 500K</option>
-                            <option value="1m">500K - 1M</option>
-                            <option value="2m">1M - 2M</option>
-                            <option value="5m">2M - 5M</option>
-                            <option value="10m">5M - 10M</option>
-                            <option value="10m+">10M+</option>
-                        </select>
-                        <select id="filter-community-listings">
-                            <option value="all">All Communities</option>
-                        </select>
-                        <select id="filter-status-listings" style="display:none;">
-                            <option value="all">All Status</option>
-                            <option value="for-sale">For Sale</option>
-                            <option value="for-rent">For Rent</option>
-                            <option value="sold">Sold</option>
-                        </select>
-                    </div>
+                <!-- FILTER BAR - VISIBLE ONLY ON LIST VIEW -->
+                <div class="filter-bar" id="filter-bar" style="display:grid;">
+                    <select id="filter-type-listings">
+                        <option value="all">ALL TYPES</option>
+                        <option value="Apartment">APARTMENT</option>
+                        <option value="Villa">VILLA</option>
+                        <option value="Penthouse">PENTHOUSE</option>
+                        <option value="Studio">STUDIO</option>
+                        <option value="Townhouse">TOWNHOUSE</option>
+                    </select>
+                    <select id="filter-bedrooms-listings">
+                        <option value="all">ANY BEDROOMS</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5+</option>
+                    </select>
+                    <select id="filter-price-listings">
+                        <option value="all">ANY PRICE</option>
+                        <option value="500k">UNDER AED 500K</option>
+                        <option value="1m">AED 500K - 1M</option>
+                        <option value="2m">AED 1M - 2M</option>
+                        <option value="5m">AED 2M - 5M</option>
+                        <option value="10m">AED 5M - 10M</option>
+                        <option value="10m+">AED 10M+</option>
+                    </select>
+                    <select id="filter-community-listings">
+                        <option value="all">ALL COMMUNITIES</option>
+                    </select>
+                    <select id="filter-status-listings">
+                        <option value="all">ALL STATUS</option>
+                        <option value="for-sale">FOR SALE</option>
+                        <option value="for-rent">FOR RENT</option>
+                        <option value="sold">SOLD</option>
+                    </select>
+                    <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px; width:100%;">
                 </div>
 
                 <!-- Listings Grid -->
@@ -1876,32 +1411,8 @@
                     });
                 }
 
-                // Filter toggle buttons
-                document.querySelectorAll('.filter-toggle').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        document.querySelectorAll('.filter-toggle').forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        const status = this.dataset.status;
-                        const statusSelect = document.getElementById('filter-status-listings');
-                        if (statusSelect) {
-                            if (status === 'all') {
-                                statusSelect.value = 'all';
-                            } else if (status === 'under-1m') {
-                                const priceSelect = document.getElementById('filter-price-listings');
-                                if (priceSelect) priceSelect.value = '500k';
-                                statusSelect.value = 'all';
-                            } else {
-                                statusSelect.value = status;
-                            }
-                        }
-                        if (typeof window.filterListings === 'function') {
-                            window.filterListings();
-                        }
-                    });
-                });
-
                 // Auto-filter on any filter change
-                document.querySelectorAll('.filter-bar-premium select, .filter-bar-premium input').forEach(el => {
+                document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
                     el.addEventListener('change', function() {
                         if (typeof window.filterListings === 'function') {
                             window.filterListings();
@@ -1910,21 +1421,6 @@
                     el.addEventListener('keyup', function(e) {
                         if (e.key === 'Enter' && typeof window.filterListings === 'function') {
                             window.filterListings();
-                        }
-                    });
-                });
-
-                // View toggle
-                document.querySelectorAll('.view-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-                        this.classList.add('active');
-                        const view = this.dataset.view;
-                        if (view === 'map') {
-                            // Placeholder for map view
-                            showToast('Map view coming soon!', 'info');
-                            document.querySelector('.view-btn[data-view="grid"]').classList.add('active');
-                            this.classList.remove('active');
                         }
                     });
                 });
