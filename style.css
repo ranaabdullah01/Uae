@@ -244,6 +244,12 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .btn-outline:hover { background: var(--emerald); color: var(--cream); }
 
+.btn-sm {
+    padding: 8px 16px;
+    min-width: 0;
+    font-size: 12px;
+}
+
 /* ================ HEADER / NAV ================ */
 
 #main-header {
@@ -1371,13 +1377,42 @@ nav .nav-container {
 .badge-featured { background: var(--brass); color: var(--emerald-deep); }
 .status-badge.sold, .badge-status { background: var(--ink); color: var(--cream); }
 .status-badge.for-rent, .badge-type { background: var(--emerald); color: var(--cream); }
+.badge-status.for-rent { background: #1A5A7A; color: var(--cream); }
+.badge-status.sold { background: #6B7280; color: var(--cream); }
+.badge-type { background: rgba(0,0,0,0.6); color: var(--cream); backdrop-filter: blur(4px); }
+
+/* ---- Price Tag Overlay ---- */
+.listing-card-price-tag {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 18px 20px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%);
+    z-index: 2;
+}
+
+.listing-card-price-tag .price {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--cream);
+    letter-spacing: -0.02em;
+}
+
+.listing-card-price-tag .price-sub {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+}
 
 /* ---- Body ---- */
 .property-info, .offplan-info, .community-info, .sale-info,
 .property-content, .offplan-content, .community-content,
 .listing-card-body, .offplan-card-body {
-    padding: 24px 24px 26px;
-    display: flex; flex-direction: column; gap: 10px;
+    padding: 18px 20px 20px;
+    display: flex; flex-direction: column; gap: 6px;
     flex: 1 1 auto;
 }
 .property-info h3, .offplan-info h3, .community-info h3, .sale-info h3,
@@ -1385,7 +1420,7 @@ nav .nav-container {
 .listing-card-body h3, .offplan-card-body h3 {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.05rem;
     color: var(--emerald-deep);
     margin: 0 0 4px;
     line-height: 1.2;
@@ -1396,7 +1431,8 @@ nav .nav-container {
     overflow: hidden;
     min-height: 2.6em;
 }
-.property-location, .property-community, .offplan-card-developer {
+.property-location, .property-community, .offplan-card-developer,
+.listing-card-location {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
     font-size: 13px;
@@ -1406,6 +1442,7 @@ nav .nav-container {
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .property-location::before { content: '📍'; }
+.listing-card-location i { color: var(--brass); font-size: 12px; }
 
 .property-price, .offplan-price, .sale-price,
 .listing-card-price, .offplan-card-price {
@@ -1422,8 +1459,8 @@ nav .nav-container {
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
-    padding-top: 16px;
-    margin-top: 8px;
+    padding-top: 12px;
+    margin-top: 6px;
     border-top: 1px solid var(--line);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 400;
@@ -1435,6 +1472,7 @@ nav .nav-container {
     font-weight: 500;
     white-space: nowrap;
 }
+.listing-card-details i { color: var(--brass); font-size: 13px; }
 
 .offplan-card-details {
     padding-top: 16px;
@@ -1447,37 +1485,91 @@ nav .nav-container {
     line-height: 1.5;
 }
 
+/* ---- RERA Badge ---- */
+.listing-card-rera {
+    display: inline-block;
+    padding: 3px 10px;
+    background: var(--cream-warm);
+    border-radius: 100px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 9px;
+    color: var(--emerald);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 4px;
+    align-self: flex-start;
+}
+
 /* ---- Action row ---- */
 .property-actions, .listing-card-actions, .offplan-card-actions,
 .community-actions {
     display: flex; gap: 10px; flex-wrap: wrap;
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
 }
 .listing-card-actions .btn, .offplan-card-actions .btn,
 .community-actions .btn { flex: 1 1 auto; }
+.listing-card-actions .btn-secondary {
+    background: var(--paper);
+    color: var(--emerald);
+    border-color: var(--line);
+}
+.listing-card-actions .btn-secondary:hover {
+    background: var(--cream);
+    border-color: var(--emerald);
+}
+.listing-card-actions .btn-whatsapp {
+    background: var(--whatsapp);
+    color: var(--white);
+    border: none;
+}
+.listing-card-actions .btn-whatsapp:hover { background: var(--whatsapp-dark); }
 
 .btn-sm {
-    padding: 11px 20px;
+    padding: 10px 16px;
     min-width: 0;
-    font-size: 12px;
+    font-size: 11px;
+    border-radius: var(--radius-sm);
 }
 
-/* ================ FILTER BAR ================ */
-.filter-bar {
+/* ================ FILTER BAR PREMIUM ================ */
+.filter-bar-premium {
     background: var(--white);
-    border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 20px;
-    margin-bottom: 40px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
     box-shadow: var(--shadow-sm);
+    border: 1px solid var(--line);
+    padding: 20px 24px;
+    margin-bottom: 32px;
 }
-.filter-bar select, .filter-bar input {
+
+.filter-top-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.filter-search-wrapper {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-search-wrapper i {
+    position: absolute;
+    left: 16px;
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+
+.filter-search-wrapper input {
     width: 100%;
-    padding: 12px 16px;
+    padding: 12px 16px 12px 44px;
     border: 1px solid var(--line);
     border-radius: var(--radius-sm);
     background: var(--paper);
@@ -1486,18 +1578,185 @@ nav .nav-container {
     font-size: 14px;
     color: var(--ink);
     transition: var(--transition);
-    appearance: none;
 }
-.filter-bar select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230B3B2E' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 16px center;
-    padding-right: 40px;
-}
-.filter-bar select:focus, .filter-bar input:focus {
+
+.filter-search-wrapper input:focus {
     outline: none;
     border-color: var(--brass);
-    box-shadow: 0 0 0 4px rgba(176,138,62,0.12);
+    box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.12);
+    background: var(--white);
+}
+
+.filter-toggle-group {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filter-toggle {
+    padding: 8px 18px;
+    border: 1px solid var(--line);
+    border-radius: 100px;
+    background: transparent;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+}
+
+.filter-toggle:hover {
+    border-color: var(--brass);
+    color: var(--emerald);
+}
+
+.filter-toggle.active {
+    background: var(--emerald);
+    color: var(--cream);
+    border-color: var(--emerald);
+}
+
+.filter-view-toggle {
+    display: flex;
+    gap: 4px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.filter-view-toggle .view-btn {
+    padding: 8px 14px;
+    border: none;
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 14px;
+}
+
+.filter-view-toggle .view-btn:hover {
+    background: var(--cream);
+}
+
+.filter-view-toggle .view-btn.active {
+    background: var(--emerald);
+    color: var(--cream);
+}
+
+.filter-bottom-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+}
+
+.filter-bottom-row select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--paper);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--ink);
+    transition: var(--transition);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%230B3B2E' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+}
+
+.filter-bottom-row select:focus {
+    outline: none;
+    border-color: var(--brass);
+    box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.12);
+}
+
+/* ---------- Listing Grid Responsive ---------- */
+.listings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+}
+
+@media (max-width: 1024px) {
+    .listings-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .listings-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .filter-top-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-search-wrapper {
+        min-width: 0;
+    }
+
+    .filter-toggle-group {
+        justify-content: center;
+    }
+
+    .filter-view-toggle {
+        align-self: center;
+    }
+
+    .filter-bottom-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .filter-bottom-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-toggle-group {
+        gap: 4px;
+    }
+
+    .filter-toggle {
+        font-size: 10px;
+        padding: 6px 12px;
+    }
+
+    .listing-card-body h3 {
+        font-size: 0.95rem;
+    }
+
+    .listing-card-price-tag .price {
+        font-size: 1.2rem;
+    }
+}
+
+/* ---------- No Results ---------- */
+.no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    color: var(--ink-soft);
+}
+
+.no-results i {
+    display: block;
+    font-size: 48px;
+    color: var(--line);
+    margin-bottom: 16px;
 }
 
 /* ================ ABOUT / SNIPPET ================ */
@@ -2454,14 +2713,6 @@ nav .nav-container {
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.4);
 }
 
-#listing-detail > .btn-secondary:active {
-    transform: scale(0.97);
-}
-
-#listing-detail > .btn-secondary::before {
-    content: none;
-}
-
 #listing-detail > .btn-secondary i {
     font-size: 15px;
 }
@@ -2539,10 +2790,6 @@ nav .nav-container {
     background: var(--white);
     transform: scale(1.10);
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.20);
-}
-
-.gallery-controls button:active {
-    transform: scale(0.95);
 }
 
 .gallery-controls .prev-btn {
@@ -3288,6 +3535,7 @@ nav .nav-container {
         backdrop-filter: blur(8px);
     }
 }
+
 /* ================ FOOTER ================ */
 footer {
     background: var(--white);
