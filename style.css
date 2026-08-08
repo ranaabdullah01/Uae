@@ -2421,49 +2421,53 @@ nav .nav-container {
     padding: 40px 0 80px;
 }
 
-/* Back button styling - cleaner and more visible */
+/* Back button styling - Yellow/Gold colored, no arrow */
 #listing-detail > .btn-secondary {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 32px;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 28px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 13px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     border-radius: 100px;
-    background: var(--white);
-    color: var(--emerald);
-    border: 2px solid var(--line);
-    box-shadow: var(--shadow-sm);
+    background: var(--brass);
+    color: var(--white);
+    border: none;
+    box-shadow: 0 4px 14px rgba(176, 138, 62, 0.3);
     transition: var(--transition);
     cursor: pointer;
 }
 
 #listing-detail > .btn-secondary:hover {
-    background: var(--emerald);
-    color: var(--cream);
-    border-color: var(--emerald);
-    transform: translateX(-4px);
-    box-shadow: var(--shadow);
+    background: var(--brass-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(176, 138, 62, 0.4);
 }
 
+#listing-detail > .btn-secondary:active {
+    transform: scale(0.97);
+}
+
+/* Remove the arrow pseudo-element */
 #listing-detail > .btn-secondary::before {
-    content: '←';
-    font-size: 18px;
-    transition: transform 0.3s ease;
+    content: none;
 }
 
-#listing-detail > .btn-secondary:hover::before {
-    transform: translateX(-6px);
+/* Back button icon styling - using Font Awesome arrow */
+#listing-detail > .btn-secondary i {
+    font-size: 14px;
+    margin-right: 2px;
 }
 
 .listing-detail-page {
     max-width: 1000px;
     margin: 0 auto;
-    padding-top: 8px;
+    padding-top: 4px;
 }
 
 /* ================ IMAGE SLIDER ================ */
@@ -2588,9 +2592,9 @@ nav .nav-container {
 
 @media (max-width: 768px) {
     #listing-detail > .btn-secondary {
-        margin-bottom: 20px;
-        padding: 12px 24px;
-        font-size: 13px;
+        margin-bottom: 12px;
+        padding: 10px 20px;
+        font-size: 12px;
         width: 100%;
         justify-content: center;
     }
@@ -2643,9 +2647,9 @@ nav .nav-container {
 
 @media (max-width: 480px) {
     #listing-detail > .btn-secondary {
-        margin-bottom: 16px;
-        padding: 10px 18px;
-        font-size: 12px;
+        margin-bottom: 10px;
+        padding: 8px 16px;
+        font-size: 11px;
     }
 
     .gallery-controls button {
