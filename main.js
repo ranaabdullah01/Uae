@@ -93,6 +93,9 @@ function handleRoute() {
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+            // Hide filter bar on detail view
+            const filterBar = document.getElementById('filter-bar');
+            if (filterBar) filterBar.style.display = 'none';
         } else {
             window.showListingList({ push: false });
         }
@@ -230,6 +233,9 @@ function updateAllSections() {
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
             document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+            // Hide filter bar on detail view
+            const filterBar = document.getElementById('filter-bar');
+            if (filterBar) filterBar.style.display = 'none';
         }
     }
 }
@@ -424,7 +430,7 @@ function getWhatsAppNumber() {
     return number.replace(/[^0-9]/g, '');
 }
 
-// ============= VIEW LISTING DETAIL (PAGE) - WITH FILTER BAR VISIBLE =============
+// ============= VIEW LISTING DETAIL (PAGE) - HIDE FILTER BAR =============
 
 window.viewListingPage = function(id, opts = {}) {
     const { push = true } = opts;
@@ -441,7 +447,7 @@ window.viewListingPage = function(id, opts = {}) {
     const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'none';
-    if (filterBar) filterBar.style.display = 'grid'; // Keep filter bar visible
+    if (filterBar) filterBar.style.display = 'none'; // HIDE filter bar on detail view
     if (detailContainer) {
         detailContainer.style.display = 'block';
         if (content) {
@@ -486,7 +492,7 @@ window.showListingList = function(opts = {}) {
     const filterBar = document.getElementById('filter-bar');
     
     if (grid) grid.style.display = 'grid';
-    if (filterBar) filterBar.style.display = 'grid'; // Keep filter bar visible
+    if (filterBar) filterBar.style.display = 'grid'; // SHOW filter bar on list view
     if (detail) detail.style.display = 'none';
     if (content) content.innerHTML = '';
     
@@ -1169,6 +1175,8 @@ function navigateTo(sectionId, opts = {}) {
     // Listings view handling
     if (sectionId === 'listings') {
         const { section, slug: routeSlug } = parseCurrentRoute();
+        const filterBar = document.getElementById('filter-bar');
+        
         if (routeSlug && section === 'listings') {
             const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
             if (listing) {
@@ -1176,15 +1184,15 @@ function navigateTo(sectionId, opts = {}) {
                 document.getElementById('listing-detail').style.display = 'block';
                 document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
                 document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+                if (filterBar) filterBar.style.display = 'none'; // Hide filter bar on detail
                 return; // Don't proceed with grid view
             }
         }
         // Show grid view
         const grid = document.getElementById('listings-grid');
         const detail = document.getElementById('listing-detail');
-        const filterBar = document.getElementById('filter-bar');
         if (grid) grid.style.display = 'grid';
-        if (filterBar) filterBar.style.display = 'grid';
+        if (filterBar) filterBar.style.display = 'grid'; // Show filter bar on list view
         if (detail) detail.style.display = 'none';
     }
 
