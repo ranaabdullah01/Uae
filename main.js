@@ -381,7 +381,7 @@ function renderListings(listingsData, container) {
     container.innerHTML = '';
     
     if (listingsData.length === 0) {
-        container.innerHTML = '<p class="no-results"><i class="fas fa-home"></i> No properties found matching your criteria.</p>';
+        container.innerHTML = '<p class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--dark-grey);">No properties found matching your criteria.</p>';
         return;
     }
     
@@ -395,37 +395,28 @@ function createListingCard(listing) {
     card.className = 'listing-card';
     
     const images = listing.images && typeof listing.images === 'string' 
-        ? listing.images.split(',').map(img => img.trim()).filter(img => img)
+        ? listing.images.split(',') 
         : (Array.isArray(listing.images) ? listing.images : []);
     const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/800x600/0A1628/C9A84C?text=Property';
-    
-    const statusClass = listing.status || 'for-sale';
-    const statusDisplay = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
-    const rerna = config.rernaBRN || '123456';
     
     card.innerHTML = `
         <div class="listing-card-image">
             <img src="${firstImage}" alt="${listing.title}" loading="lazy">
             <div class="listing-card-badges">
                 ${listing.featured ? '<span class="badge badge-featured">Featured</span>' : ''}
-                <span class="badge badge-status ${statusClass}">${statusDisplay}</span>
-                <span class="badge badge-type">${listing.type || 'Property'}</span>
-            </div>
-            <div class="listing-card-price-tag">
-                <div class="price">AED ${formatPrice(listing.price)}</div>
+                <span class="badge badge-status">${listing.status.replace('-', ' ')}</span>
+                <span class="badge badge-type">${listing.type}</span>
             </div>
         </div>
         <div class="listing-card-body">
             <h3>${listing.title}</h3>
-            <div class="listing-card-location">
-                <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
-            </div>
+            <div class="listing-card-price">AED ${formatPrice(listing.price)}</div>
             <div class="listing-card-details">
-                <span><i class="fas fa-bed"></i> ${listing.bedrooms || 0}</span>
-                <span><i class="fas fa-bath"></i> ${listing.bathrooms || 0}</span>
-                <span><i class="fas fa-ruler-combined"></i> ${listing.sqft || 0} sqft</span>
+                <span><i class="fas fa-map-marker-alt"></i> ${listing.community}</span>
+                <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
+                <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
+                <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
             </div>
-            <span class="listing-card-rera">RERA BRN: ${rerna}</span>
             <div class="listing-card-actions">
                 <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
                 <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
@@ -513,6 +504,8 @@ window.showListingList = function(opts = {}) {
     navigateTo('listings', { push: false });
 };
 
+// ============= RENDER LISTING DETAIL - PREMIUM TWO-COLUMN =============
+
 function renderListingDetail(listing) {
     const images = listing.images && typeof listing.images === 'string' 
         ? listing.images.split(',').map(img => img.trim()).filter(img => img)
@@ -527,7 +520,9 @@ function renderListingDetail(listing) {
         : (Array.isArray(listing.features) ? listing.features : []);
     
     const statusClass = listing.status || 'for-sale';
+    const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
     
+    // Gallery with slider controls
     let gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -554,21 +549,19 @@ function renderListingDetail(listing) {
             ` : ''}
         </div>
     `;
-    
+
+    // Build specs data
     const specs = [
         { icon: 'fa-bed', label: 'Bedrooms', value: listing.bedrooms || 'N/A' },
         { icon: 'fa-bath', label: 'Bathrooms', value: listing.bathrooms || 'N/A' },
         { icon: 'fa-ruler-combined', label: 'Size', value: listing.sqft ? `${listing.sqft} sqft` : 'N/A' },
-        { icon: 'fa-building', label: 'Type', value: listing.type || 'N/A' },
-        { icon: 'fa-layer-group', label: 'Floor', value: listing.floor || 'N/A' },
-        { icon: 'fa-eye', label: 'View', value: listing.view || 'N/A' },
-        { icon: 'fa-couch', label: 'Furnishing', value: listing.furnishing || 'N/A' },
-        { icon: 'fa-car', label: 'Parking', value: listing.parking || 'N/A' }
+        { icon: 'fa-building', label: 'Type', value: listing.type || 'N/A' }
     ];
-    
+
+    // Build property details
     const details = [
-        { label: 'Type', value: listing.type || 'N/A' },
-        { label: 'Status', value: listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'N/A' },
+        { label: 'Property Type', value: listing.type || 'N/A' },
+        { label: 'Status', value: statusLabel },
         { label: 'Community', value: listing.community || 'N/A' },
         { label: 'Bedrooms', value: listing.bedrooms || 'N/A' },
         { label: 'Bathrooms', value: listing.bathrooms || 'N/A' },
@@ -579,39 +572,88 @@ function renderListingDetail(listing) {
         { label: 'Parking', value: listing.parking || 'N/A' }
     ];
     
-    if (listing.permit) details.push({ label: 'Permit', value: listing.permit });
-    if (listing.building) details.push({ label: 'Building', value: listing.building });
-    
+    if (listing.permit) {
+        details.push({ label: 'Trakheesi Permit', value: listing.permit });
+    }
+    if (listing.building) {
+        details.push({ label: 'Building', value: listing.building });
+    }
+
+    // WhatsApp number
+    const whatsappNumber = getWhatsAppNumber();
+    const whatsappText = listing.whatsappText || "I'm interested in this property";
+
     return `
         <div class="listing-detail-page">
-            ${gallery}
-            
-            <div class="listing-detail-header">
-                <h1 class="listing-detail-title">${listing.title}</h1>
-                <div class="listing-detail-location">
-                    <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
-                </div>
-                
-                <div class="listing-detail-price-row">
-                    <span class="listing-detail-price">AED ${formatPrice(listing.price)}</span>
-                    <span class="listing-detail-status-badge ${statusClass}">${listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE'}</span>
-                </div>
-                
-                <div class="listing-detail-specs">
-                    ${specs.map(spec => `
-                        <div class="listing-detail-spec-item">
-                            <div class="spec-icon"><i class="fas ${spec.icon}"></i></div>
-                            <div>
-                                <div class="spec-label">${spec.label}</div>
-                                <div class="spec-value">${spec.value}</div>
+            <!-- Main two-column layout -->
+            <div class="listing-detail-container">
+                <!-- LEFT COLUMN: Gallery + Location -->
+                <div class="listing-detail-left-col">
+                    ${gallery}
+                    
+                    <!-- Location Section -->
+                    <div class="listing-detail-card location-card">
+                        <h3 class="listing-detail-card-title">Location</h3>
+                        <div class="location-content">
+                            <div class="location-address">
+                                <i class="fas fa-map-pin"></i>
+                                <span>${listing.community || 'Dubai, UAE'}</span>
+                            </div>
+                            <div class="location-map-placeholder">
+                                <i class="fas fa-map-marked-alt"></i>
+                                <span>View on map</span>
                             </div>
                         </div>
-                    `).join('')}
+                    </div>
                 </div>
-            </div>
-            
-            <div class="listing-detail-grid">
-                <div class="listing-detail-left">
+                
+                <!-- RIGHT COLUMN: Property Info -->
+                <div class="listing-detail-right-col">
+                    <!-- Breadcrumb -->
+                    <div class="breadcrumb-nav">
+                        <a href="#" onclick="window.showListingList(); return false;">Properties</a>
+                        <span class="separator">/</span>
+                        <span class="current">${listing.title}</span>
+                    </div>
+                    
+                    <!-- Featured Badge & Favorite -->
+                    <div class="detail-badges-row">
+                        ${listing.featured ? '<span class="detail-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
+                        <button class="favorite-btn" aria-label="Save to favorites">
+                            <i class="far fa-heart"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="listing-detail-title">${listing.title}</h1>
+                    
+                    <!-- Price -->
+                    <div class="listing-detail-price">AED ${formatPrice(listing.price)}</div>
+                    
+                    <!-- Location -->
+                    <div class="listing-detail-location">
+                        <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
+                    </div>
+                    
+                    <!-- Specs Row -->
+                    <div class="listing-detail-specs">
+                        ${specs.map(spec => `
+                            <div class="listing-detail-spec-item">
+                                <div class="spec-icon"><i class="fas ${spec.icon}"></i></div>
+                                <div>
+                                    <div class="spec-label">${spec.label}</div>
+                                    <div class="spec-value">${spec.value}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Status Badge -->
+                    <div class="status-row">
+                        <span class="listing-detail-status-badge ${statusClass}">${statusLabel}</span>
+                    </div>
+                    
+                    <!-- Description -->
                     ${listing.description ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Description</h3>
@@ -619,6 +661,7 @@ function renderListingDetail(listing) {
                         </div>
                     ` : ''}
                     
+                    <!-- Features & Amenities -->
                     ${features.length > 0 ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Features & Amenities</h3>
@@ -632,6 +675,7 @@ function renderListingDetail(listing) {
                         </div>
                     ` : ''}
                     
+                    <!-- Property Details -->
                     <div class="listing-detail-card">
                         <h3 class="listing-detail-card-title">Property Details</h3>
                         <div class="listing-detail-details-grid">
@@ -643,22 +687,42 @@ function renderListingDetail(listing) {
                             `).join('')}
                         </div>
                     </div>
-                </div>
-                
-                <div class="listing-detail-right">
+                    
+                    <!-- Action Buttons -->
                     <div class="listing-detail-actions-card">
                         <h4 class="action-title">Interested in this property?</h4>
                         <p class="action-subtitle">Get more details or schedule a viewing</p>
                         <div class="listing-detail-actions">
-                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp">
+                            <a href="https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappText)}" target="_blank" class="btn btn-whatsapp">
                                 <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
                             </a>
                             <button class="btn btn-primary" onclick="window.scheduleViewing('${listing.title}')">
                                 <i class="fas fa-calendar-check"></i> Schedule Viewing
                             </button>
-                            <button class="btn btn-secondary-outline" onclick="window.showListingList()">
-                                <i class="fas fa-arrow-left"></i> Back to Properties
-                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Benefits Strip -->
+                    <div class="benefits-strip">
+                        <div class="benefit-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Secure Investment</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-chart-line"></i>
+                            <span>High ROI Potential</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-headset"></i>
+                            <span>Full Support</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <span>Flexible Payment</span>
+                        </div>
+                        <div class="benefit-item">
+                            <i class="fas fa-percent"></i>
+                            <span>No Commission</span>
                         </div>
                     </div>
                 </div>
@@ -1481,7 +1545,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     submitForm('valuation-form', 'leads/valuation', 'Thank you! Your valuation request has been submitted. We will get back to you within 24 hours.');
     submitForm('goldenvisa-form', 'leads/goldenvisa', 'Thank you! Your Golden Visa consultation request has been submitted. We will contact you shortly.');
     
-    document.querySelectorAll('.filter-bar-premium select, .filter-bar-premium input').forEach(el => {
+    document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
         el.addEventListener('change', filterListings);
         el.addEventListener('keyup', function(e) { if (e.key === 'Enter') filterListings(); });
     });
