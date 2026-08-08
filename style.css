@@ -2415,62 +2415,65 @@ nav .nav-container {
     min-width: 120px;
 }
 
-/* ================ LISTING DETAIL PAGE - IMPROVED SPACING ================ */
+/* ================ LISTING DETAIL PAGE - IMPROVED BACK BUTTON & SLIDER ================ */
 
 #listing-detail {
     padding: 40px 0 80px;
 }
 
-/* Back button styling */
+/* Back button styling - cleaner and more visible */
 #listing-detail > .btn-secondary {
-    margin-bottom: 32px;
+    margin-bottom: 28px;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 28px;
+    gap: 10px;
+    padding: 14px 32px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 14px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     border-radius: 100px;
-    background: transparent;
+    background: var(--white);
     color: var(--emerald);
-    border: 1.5px solid var(--line);
+    border: 2px solid var(--line);
+    box-shadow: var(--shadow-sm);
     transition: var(--transition);
+    cursor: pointer;
 }
 
 #listing-detail > .btn-secondary:hover {
-    background: var(--cream);
+    background: var(--emerald);
+    color: var(--cream);
     border-color: var(--emerald);
     transform: translateX(-4px);
+    box-shadow: var(--shadow);
 }
 
 #listing-detail > .btn-secondary::before {
     content: '←';
-    font-size: 16px;
+    font-size: 18px;
     transition: transform 0.3s ease;
 }
 
 #listing-detail > .btn-secondary:hover::before {
-    transform: translateX(-4px);
+    transform: translateX(-6px);
 }
 
 .listing-detail-page {
     max-width: 1000px;
     margin: 0 auto;
-    padding-top: 12px;
+    padding-top: 8px;
 }
 
+/* ================ IMAGE SLIDER ================ */
+
 .listing-detail-gallery {
+    position: relative;
     margin-bottom: 40px;
     border-radius: var(--radius);
     overflow: hidden;
-}
-
-/* Make gallery top rounded */
-.listing-detail-gallery .gallery-main {
-    border-radius: var(--radius) var(--radius) 0 0;
+    background: var(--cream-warm);
 }
 
 .gallery-main {
@@ -2484,18 +2487,82 @@ nav .nav-container {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform .5s var(--ease);
+    transition: transform 0.5s var(--ease);
 }
 
-.gallery-main img:hover {
-    transform: scale(1.02);
+/* Slider Controls */
+.gallery-controls {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.gallery-controls button {
+    pointer-events: auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    color: var(--emerald-deep);
+    font-size: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gallery-controls button:hover {
+    background: var(--white);
+    transform: scale(1.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.gallery-controls button:active {
+    transform: scale(0.95);
+}
+
+.gallery-controls .prev-btn {
+    margin-right: auto;
+}
+
+.gallery-controls .next-btn {
+    margin-left: auto;
+}
+
+/* Image Counter */
+.gallery-counter {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    color: var(--cream);
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 5;
+    letter-spacing: 0.04em;
 }
 
 .gallery-thumbs {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     gap: 10px;
     margin-top: 12px;
+    padding: 4px 2px;
 }
 
 .gallery-thumbs .thumb {
@@ -2503,168 +2570,53 @@ nav .nav-container {
     object-fit: cover;
     border-radius: var(--radius-sm);
     cursor: pointer;
-    border: 2px solid transparent;
+    border: 2.5px solid transparent;
     transition: var(--transition);
 }
 
 .gallery-thumbs .thumb:hover {
+    border-color: var(--brass-light);
+    transform: scale(1.04);
+}
+
+.gallery-thumbs .thumb.active {
     border-color: var(--brass);
-    transform: scale(1.03);
-}
-
-.listing-detail-page-header {
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--line);
-}
-
-.listing-detail-page-title {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 700;
-    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
-    color: var(--emerald-deep);
-    margin-bottom: 12px;
-    letter-spacing: -0.02em;
-}
-
-.listing-detail-page-price {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--brass-dark);
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
-}
-
-.listing-detail-page-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px 24px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 14px;
-    color: var(--ink-soft);
-}
-
-.listing-detail-page-meta span {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.listing-detail-page-meta i {
-    color: var(--brass);
-    width: 16px;
-}
-
-.listing-detail-page-body {
-    display: grid;
-    gap: 40px;
-}
-
-.listing-detail-page-description h3,
-.listing-detail-page-features h3,
-.listing-detail-page-specs h3 {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--emerald-deep);
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
-}
-
-.listing-detail-page-description p {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.8;
-    color: var(--ink-soft);
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 10px;
-}
-
-.feature-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 14px;
-    background: var(--cream-warm);
-    border-radius: var(--radius-sm);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 400;
-    font-size: 13px;
-    color: var(--ink);
-}
-
-.feature-tag i {
-    color: var(--brass);
-}
-
-.specs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 12px;
-}
-
-.spec-item {
-    display: flex;
-    flex-direction: column;
-    padding: 12px 16px;
-    background: var(--paper);
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--line);
-}
-
-.spec-item span {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-soft);
-}
-
-.spec-item strong {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--emerald-deep);
-    margin-top: 4px;
-    letter-spacing: -0.01em;
-}
-
-.listing-detail-page-actions {
-    display: flex;
-    gap: 12px;
-    flex-wrap: wrap;
-    padding-top: 24px;
-    border-top: 1px solid var(--line);
-    margin-top: 12px;
-}
-
-.listing-detail-page-actions .btn {
-    flex: 1;
-    min-width: 160px;
+    box-shadow: 0 0 0 2px rgba(176, 138, 62, 0.3);
 }
 
 /* ================ LISTING DETAIL MOBILE ================ */
 
 @media (max-width: 768px) {
     #listing-detail > .btn-secondary {
-        margin-bottom: 24px;
-        padding: 10px 20px;
-        font-size: 12px;
+        margin-bottom: 20px;
+        padding: 12px 24px;
+        font-size: 13px;
         width: 100%;
         justify-content: center;
     }
 
-    .listing-detail-gallery .gallery-thumbs {
-        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    .gallery-controls button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
     }
-    
+
+    .gallery-controls {
+        padding: 0 10px;
+    }
+
+    .gallery-thumbs {
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        gap: 8px;
+    }
+
+    .gallery-counter {
+        font-size: 11px;
+        padding: 4px 12px;
+        bottom: 12px;
+        right: 12px;
+    }
+
     .listing-detail-page-meta {
         font-size: 12px;
         gap: 10px 16px;
@@ -2691,9 +2643,20 @@ nav .nav-container {
 
 @media (max-width: 480px) {
     #listing-detail > .btn-secondary {
-        margin-bottom: 18px;
-        padding: 8px 16px;
-        font-size: 11px;
+        margin-bottom: 16px;
+        padding: 10px 18px;
+        font-size: 12px;
+    }
+
+    .gallery-controls button {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+
+    .gallery-thumbs {
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 6px;
     }
 
     .features-grid,
