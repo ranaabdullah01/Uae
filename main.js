@@ -431,6 +431,79 @@ function getWhatsAppNumber() {
     return number.replace(/[^0-9]/g, '');
 }
 
+// ============= VIEW LISTING DETAIL (PAGE) - HIDE FILTER BAR =============
+
+window.viewListingPage = function(id, opts = {}) {
+    const { push = true } = opts;
+    const listing = listings.find(l => l.id == id || String(l.id) === String(id));
+    if (!listing) {
+        showToast('Listing not found.', 'error');
+        return;
+    }
+
+    const grid = document.getElementById('listings-grid');
+    const detailContainer = document.getElementById('listing-detail');
+    const content = document.getElementById('listing-detail-content');
+    const filterBar = document.getElementById('filter-bar');
+    
+    if (grid) grid.style.display = 'none';
+    if (filterBar) filterBar.style.display = 'none';
+    if (detailContainer) {
+        detailContainer.style.display = 'block';
+        if (content) {
+            content.innerHTML = renderListingDetail(listing);
+            setTimeout(initGallery, 100);
+        }
+    }
+
+    if (push) {
+        const path = buildPath('listings', listing.id);
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: listing.id }, '', path);
+        }
+        updateCanonical(path);
+    }
+    
+    document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+    
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    const listingsSection = document.getElementById('listings');
+    if (listingsSection) listingsSection.classList.add('active');
+    
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === 'listings') {
+            el.classList.add('active');
+        }
+    });
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+window.showListingList = function(opts = {}) {
+    const { push = true } = opts;
+    const grid = document.getElementById('listings-grid');
+    const detail = document.getElementById('listing-detail');
+    const content = document.getElementById('listing-detail-content');
+    const filterBar = document.getElementById('filter-bar');
+    
+    if (grid) grid.style.display = 'grid';
+    if (filterBar) filterBar.style.display = 'grid';
+    if (detail) detail.style.display = 'none';
+    if (content) content.innerHTML = '';
+    
+    if (push) {
+        const path = buildPath('listings');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: null }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
+    
+    navigateTo('listings', { push: false });
+};
+
 // ============= RENDER LISTING DETAIL - PREMIUM TWO-COLUMN =============
 
 function renderListingDetail(listing) {
@@ -512,11 +585,6 @@ function renderListingDetail(listing) {
 
     return `
         <div class="listing-detail-page">
-            <!-- Back Button -->
-            <button class="listing-back-btn" onclick="window.showListingList()">
-                <i class="fas fa-arrow-left"></i> Back to Properties
-            </button>
-            
             <!-- Main two-column layout -->
             <div class="listing-detail-container">
                 <!-- LEFT COLUMN: Gallery + Location -->
@@ -524,7 +592,7 @@ function renderListingDetail(listing) {
                     ${gallery}
                     
                     <!-- Location Section -->
-                    <div class="location-card">
+                    <div class="listing-detail-card location-card">
                         <h3 class="listing-detail-card-title">Location</h3>
                         <div class="location-content">
                             <div class="location-address">
@@ -548,7 +616,7 @@ function renderListingDetail(listing) {
                         <span class="current">${listing.title}</span>
                     </div>
                     
-                    <!-- Badges Row -->
+                    <!-- Featured Badge only (no heart button) -->
                     <div class="detail-badges-row">
                         ${listing.featured ? '<span class="detail-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
                     </div>
@@ -633,105 +701,34 @@ function renderListingDetail(listing) {
                 </div>
             </div>
             
-            <!-- Benefits Strip - Full width below columns -->
-            <div class="listing-benefits-strip">
-                <div class="listing-benefit-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Secure Investment</span>
-                </div>
-                <div class="listing-benefit-item">
-                    <i class="fas fa-chart-line"></i>
-                    <span>High ROI Potential</span>
-                </div>
-                <div class="listing-benefit-item">
-                    <i class="fas fa-headset"></i>
-                    <span>Full Support</span>
-                </div>
-                <div class="listing-benefit-item">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <span>Flexible Payment</span>
-                </div>
-                <div class="listing-benefit-item">
-                    <i class="fas fa-percent"></i>
-                    <span>No Commission</span>
+            <!-- Benefits Strip - full-width, spans beneath both columns -->
+            <div class="listing-benefits-section">
+                <div class="benefits-strip">
+                    <div class="benefit-item">
+                        <div class="benefit-icon-circle"><i class="fas fa-shield-alt"></i></div>
+                        <span>Secure Investment</span>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-circle"><i class="fas fa-chart-line"></i></div>
+                        <span>High ROI Potential</span>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-circle"><i class="fas fa-headset"></i></div>
+                        <span>Full Support</span>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-circle"><i class="fas fa-hand-holding-usd"></i></div>
+                        <span>Flexible Payment</span>
+                    </div>
+                    <div class="benefit-item">
+                        <div class="benefit-icon-circle"><i class="fas fa-percent"></i></div>
+                        <span>No Commission</span>
+                    </div>
                 </div>
             </div>
         </div>
-    );
+    `;
 }
-
-// ============= VIEW LISTING DETAIL (PAGE) - HIDE FILTER BAR =============
-
-window.viewListingPage = function(id, opts = {}) {
-    const { push = true } = opts;
-    const listing = listings.find(l => l.id == id || String(l.id) === String(id));
-    if (!listing) {
-        showToast('Listing not found.', 'error');
-        return;
-    }
-
-    const grid = document.getElementById('listings-grid');
-    const detailContainer = document.getElementById('listing-detail');
-    const content = document.getElementById('listing-detail-content');
-    const filterBar = document.getElementById('filter-bar');
-    
-    if (grid) grid.style.display = 'none';
-    if (filterBar) filterBar.style.display = 'none';
-    if (detailContainer) {
-        detailContainer.style.display = 'block';
-        if (content) {
-            content.innerHTML = renderListingDetail(listing);
-            setTimeout(initGallery, 100);
-        }
-    }
-
-    if (push) {
-        const path = buildPath('listings', listing.id);
-        if (location.pathname !== path) {
-            history.pushState({ section: 'listings', slug: listing.id }, '', path);
-        }
-        updateCanonical(path);
-    }
-    
-    document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-    
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    const listingsSection = document.getElementById('listings');
-    if (listingsSection) listingsSection.classList.add('active');
-    
-    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset && el.dataset.section === 'listings') {
-            el.classList.add('active');
-        }
-    });
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-};
-
-window.showListingList = function(opts = {}) {
-    const { push = true } = opts;
-    const grid = document.getElementById('listings-grid');
-    const detail = document.getElementById('listing-detail');
-    const content = document.getElementById('listing-detail-content');
-    const filterBar = document.getElementById('filter-bar');
-    
-    if (grid) grid.style.display = 'grid';
-    if (filterBar) filterBar.style.display = 'grid';
-    if (detail) detail.style.display = 'none';
-    if (content) content.innerHTML = '';
-    
-    if (push) {
-        const path = buildPath('listings');
-        if (location.pathname !== path) {
-            history.pushState({ section: 'listings', slug: null }, '', path);
-        }
-        updateCanonical(path);
-    }
-    document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
-    
-    navigateTo('listings', { push: false });
-};
 
 // ============= GALLERY IMAGE SLIDER FUNCTIONS =============
 
