@@ -111,7 +111,7 @@
     height: 44px !important;
     padding: 0 !important;
     margin: 0 !important;
-    margin-left: auto !important;
+    margin-left: auto !important; /* Push to the right */
     background: transparent !important;
     border: 0 !important;
     flex-direction: column !important;
@@ -689,10 +689,71 @@
 }
 
 /* ============================================================
-   MOBILE FIX: PROPERTY DETAILS TABLE
-   Ensures Property Type → Building display cleanly on small screens
+   MOBILE FIXES FOR PROPERTY DETAILS PAGE
+   (applies only on screens ≤ 767px)
    ============================================================ */
 @media (max-width: 767px) {
+  /* 1. Navigation hamburger – ensure it stays on the right */
+  #main-header .hamburger {
+    margin-left: auto !important;
+  }
+
+  /* 2. Reorder listing detail content:
+     Gallery → Title → Price → Location → Quick Stats →
+     Description → Property Details → Features → CTA
+  */
+  .listing-detail-container {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Flatten the two columns so their children become direct flex items */
+  .listing-detail-left-col,
+  .listing-detail-right-col {
+    display: contents !important;
+  }
+
+  /* Now set order on each direct child of .listing-detail-container */
+  .listing-detail-gallery {
+    order: 1 !important;
+  }
+  .listing-detail-title {
+    order: 2 !important;
+  }
+  .price-status-row {
+    order: 3 !important;
+  }
+  .listing-detail-location {
+    order: 4 !important;
+  }
+  .quick-stats-card {
+    order: 5 !important;
+  }
+  .description-card {
+    order: 6 !important;
+  }
+  .property-details-card {
+    order: 7 !important;
+  }
+  .features-card {
+    order: 8 !important;
+  }
+  .listing-detail-actions-card {
+    order: 9 !important;
+  }
+
+  /* Optional: adjust spacing between items */
+  .listing-detail-container > * {
+    margin-bottom: 8px;
+  }
+  .listing-detail-container > .listing-detail-gallery {
+    margin-bottom: 16px;
+  }
+  .listing-detail-container > .listing-detail-actions-card {
+    margin-bottom: 0;
+  }
+
+  /* 3. Property Details table – clean single column layout */
   .listing-detail-details-grid {
     grid-template-columns: 1fr !important;
     gap: 4px 0 !important;
