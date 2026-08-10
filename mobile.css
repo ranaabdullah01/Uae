@@ -687,3 +687,44 @@
     font-size: 12px !important;
   }
 }
+
+/* ============================================================
+   MOBILE FIX: PROPERTY DETAILS TABLE
+   Ensures Property Type → Building display cleanly on small screens
+   ============================================================ */
+@media (max-width: 767px) {
+  .listing-detail-details-grid {
+    grid-template-columns: 1fr !important;
+    gap: 4px 0 !important;
+  }
+  .listing-detail-detail-item {
+    padding: 8px 0 !important;
+    border-bottom: 1px solid var(--cream-warm);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .listing-detail-detail-item .detail-label {
+    font-size: 12px !important;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .listing-detail-detail-item .detail-value {
+    font-size: 14px !important;
+    font-weight: 600;
+    color: var(--emerald-deep);
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+  }
+  .property-details-card {
+    padding: 16px !important;
+  }
+  .property-details-card .listing-detail-card-title {
+    font-size: 1rem !important;
+    margin-bottom: 10px !important;
+  }
+}
