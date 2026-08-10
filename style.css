@@ -2444,11 +2444,15 @@ nav .nav-container {
 }
 
 /* ============================================================
-   LISTING DETAIL PAGE - PREMIUM TWO-COLUMN LAYOUT (NEW)
+   LISTING DETAIL PAGE - UPDATED 2-COLUMN LAYOUT
+   Gallery: 16:9 with 4 thumbs + "more" card
+   Left: Gallery + Property Details
+   Right: Breadcrumb, Title, Price, Quick Stats, Status, Description, Features, CTA
+   Full-width trust badges at bottom
    ============================================================ */
 
 #listing-detail {
-    padding: 40px 0 80px;
+    padding: 40px 0 60px;
     background: var(--paper);
 }
 
@@ -2483,20 +2487,22 @@ nav .nav-container {
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.4);
 }
 
+/* ---- Two-column grid ---- */
 .listing-detail-container {
     display: grid;
-    grid-template-columns: 58% 42%;
+    grid-template-columns: 56% 44%;
     gap: 48px;
     align-items: start;
 }
 
+/* ---- Left Column ---- */
 .listing-detail-left-col {
     display: flex;
     flex-direction: column;
     gap: 32px;
 }
 
-/* ---- Premium Gallery ---- */
+/* ---- Gallery (16:9) ---- */
 .listing-detail-gallery {
     position: relative;
     border-radius: 20px;
@@ -2507,10 +2513,10 @@ nav .nav-container {
 
 .gallery-main {
     position: relative;
-    aspect-ratio: 4/3;
+    aspect-ratio: 16/9;
     background: #F0EDE8;
     overflow: hidden;
-    min-height: 480px;
+    min-height: 380px;
 }
 
 .gallery-main img {
@@ -2539,15 +2545,15 @@ nav .nav-container {
 
 .gallery-controls button {
     pointer-events: auto;
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
     color: var(--emerald-deep);
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
@@ -2582,21 +2588,24 @@ nav .nav-container {
     letter-spacing: 0.04em;
 }
 
+/* ---- Thumbnails (4 thumbs + "more" card) ---- */
 .gallery-thumbs {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
     padding: 16px 20px 20px;
     background: var(--white);
 }
 
 .gallery-thumbs .thumb {
-    aspect-ratio: 16/10;
+    aspect-ratio: 1/1;
     object-fit: cover;
     border-radius: 10px;
     cursor: pointer;
     border: 3px solid transparent;
     transition: var(--transition);
+    width: 100%;
+    height: auto;
 }
 
 .gallery-thumbs .thumb:hover {
@@ -2609,61 +2618,35 @@ nav .nav-container {
     box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.2);
 }
 
-/* ---- Location Card ---- */
-.location-card {
-    background: var(--white);
-    border-radius: 16px;
-    padding: 28px 32px;
-    border: 1px solid var(--line);
-    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
-}
-
-.location-card .listing-detail-card-title {
-    margin-bottom: 16px;
-}
-
-.location-content {
+.gallery-thumbs .thumb.more-photos {
+    background: var(--emerald-deep);
+    color: var(--cream);
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-}
-
-.location-address {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    justify-content: center;
     font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    color: var(--ink);
-}
-
-.location-address i {
-    color: var(--brass);
-    font-size: 18px;
-}
-
-.location-map-placeholder {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    background: var(--cream-warm);
-    border-radius: 100px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 500;
-    font-size: 13px;
-    color: var(--emerald);
+    font-weight: 600;
+    font-size: 16px;
+    text-align: center;
+    border: none;
+    transition: background 0.3s var(--ease);
     cursor: pointer;
-    transition: var(--transition);
-    border: 1px solid transparent;
 }
 
-.location-map-placeholder:hover {
+.gallery-thumbs .thumb.more-photos:hover {
     background: var(--brass);
-    color: var(--white);
-    border-color: var(--brass);
+    color: var(--emerald-deep);
+}
+
+.gallery-thumbs .thumb.more-photos span {
+    display: block;
+    line-height: 1.2;
+}
+
+/* ---- Property Details Card (left column) ---- */
+.property-details-card .listing-detail-details-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 24px;
 }
 
 /* ---- Right Column ---- */
@@ -2681,6 +2664,7 @@ nav .nav-container {
     font-family: 'Inter', sans-serif;
     font-size: 13px;
     color: var(--ink-soft);
+    flex-wrap: wrap;
 }
 
 .breadcrumb-nav a {
@@ -2703,36 +2687,6 @@ nav .nav-container {
     font-weight: 500;
 }
 
-/* Badges */
-.detail-badges-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-top: 4px;
-}
-
-.detail-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 16px;
-    border-radius: 100px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.detail-badge.featured {
-    background: var(--brass);
-    color: var(--white);
-}
-
-.detail-badge.featured i {
-    font-size: 10px;
-}
-
 /* Title */
 .listing-detail-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -2751,76 +2705,34 @@ nav .nav-container {
     font-size: clamp(2rem, 2.8vw, 2.8rem);
     color: var(--brass-dark);
     letter-spacing: -0.02em;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
-/* Location */
-.listing-detail-location {
+/* Quick Stats */
+.quick-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
     font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--ink-soft);
-    display: flex;
+    padding: 8px 0 4px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 8px;
+}
+
+.quick-stats span {
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 6px;
 }
 
-.listing-detail-location i {
-    color: var(--brass);
-    font-size: 16px;
-}
-
-/* Specs */
-.listing-detail-specs {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    background: var(--white);
-    border-radius: 14px;
-    padding: 16px 20px;
-    border: 1px solid var(--line);
-    box-shadow: 0 2px 8px rgba(11, 59, 46, 0.04);
-}
-
-.listing-detail-spec-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 4px 0;
-}
-
-.listing-detail-spec-item .spec-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: var(--cream);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.quick-stats i {
     color: var(--brass);
     font-size: 14px;
-    flex-shrink: 0;
 }
 
-.listing-detail-spec-item .spec-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 10px;
-    font-weight: 500;
-    color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.listing-detail-spec-item .spec-value {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--emerald-deep);
-    letter-spacing: -0.01em;
-}
-
-/* Status */
+/* Status Badge */
 .status-row {
     margin-top: 4px;
 }
@@ -2922,7 +2834,7 @@ nav .nav-container {
     flex-shrink: 0;
 }
 
-/* Property Details Grid */
+/* Property Details Grid (used in left column) */
 .listing-detail-details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2957,7 +2869,7 @@ nav .nav-container {
     color: var(--emerald-deep);
 }
 
-/* Action Card */
+/* CTA Buttons */
 .listing-detail-actions-card {
     background: var(--white);
     border-radius: 16px;
@@ -3023,45 +2935,61 @@ nav .nav-container {
     box-shadow: 0 8px 24px rgba(11, 59, 46, 0.35);
 }
 
-/* ---- Full-Width Benefits Strip ---- */
-.benefits-strip-full {
+/* ---- FULL-WIDTH TRUST BADGES ---- */
+.trust-badges-full {
     margin-top: 48px;
     padding-top: 32px;
     border-top: 1px solid var(--line);
     width: 100%;
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
 }
 
-.benefits-strip-inner {
+.trust-badges-inner {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
+    gap: 12px;
     max-width: 1360px;
     margin: 0 auto;
-    padding: 16px 0 4px;
+    padding: 28px 24px;
 }
 
-.benefit-item {
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+}
+
+.trust-item i {
+    font-size: 28px;
+    color: var(--brass);
+    flex-shrink: 0;
+    width: 40px;
+    text-align: center;
+}
+
+.trust-item div {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    text-align: center;
-    padding: 8px 4px;
 }
 
-.benefit-item i {
-    font-size: 20px;
-    color: var(--brass);
+.trust-item strong {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--emerald-deep);
+    letter-spacing: -0.02em;
 }
 
-.benefit-item span {
+.trust-item span {
     font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
+    font-weight: 400;
+    font-size: 0.8rem;
     color: var(--ink-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    line-height: 1.2;
+    line-height: 1.4;
 }
 
 /* ---- Responsive ---- */
@@ -3070,31 +2998,39 @@ nav .nav-container {
         grid-template-columns: 1fr;
         gap: 32px;
     }
+
     .listing-detail-right-col {
         order: 2;
     }
     .listing-detail-left-col {
         order: 1;
     }
+
     .gallery-main {
-        min-height: 350px;
+        min-height: 280px;
     }
-    .benefits-strip-inner {
+
+    .gallery-thumbs {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        padding: 12px 16px 16px;
+    }
+
+    .trust-badges-inner {
         grid-template-columns: repeat(3, 1fr);
-    }
-    .benefit-item:last-child,
-    .benefit-item:nth-last-child(2) {
-        display: none;
+        gap: 16px 24px;
+        padding: 20px 16px;
     }
 }
 
 @media (max-width: 767px) {
     #listing-detail {
-        padding: 20px 0 50px;
+        padding: 20px 0 40px;
     }
     #listing-detail .container {
         padding: 0 16px;
     }
+
     #listing-detail > .btn-secondary {
         margin-bottom: 16px;
         padding: 12px 20px;
@@ -3102,141 +3038,152 @@ nav .nav-container {
         width: 100%;
         justify-content: center;
     }
+
     .listing-detail-container {
         gap: 24px;
     }
+
     .listing-detail-gallery {
         border-radius: 14px;
     }
+
     .gallery-main {
-        min-height: 220px;
+        min-height: 200px;
     }
+
     .gallery-controls {
         padding: 0 12px;
     }
+
     .gallery-controls button {
         width: 36px;
         height: 36px;
         font-size: 13px;
         opacity: 1;
     }
+
     .gallery-counter {
         font-size: 11px;
         padding: 4px 14px;
         bottom: 12px;
         right: 12px;
     }
+
     .gallery-thumbs {
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
-        padding: 12px 14px 16px;
+        padding: 10px 12px 14px;
     }
+
     .gallery-thumbs .thumb {
         border-radius: 8px;
         border-width: 2px;
     }
-    .listing-detail-specs {
-        grid-template-columns: repeat(2, 1fr);
-        padding: 12px 14px;
-        gap: 8px;
-    }
-    .listing-detail-spec-item .spec-icon {
-        width: 32px;
-        height: 32px;
+
+    .gallery-thumbs .thumb.more-photos {
         font-size: 12px;
     }
-    .listing-detail-spec-item .spec-value {
-        font-size: 13px;
-    }
+
     .listing-detail-title {
         font-size: 1.4rem;
     }
+
     .listing-detail-price {
         font-size: 1.6rem;
     }
+
+    .quick-stats {
+        font-size: 0.85rem;
+        gap: 8px 14px;
+    }
+
     .listing-detail-card {
         padding: 18px 16px;
         border-radius: 12px;
     }
+
     .listing-detail-card-title {
         font-size: 1rem;
         margin-bottom: 12px;
     }
+
     .listing-detail-card-title::before {
         height: 16px;
         width: 3px;
     }
+
     .listing-detail-features-grid {
         grid-template-columns: 1fr 1fr;
         gap: 4px 12px;
     }
+
     .listing-detail-feature-item {
         font-size: 12px;
         padding: 4px 0;
     }
+
     .listing-detail-details-grid {
         grid-template-columns: 1fr;
         gap: 4px;
     }
+
     .listing-detail-detail-item {
         padding: 6px 0;
     }
+
     .listing-detail-detail-item .detail-label {
         font-size: 11px;
     }
+
     .listing-detail-detail-item .detail-value {
         font-size: 13px;
     }
+
     .listing-detail-actions-card {
         padding: 20px 18px 24px;
         border-radius: 12px;
     }
+
     .listing-detail-actions-card .action-title {
         font-size: 1rem;
     }
+
     .listing-detail-actions-card .action-subtitle {
         font-size: 13px;
         margin-bottom: 16px;
     }
+
     .listing-detail-actions .btn {
         padding: 14px 20px;
         font-size: 13px;
         border-radius: 10px;
     }
-    .benefits-strip-full {
+
+    .trust-badges-full {
         margin-top: 32px;
         padding-top: 20px;
-    }
-    .benefits-strip-inner {
-        grid-template-columns: repeat(3, 1fr);
-        padding: 8px 0 0;
-        gap: 4px;
-    }
-    .benefit-item:last-child,
-    .benefit-item:nth-last-child(2) {
-        display: none;
-    }
-    .benefit-item i {
-        font-size: 16px;
-    }
-    .benefit-item span {
-        font-size: 9px;
-    }
-    .location-card {
-        padding: 18px 16px;
         border-radius: 12px;
     }
-    .location-content {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+
+    .trust-badges-inner {
+        grid-template-columns: 1fr 1fr;
+        gap: 16px 20px;
+        padding: 20px 16px;
     }
-    .location-map-placeholder {
-        justify-content: center;
+
+    .trust-item i {
+        font-size: 22px;
+        width: 32px;
     }
-    .detail-badges-row {
-        margin-top: 0;
+
+    .trust-item strong {
+        font-size: 0.85rem;
     }
+
+    .trust-item span {
+        font-size: 0.7rem;
+    }
+
     .breadcrumb-nav {
         font-size: 12px;
     }
@@ -3244,59 +3191,39 @@ nav .nav-container {
 
 @media (max-width: 479px) {
     .gallery-main {
-        min-height: 180px;
+        min-height: 160px;
     }
+
     .gallery-controls button {
         width: 30px;
         height: 30px;
         font-size: 10px;
     }
+
     .gallery-thumbs {
-        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        grid-template-columns: repeat(5, 1fr);
         gap: 4px;
         padding: 8px 10px 12px;
     }
-    .listing-detail-specs {
-        grid-template-columns: 1fr 1fr;
-        padding: 10px 12px;
-        gap: 6px;
-    }
-    .listing-detail-spec-item {
-        gap: 8px;
-    }
-    .listing-detail-spec-item .spec-icon {
-        width: 28px;
-        height: 28px;
+
+    .gallery-thumbs .thumb.more-photos {
         font-size: 10px;
     }
-    .listing-detail-spec-item .spec-label {
-        font-size: 9px;
-    }
-    .listing-detail-spec-item .spec-value {
-        font-size: 12px;
-    }
+
     .listing-detail-title {
         font-size: 1.2rem;
     }
+
     .listing-detail-price {
         font-size: 1.3rem;
     }
+
     .listing-detail-features-grid {
         grid-template-columns: 1fr;
     }
-    .benefits-strip-inner {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
 
-@supports (-webkit-backdrop-filter: blur(12px)) {
-    .gallery-controls button {
-        -webkit-backdrop-filter: blur(12px);
-        backdrop-filter: blur(12px);
-    }
-    .gallery-counter {
-        -webkit-backdrop-filter: blur(8px);
-        backdrop-filter: blur(8px);
+    .trust-badges-inner {
+        grid-template-columns: 1fr 1fr;
     }
 }
 
