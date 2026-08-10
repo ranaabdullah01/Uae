@@ -1,1434 +1,560 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Agent Web Studio — Property Detail</title>
+    <meta charset="UTF-8">
+    <!-- GitHub Pages SPA routing fix -->
+    <script type="text/javascript">
+        (function(l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function(s) {
+                    return s.replace(/~and~/g, '&');
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        }(window.location));
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Web Studio | Websites That Sell Homes</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio. RERA licensed agents.">
+    <meta name="keywords" content="Dubai real estate, luxury properties, buy property Dubai, rent Dubai, off-plan Dubai, Golden Visa">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://agentwebstudio.com/">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Agent Web Studio | Luxury Real Estate Websites">
+    <meta property="og:description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio.">
+    <meta property="og:url" content="https://agentwebstudio.com/">
+    <meta property="og:type" content="website">
+    
+    <!-- Premium Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile.css">
 
-    <!-- Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
+    <!-- Schema.org RealEstateAgent Markup -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "Agent Web Studio",
+        "description": "Premium Dubai real estate agency specializing in luxury properties, off-plan investments, and Golden Visa services.",
+        "url": "https://agentwebstudio.com/",
+        "telephone": "+971501234567",
+        "email": "info@agentwebstudio.com",
+        "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
+        "priceRange": "AED 500,000 - AED 50,000,000",
+        "openingHours": "Mo-Su 09:00-21:00",
+        "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
+    }
+    </script>
     <style>
         /* ============================================================
-           BASE RESET & VARIABLES (partial, enough to render the page)
+           REDESIGN: DESKTOP HOMEPAGE — all content centered
            ============================================================ */
-        *,
-        *::before,
-        *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
 
-        :root {
-            --emerald: #0B3B2E;
-            --emerald-deep: #072720;
-            --emerald-soft: #14503F;
-            --cream: #F7F3EA;
-            --cream-warm: #EFE7D6;
-            --paper: #FBF9F4;
-            --brass: #B08A3E;
-            --brass-light: #D4B266;
-            --brass-dark: #8A6B2C;
-            --ink: #0F1A16;
-            --ink-soft: #4A544F;
-            --line: #E4DDCC;
-            --white: #FFFFFF;
-            --whatsapp: #25D366;
-            --whatsapp-dark: #1DA851;
-            --radius: 14px;
-            --radius-sm: 8px;
-            --radius-lg: 22px;
-            --shadow-sm: 0 4px 14px rgba(11, 59, 46, 0.08);
-            --shadow: 0 12px 40px rgba(11, 59, 46, 0.10);
-            --shadow-lg: 0 24px 70px rgba(11, 59, 46, 0.18);
-            --ease: cubic-bezier(0.22, 1, 0.36, 1);
-            --transition: all 0.35s var(--ease);
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--paper);
-            color: var(--ink);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        h1,
-        h2,
-        h3,
-        h4 {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            color: var(--emerald-deep);
-        }
-
-        .container {
-            max-width: 1360px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
-
-        /* ============================================================
-           BUTTONS
-           ============================================================ */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 12px 28px;
-            border: 1.5px solid transparent;
-            border-radius: 100px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: var(--transition);
-            text-decoration: none;
-            min-width: 140px;
-        }
-
-        .btn-primary {
-            background: var(--emerald);
-            color: var(--cream);
-            box-shadow: 0 8px 24px rgba(11, 59, 46, 0.20);
-        }
-        .btn-primary:hover {
-            background: var(--emerald-deep);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(11, 59, 46, 0.30);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--emerald);
-            border-color: var(--line);
-        }
-        .btn-secondary:hover {
-            background: var(--cream);
-            border-color: var(--emerald);
-        }
-
-        .btn-whatsapp {
-            background: var(--whatsapp);
-            color: var(--white);
-            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.25);
-        }
-        .btn-whatsapp:hover {
-            background: var(--whatsapp-dark);
-            transform: translateY(-2px);
-        }
-
-        .btn-sm {
-            padding: 8px 18px;
-            font-size: 11px;
-            min-width: 0;
-        }
-
-        /* ============================================================
-           HEADER (mobile-friendly)
-           ============================================================ */
-        #main-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            background: transparent;
-            border-bottom: 1px solid rgba(247, 243, 234, 0.16);
-            transition: all 0.3s var(--ease);
-        }
-        #main-header.scrolled {
-            background: rgba(251, 249, 244, 0.98);
-            border-bottom: 1px solid var(--line);
-            box-shadow: var(--shadow-sm);
-            backdrop-filter: saturate(160%) blur(14px);
-            -webkit-backdrop-filter: saturate(160%) blur(14px);
-        }
-
-        nav .nav-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            max-width: 1240px;
-            margin: 0 auto;
-            padding: 14px 24px;
-            position: relative;
-        }
-
-        /* Mobile logo (visible on mobile) */
-        .mobile-logo {
-            display: none;
-        }
-        .mobile-logo a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-        }
-        .mobile-logo img {
-            width: 38px;
-            height: 38px;
-            object-fit: contain;
-            border-radius: 0;
-            background: transparent;
-        }
-        .mobile-logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-        .mobile-logo-main {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 800;
-            font-size: 15px;
-            color: #F7F3EA;
-            letter-spacing: -0.02em;
-        }
-        .mobile-logo-sub {
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 8px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: #D4B266;
-            margin-top: 1px;
-        }
-        #main-header.scrolled .mobile-logo-main {
-            color: var(--emerald-deep);
-        }
-        #main-header.scrolled .mobile-logo-sub {
-            color: var(--brass);
-        }
-
-        /* Desktop logo (hidden on mobile) */
-        .logo {
-            flex-shrink: 0;
-            padding: 0 20px;
-        }
-        .logo a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-        .logo img {
-            width: 44px;
-            height: 44px;
-            object-fit: contain;
-            background: transparent;
-        }
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.1;
-        }
-        .logo-main {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 800;
-            font-size: 17px;
-            color: #F7F3EA;
-            letter-spacing: -0.02em;
-            transition: color 0.3s var(--ease);
-        }
-        .logo-sub {
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 8px;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-            color: var(--brass-light);
-            margin-top: 1px;
-            transition: color 0.3s var(--ease);
-        }
-        #main-header.scrolled .logo-main {
-            color: var(--emerald-deep);
-        }
-        #main-header.scrolled .logo-sub {
-            color: var(--brass);
-        }
-
-        /* Navigation links */
-        .nav-links-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            gap: 0;
-        }
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-        .nav-menu a {
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
-            font-size: 13px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--cream);
-            padding: 8px 0;
-            position: relative;
-            transition: color 0.3s var(--ease);
-            text-decoration: none;
-        }
-        .nav-menu a::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            bottom: 0;
-            width: 0;
-            height: 1.5px;
-            background: var(--brass);
-            transition: width 0.35s var(--ease);
-        }
-        .nav-menu a:hover::after {
-            width: 100%;
-        }
-        #main-header.scrolled .nav-menu a {
-            color: var(--ink);
-        }
-        #main-header.scrolled .nav-menu a:hover {
-            color: var(--brass);
-        }
-
-        .nav-left {
-            justify-content: flex-end;
-            flex: 1;
-        }
-        .nav-right {
-            justify-content: flex-start;
-            flex: 1;
-        }
-
-        .btn-contact {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 24px;
-            background: var(--brass);
-            color: var(--emerald-deep);
-            border-radius: 100px;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            transition: all 0.3s var(--ease);
-            border: none;
-        }
-        .btn-contact:hover {
-            background: var(--brass-light);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(176, 138, 62, 0.3);
-        }
-        #main-header.scrolled .btn-contact {
-            background: var(--emerald);
-            color: var(--cream);
-        }
-        #main-header.scrolled .btn-contact:hover {
-            background: var(--emerald-deep);
-        }
-
-        /* Hamburger */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            width: 42px;
-            height: 42px;
-            padding: 0;
-            margin: 0;
-            background: transparent;
-            border: 0;
-            cursor: pointer;
-            flex-shrink: 0;
-            z-index: 1003;
-        }
-        .hamburger span {
-            display: block;
-            width: 26px;
-            height: 2px;
-            border-radius: 2px;
-            background: var(--cream);
-            transition: transform 0.28s ease, opacity 0.28s ease, background 0.28s ease;
-        }
-        #main-header.scrolled .hamburger span {
-            background: var(--emerald-deep);
-        }
-        .hamburger.active span:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .hamburger.active span:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* ============================================================
-           MOBILE RESPONSIVE — HEADER
-           ============================================================ */
-        @media (max-width: 1024px) {
-            .logo {
+        /* ---------- OVERRIDE HEADER FOR DESKTOP ---------- */
+        @media (min-width: 901px) {
+            #main-header {
                 display: none !important;
             }
-            .mobile-logo {
-                display: flex !important;
-                flex-shrink: 0;
+
+            .floating-nav {
+                position: absolute;
+                top: 24px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.10);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                pointer-events: auto;
             }
-            .hamburger {
-                display: inline-flex !important;
-                margin-left: auto;
-                flex-shrink: 0;
+
+            .floating-nav a {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 13px;
+                letter-spacing: 0.04em;
+                padding: 8px 16px;
+                border-radius: 999px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: all 0.2s ease;
+                text-decoration: none;
+                white-space: nowrap;
+                text-transform: uppercase;
             }
-            .nav-links-wrapper {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
+
+            .floating-nav a:hover {
+                background: rgba(255, 255, 255, 0.18);
+                color: #fff;
+            }
+
+            .floating-nav a.active {
+                background: #ffffff;
+                color: #111111;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .floating-nav a.active:hover {
+                background: #ffffff;
+                color: #111111;
+            }
+
+            .floating-logo {
+                position: absolute;
+                top: 20px;
+                left: 32px;
                 z-index: 1001;
                 display: flex;
-                flex-direction: column;
-                align-items: stretch;
-                justify-content: flex-start;
+                align-items: center;
                 gap: 10px;
-                padding: 84px 20px 44px;
-                background: transparent;
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
-                transform: translateX(-100%);
-                transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
-                overflow-y: auto;
-                border: 0;
-                box-shadow: none;
-                opacity: 1;
-                visibility: visible;
-                /* Remove from flex layout when hidden */
-                flex: 0 0 0;
-                width: 0;
-                height: 0;
-                overflow: hidden;
-                padding: 0;
-                margin: 0;
+                pointer-events: auto;
             }
-            .nav-links-wrapper.active {
-                transform: translateX(0);
-                flex: 1 1 auto;
-                width: 100vw;
-                height: 100vh;
-                height: 100dvh;
-                overflow-y: auto;
-                padding: 84px 20px 44px;
-                background: rgba(11, 46, 38, 0.96);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-            }
-            #main-header.scrolled .nav-links-wrapper.active {
-                background: rgba(251, 249, 244, 0.98);
-                backdrop-filter: blur(14px) saturate(160%);
-                -webkit-backdrop-filter: blur(14px) saturate(160%);
-            }
-            .nav-left,
-            .nav-right {
-                flex-direction: column;
-                gap: 8px;
-                width: 100%;
-                justify-content: center;
-                flex: unset;
-            }
-            .nav-left {
-                order: 2;
-            }
-            .nav-right {
-                order: 3;
-            }
-            .nav-menu a {
-                display: block;
-                padding: 14px 16px;
-                border-radius: 12px;
-                color: var(--cream);
-                background: rgba(247, 243, 234, 0.06);
-                border: 1px solid rgba(247, 243, 234, 0.10);
-                text-align: left;
-                font-size: 14px;
-                font-weight: 500;
-                letter-spacing: 0.04em;
-                text-transform: uppercase;
+
+            .floating-logo a {
+                display: flex;
+                align-items: center;
+                gap: 10px;
                 text-decoration: none;
             }
-            #main-header.scrolled .nav-menu a {
-                color: var(--emerald-deep);
-                background: rgba(11, 59, 46, 0.05);
-                border-color: rgba(11, 59, 46, 0.12);
+
+            .floating-logo img {
+                width: 46px;
+                height: 46px;
+                object-fit: contain;
+                border-radius: 0;
+                background: transparent;
             }
-            .nav-menu .btn-contact {
-                justify-content: center;
-                background: var(--brass);
-                color: var(--emerald-deep);
-                padding: 14px 16px;
-                border-radius: 12px;
-                font-size: 14px;
-                width: 100%;
+
+            .floating-logo-text {
+                display: flex;
+                flex-direction: column;
+                line-height: 1.1;
             }
-            #main-header.scrolled .nav-menu .btn-contact {
-                background: var(--emerald);
-                color: var(--cream);
+
+            .floating-logo-main {
+                font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+                font-weight: 800;
+                font-size: 18px;
+                color: #ffffff;
+                letter-spacing: -0.02em;
+                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
             }
-            /* Ensure header stays clean on mobile */
-            nav .nav-container {
-                padding: 10px 18px;
-                min-height: 64px;
+
+            .floating-logo-sub {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 9px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 1px;
+                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
             }
-            #main-header.scrolled .nav-links-wrapper.active .nav-menu a {
-                color: var(--emerald-deep);
-                background: rgba(11, 59, 46, 0.05);
-                border-color: rgba(11, 59, 46, 0.12);
+
+            .hamburger {
+                display: none !important;
             }
         }
 
-        /* ============================================================
-           PROPERTY DETAIL PAGE — DESKTOP
-           ============================================================ */
-        #listing-detail {
-            padding: 20px 0 40px;
-            background: var(--paper);
-        }
-        #listing-detail .container {
-            max-width: 1360px;
-            padding: 0 32px;
-        }
-
-        .listing-detail-top-bar {
+        /* ---------- HERO OVERRIDES ---------- */
+        .hero {
+            position: relative;
+            min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 24px;
-        }
-        .listing-detail-top-bar .btn-secondary {
-            padding: 10px 24px;
-            font-size: 12px;
-            background: var(--brass);
-            color: var(--white);
-            border: none;
-            box-shadow: 0 4px 16px rgba(176, 138, 62, 0.25);
-        }
-        .listing-detail-top-bar .btn-secondary:hover {
-            background: var(--brass-dark);
-            transform: translateY(-2px);
-        }
-
-        .breadcrumb-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            color: var(--ink-soft);
-            flex-wrap: wrap;
-        }
-        .breadcrumb-nav a {
-            color: var(--brass);
-            text-decoration: none;
-            transition: var(--transition);
-        }
-        .breadcrumb-nav a:hover {
-            color: var(--brass-dark);
-            text-decoration: underline;
-        }
-        .breadcrumb-nav .separator {
-            color: var(--line);
-        }
-        .breadcrumb-nav .current {
-            color: var(--ink);
-            font-weight: 500;
-        }
-
-        /* Two-column grid */
-        .listing-detail-container {
-            display: grid;
-            grid-template-columns: 56% 44%;
-            gap: 48px;
-            align-items: start;
-        }
-
-        /* Left Column */
-        .listing-detail-left-col {
-            display: flex;
-            flex-direction: column;
-            gap: 28px;
-        }
-
-        /* Gallery */
-        .listing-detail-gallery {
-            position: relative;
-            border-radius: 20px;
+            padding: 0 !important;
+            background: #0B2E26;
             overflow: hidden;
-            background: #F0EDE8;
-            box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
-        }
-        .gallery-main {
-            position: relative;
-            aspect-ratio: 16/9;
-            background: #F0EDE8;
-            overflow: hidden;
-            min-height: 340px;
-        }
-        .gallery-main img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s var(--ease);
-        }
-        .gallery-main img:hover {
-            transform: scale(1.02);
         }
 
-        .gallery-controls {
+        #home .hero-slideshow {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 0 !important;
+            overflow: hidden !important;
+            pointer-events: none !important;
+        }
+
+        #home .hero-slide {
+            position: absolute !important;
+            inset: 0 !important;
+            z-index: 1 !important;
+            background-size: cover !important;
+            background-position: center !important;
+            opacity: 0;
+            transform: scale(1.04);
+            animation: heroFade 10s infinite ease-in-out;
+            will-change: opacity, transform;
+        }
+
+        #home .hero-slide:nth-child(1) { animation-delay: 0s; }
+        #home .hero-slide:nth-child(2) { animation-delay: 2s; }
+        #home .hero-slide:nth-child(3) { animation-delay: 4s; }
+        #home .hero-slide:nth-child(4) { animation-delay: 6s; }
+        #home .hero-slide:nth-child(5) { animation-delay: 8s; }
+
+        @keyframes heroFade {
+            0%   { opacity: 0; transform: scale(1.05); }
+            6%   { opacity: 1; }
+            22%  { opacity: 1; transform: scale(1.10); }
+            30%  { opacity: 0; }
+            100% { opacity: 0; transform: scale(1.05); }
+        }
+
+        #home .hero::after {
+            content: '';
             position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            transform: translateY(-50%);
-            display: flex;
-            justify-content: space-between;
-            padding: 0 24px;
-            z-index: 5;
+            inset: 0;
+            z-index: 2;
+            background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 100%);
             pointer-events: none;
         }
-        .gallery-controls button {
-            pointer-events: auto;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-            color: var(--emerald-deep);
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-        }
-        .listing-detail-gallery:hover .gallery-controls button {
-            opacity: 1;
-        }
-        .gallery-controls button:hover {
-            background: var(--white);
-            transform: scale(1.10);
-        }
-        .gallery-counter {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(8px);
-            color: var(--cream);
-            padding: 6px 18px;
-            border-radius: 100px;
-            font-family: 'Inter', sans-serif;
-            font-size: 13px;
-            font-weight: 500;
-            z-index: 5;
-        }
 
-        .gallery-thumbs {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
-            padding: 16px 20px 20px;
-            background: var(--white);
-        }
-        .gallery-thumbs .thumb {
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            border-radius: 10px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: var(--transition);
+        #home .hero-content {
+            position: relative;
+            z-index: 3;
             width: 100%;
-            display: block;
-        }
-        .gallery-thumbs .thumb:hover {
-            border-color: var(--brass-light);
-            transform: scale(1.04);
-        }
-        .gallery-thumbs .thumb.active {
-            border-color: var(--brass);
-            box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.2);
-        }
-        .gallery-thumbs .thumb.more-photos {
-            background: var(--emerald-deep);
-            color: var(--cream);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            text-align: center;
-            border: none;
-            cursor: pointer;
-        }
-        .gallery-thumbs .thumb.more-photos:hover {
-            background: var(--brass);
-            color: var(--emerald-deep);
-        }
-
-        /* Right Column */
-        .listing-detail-right-col {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 100px 32px 80px;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            text-align: center;
             gap: 16px;
         }
 
-        .listing-detail-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: clamp(1.8rem, 2.6vw, 2.6rem);
-            color: var(--emerald-deep);
-            margin: 4px 0 8px 0;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
+        /* ---- Hero Text ---- */
+        .hero-text-wrap {
+            max-width: 820px;
+            margin: 0 auto;
         }
 
-        .price-status-row {
+        .hero-title {
+            font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+            font-weight: 800;
+            font-size: clamp(3.6rem, 7vw, 5.2rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        .hero-title .gold-text {
+            color: #B88A3B;
+            font-style: italic;
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto 4px;
+            line-height: 1.6;
+            text-align: center;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* ---- Buttons ---- */
+        .hero-buttons {
             display: flex;
-            align-items: center;
             gap: 16px;
             flex-wrap: wrap;
-            margin-bottom: 4px;
-        }
-        .listing-detail-price {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: clamp(2rem, 2.8vw, 2.8rem);
-            color: var(--brass-dark);
-            letter-spacing: -0.02em;
-        }
-        .status-pill {
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 100px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            background: var(--emerald);
-            color: var(--cream);
-        }
-        .status-pill.for-sale {
-            background: var(--emerald);
-            color: var(--cream);
-        }
-        .status-pill.for-rent {
-            background: #1A5A7A;
-            color: var(--cream);
-        }
-        .status-pill.sold {
-            background: #6B7280;
-            color: var(--cream);
-        }
-
-        .listing-detail-location {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 0.95rem;
-            color: var(--ink-soft);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
-        .listing-detail-location i {
-            color: var(--brass);
-            font-size: 14px;
-        }
-
-        /* Quick Stats */
-        .quick-stats-card {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            background: var(--white);
-            border-radius: 12px;
-            padding: 12px 16px;
-            border: 1px solid var(--line);
-            box-shadow: 0 2px 8px rgba(11, 59, 46, 0.04);
-            margin: 4px 0 12px;
-        }
-        .quick-stat-block {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            padding: 6px 4px;
-            border-right: 1px solid var(--line);
-        }
-        .quick-stat-block:last-child {
-            border-right: none;
-        }
-        .quick-stat-block i {
-            font-size: 18px;
-            color: var(--brass);
-            margin-bottom: 2px;
-        }
-        .quick-stat-block .stat-value {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--emerald-deep);
-            line-height: 1.2;
-        }
-        .quick-stat-block .stat-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 10px;
-            font-weight: 500;
-            color: var(--ink-soft);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        /* Cards */
-        .listing-detail-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 20px 24px;
-            border: 1px solid var(--line);
-            box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
-            transition: box-shadow 0.3s var(--ease);
-        }
-        .listing-detail-card:hover {
-            box-shadow: 0 6px 24px rgba(11, 59, 46, 0.07);
-        }
-        .listing-detail-card-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            color: var(--emerald-deep);
-            margin: 0 0 12px 0;
-            letter-spacing: -0.02em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .listing-detail-card-title::before {
-            content: '';
-            display: inline-block;
-            width: 4px;
-            height: 18px;
-            background: var(--brass);
-            border-radius: 2px;
-            flex-shrink: 0;
-        }
-        .listing-detail-description {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 0.95rem;
-            line-height: 1.8;
-            color: var(--ink-soft);
-            margin: 0;
-        }
-        .listing-detail-features-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px 16px;
-        }
-        .listing-detail-feature-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 4px 0;
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 14px;
-            color: var(--ink);
-        }
-        .listing-detail-feature-item i {
-            color: var(--brass);
-            font-size: 13px;
-            flex-shrink: 0;
-        }
-
-        /* Property Details Grid */
-        .listing-detail-details-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px 20px;
-        }
-        .listing-detail-detail-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--cream-warm);
-        }
-        .listing-detail-detail-item:last-child {
-            border-bottom: none;
-        }
-        .listing-detail-detail-item .detail-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--ink-soft);
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .listing-detail-detail-item .detail-value {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            color: var(--emerald-deep);
-        }
-
-        /* CTA */
-        .listing-detail-actions-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 24px 24px 28px;
-            border: 1px solid var(--line);
-            box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
-            text-align: center;
-            margin-top: 4px;
-        }
-        .listing-detail-actions-card .action-title {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 600;
-            font-size: 1.05rem;
-            color: var(--emerald-deep);
-            margin: 0 0 4px 0;
-            letter-spacing: -0.02em;
-        }
-        .listing-detail-actions-card .action-subtitle {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 13px;
-            color: var(--ink-soft);
-            margin: 0 0 16px 0;
-        }
-        .listing-detail-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .listing-detail-actions .btn {
-            width: 100%;
-            padding: 14px 20px;
-            font-size: 13px;
-            border-radius: 12px;
             justify-content: center;
-            min-width: 0;
-        }
-        .listing-detail-actions .btn-whatsapp {
-            background: var(--whatsapp);
-            color: var(--white);
-            box-shadow: 0 4px 16px rgba(37, 211, 102, 0.3);
-        }
-        .listing-detail-actions .btn-whatsapp:hover {
-            background: var(--whatsapp-dark);
-            transform: translateY(-2px);
-        }
-        .listing-detail-actions .btn-primary {
-            background: var(--emerald);
-            color: var(--cream);
-            box-shadow: 0 4px 16px rgba(11, 59, 46, 0.25);
-        }
-        .listing-detail-actions .btn-primary:hover {
-            background: var(--emerald-deep);
-            transform: translateY(-2px);
+            margin: 12px 0 6px;
         }
 
-        /* Trust Badges */
-        .trust-badges-full {
-            margin-top: 32px;
-            padding-top: 16px;
-            border-top: 1px solid var(--line);
-            width: 100%;
-            background: var(--white);
-            border-radius: 16px;
-            border: 1px solid var(--line);
-            box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
-            max-width: 1360px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .trust-badges-inner {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            padding: 24px 20px;
+        .hero-buttons .btn {
+            min-width: 170px;
+            padding: 14px 34px;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
             align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
-        .trust-item {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            text-align: left;
+
+        .hero-buttons .btn-primary {
+            background: #ffffff;
+            color: #0B2E26;
+            border-color: #ffffff;
         }
-        .trust-item i {
-            font-size: 28px;
-            color: var(--brass);
-            flex-shrink: 0;
-            width: 40px;
-            text-align: center;
+        .hero-buttons .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
         }
-        .trust-item div {
-            display: flex;
-            flex-direction: column;
+
+        .hero-buttons .btn-whatsapp {
+            background: rgba(37, 211, 102, 0.25);
+            border-color: rgba(37, 211, 102, 0.4);
+            color: #fff;
         }
-        .trust-item strong {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: var(--emerald-deep);
-            letter-spacing: -0.02em;
-            line-height: 1.2;
+        .hero-buttons .btn-whatsapp:hover {
+            background: #25D366;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(37, 211, 102, 0.3);
         }
-        .trust-item span {
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            font-size: 0.8rem;
-            color: var(--ink-soft);
-            line-height: 1.3;
+        .hero-buttons .btn-whatsapp i {
+            margin-right: 8px;
         }
 
         /* ============================================================
-           MOBILE RESPONSIVE — PROPERTY DETAIL (ORDER & LAYOUT)
+           GLASS SEARCH BAR — centered, elegant, horizontal
            ============================================================ */
-        @media (max-width: 1023px) {
-            #listing-detail .container {
-                padding: 0 20px;
+        .glass-search-bar {
+            width: 100%;
+            max-width: 1000px;
+            margin: 8px auto 0;
+            background: rgba(255, 255, 255, 0.10);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.20);
+            border-radius: 999px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.12);
+            padding: 6px 8px 6px 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            transition: all 0.3s ease;
+        }
+        .glass-search-bar:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.35);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.20);
+        }
+
+        .glass-search-bar .search-field {
+            flex: 1 1 140px;
+            min-width: 110px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .glass-search-bar .search-field label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 9px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            margin-left: 2px;
+            opacity: 0.8;
+        }
+        .glass-search-bar .search-field select,
+        .glass-search-bar .search-field input {
+            width: 100%;
+            padding: 6px 8px 6px 4px;
+            border: none;
+            border-radius: 0;
+            background: transparent;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #ffffff;
+            outline: none;
+            appearance: none;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            transition: border 0.2s ease;
+            cursor: pointer;
+        }
+        .glass-search-bar .search-field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='rgba(255,255,255,0.6)' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            padding-right: 24px;
+        }
+        .glass-search-bar .search-field select option {
+            background: #1a2e28;
+            color: #fff;
+        }
+        .glass-search-bar .search-field select:focus,
+        .glass-search-bar .search-field input:focus {
+            border-bottom-color: #B88A3B;
+        }
+        .glass-search-bar .search-field input::placeholder {
+            color: rgba(255,255,255,0.4);
+            font-weight: 300;
+            font-size: 12px;
+        }
+
+        .glass-search-btn {
+            flex: 0 0 auto;
+            padding: 10px 28px;
+            border: none;
+            border-radius: 999px;
+            background: #B88A3B;
+            color: #0B2E26;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 16px rgba(184, 138, 59, 0.3);
+        }
+        .glass-search-btn:hover {
+            background: #d4a84a;
+            transform: scale(1.02);
+            box-shadow: 0 8px 28px rgba(184, 138, 59, 0.4);
+        }
+        .glass-search-btn i {
+            margin-right: 6px;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1100px) {
+            .glass-search-bar {
+                max-width: 100%;
             }
-            .listing-detail-container {
-                grid-template-columns: 1fr;
-                gap: 32px;
+        }
+
+        @media (max-width: 900px) {
+            .floating-nav,
+            .floating-logo {
+                display: none !important;
             }
-            .listing-detail-right-col {
-                order: 2;
+            #main-header {
+                display: flex !important;
             }
-            .listing-detail-left-col {
-                order: 1;
+            #home .hero-content {
+                padding: 90px 20px 60px;
             }
-            .gallery-main {
-                min-height: 280px;
+            .hero-title {
+                font-size: clamp(2.8rem, 10vw, 3.6rem) !important;
+                margin-bottom: 12px !important;
             }
-            .gallery-thumbs {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 8px;
-                padding: 12px 16px 16px;
+            .hero-subtitle {
+                font-size: 0.85rem !important;
             }
-            .trust-badges-inner {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 16px 24px;
-                padding: 20px 16px;
-            }
-            .quick-stats-card {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .quick-stat-block:nth-child(2) {
-                border-right: none;
-            }
-            .quick-stat-block:nth-child(3) {
-                border-right: 1px solid var(--line);
-            }
-            .listing-detail-top-bar {
+            .glass-search-bar {
+                border-radius: 28px;
+                padding: 16px 18px;
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
-                margin-bottom: 20px;
+                background: rgba(255,255,255,0.10);
+                backdrop-filter: blur(18px);
+                margin-top: 16px;
             }
-            .listing-detail-top-bar .breadcrumb-nav {
-                justify-content: flex-start;
+            .glass-search-bar .search-field {
+                flex: 1 1 100%;
+                min-width: 0;
             }
-        }
-
-        /* ============================================================
-           MOBILE — REORDERED CONTENT (display: contents + order)
-           ============================================================ */
-        @media (max-width: 767px) {
-            #listing-detail {
-                padding: 16px 0 30px;
-            }
-            #listing-detail .container {
-                padding: 0 16px;
-            }
-
-            /* ---- Flatten the container using display: contents ---- */
-            .listing-detail-container {
-                display: flex;
-                flex-direction: column;
-                gap: 16px;
-            }
-
-            .listing-detail-left-col,
-            .listing-detail-right-col {
-                display: contents;
-                /* children become direct children of the flex container */;
-            }
-
-            /* ---- ORDER each child element ---- */
-            .listing-detail-gallery {
-                order: 1;
-            }
-            .listing-detail-title {
-                order: 2;
-                margin-top: 0;
-            }
-            .price-status-row {
-                order: 3;
-            }
-            .listing-detail-location {
-                order: 4;
-            }
-            .quick-stats-card {
-                order: 5;
-            }
-            .listing-detail-actions-card {
-                order: 6;
-            }
-            /* Description card (first .listing-detail-card inside the flattened flow) */
-            .listing-detail-card:first-of-type {
-                order: 7;
-            }
-            /* Features card (second .listing-detail-card inside the flattened flow) */
-            .listing-detail-card:last-of-type {
-                order: 8;
-            }
-            /* Property Details card (from left col) */
-            .property-details-card {
-                order: 9;
-            }
-
-            /* ---- Top bar stays above ---- */
-            .listing-detail-top-bar {
-                order: 0;
-                margin-bottom: 12px;
-            }
-
-            /* ---- Trust badges stay at bottom ---- */
-            .trust-badges-full {
-                order: 10;
-                margin-top: 12px;
-            }
-
-            /* ---- Gallery adjustments ---- */
-            .gallery-main {
-                min-height: 200px;
-            }
-            .gallery-controls {
-                padding: 0 12px;
-            }
-            .gallery-controls button {
-                width: 36px;
-                height: 36px;
-                font-size: 13px;
-                opacity: 1;
-            }
-            .gallery-counter {
-                font-size: 11px;
-                padding: 4px 14px;
-                bottom: 12px;
-                right: 12px;
-            }
-            .gallery-thumbs {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 6px;
-                padding: 10px 12px 14px;
-            }
-            .gallery-thumbs .thumb {
-                border-radius: 8px;
-                border-width: 2px;
-            }
-            .gallery-thumbs .thumb.more-photos {
-                font-size: 12px;
-            }
-
-            /* ---- Title & Price ---- */
-            .listing-detail-title {
-                font-size: 1.4rem;
-                margin-bottom: 2px;
-            }
-            .listing-detail-price {
-                font-size: 1.6rem;
-            }
-            .price-status-row {
-                gap: 10px;
-            }
-            .status-pill {
-                font-size: 10px;
-                padding: 2px 12px;
-            }
-            .listing-detail-location {
-                font-size: 0.85rem;
-            }
-
-            /* ---- Quick Stats ---- */
-            .quick-stats-card {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 10px 12px;
-                gap: 4px;
-                margin: 0 0 4px;
-            }
-            .quick-stat-block {
-                border-right: none;
-                padding: 4px 2px;
-            }
-            .quick-stat-block:nth-child(odd) {
-                border-right: 1px solid var(--line);
-            }
-            .quick-stat-block .stat-value {
-                font-size: 0.95rem;
-            }
-            .quick-stat-block .stat-label {
-                font-size: 9px;
-            }
-            .quick-stat-block i {
+            .glass-search-bar .search-field select,
+            .glass-search-bar .search-field input {
                 font-size: 15px;
+                padding: 8px 4px;
             }
-
-            /* ---- Cards ---- */
-            .listing-detail-card {
-                padding: 16px 14px;
-                border-radius: 12px;
-                margin: 0;
-            }
-            .listing-detail-card-title {
-                font-size: 0.95rem;
-                margin-bottom: 10px;
-            }
-            .listing-detail-card-title::before {
-                height: 15px;
-                width: 3px;
-            }
-            .listing-detail-features-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 4px 10px;
-            }
-            .listing-detail-feature-item {
-                font-size: 12px;
-                padding: 3px 0;
-            }
-
-            /* ---- Property Details Table: stack to 1 column ---- */
-            .listing-detail-details-grid {
-                grid-template-columns: 1fr !important;
-                gap: 3px;
-            }
-            .listing-detail-detail-item {
-                padding: 5px 0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                flex-wrap: wrap;
-            }
-            .listing-detail-detail-item .detail-label {
-                font-size: 10px;
-            }
-            .listing-detail-detail-item .detail-value {
-                font-size: 13px;
-                text-align: right;
-                max-width: 60%;
-                word-break: break-word;
-            }
-
-            /* ---- CTA ---- */
-            .listing-detail-actions-card {
-                padding: 18px 16px 22px;
-                border-radius: 12px;
-            }
-            .listing-detail-actions-card .action-title {
-                font-size: 0.95rem;
-            }
-            .listing-detail-actions-card .action-subtitle {
-                font-size: 12px;
-                margin-bottom: 14px;
-            }
-            .listing-detail-actions .btn {
-                padding: 12px 16px;
-                font-size: 12px;
-                border-radius: 10px;
-            }
-
-            /* ---- Trust Badges ---- */
-            .trust-badges-full {
-                border-radius: 12px;
-                margin-top: 4px;
-            }
-            .trust-badges-inner {
-                grid-template-columns: 1fr 1fr;
-                gap: 14px 18px;
-                padding: 18px 14px;
-            }
-            .trust-item i {
-                font-size: 22px;
-                width: 32px;
-            }
-            .trust-item strong {
-                font-size: 0.85rem;
-            }
-            .trust-item span {
-                font-size: 0.7rem;
-            }
-
-            /* ---- Breadcrumb ---- */
-            .listing-detail-top-bar .btn-secondary {
+            .glass-search-btn {
                 width: 100%;
                 justify-content: center;
-                padding: 12px;
-                font-size: 11px;
+                padding: 14px;
+                border-radius: 999px;
             }
-            .listing-detail-top-bar .breadcrumb-nav {
-                font-size: 12px;
-                justify-content: center;
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
             }
-
-            /* ---- Top bar ---- */
-            .listing-detail-top-bar {
-                gap: 10px;
-                margin-bottom: 12px;
+            .hero-buttons .btn {
+                width: 100%;
+                max-width: 300px;
             }
         }
 
-        /* ============================================================
-           VERY SMALL SCREENS
-           ============================================================ */
-        @media (max-width: 479px) {
-            .gallery-main {
-                min-height: 160px;
+        @media (max-width: 480px) {
+            .glass-search-bar {
+                padding: 14px 14px;
             }
-            .gallery-controls button {
-                width: 30px;
-                height: 30px;
-                font-size: 10px;
-            }
-            .gallery-thumbs {
-                grid-template-columns: repeat(5, 1fr);
-                gap: 4px;
-                padding: 8px 10px 12px;
-            }
-            .gallery-thumbs .thumb.more-photos {
-                font-size: 10px;
-            }
-            .listing-detail-title {
-                font-size: 1.2rem;
-            }
-            .listing-detail-price {
-                font-size: 1.3rem;
-            }
-            .listing-detail-features-grid {
-                grid-template-columns: 1fr;
-            }
-            .trust-badges-inner {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px 14px;
-                padding: 14px 10px;
-            }
-            .trust-item i {
-                font-size: 18px;
-                width: 28px;
-            }
-            .trust-item strong {
-                font-size: 0.75rem;
-            }
-            .trust-item span {
-                font-size: 0.6rem;
-            }
-            .quick-stats-card {
-                grid-template-columns: 1fr 1fr;
-                padding: 8px 10px;
-                gap: 2px;
-            }
-            .quick-stat-block .stat-value {
-                font-size: 0.85rem;
-            }
-            .quick-stat-block .stat-label {
+            .glass-search-bar .search-field label {
                 font-size: 8px;
             }
-            .quick-stat-block i {
-                font-size: 13px;
+            .glass-search-bar .search-field select,
+            .glass-search-bar .search-field input {
+                font-size: 14px;
+                padding: 6px 2px;
             }
-            #listing-detail .container {
-                padding: 0 12px;
-            }
-        }
-
-        /* ============================================================
-           TOAST (for demo feedback)
-           ============================================================ */
-        #toast-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 9999;
-        }
-        .toast {
-            padding: 14px 22px;
-            background: var(--emerald-deep);
-            color: var(--cream);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--brass);
-            animation: slideIn 0.3s var(--ease);
-            max-width: 340px;
-            font-family: 'Inter', sans-serif;
-        }
-        .toast.success {
-            border-left-color: #34D399;
-        }
-        .toast.error {
-            border-left-color: #F87171;
-        }
-        .toast.fadeout {
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: none;
-                opacity: 1;
+            .hero-buttons .btn {
+                min-width: 120px;
+                padding: 10px 18px;
+                font-size: 11px;
+                max-width: 100%;
             }
         }
     </style>
 </head>
 <body>
+    <!-- =============== PRELOADER =============== -->
+    <div id="preloader">
+        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
+    </div>
 
-    <!-- ========== HEADER ========== -->
+    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
+    <div class="floating-logo" id="floating-logo">
+        <a href="#home" data-section="home">
+            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+            <div class="floating-logo-text">
+                <span class="floating-logo-main">Agent Web Studio</span>
+                <span class="floating-logo-sub">Websites That Sell Homes</span>
+            </div>
+        </a>
+    </div>
+
+    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
+        <a href="#home" data-section="home" class="active">HOME</a>
+        <a href="#listings" data-section="listings">PROPERTIES</a>
+        <a href="#offplan" data-section="offplan">OFF-PLAN</a>
+        <a href="#valuation" data-section="valuation">VALUATION</a>
+        <a href="#communities" data-section="communities">COMMUNITIES</a>
+        <a href="#about" data-section="about">ABOUT</a>
+        <a href="#blog" data-section="blog">BLOG</a>
+        <a href="#contact" data-section="contact">CONTACT</a>
+        <a href="#goldenvisa" data-section="goldenvisa">GOLDEN VISA</a>
+    </nav>
+
+    <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
     <header id="main-header">
         <nav>
-            <div class="nav-container">
-                <!-- Mobile Logo -->
+            <div class="container nav-container">
                 <div class="mobile-logo">
-                    <a href="#home">
+                    <a href="#home" data-section="home">
                         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
                         <div class="mobile-logo-text">
                             <span class="mobile-logo-main">Agent Web Studio</span>
@@ -1437,18 +563,6 @@
                     </a>
                 </div>
 
-                <!-- Desktop Logo -->
-                <div class="logo">
-                    <a href="#home">
-                        <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-                        <div class="logo-text">
-                            <span class="logo-main">Agent Web Studio</span>
-                            <span class="logo-sub">Websites That Sell Homes</span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Nav Links (overlay on mobile) -->
                 <div id="nav-menu" class="nav-links-wrapper">
                     <ul class="nav-menu nav-left">
                         <li><a href="#home" data-section="home" class="active">HOME</a></li>
@@ -1456,15 +570,26 @@
                         <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
                         <li><a href="#valuation" data-section="valuation">VALUATION</a></li>
                     </ul>
+                    
+                    <div class="logo">
+                        <a href="#home" data-section="home">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+                            <div class="logo-text">
+                                <span class="logo-main">Agent Web Studio</span>
+                                <span class="logo-sub">Websites That Sell Homes</span>
+                            </div>
+                        </a>
+                    </div>
+                    
                     <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities">COMMUNITIES</a></li>
                         <li><a href="#about" data-section="about">ABOUT</a></li>
                         <li><a href="#blog" data-section="blog">BLOG</a></li>
-                        <li><a href="#contact" data-section="contact" class="btn-contact">CONTACT</a></li>
+                        <li><a href="#contact" data-section="contact">CONTACT</a></li>
+                        <li><a href="#goldenvisa" data-section="goldenvisa">GOLDEN VISA</a></li>
                     </ul>
                 </div>
 
-                <!-- Hamburger (far right) -->
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -1472,370 +597,833 @@
         </nav>
     </header>
 
-    <!-- ========== PROPERTY DETAIL PAGE ========== -->
-    <section id="listing-detail" style="padding-top: 80px;">
+    <main id="main-content">
+        <!-- ============================================================
+             HOME SECTION — CENTERED HERO WITH GLASS SEARCH BAR
+             ============================================================ -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <!-- slideshow backgrounds -->
+                <div class="hero-slideshow" aria-hidden="true">
+                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80')"></div>
+                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1920&q=80')"></div>
+                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1920&q=80')"></div>
+                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1920&q=80')"></div>
+                    <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1920&q=80')"></div>
+                </div>
+
+                <div class="hero-content">
+                    <!-- Hero Text -->
+                    <div class="hero-text-wrap">
+                        <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
+                        <p class="hero-subtitle" id="agent-tagline" data-custom="true">LUXURY REAL ESTATE | OFF-PLAN INVESTMENTS | GOLDEN VISA EXPERTS</p>
+                        
+                        <!-- Buttons -->
+                        <div class="hero-buttons">
+                            <a href="#listings" class="btn btn-primary" data-section="listings">VIEW PROPERTIES</a>
+                            <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
+                        </div>
+                    </div>
+
+                    <!-- ========== GLASS SEARCH BAR (centered) ========== -->
+                    <div class="glass-search-bar" id="hero-search-bar">
+                        <!-- Property Type -->
+                        <div class="search-field">
+                            <label for="filter-type-hero">PROPERTY TYPE</label>
+                            <select id="filter-type-hero" name="type">
+                                <option value="all">ALL TYPES</option>
+                                <option value="Apartment">APARTMENT</option>
+                                <option value="Villa">VILLA</option>
+                                <option value="Penthouse">PENTHOUSE</option>
+                                <option value="Studio">STUDIO</option>
+                                <option value="Townhouse">TOWNHOUSE</option>
+                            </select>
+                        </div>
+                        <!-- Community -->
+                        <div class="search-field">
+                            <label for="filter-community-hero">COMMUNITY</label>
+                            <select id="filter-community-hero" name="community">
+                                <option value="all">ALL COMMUNITIES</option>
+                            </select>
+                        </div>
+                        <!-- Price -->
+                        <div class="search-field">
+                            <label for="filter-price-hero">PRICE RANGE</label>
+                            <select id="filter-price-hero" name="price">
+                                <option value="all">ANY PRICE</option>
+                                <option value="500k">UNDER AED 500K</option>
+                                <option value="1m">AED 500K – 1M</option>
+                                <option value="2m">AED 1M – 2M</option>
+                                <option value="5m">AED 2M – 5M</option>
+                                <option value="10m">AED 5M – 10M</option>
+                                <option value="10m+">AED 10M+</option>
+                            </select>
+                        </div>
+                        <!-- Bedrooms -->
+                        <div class="search-field">
+                            <label for="filter-bedrooms-hero">BEDROOMS</label>
+                            <select id="filter-bedrooms-hero" name="bedrooms">
+                                <option value="all">ANY</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5+</option>
+                            </select>
+                        </div>
+                        <!-- Status -->
+                        <div class="search-field" style="flex: 1 1 100px; min-width:80px;">
+                            <label for="filter-status-hero">STATUS</label>
+                            <select id="filter-status-hero" name="status">
+                                <option value="all">ALL</option>
+                                <option value="for-sale">FOR SALE</option>
+                                <option value="for-rent">FOR RENT</option>
+                                <option value="sold">SOLD</option>
+                            </select>
+                        </div>
+                        <!-- Search Button -->
+                        <button type="button" class="glass-search-btn" id="hero-search-btn">
+                            <i class="fas fa-search"></i> SEARCH
+                        </button>
+                    </div>
+                    <!-- end glass search bar -->
+                </div>
+            </div>
+
+            <!-- ========== REST OF HOMEPAGE ========== -->
+            <div class="container">
+                <!-- Featured Listings -->
+                <section class="featured-section">
+                    <div class="section-header">
+                        <h2>FEATURED PROPERTIES</h2>
+                        <a href="#listings" class="view-all" data-section="listings">VIEW ALL <span>→</span></a>
+                    </div>
+                    <div class="listings-grid" id="featured-listings"></div>
+                </section>
+
+                <!-- Featured Off-Plan -->
+                <section class="featured-section">
+                    <div class="section-header">
+                        <h2>FEATURED OFF-PLAN PROJECTS</h2>
+                        <a href="#offplan" class="view-all" data-section="offplan">VIEW ALL <span>→</span></a>
+                    </div>
+                    <div class="offplan-grid" id="featured-offplan"></div>
+                </section>
+
+                <!-- Communities Preview -->
+                <section class="featured-section">
+                    <div class="section-header">
+                        <h2>EXPLORE DUBAI COMMUNITIES</h2>
+                        <a href="#communities" class="view-all" data-section="communities">VIEW ALL <span>→</span></a>
+                    </div>
+                    <div class="communities-grid" id="home-communities"></div>
+                </section>
+
+                <!-- About Snippet -->
+                <section class="about-snippet">
+                    <div class="about-snippet-content">
+                        <div class="about-snippet-image">
+                            <img src="https://placehold.co/400x400/0A1628/C9A84C?text=Agent" alt="Agent Profile" id="agent-photo-home">
+                        </div>
+                        <div class="about-snippet-text">
+                            <h2 id="agent-name-home">Ahmed Khan</h2>
+                            <p id="agent-bio-home">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties.</p>
+                            <div class="stats">
+                                <div><span id="years-exp">12</span> YEARS EXPERIENCE</div>
+                                <div><span id="properties-sold">850</span> PROPERTIES SOLD</div>
+                                <div><span id="happy-clients">1200</span> HAPPY CLIENTS</div>
+                            </div>
+                            <a href="#about" class="btn btn-primary" data-section="about">MORE ABOUT ME</a>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Portal Presence -->
+                <section class="portal-section">
+                    <h2>FIND US ON</h2>
+                    <div class="portal-buttons">
+                        <a href="https://propertyfinder.ae/agents/agent-web-studio" target="_blank" class="portal-btn propertyfinder">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Property%20finder%20icon.png" alt="Property Finder" class="portal-icon">
+                            PROPERTY FINDER
+                        </a>
+                        <a href="https://bayut.com/agents/agent-web-studio" target="_blank" class="portal-btn bayut">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Bayut%20icon.png" alt="Bayut" class="portal-icon">
+                            BAYUT
+                        </a>
+                    </div>
+                </section>
+
+                <!-- ROI Calculator -->
+                <section class="roi-calculator-section">
+                    <h2>CALCULATE YOUR ROI</h2>
+                    <p>Estimate your return on investment for Dubai properties</p>
+                    <div class="calculator">
+                        <div class="calc-group">
+                            <label for="calc-price">PROPERTY PRICE (AED)</label>
+                            <input type="number" id="calc-price" value="2000000" step="100000">
+                        </div>
+                        <div class="calc-group">
+                            <label for="calc-rent">ANNUAL RENT (AED)</label>
+                            <input type="number" id="calc-rent" value="120000" step="10000">
+                        </div>
+                        <div class="calc-group">
+                            <label for="calc-service">SERVICE CHARGES (AED/YEAR)</label>
+                            <input type="number" id="calc-service" value="15000" step="1000">
+                        </div>
+                        <button id="calc-roi-btn" class="btn btn-primary">CALCULATE ROI</button>
+                        <div class="calc-results" id="calc-results"></div>
+                    </div>
+                </section>
+
+                <!-- Golden Visa Highlight -->
+                <section class="goldenvisa-highlight">
+                    <div class="gv-highlight-content">
+                        <h2>GOLDEN VISA OPPORTUNITY</h2>
+                        <p>Invest AED 2M+ in Dubai property and qualify for the UAE Golden Visa. 10-year renewable residency for you and your family.</p>
+                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">LEARN MORE</a>
+                    </div>
+                </section>
+
+                <!-- WhatsApp Contact Section -->
+                <section class="whatsapp-contact">
+                    <h2>CONNECT ON WHATSAPP</h2>
+                    <p>Quick and easy communication with our team</p>
+                    <div class="whatsapp-buttons">
+                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">BUY PROPERTY</a>
+                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">RENT PROPERTY</a>
+                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">OFF-PLAN INVESTMENT</a>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ========== LISTINGS SECTION ========== -->
+        <section id="listings" class="section">
+            <div class="listings-hero">
+                <div class="container">
+                    <h1>PROPERTY LISTINGS</h1>
+                    <p>Discover Dubai's finest properties</p>
+                </div>
+            </div>
+            <div class="container">
+                <!-- FILTER BAR - VISIBLE ONLY ON LIST VIEW -->
+                <div class="filter-bar" id="filter-bar" style="display:grid;">
+                    <select id="filter-type-listings">
+                        <option value="all">ALL TYPES</option>
+                        <option value="Apartment">APARTMENT</option>
+                        <option value="Villa">VILLA</option>
+                        <option value="Penthouse">PENTHOUSE</option>
+                        <option value="Studio">STUDIO</option>
+                        <option value="Townhouse">TOWNHOUSE</option>
+                    </select>
+                    <select id="filter-bedrooms-listings">
+                        <option value="all">ANY BEDROOMS</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5+</option>
+                    </select>
+                    <select id="filter-price-listings">
+                        <option value="all">ANY PRICE</option>
+                        <option value="500k">UNDER AED 500K</option>
+                        <option value="1m">AED 500K - 1M</option>
+                        <option value="2m">AED 1M - 2M</option>
+                        <option value="5m">AED 2M - 5M</option>
+                        <option value="10m">AED 5M - 10M</option>
+                        <option value="10m+">AED 10M+</option>
+                    </select>
+                    <select id="filter-community-listings">
+                        <option value="all">ALL COMMUNITIES</option>
+                    </select>
+                    <select id="filter-status-listings">
+                        <option value="all">ALL STATUS</option>
+                        <option value="for-sale">FOR SALE</option>
+                        <option value="for-rent">FOR RENT</option>
+                        <option value="sold">SOLD</option>
+                    </select>
+                    <input type="text" id="filter-search" placeholder="SEARCH PROPERTIES..." style="padding:12px 16px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--paper); font-family:'Inter', sans-serif; font-size:14px; width:100%;">
+                </div>
+
+                <!-- Listings Grid -->
+                <div class="listings-grid" id="listings-grid"></div>
+
+                <!-- Listing Detail View -->
+                <div id="listing-detail" style="display:none;">
+                    <!-- The back button is now rendered inside the content via renderListingDetail() -->
+                    <div id="listing-detail-content"></div>
+                </div>
+
+                <!-- Portal Section -->
+                <div class="portal-section">
+                    <h3>MORE PROPERTIES</h3>
+                    <div class="portal-buttons">
+                        <a href="https://propertyfinder.ae/agents/agent-web-studio" target="_blank" class="portal-btn propertyfinder">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Property%20finder%20icon.png" alt="Property Finder" class="portal-icon">
+                            VIEW ON PROPERTY FINDER
+                        </a>
+                        <a href="https://bayut.com/agents/agent-web-studio" target="_blank" class="portal-btn bayut">
+                            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Bayut%20icon.png" alt="Bayut" class="portal-icon">
+                            VIEW ON BAYUT
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== OFFPLAN SECTION ========== -->
+        <section id="offplan" class="section">
+            <div class="offplan-hero">
+                <div class="container">
+                    <h1>OFF-PLAN PROJECTS</h1>
+                    <p>Invest in Dubai's future with premium off-plan developments</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="offplan-grid" id="offplan-grid"></div>
+                <section class="benefits-section">
+                    <h2>WHY INVEST IN OFF-PLAN</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <h3>LOWER PRICES</h3>
+                            <p>Off-plan properties are typically 20-30% cheaper than ready properties</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3>HIGH ROI</h3>
+                            <p>Significant capital appreciation by the time of handover</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-gem"></i></div>
+                            <h3>MODERN AMENITIES</h3>
+                            <p>Access to the latest amenities and modern designs</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-map-marked-alt"></i></div>
+                            <h3>PRIME LOCATIONS</h3>
+                            <p>Developments in Dubai's most sought-after areas</p>
+                        </div>
+                    </div>
+                </section>
+                <div class="goldenvisa-highlight">
+                    <div class="gv-highlight-content">
+                        <h2>GOLDEN VISA ELIGIBLE PROPERTIES</h2>
+                        <p>Many off-plan projects qualify for UAE Golden Visa with AED 2M+ investment</p>
+                        <a href="#goldenvisa" class="btn btn-gold" data-section="goldenvisa">LEARN MORE</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== COMMUNITIES SECTION ========== -->
+        <section id="communities" class="section">
+            <div class="communities-hero">
+                <div class="container">
+                    <h1>DUBAI COMMUNITIES</h1>
+                    <p>Explore Dubai's most desirable neighborhoods</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="communities-grid" id="communities-grid"></div>
+            </div>
+        </section>
+
+        <!-- ========== BLOG SECTION ========== -->
+        <section id="blog" class="section">
+            <div class="blog-hero">
+                <div class="container">
+                    <h1>BLOG</h1>
+                    <p>Insights, tips, and news about Dubai real estate</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="blog-grid" id="blog-grid"></div>
+                <div id="blog-detail" style="display:none;">
+                    <button class="btn btn-secondary" onclick="window.showBlogList()">← BACK TO BLOG</button>
+                    <div id="blog-detail-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== ABOUT SECTION ========== -->
+        <section id="about" class="section">
+            <div class="about-hero">
+                <div class="container">
+                    <h1>ABOUT ME</h1>
+                    <p>Your trusted partner in Dubai real estate</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="about-full">
+                    <div class="about-full-image">
+                        <img src="https://placehold.co/600x600/0A1628/C9A84C?text=Agent" alt="Agent" id="agent-photo-about">
+                    </div>
+                    <div class="about-full-text">
+                        <h2 id="agent-name-about">Ahmed Khan</h2>
+                        <div class="rerna-badge-large">RERA BRN: <strong id="rerna-number-about">123456</strong></div>
+                        <p id="agent-full-bio">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.</p>
+                        <div class="stats-full">
+                            <div><span id="years-exp-about">12</span> YEARS EXPERIENCE</div>
+                            <div><span id="properties-sold-about">850</span> PROPERTIES SOLD</div>
+                            <div><span id="happy-clients-about">1200</span> HAPPY CLIENTS</div>
+                        </div>
+                        <div class="specialties">
+                            <h3>SPECIALTIES</h3>
+                            <div id="specialties-list"></div>
+                        </div>
+                        <div class="languages">
+                            <h3>LANGUAGES</h3>
+                            <div id="languages-list"></div>
+                        </div>
+                        <div class="about-ctas">
+                            <a href="#contact" class="btn btn-primary" data-section="contact">CONTACT ME</a>
+                            <a href="https://wa.me/971501234567" target="_blank" class="btn btn-whatsapp">WHATSAPP</a>
+                        </div>
+                    </div>
+                </div>
+                <section class="testimonials">
+                    <h2>CLIENT TESTIMONIALS</h2>
+                    <div class="testimonials-grid" id="testimonials-grid"></div>
+                </section>
+                <section class="recent-sales">
+                    <h2>RECENT SALES</h2>
+                    <div class="sales-grid" id="sales-grid"></div>
+                </section>
+            </div>
+        </section>
+
+        <!-- ========== CONTACT SECTION ========== -->
+        <section id="contact" class="section">
+            <div class="contact-hero">
+                <div class="container">
+                    <h1>CONTACT US</h1>
+                    <p>Get in touch with our team</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="contact-tabs">
+                    <button class="tab-btn active" data-tab="whatsapp">WHATSAPP</button>
+                    <button class="tab-btn" data-tab="inquiry">INQUIRY FORM</button>
+                    <button class="tab-btn" data-tab="viewing">SCHEDULE VIEWING</button>
+                </div>
+                <div class="tab-content active" id="tab-whatsapp">
+                    <h3>CONNECT ON WHATSAPP</h3>
+                    <div class="whatsapp-buttons">
+                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20buying%20a%20property" target="_blank" class="btn btn-whatsapp">BUY PROPERTY</a>
+                        <a href="https://wa.me/971501234567?text=I%27m%20looking%20to%20rent%20a%20property" target="_blank" class="btn btn-whatsapp">RENT PROPERTY</a>
+                        <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20off-plan%20projects" target="_blank" class="btn btn-whatsapp">OFF-PLAN INVESTMENT</a>
+                        <a href="https://wa.me/971501234567?text=I%20have%20a%20question" target="_blank" class="btn btn-whatsapp">GENERAL INQUIRY</a>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab-inquiry">
+                    <h3>SEND AN INQUIRY</h3>
+                    <form id="inquiry-form" class="contact-form">
+                        <input type="hidden" name="site_id" value="agentwebstudio">
+                        <div class="form-group">
+                            <label for="inq-name">FULL NAME *</label>
+                            <input type="text" id="inq-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inq-phone">PHONE NUMBER *</label>
+                            <input type="tel" id="inq-phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="inq-email">EMAIL ADDRESS</label>
+                            <input type="email" id="inq-email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="inq-subject">SUBJECT</label>
+                            <select id="inq-subject" name="subject">
+                                <option value="general">GENERAL INQUIRY</option>
+                                <option value="buying">BUYING PROPERTY</option>
+                                <option value="renting">RENTING PROPERTY</option>
+                                <option value="offplan">OFF-PLAN INVESTMENT</option>
+                                <option value="goldenvisa">GOLDEN VISA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="inq-message">MESSAGE *</label>
+                            <textarea id="inq-message" name="message" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">SEND INQUIRY</button>
+                    </form>
+                </div>
+                <div class="tab-content" id="tab-viewing">
+                    <h3>SCHEDULE A VIEWING</h3>
+                    <form id="viewing-form" class="contact-form">
+                        <input type="hidden" name="site_id" value="agentwebstudio">
+                        <div class="form-group">
+                            <label for="view-name">FULL NAME *</label>
+                            <input type="text" id="view-name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="view-phone">PHONE NUMBER *</label>
+                            <input type="tel" id="view-phone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="view-email">EMAIL ADDRESS</label>
+                            <input type="email" id="view-email" name="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="view-property">PROPERTY *</label>
+                            <input type="text" id="view-property" name="property" placeholder="Property name or URL" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="view-date">PREFERRED DATE *</label>
+                            <input type="date" id="view-date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="view-time">PREFERRED TIME *</label>
+                            <input type="time" id="view-time" name="time" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">SCHEDULE VIEWING</button>
+                    </form>
+                </div>
+                <div class="office-info">
+                    <h3>OFFICE INFORMATION</h3>
+                    <p><strong>ADDRESS:</strong> <span id="office-address">Dubai, UAE</span></p>
+                    <p><strong>PHONE:</strong> <span id="office-phone">+971501234567</span></p>
+                    <p><strong>EMAIL:</strong> <span id="office-email">info@agentwebstudio.com</span></p>
+                    <p><strong>WHATSAPP:</strong> <span id="office-whatsapp">+971501234567</span></p>
+                    <p><strong>HOURS:</strong> Mon-Sun 9:00 AM - 9:00 PM</p>
+                </div>
+                <div class="map-container">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115164.99999999999!2d55.139835!3d25.204849!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e5f43496ad9c645%3A0xbde66e5084295162!2sDubai%20-%20United%20Arab%20Emirates!5e0!3m2!1sen!2sus!4v1699999999999" width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== VALUATION SECTION ========== -->
+        <section id="valuation" class="section">
+            <div class="valuation-hero">
+                <div class="container">
+                    <h1>PROPERTY VALUATION</h1>
+                    <p>Get a free property valuation from our experts</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="valuation-form-container">
+                    <div class="valuation-trust">
+                        <div class="trust-badge"><i class="fas fa-check-circle"></i> FREE SERVICE</div>
+                        <div class="trust-badge"><i class="fas fa-shield-alt"></i> RERA LICENSED</div>
+                        <div class="trust-badge"><i class="fas fa-clock"></i> 24HR RESPONSE</div>
+                    </div>
+                    <form id="valuation-form" class="valuation-form">
+                        <input type="hidden" name="site_id" value="agentwebstudio">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="val-name">FULL NAME *</label>
+                                <input type="text" id="val-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="val-phone">PHONE NUMBER *</label>
+                                <input type="tel" id="val-phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="val-email">EMAIL ADDRESS</label>
+                                <input type="email" id="val-email" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="val-property-type">PROPERTY TYPE *</label>
+                                <select id="val-property-type" name="propertyType" required>
+                                    <option value="">SELECT TYPE</option>
+                                    <option value="Apartment">APARTMENT</option>
+                                    <option value="Villa">VILLA</option>
+                                    <option value="Penthouse">PENTHOUSE</option>
+                                    <option value="Studio">STUDIO</option>
+                                    <option value="Townhouse">TOWNHOUSE</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="val-community">COMMUNITY *</label>
+                                <select id="val-community" name="community" required>
+                                    <option value="">SELECT COMMUNITY</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="val-bedrooms">BEDROOMS *</label>
+                                <select id="val-bedrooms" name="bedrooms" required>
+                                    <option value="">SELECT</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="5+">5+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="val-size">PROPERTY SIZE (SQFT)</label>
+                                <input type="number" id="val-size" name="size" placeholder="e.g. 1200">
+                            </div>
+                            <div class="form-group">
+                                <label for="val-year">YEAR BUILT</label>
+                                <input type="number" id="val-year" name="yearBuilt" placeholder="e.g. 2020">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="val-address">PROPERTY ADDRESS</label>
+                            <input type="text" id="val-address" name="address" placeholder="Building name, street, community">
+                        </div>
+                        <div class="form-group">
+                            <label for="val-features">PROPERTY FEATURES</label>
+                            <textarea id="val-features" name="features" rows="3" placeholder="List key features..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">GET FREE VALUATION</button>
+                    </form>
+                    <div class="valuation-index">
+                        <h3>DUBAI DLD RENTAL INDEX</h3>
+                        <p>Average rental rates by community based on official DLD data.</p>
+                        <div id="rental-index" class="rental-index-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== GOLDEN VISA SECTION ========== -->
+        <section id="goldenvisa" class="section">
+            <div class="goldenvisa-hero">
+                <div class="container">
+                    <h1>UAE GOLDEN VISA</h1>
+                    <p>Your pathway to 10-year renewable residency in the UAE</p>
+                </div>
+            </div>
+            <div class="container">
+                <section class="gv-intro">
+                    <h2>WHAT IS THE GOLDEN VISA?</h2>
+                    <p>The UAE Golden Visa is a long-term residence visa valid for 10 years, renewable, and without the need for a sponsor. It offers investors, entrepreneurs, and talented individuals the opportunity to live, work, and study in the UAE.</p>
+                    <div class="gv-requirements">
+                        <h3>PROPERTY INVESTMENT REQUIREMENTS</h3>
+                        <ul>
+                            <li>Minimum investment of AED 2,000,000 in property</li>
+                            <li>Property can be off-plan or ready</li>
+                            <li>Property must be owned outright (not mortgaged)</li>
+                            <li>Valid for the investor, spouse, and children</li>
+                        </ul>
+                    </div>
+                </section>
+                <section class="gv-benefits">
+                    <h2>GOLDEN VISA BENEFITS</h2>
+                    <div class="benefits-grid">
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-passport"></i></div>
+                            <h3>10-YEAR RESIDENCY</h3>
+                            <p>Renewable visa for 10 years without a sponsor</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-users"></i></div>
+                            <h3>FAMILY INCLUSION</h3>
+                            <p>Includes spouse, children, and parents</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-briefcase"></i></div>
+                            <h3>BUSINESS OPPORTUNITIES</h3>
+                            <p>Easier to start and manage businesses in UAE</p>
+                        </div>
+                        <div class="benefit-card">
+                            <div class="benefit-icon"><i class="fas fa-plane-departure"></i></div>
+                            <h3>TRAVEL FLEXIBILITY</h3>
+                            <p>Unrestricted travel in and out of UAE</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="gv-process">
+                    <h2>HOW TO APPLY</h2>
+                    <div class="process-steps">
+                        <div class="step">
+                            <span class="step-number">1</span>
+                            <h3>PROPERTY INVESTMENT</h3>
+                            <p>Invest AED 2M+ in Dubai property</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">2</span>
+                            <h3>PROPERTY VERIFICATION</h3>
+                            <p>Get property valuation and legal documentation</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">3</span>
+                            <h3>VISA APPLICATION</h3>
+                            <p>Submit application through Dubai Land Department</p>
+                        </div>
+                        <div class="step">
+                            <span class="step-number">4</span>
+                            <h3>VISA ISSUANCE</h3>
+                            <p>Receive your 10-year Golden Visa</p>
+                        </div>
+                    </div>
+                </section>
+                <section class="gv-faq">
+                    <h2>FREQUENTLY ASKED QUESTIONS</h2>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <button class="faq-question">What is the minimum investment for Golden Visa?</button>
+                            <div class="faq-answer">The minimum investment is AED 2,000,000 in property. This can be a single property or multiple properties totaling AED 2M+.</div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">Can I apply with an off-plan property?</button>
+                            <div class="faq-answer">Yes, off-plan properties are eligible if they are registered with the Dubai Land Department and meet the minimum value requirement.</div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">How long does the Golden Visa last?</button>
+                            <div class="faq-answer">The Golden Visa is valid for 10 years and is renewable.</div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">Can I include my family?</button>
+                            <div class="faq-answer">Yes, you can include your spouse, children, and even parents under your Golden Visa.</div>
+                        </div>
+                        <div class="faq-item">
+                            <button class="faq-question">What if I sell the property?</button>
+                            <div class="faq-answer">You must maintain the AED 2M+ investment. Selling the property may affect your visa status.</div>
+                        </div>
+                    </div>
+                </section>
+                <section class="gv-lead">
+                    <h2>INTERESTED IN GOLDEN VISA?</h2>
+                    <p>Contact us for a free consultation on Golden Visa eligibility</p>
+                    <form id="goldenvisa-form" class="gv-form">
+                        <input type="hidden" name="site_id" value="agentwebstudio">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gv-name">FULL NAME *</label>
+                                <input type="text" id="gv-name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gv-phone">PHONE NUMBER *</label>
+                                <input type="tel" id="gv-phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gv-email">EMAIL ADDRESS</label>
+                                <input type="email" id="gv-email" name="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="gv-budget">PROPERTY BUDGET (AED)</label>
+                                <select id="gv-budget" name="budget">
+                                    <option value="">SELECT</option>
+                                    <option value="2m-3m">AED 2M - 3M</option>
+                                    <option value="3m-5m">AED 3M - 5M</option>
+                                    <option value="5m-10m">AED 5M - 10M</option>
+                                    <option value="10m+">AED 10M+</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-gold">GET FREE CONSULTATION</button>
+                    </form>
+                    <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20Golden%20Visa" target="_blank" class="btn btn-whatsapp">ASK ON WHATSAPP</a>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="main-footer">
         <div class="container">
-
-            <!-- TOP BAR: Back + Breadcrumb -->
-            <div class="listing-detail-top-bar">
-                <button class="btn btn-secondary" onclick="window.history.back()">
-                    <i class="fas fa-arrow-left"></i> BACK TO PROPERTIES
-                </button>
-                <div class="breadcrumb-nav">
-                    <a href="#">Home</a>
-                    <span class="separator">/</span>
-                    <a href="#">Properties</a>
-                    <span class="separator">/</span>
-                    <span class="current">Dubai Marina</span>
-                    <span class="separator">/</span>
-                    <span class="current">Beachfront Villa</span>
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Agent Web Studio</h3>
+                    <p>Websites That Sell Homes</p>
+                    <div class="rerna-badge">RERA BRN: <strong id="footer-rerna">123456</strong></div>
+                    <div class="social-links">
+                        <a href="#" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" target="_blank" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>QUICK LINKS</h4>
+                    <ul>
+                        <li><a href="#home" data-section="home">HOME</a></li>
+                        <li><a href="#listings" data-section="listings">LISTINGS</a></li>
+                        <li><a href="#offplan" data-section="offplan">OFF-PLAN</a></li>
+                        <li><a href="#communities" data-section="communities">COMMUNITIES</a></li>
+                        <li><a href="#blog" data-section="blog">BLOG</a></li>
+                        <li><a href="#goldenvisa" data-section="goldenvisa">GOLDEN VISA</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h4>CONTACT</h4>
+                    <p><span id="footer-address">Dubai, UAE</span></p>
+                    <p><a href="tel:+971501234567" id="footer-phone">+971501234567</a></p>
+                    <p><a href="mailto:info@agentwebstudio.com" id="footer-email">info@agentwebstudio.com</a></p>
+                    <p><a href="https://wa.me/971501234567" target="_blank" id="footer-whatsapp">WHATSAPP</a></p>
                 </div>
             </div>
-
-            <!-- MAIN CONTENT -->
-            <div class="listing-detail-container">
-
-                <!-- LEFT COLUMN -->
-                <div class="listing-detail-left-col">
-
-                    <!-- GALLERY -->
-                    <div class="listing-detail-gallery" id="listing-gallery">
-                        <div class="gallery-main" id="gallery-main">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80" alt="Beachfront Villa" id="gallery-main-image">
-                            <div class="gallery-controls">
-                                <button class="prev-btn" id="gallery-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
-                                <button class="next-btn" id="gallery-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
-                            </div>
-                            <div class="gallery-counter" id="gallery-counter">1 / 6</div>
-                        </div>
-                        <div class="gallery-thumbs" id="gallery-thumbs">
-                            <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=200&q=80" alt="1" class="thumb active" data-index="0">
-                            <img src="https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=200&q=80" alt="2" class="thumb" data-index="1">
-                            <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=200&q=80" alt="3" class="thumb" data-index="2">
-                            <img src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=200&q=80" alt="4" class="thumb" data-index="3">
-                            <div class="thumb more-photos" onclick="showToast('Gallery view coming soon!', 'info')">
-                                <span>+2 Photos</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PROPERTY DETAILS CARD (will move to bottom on mobile via order) -->
-                    <div class="listing-detail-card property-details-card">
-                        <h3 class="listing-detail-card-title">Property Details</h3>
-                        <div class="listing-detail-details-grid">
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Property Type</span>
-                                <span class="detail-value">Villa</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Status</span>
-                                <span class="detail-value">FOR SALE</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Community</span>
-                                <span class="detail-value">Palm Jumeirah</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Bedrooms</span>
-                                <span class="detail-value">5</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Bathrooms</span>
-                                <span class="detail-value">7</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Size</span>
-                                <span class="detail-value">8,500 sqft</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Floor</span>
-                                <span class="detail-value">Ground + 2</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">View</span>
-                                <span class="detail-value">Sea View</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Furnishing</span>
-                                <span class="detail-value">Fully Furnished</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Parking</span>
-                                <span class="detail-value">4</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Trakheesi Permit</span>
-                                <span class="detail-value">#123456789</span>
-                            </div>
-                            <div class="listing-detail-detail-item">
-                                <span class="detail-label">Building</span>
-                                <span class="detail-value">The Palm Residences</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- RIGHT COLUMN -->
-                <div class="listing-detail-right-col">
-
-                    <!-- TITLE -->
-                    <h1 class="listing-detail-title">Beachfront Villa with Private Pool</h1>
-
-                    <!-- PRICE + STATUS -->
-                    <div class="price-status-row">
-                        <span class="listing-detail-price">AED 25.0M</span>
-                        <span class="status-pill for-sale">FOR SALE</span>
-                    </div>
-
-                    <!-- LOCATION -->
-                    <div class="listing-detail-location">
-                        <i class="fas fa-map-marker-alt"></i> Palm Jumeirah, Dubai, UAE
-                    </div>
-
-                    <!-- QUICK STATS -->
-                    <div class="quick-stats-card">
-                        <div class="quick-stat-block">
-                            <i class="fas fa-bed"></i>
-                            <span class="stat-value">5</span>
-                            <span class="stat-label">Beds</span>
-                        </div>
-                        <div class="quick-stat-block">
-                            <i class="fas fa-bath"></i>
-                            <span class="stat-value">7</span>
-                            <span class="stat-label">Baths</span>
-                        </div>
-                        <div class="quick-stat-block">
-                            <i class="fas fa-ruler-combined"></i>
-                            <span class="stat-value">8,500</span>
-                            <span class="stat-label">sqft</span>
-                        </div>
-                        <div class="quick-stat-block">
-                            <i class="fas fa-building"></i>
-                            <span class="stat-value">Villa</span>
-                            <span class="stat-label">Type</span>
-                        </div>
-                    </div>
-
-                    <!-- CTA BUTTONS (moves up on mobile) -->
-                    <div class="listing-detail-actions-card">
-                        <h4 class="action-title">Interested in this property?</h4>
-                        <p class="action-subtitle">Get more details or schedule a viewing</p>
-                        <div class="listing-detail-actions">
-                            <a href="https://wa.me/971501234567?text=I'm%20interested%20in%20the%20Beachfront%20Villa" target="_blank" class="btn btn-whatsapp">
-                                <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
-                            </a>
-                            <button class="btn btn-primary" onclick="showToast('Viewing scheduled!', 'success')">
-                                <i class="fas fa-calendar-check"></i> Schedule Viewing
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- DESCRIPTION -->
-                    <div class="listing-detail-card">
-                        <h3 class="listing-detail-card-title">Description</h3>
-                        <p class="listing-detail-description">
-                            This stunning beachfront villa on Palm Jumeirah offers unparalleled luxury living with
-                            panoramic sea views, a private infinity pool, and direct beach access. The property features
-                            5 spacious bedrooms, 7 bathrooms, and over 8,500 sqft of living space. Designed with
-                            contemporary elegance, this villa is perfect for those seeking the ultimate Dubai lifestyle.
-                        </p>
-                    </div>
-
-                    <!-- FEATURES -->
-                    <div class="listing-detail-card">
-                        <h3 class="listing-detail-card-title">Features &amp; Amenities</h3>
-                        <div class="listing-detail-features-grid">
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Private Pool</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Direct Beach Access</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Sea View</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Smart Home System</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Gym &amp; Spa</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> 24/7 Security</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Landscaped Garden</span>
-                            <span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> Covered Parking</span>
-                        </div>
-                    </div>
-
-                </div>
-                <!-- end right col -->
-
+            <div class="footer-bottom">
+                <p>&copy; <span id="footer-year"></span> Agent Web Studio. All rights reserved.</p>
+                <p>Websites That Sell Homes</p>
             </div>
-            <!-- end container -->
-
-            <!-- TRUST BADGES (full width, at bottom) -->
-            <div class="trust-badges-full">
-                <div class="trust-badges-inner">
-                    <div class="trust-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <div>
-                            <strong>Secure Investment</strong>
-                            <span>RERA approved property with freehold ownership</span>
-                        </div>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-chart-line"></i>
-                        <div>
-                            <strong>High ROI Potential</strong>
-                            <span>Premium location with strong rental demand</span>
-                        </div>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-headset"></i>
-                        <div>
-                            <strong>Full Support</strong>
-                            <span>From purchase to property management</span>
-                        </div>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-hand-holding-usd"></i>
-                        <div>
-                            <strong>Flexible Payment</strong>
-                            <span>Multiple payment options available</span>
-                        </div>
-                    </div>
-                    <div class="trust-item">
-                        <i class="fas fa-percent"></i>
-                        <div>
-                            <strong>No Commission</strong>
-                            <span>Direct from developer or owner</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
-    </section>
+    </footer>
 
-    <!-- ========== TOAST CONTAINER ========== -->
-    <div id="toast-container"></div>
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/971501234567?text=Hello%20Agent%20Web%20Studio%2C%20I%20need%20assistance" target="_blank" class="float-whatsapp" aria-label="Contact on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-    <!-- ========== SCRIPTS ========== -->
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
+
+    <script type="module" src="config.js"></script>
+    <script type="module" src="main.js"></script>
+
+    <!-- Inline script to sync hero search with listings -->
     <script>
-        // ---- Toast ----
-        function showToast(message, type) {
-            const container = document.getElementById('toast-container');
-            if (!container) return alert(message);
-            const toast = document.createElement('div');
-            toast.className = 'toast ' + (type || 'success');
-            toast.textContent = message;
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('fadeout');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
+        (function() {
+            document.addEventListener('DOMContentLoaded', function() {
+                const heroSearchBtn = document.getElementById('hero-search-btn');
+                if (heroSearchBtn) {
+                    heroSearchBtn.addEventListener('click', function(e) {
+                        const heroType = document.getElementById('filter-type-hero');
+                        const heroCommunity = document.getElementById('filter-community-hero');
+                        const heroPrice = document.getElementById('filter-price-hero');
+                        const heroBedrooms = document.getElementById('filter-bedrooms-hero');
+                        const heroStatus = document.getElementById('filter-status-hero');
 
-        // ---- Mobile Hamburger ----
-        const hamburger = document.getElementById('hamburger');
-        const navMenu = document.getElementById('nav-menu');
+                        const listingType = document.getElementById('filter-type-listings');
+                        const listingCommunity = document.getElementById('filter-community-listings');
+                        const listingPrice = document.getElementById('filter-price-listings');
+                        const listingBedrooms = document.getElementById('filter-bedrooms-listings');
+                        const listingStatus = document.getElementById('filter-status-listings');
 
-        if (hamburger && navMenu) {
-            hamburger.addEventListener('click', function(e) {
-                e.stopPropagation();
-                this.classList.toggle('active');
-                navMenu.classList.toggle('active');
-                document.body.style.overflow = navMenu.classList.contains('active') ? 'hidden' : '';
-            });
+                        if (heroType && listingType) listingType.value = heroType.value;
+                        if (heroCommunity && listingCommunity) listingCommunity.value = heroCommunity.value;
+                        if (heroPrice && listingPrice) listingPrice.value = heroPrice.value;
+                        if (heroBedrooms && listingBedrooms) listingBedrooms.value = heroBedrooms.value;
+                        if (heroStatus && listingStatus) listingStatus.value = heroStatus.value;
 
-            // Close menu on link click
-            navMenu.querySelectorAll('a').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    hamburger.classList.remove('active');
-                    navMenu.classList.remove('active');
-                    document.body.style.overflow = '';
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                        if (typeof window.navigateTo === 'function') {
+                            window.navigateTo('listings');
+                        }
+                    });
+                }
+
+                // Auto-filter on any filter change
+                document.querySelectorAll('.filter-bar select, .filter-bar input').forEach(el => {
+                    el.addEventListener('change', function() {
+                        if (typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                    });
+                    el.addEventListener('keyup', function(e) {
+                        if (e.key === 'Enter' && typeof window.filterListings === 'function') {
+                            window.filterListings();
+                        }
+                    });
                 });
             });
-
-            // Close on outside click
-            document.addEventListener('click', function(e) {
-                if (window.innerWidth <= 1024 &&
-                    navMenu.classList.contains('active') &&
-                    !navMenu.contains(e.target) &&
-                    !hamburger.contains(e.target)) {
-                    hamburger.classList.remove('active');
-                    navMenu.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-            });
-        }
-
-        // ---- Header scroll effect ----
-        const header = document.getElementById('main-header');
-        window.addEventListener('scroll', function() {
-            header.classList.toggle('scrolled', window.scrollY > 50);
-        });
-
-        // ---- Gallery thumbnails ----
-        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)');
-        const mainImg = document.getElementById('gallery-main-image');
-        const counter = document.getElementById('gallery-counter');
-        let currentIndex = 0;
-        const totalImages = 6;
-
-        function setGallery(index) {
-            if (index < 0) index = totalImages - 1;
-            if (index >= totalImages) index = 0;
-            currentIndex = index;
-
-            const srcs = [
-                'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1582407947304-fd86f028f716?auto=format&fit=crop&w=1200&q=80',
-                'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1200&q=80'
-            ];
-
-            if (mainImg) mainImg.src = srcs[index] || srcs[0];
-            if (counter) counter.textContent = (index + 1) + ' / ' + totalImages;
-
-            thumbs.forEach(function(thumb, i) {
-                thumb.classList.toggle('active', i === index);
-            });
-        }
-
-        thumbs.forEach(function(thumb, i) {
-            thumb.addEventListener('click', function() { setGallery(i); });
-        });
-
-        document.getElementById('gallery-prev')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-            setGallery(currentIndex - 1);
-        });
-        document.getElementById('gallery-next')?.addEventListener('click', function(e) {
-            e.stopPropagation();
-            setGallery(currentIndex + 1);
-        });
-
-        // Keyboard nav
-        document.addEventListener('keydown', function(e) {
-            const detailVisible = document.getElementById('listing-detail');
-            if (!detailVisible) return;
-            if (e.key === 'ArrowLeft') { e.preventDefault();
-                setGallery(currentIndex - 1); }
-            if (e.key === 'ArrowRight') { e.preventDefault();
-                setGallery(currentIndex + 1); }
-        });
-
-        // ---- Simulate "more photos" ----
-        document.querySelector('.thumb.more-photos')?.addEventListener('click', function() {
-            showToast('Gallery view coming soon!', 'info');
-        });
-
-        // ---- Simulate "Schedule Viewing" ----
-        document.querySelector('.listing-detail-actions-card .btn-primary')?.addEventListener('click', function() {
-            showToast('✅ Viewing request submitted! We will confirm shortly.', 'success');
-        });
-
-        // ---- Simulate WhatsApp ----
-        document.querySelector('.listing-detail-actions-card .btn-whatsapp')?.addEventListener('click', function(e) {
-            // Let the link work, but show a toast for demo
-            showToast('Opening WhatsApp...', 'info');
-        });
-
-        console.log('✅ Property Detail page loaded — mobile responsive with reordered content.');
+        })();
     </script>
-
 </body>
 </html>
