@@ -560,7 +560,7 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- PROPERTY DETAILS (used in left column on desktop, moved to right on mobile) ----------
+    // ---------- PROPERTY DETAILS TABLE (left column) ----------
     const details = [
         { label: 'Property Type', value: listing.type || 'N/A' },
         { label: 'Status', value: statusLabel },
@@ -578,21 +578,6 @@ function renderListingDetail(listing) {
 
     const propertyDetailsHtml = `
         <div class="listing-detail-card property-details-card">
-            <h3 class="listing-detail-card-title">Property Details</h3>
-            <div class="listing-detail-details-grid">
-                ${details.map(d => `
-                    <div class="listing-detail-detail-item">
-                        <span class="detail-label">${d.label}</span>
-                        <span class="detail-value">${d.value}</span>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    `;
-
-    // Same details but for mobile (rendered in right column)
-    const propertyDetailsMobileHtml = `
-        <div class="property-details-card-mobile">
             <h3 class="listing-detail-card-title">Property Details</h3>
             <div class="listing-detail-details-grid">
                 ${details.map(d => `
@@ -696,9 +681,6 @@ function renderListingDetail(listing) {
                     <!-- Quick Stats Card -->
                     ${quickStats}
 
-                    <!-- CTA Buttons (moved up after quick stats) -->
-                    ${ctaHtml}
-
                     <!-- Description -->
                     ${listing.description ? `
                         <div class="listing-detail-card">
@@ -721,8 +703,8 @@ function renderListingDetail(listing) {
                         </div>
                     ` : ''}
 
-                    <!-- Property Details - Mobile version (hidden on desktop, shown on mobile after features) -->
-                    ${propertyDetailsMobileHtml}
+                    <!-- CTA Buttons -->
+                    ${ctaHtml}
                 </div>
             </div>
 
