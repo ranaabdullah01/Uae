@@ -505,11 +505,9 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL - UPDATED 2-COLUMN LAYOUT
+// RENDER LISTING DETAIL - REFINED 2-COLUMN LAYOUT
 // Gallery: 16:9 with 4 thumbs + "more" card
-// Left: Gallery + Property Details
-// Right: Breadcrumb, Title, Price, Quick Stats, Status, Description, Features, CTA
-// Full-width trust badges at bottom
+// Price + status inline, quick stats card, improved symmetry
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -559,7 +557,7 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- PROPERTY DETAILS TABLE (moved to left column) ----------
+    // ---------- PROPERTY DETAILS TABLE (left column) ----------
     const details = [
         { label: 'Property Type', value: listing.type || 'N/A' },
         { label: 'Status', value: statusLabel },
@@ -589,14 +587,29 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- QUICK STATS ----------
+    // ---------- QUICK STATS CARD (horizontal blocks) ----------
     const quickStats = `
-        <div class="quick-stats">
-            <span><i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai'}</span>
-            <span><i class="fas fa-bed"></i> ${listing.bedrooms || 'N/A'} Bed</span>
-            <span><i class="fas fa-bath"></i> ${listing.bathrooms || 'N/A'} Bath</span>
-            <span><i class="fas fa-ruler-combined"></i> ${listing.sqft || 'N/A'} sqft</span>
-            <span><i class="fas fa-building"></i> ${listing.type || 'N/A'} • ${statusLabel}</span>
+        <div class="quick-stats-card">
+            <div class="quick-stat-block">
+                <i class="fas fa-bed"></i>
+                <span class="stat-value">${listing.bedrooms || 'N/A'}</span>
+                <span class="stat-label">Beds</span>
+            </div>
+            <div class="quick-stat-block">
+                <i class="fas fa-bath"></i>
+                <span class="stat-value">${listing.bathrooms || 'N/A'}</span>
+                <span class="stat-label">Baths</span>
+            </div>
+            <div class="quick-stat-block">
+                <i class="fas fa-ruler-combined"></i>
+                <span class="stat-value">${listing.sqft || 'N/A'}</span>
+                <span class="stat-label">sqft</span>
+            </div>
+            <div class="quick-stat-block">
+                <i class="fas fa-building"></i>
+                <span class="stat-value">${listing.type || 'N/A'}</span>
+                <span class="stat-label">Type</span>
+            </div>
         </div>
     `;
 
@@ -646,16 +659,19 @@ function renderListingDetail(listing) {
                     <!-- Title -->
                     <h1 class="listing-detail-title">${listing.title}</h1>
 
-                    <!-- Price -->
-                    <div class="listing-detail-price">AED ${formatPrice(listing.price)}</div>
-
-                    <!-- Quick Stats -->
-                    ${quickStats}
-
-                    <!-- Status Badge -->
-                    <div class="status-row">
-                        <span class="listing-detail-status-badge ${statusClass}">${statusLabel}</span>
+                    <!-- Price + Status inline -->
+                    <div class="price-status-row">
+                        <span class="listing-detail-price">AED ${formatPrice(listing.price)}</span>
+                        <span class="status-pill ${statusClass}">${statusLabel}</span>
                     </div>
+
+                    <!-- Location line (community) -->
+                    <div class="listing-detail-location">
+                        <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
+                    </div>
+
+                    <!-- Quick Stats Card -->
+                    ${quickStats}
 
                     <!-- Description -->
                     ${listing.description ? `
