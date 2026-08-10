@@ -2444,8 +2444,7 @@ nav .nav-container {
 }
 
 /* ============================================================
-   LISTING DETAIL PAGE - PREMIUM TWO-COLUMN LAYOUT
-   Wide, spacious, luxury Dubai real estate style
+   LISTING DETAIL PAGE - PREMIUM TWO-COLUMN LAYOUT (NEW)
    ============================================================ */
 
 #listing-detail {
@@ -2458,7 +2457,6 @@ nav .nav-container {
     padding: 0 32px;
 }
 
-/* Back button - refined */
 #listing-detail > .btn-secondary {
     margin-bottom: 32px;
     display: inline-flex;
@@ -2485,10 +2483,6 @@ nav .nav-container {
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.4);
 }
 
-/* ============================================================
-   MAIN TWO-COLUMN LAYOUT - LEFT 58% / RIGHT 42%
-   ============================================================ */
-
 .listing-detail-container {
     display: grid;
     grid-template-columns: 58% 42%;
@@ -2496,20 +2490,13 @@ nav .nav-container {
     align-items: start;
 }
 
-/* ============================================================
-   LEFT COLUMN
-   ============================================================ */
-
 .listing-detail-left-col {
     display: flex;
     flex-direction: column;
     gap: 32px;
 }
 
-/* ============================================================
-   PREMIUM GALLERY
-   ============================================================ */
-
+/* ---- Premium Gallery ---- */
 .listing-detail-gallery {
     position: relative;
     border-radius: 20px;
@@ -2622,10 +2609,7 @@ nav .nav-container {
     box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.2);
 }
 
-/* ============================================================
-   LOCATION CARD (Left Column)
-   ============================================================ */
-
+/* ---- Location Card ---- */
 .location-card {
     background: var(--white);
     border-radius: 16px;
@@ -2682,14 +2666,7 @@ nav .nav-container {
     border-color: var(--brass);
 }
 
-.location-map-placeholder i {
-    font-size: 16px;
-}
-
-/* ============================================================
-   RIGHT COLUMN
-   ============================================================ */
-
+/* ---- Right Column ---- */
 .listing-detail-right-col {
     display: flex;
     flex-direction: column;
@@ -2726,7 +2703,7 @@ nav .nav-container {
     font-weight: 500;
 }
 
-/* Badges Row - No favorite button */
+/* Badges */
 .detail-badges-row {
     display: flex;
     align-items: center;
@@ -2794,7 +2771,7 @@ nav .nav-container {
     font-size: 16px;
 }
 
-/* Specs Row - Compact 4 columns */
+/* Specs */
 .listing-detail-specs {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2843,7 +2820,7 @@ nav .nav-container {
     letter-spacing: -0.01em;
 }
 
-/* Status Row */
+/* Status */
 .status-row {
     margin-top: 4px;
 }
@@ -2876,7 +2853,7 @@ nav .nav-container {
     color: var(--cream);
 }
 
-/* Cards in Right Column */
+/* Cards */
 .listing-detail-card {
     background: var(--white);
     border-radius: 16px;
@@ -2980,10 +2957,7 @@ nav .nav-container {
     color: var(--emerald-deep);
 }
 
-/* ============================================================
-   ACTION CARD
-   ============================================================ */
-
+/* Action Card */
 .listing-detail-actions-card {
     background: var(--white);
     border-radius: 16px;
@@ -3049,16 +3023,21 @@ nav .nav-container {
     box-shadow: 0 8px 24px rgba(11, 59, 46, 0.35);
 }
 
-/* ============================================================
-   BENEFITS STRIP
-   ============================================================ */
+/* ---- Full-Width Benefits Strip ---- */
+.benefits-strip-full {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    width: 100%;
+}
 
-.benefits-strip {
+.benefits-strip-inner {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
+    max-width: 1360px;
+    margin: 0 auto;
     padding: 16px 0 4px;
-    border-top: 1px solid var(--line);
 }
 
 .benefit-item {
@@ -3071,13 +3050,13 @@ nav .nav-container {
 }
 
 .benefit-item i {
-    font-size: 18px;
+    font-size: 20px;
     color: var(--brass);
 }
 
 .benefit-item span {
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     color: var(--ink-soft);
     text-transform: uppercase;
@@ -3085,82 +3064,37 @@ nav .nav-container {
     line-height: 1.2;
 }
 
-/* ============================================================
-   RESPONSIVE - DESKTOP FIRST
-   ============================================================ */
-
-/* Large Desktop (1400px+) */
-@media (min-width: 1400px) {
-    #listing-detail .container {
-        max-width: 1440px;
-        padding: 0 48px;
-    }
-    
-    .listing-detail-container {
-        gap: 56px;
-    }
-    
-    .gallery-main {
-        min-height: 520px;
-    }
-    
-    .gallery-controls button {
-        width: 56px;
-        height: 56px;
-        font-size: 20px;
-    }
-}
-
-/* Desktop (1024px - 1399px) */
-@media (min-width: 1024px) and (max-width: 1399px) {
-    .listing-detail-container {
-        gap: 40px;
-    }
-    
-    .gallery-main {
-        min-height: 400px;
-    }
-}
-
-/* Tablet (768px - 1023px) - Switch to single column */
+/* ---- Responsive ---- */
 @media (max-width: 1023px) {
     .listing-detail-container {
         grid-template-columns: 1fr;
         gap: 32px;
     }
-    
     .listing-detail-right-col {
         order: 2;
     }
-    
     .listing-detail-left-col {
         order: 1;
     }
-    
     .gallery-main {
         min-height: 350px;
     }
-    
-    .benefits-strip {
+    .benefits-strip-inner {
         grid-template-columns: repeat(3, 1fr);
     }
-    
     .benefit-item:last-child,
     .benefit-item:nth-last-child(2) {
         display: none;
     }
 }
 
-/* Mobile (below 768px) */
 @media (max-width: 767px) {
     #listing-detail {
         padding: 20px 0 50px;
     }
-    
     #listing-detail .container {
         padding: 0 16px;
     }
-    
     #listing-detail > .btn-secondary {
         margin-bottom: 16px;
         padding: 12px 20px;
@@ -3168,237 +3102,193 @@ nav .nav-container {
         width: 100%;
         justify-content: center;
     }
-    
     .listing-detail-container {
         gap: 24px;
     }
-    
     .listing-detail-gallery {
         border-radius: 14px;
     }
-    
     .gallery-main {
         min-height: 220px;
     }
-    
     .gallery-controls {
         padding: 0 12px;
     }
-    
     .gallery-controls button {
         width: 36px;
         height: 36px;
         font-size: 13px;
         opacity: 1;
     }
-    
     .gallery-counter {
         font-size: 11px;
         padding: 4px 14px;
         bottom: 12px;
         right: 12px;
     }
-    
     .gallery-thumbs {
         grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
         gap: 6px;
         padding: 12px 14px 16px;
     }
-    
     .gallery-thumbs .thumb {
         border-radius: 8px;
         border-width: 2px;
     }
-    
     .listing-detail-specs {
         grid-template-columns: repeat(2, 1fr);
         padding: 12px 14px;
         gap: 8px;
     }
-    
     .listing-detail-spec-item .spec-icon {
         width: 32px;
         height: 32px;
         font-size: 12px;
     }
-    
     .listing-detail-spec-item .spec-value {
         font-size: 13px;
     }
-    
     .listing-detail-title {
         font-size: 1.4rem;
     }
-    
     .listing-detail-price {
         font-size: 1.6rem;
     }
-    
     .listing-detail-card {
         padding: 18px 16px;
         border-radius: 12px;
     }
-    
     .listing-detail-card-title {
         font-size: 1rem;
         margin-bottom: 12px;
     }
-    
     .listing-detail-card-title::before {
         height: 16px;
         width: 3px;
     }
-    
     .listing-detail-features-grid {
         grid-template-columns: 1fr 1fr;
         gap: 4px 12px;
     }
-    
     .listing-detail-feature-item {
         font-size: 12px;
         padding: 4px 0;
     }
-    
     .listing-detail-details-grid {
         grid-template-columns: 1fr;
         gap: 4px;
     }
-    
     .listing-detail-detail-item {
         padding: 6px 0;
     }
-    
     .listing-detail-detail-item .detail-label {
         font-size: 11px;
     }
-    
     .listing-detail-detail-item .detail-value {
         font-size: 13px;
     }
-    
     .listing-detail-actions-card {
         padding: 20px 18px 24px;
         border-radius: 12px;
     }
-    
     .listing-detail-actions-card .action-title {
         font-size: 1rem;
     }
-    
     .listing-detail-actions-card .action-subtitle {
         font-size: 13px;
         margin-bottom: 16px;
     }
-    
     .listing-detail-actions .btn {
         padding: 14px 20px;
         font-size: 13px;
         border-radius: 10px;
     }
-    
-    .benefits-strip {
+    .benefits-strip-full {
+        margin-top: 32px;
+        padding-top: 20px;
+    }
+    .benefits-strip-inner {
         grid-template-columns: repeat(3, 1fr);
-        padding: 12px 0 0;
+        padding: 8px 0 0;
         gap: 4px;
     }
-    
     .benefit-item:last-child,
     .benefit-item:nth-last-child(2) {
         display: none;
     }
-    
     .benefit-item i {
-        font-size: 15px;
+        font-size: 16px;
     }
-    
     .benefit-item span {
-        font-size: 8px;
+        font-size: 9px;
     }
-    
     .location-card {
         padding: 18px 16px;
         border-radius: 12px;
     }
-    
     .location-content {
         flex-direction: column;
         align-items: stretch;
         gap: 10px;
     }
-    
     .location-map-placeholder {
         justify-content: center;
     }
-    
     .detail-badges-row {
         margin-top: 0;
     }
-    
     .breadcrumb-nav {
         font-size: 12px;
     }
 }
 
-/* Small Mobile (below 480px) */
 @media (max-width: 479px) {
     .gallery-main {
         min-height: 180px;
     }
-    
     .gallery-controls button {
         width: 30px;
         height: 30px;
         font-size: 10px;
     }
-    
     .gallery-thumbs {
         grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
         gap: 4px;
         padding: 8px 10px 12px;
     }
-    
     .listing-detail-specs {
         grid-template-columns: 1fr 1fr;
         padding: 10px 12px;
         gap: 6px;
     }
-    
     .listing-detail-spec-item {
         gap: 8px;
     }
-    
     .listing-detail-spec-item .spec-icon {
         width: 28px;
         height: 28px;
         font-size: 10px;
     }
-    
     .listing-detail-spec-item .spec-label {
         font-size: 9px;
     }
-    
     .listing-detail-spec-item .spec-value {
         font-size: 12px;
     }
-    
     .listing-detail-title {
         font-size: 1.2rem;
     }
-    
     .listing-detail-price {
         font-size: 1.3rem;
     }
-    
     .listing-detail-features-grid {
         grid-template-columns: 1fr;
     }
-    
-    .benefits-strip {
+    .benefits-strip-inner {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-/* Safari-specific fixes for backdrop blur */
 @supports (-webkit-backdrop-filter: blur(12px)) {
     .gallery-controls button {
         -webkit-backdrop-filter: blur(12px);
