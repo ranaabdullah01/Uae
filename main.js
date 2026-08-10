@@ -403,7 +403,7 @@ function createListingCard(listing) {
         <div class="listing-card-image">
             <img src="${firstImage}" alt="${listing.title}" loading="lazy">
             <div class="listing-card-badges">
-                ${listing.featured ? '<span class="badge badge-featured">Featured</span>' : ''}
+                ${listing.featured ? '<span class="badge badge-featured"><i class="fas fa-star"></i> FEATURED</span>' : ''}
                 <span class="badge badge-status">${listing.status.replace('-', ' ')}</span>
                 <span class="badge badge-type">${listing.type}</span>
             </div>
@@ -616,12 +616,9 @@ function renderListingDetail(listing) {
                         <span class="current">${listing.title}</span>
                     </div>
                     
-                    <!-- Featured Badge & Favorite -->
+                    <!-- Featured Badge only (no heart button) -->
                     <div class="detail-badges-row">
                         ${listing.featured ? '<span class="detail-badge featured"><i class="fas fa-star"></i> Featured</span>' : ''}
-                        <button class="favorite-btn" aria-label="Save to favorites">
-                            <i class="far fa-heart"></i>
-                        </button>
                     </div>
                     
                     <!-- Title -->
