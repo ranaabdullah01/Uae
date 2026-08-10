@@ -847,15 +847,19 @@
 
                 <!-- Listings Grid -->
                 <div class="listings-grid" id="listings-grid"></div>
+            </div>
 
-                <!-- Listing Detail View -->
-                <div id="listing-detail" style="display:none;">
+            <!-- Listing Detail View - own wide wrapper, independent of the grid's .container width -->
+            <div id="listing-detail" style="display:none;">
+                <div class="listing-detail-wrap">
                     <button class="btn btn-secondary" onclick="window.showListingList()">
                         <i class="fas fa-arrow-left"></i> BACK TO PROPERTIES
                     </button>
                     <div id="listing-detail-content"></div>
                 </div>
+            </div>
 
+            <div class="container">
                 <!-- Portal Section -->
                 <div class="portal-section">
                     <h3>MORE PROPERTIES</h3>
