@@ -696,6 +696,9 @@ function renderListingDetail(listing) {
                     <!-- Quick Stats Card -->
                     ${quickStats}
 
+                    <!-- CTA Buttons (moved up after quick stats) -->
+                    ${ctaHtml}
+
                     <!-- Description -->
                     ${listing.description ? `
                         <div class="listing-detail-card">
@@ -720,9 +723,6 @@ function renderListingDetail(listing) {
 
                     <!-- Property Details - Mobile version (hidden on desktop, shown on mobile after features) -->
                     ${propertyDetailsMobileHtml}
-
-                    <!-- CTA Buttons -->
-                    ${ctaHtml}
                 </div>
             </div>
 
