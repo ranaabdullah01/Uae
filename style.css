@@ -2454,12 +2454,12 @@ nav .nav-container {
 }
 
 #listing-detail .container {
-    max-width: 1360px;
+    max-width: 1440px;
     padding: 0 32px;
 }
 
 /* Back button - refined */
-#listing-detail > .btn-secondary {
+.listing-back-btn {
     margin-bottom: 32px;
     display: inline-flex;
     align-items: center;
@@ -2479,7 +2479,7 @@ nav .nav-container {
     cursor: pointer;
 }
 
-#listing-detail > .btn-secondary:hover {
+.listing-back-btn:hover {
     background: var(--brass-dark);
     transform: translateY(-2px);
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.4);
@@ -3050,34 +3050,38 @@ nav .nav-container {
 }
 
 /* ============================================================
-   BENEFITS STRIP
+   BENEFITS STRIP - Full width below columns
    ============================================================ */
 
-.benefits-strip {
+.listing-benefits-strip {
+    margin-top: 48px;
+    padding: 24px 32px;
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid var(--line);
+    box-shadow: 0 2px 12px rgba(11, 59, 46, 0.04);
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 8px;
-    padding: 16px 0 4px;
-    border-top: 1px solid var(--line);
 }
 
-.benefit-item {
+.listing-benefit-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-align: center;
-    padding: 8px 4px;
+    padding: 12px 8px;
 }
 
-.benefit-item i {
-    font-size: 18px;
+.listing-benefit-item i {
+    font-size: 22px;
     color: var(--brass);
 }
 
-.benefit-item span {
+.listing-benefit-item span {
     font-family: 'Inter', sans-serif;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 500;
     color: var(--ink-soft);
     text-transform: uppercase;
@@ -3141,13 +3145,8 @@ nav .nav-container {
         min-height: 350px;
     }
     
-    .benefits-strip {
+    .listing-benefits-strip {
         grid-template-columns: repeat(3, 1fr);
-    }
-    
-    .benefit-item:last-child,
-    .benefit-item:nth-last-child(2) {
-        display: none;
     }
 }
 
@@ -3161,7 +3160,7 @@ nav .nav-container {
         padding: 0 16px;
     }
     
-    #listing-detail > .btn-secondary {
+    .listing-back-btn {
         margin-bottom: 16px;
         padding: 12px 20px;
         font-size: 12px;
@@ -3296,23 +3295,19 @@ nav .nav-container {
         border-radius: 10px;
     }
     
-    .benefits-strip {
+    .listing-benefits-strip {
         grid-template-columns: repeat(3, 1fr);
-        padding: 12px 0 0;
+        padding: 16px 12px;
+        margin-top: 24px;
         gap: 4px;
     }
     
-    .benefit-item:last-child,
-    .benefit-item:nth-last-child(2) {
-        display: none;
+    .listing-benefit-item i {
+        font-size: 16px;
     }
     
-    .benefit-item i {
-        font-size: 15px;
-    }
-    
-    .benefit-item span {
-        font-size: 8px;
+    .listing-benefit-item span {
+        font-size: 9px;
     }
     
     .location-card {
@@ -3393,7 +3388,7 @@ nav .nav-container {
         grid-template-columns: 1fr;
     }
     
-    .benefits-strip {
+    .listing-benefits-strip {
         grid-template-columns: repeat(3, 1fr);
     }
 }
