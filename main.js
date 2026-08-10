@@ -508,6 +508,8 @@ window.showListingList = function(opts = {}) {
 // RENDER LISTING DETAIL - REFINED 2-COLUMN LAYOUT
 // Gallery: 16:9 with 4 thumbs + "more" card
 // Price + status inline, quick stats card, improved symmetry
+// TOP BAR: Back button + Breadcrumb aligned on same baseline
+// TRUST BADGES: full-width card with centered icons & text
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -530,7 +532,7 @@ function renderListingDetail(listing) {
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
-                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image">
+                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
                         <i class="fas fa-chevron-left"></i>
@@ -546,7 +548,8 @@ function renderListingDetail(listing) {
                     <img src="${img}" alt="${listing.title} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setGalleryImage(${index})">
+                         onclick="window.setGalleryImage(${index})"
+                         onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
                     <div class="thumb more-photos" onclick="window.openGallery()">
@@ -635,6 +638,22 @@ function renderListingDetail(listing) {
     // ---------- FULL HTML ----------
     return `
         <div class="listing-detail-page">
+            <!-- TOP BAR: Back button + Breadcrumb -->
+            <div class="listing-detail-top-bar">
+                <button class="btn btn-secondary" onclick="window.showListingList()">
+                    <i class="fas fa-arrow-left"></i> BACK TO PROPERTIES
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="#" onclick="window.showListingList(); return false;">Home</a>
+                    <span class="separator">/</span>
+                    <a href="#" onclick="window.showListingList(); return false;">Properties</a>
+                    <span class="separator">/</span>
+                    <span class="current">${listing.community || 'Community'}</span>
+                    <span class="separator">/</span>
+                    <span class="current">${listing.title}</span>
+                </div>
+            </div>
+
             <!-- Main two-column layout -->
             <div class="listing-detail-container">
                 <!-- LEFT COLUMN -->
@@ -645,17 +664,6 @@ function renderListingDetail(listing) {
 
                 <!-- RIGHT COLUMN -->
                 <div class="listing-detail-right-col">
-                    <!-- Breadcrumb -->
-                    <div class="breadcrumb-nav">
-                        <a href="#" onclick="window.showListingList(); return false;">Home</a>
-                        <span class="separator">/</span>
-                        <a href="#" onclick="window.showListingList(); return false;">Properties</a>
-                        <span class="separator">/</span>
-                        <span class="current">${listing.community || 'Community'}</span>
-                        <span class="separator">/</span>
-                        <span class="current">${listing.title}</span>
-                    </div>
-
                     <!-- Title -->
                     <h1 class="listing-detail-title">${listing.title}</h1>
 
