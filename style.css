@@ -1350,27 +1350,55 @@ nav .nav-container {
 
 /* ---- Badges ---- */
 .listing-card-badges {
-    position: absolute; top: 14px; left: 14px; right: 14px;
-    display: flex; gap: 8px; flex-wrap: wrap;
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    right: 14px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
     pointer-events: none;
     z-index: 2;
 }
-.property-badge, .property-status, .status-badge, .badge {
+
+.badge {
     display: inline-block;
     padding: 6px 14px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     font-weight: 600;
-    font-size: 11px;
+    font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     border-radius: 100px;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
     white-space: nowrap;
     z-index: 2;
 }
-.badge-featured { background: var(--brass); color: var(--emerald-deep); }
-.status-badge.sold, .badge-status { background: var(--ink); color: var(--cream); }
-.status-badge.for-rent, .badge-type { background: var(--emerald); color: var(--cream); }
+
+.badge-featured {
+    background: linear-gradient(135deg, var(--brass-light), var(--brass));
+    color: var(--emerald-deep);
+    font-weight: 700;
+    font-size: 11px;
+    padding: 6px 16px;
+    letter-spacing: 0.06em;
+    box-shadow: 0 4px 16px rgba(176, 138, 62, 0.35);
+}
+
+.badge-featured i {
+    margin-right: 4px;
+    font-size: 10px;
+}
+
+.badge-status {
+    background: var(--ink);
+    color: var(--cream);
+}
+
+.badge-type {
+    background: var(--emerald);
+    color: var(--cream);
+}
 
 /* ---- Body ---- */
 .property-info, .offplan-info, .community-info, .sale-info,
@@ -2698,7 +2726,7 @@ nav .nav-container {
     font-weight: 500;
 }
 
-/* Badges Row */
+/* Badges Row - No favorite button */
 .detail-badges-row {
     display: flex;
     align-items: center;
@@ -2726,27 +2754,6 @@ nav .nav-container {
 
 .detail-badge.featured i {
     font-size: 10px;
-}
-
-.favorite-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 1.5px solid var(--line);
-    background: var(--white);
-    color: var(--ink-soft);
-    font-size: 18px;
-    cursor: pointer;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.favorite-btn:hover {
-    border-color: var(--brass);
-    color: var(--brass);
-    transform: scale(1.05);
 }
 
 /* Title */
