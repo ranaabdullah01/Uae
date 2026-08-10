@@ -507,21 +507,21 @@ window.showListingList = function(opts = {}) {
 // ============= RENDER LISTING DETAIL - PREMIUM TWO-COLUMN =============
 
 function renderListingDetail(listing) {
-    const images = listing.images && typeof listing.images === 'string' 
+    const images = listing.images && typeof listing.images === 'string'
         ? listing.images.split(',').map(img => img.trim()).filter(img => img)
         : (Array.isArray(listing.images) ? listing.images : []);
-    
+
     if (images.length === 0) {
         images.push('https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image');
     }
-    
+
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
         : (Array.isArray(listing.features) ? listing.features : []);
-    
+
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
-    
+
     // Gallery with slider controls
     let gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
@@ -540,8 +540,8 @@ function renderListingDetail(listing) {
             ${images.length > 1 ? `
                 <div class="gallery-thumbs" id="gallery-thumbs">
                     ${images.map((img, index) => `
-                        <img src="${img}" alt="${listing.title} - Image ${index + 1}" 
-                             class="thumb ${index === 0 ? 'active' : ''}" 
+                        <img src="${img}" alt="${listing.title} - Image ${index + 1}"
+                             class="thumb ${index === 0 ? 'active' : ''}"
                              data-index="${index}"
                              onclick="window.setGalleryImage(${index})">
                     `).join('')}
@@ -700,28 +700,28 @@ function renderListingDetail(listing) {
                     </div>
                 </div>
             </div>
-            
-            <!-- Benefits Strip - full-width, spans beneath both columns -->
-            <div class="listing-benefits-section">
-                <div class="benefits-strip">
+
+            <!-- FULL-WIDTH BENEFITS STRIP -->
+            <div class="benefits-strip-full">
+                <div class="benefits-strip-inner">
                     <div class="benefit-item">
-                        <div class="benefit-icon-circle"><i class="fas fa-shield-alt"></i></div>
+                        <i class="fas fa-shield-alt"></i>
                         <span>Secure Investment</span>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-circle"><i class="fas fa-chart-line"></i></div>
+                        <i class="fas fa-chart-line"></i>
                         <span>High ROI Potential</span>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-circle"><i class="fas fa-headset"></i></div>
+                        <i class="fas fa-headset"></i>
                         <span>Full Support</span>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-circle"><i class="fas fa-hand-holding-usd"></i></div>
+                        <i class="fas fa-hand-holding-usd"></i>
                         <span>Flexible Payment</span>
                     </div>
                     <div class="benefit-item">
-                        <div class="benefit-icon-circle"><i class="fas fa-percent"></i></div>
+                        <i class="fas fa-percent"></i>
                         <span>No Commission</span>
                     </div>
                 </div>
