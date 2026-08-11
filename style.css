@@ -459,7 +459,8 @@ nav .nav-container {
 
 @media (max-width: 1024px) {
     nav .nav-container {
-        justify-content: space-between;
+        width: 100% !important;            /* <-- FIX: full width on mobile */
+        justify-content: space-between !important;
         padding-top: 10px;
         padding-bottom: 10px;
     }
