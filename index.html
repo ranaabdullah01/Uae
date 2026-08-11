@@ -37,7 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="mobile.css?v=2">
+    <link rel="stylesheet" href="mobile.css?v=3">
 
     <!-- Schema.org RealEstateAgent Markup -->
     <script type="application/ld+json">
@@ -530,6 +530,18 @@
                 margin: 0 !important;
                 width: 40px !important;
                 height: 40px !important;
+            }
+            html body #main-header .mobile-logo {
+                max-width: calc(100% - 56px) !important;
+                overflow: hidden !important;
+                min-width: 0 !important;
+            }
+            html body #main-header .mobile-logo-main,
+            html body #main-header .mobile-logo-sub {
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                max-width: 100% !important;
             }
         }
     </style>
