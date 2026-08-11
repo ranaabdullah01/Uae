@@ -105,13 +105,15 @@
   /* ========== HAMBURGER MENU - RIGHT SIDE ========== */
   #main-header .hamburger {
     display: flex !important;
-    position: relative !important;
+    position: absolute !important;
+    top: 50% !important;
+    right: 6px !important;
+    transform: translateY(-50%) !important;
     z-index: 1003 !important;
-    width: 44px !important;
-    height: 44px !important;
+    width: 40px !important;
+    height: 40px !important;
     padding: 0 !important;
     margin: 0 !important;
-    margin-left: auto !important;
     background: transparent !important;
     border: 0 !important;
     flex-direction: column !important;
@@ -727,14 +729,4 @@
     font-size: 1rem !important;
     margin-bottom: 10px !important;
   }
-}
-/* ===== Hamburger: keep original absolute-centered positioning, just move closer to edge ===== */
-#main-header .hamburger {
-  position: absolute !important;
-  right: 6px !important;      /* was 16px — pulls it flush to the edge */
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-  margin: 0 !important;
-  width: 40px !important;
-  height: 40px !important;
 }
