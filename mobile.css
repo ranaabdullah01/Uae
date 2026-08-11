@@ -728,13 +728,13 @@
     margin-bottom: 10px !important;
   }
 }
-/* ===== Push hamburger icon flush to right edge ===== */
-#main-header nav .nav-container {
-  padding-right: 12px !important; /* tighter edge padding */
-}
-
+/* ===== Hamburger: keep original absolute-centered positioning, just move closer to edge ===== */
 #main-header .hamburger {
-  width: 32px !important;      /* shrink hitbox so icon sits closer to edge */
-  margin-right: 0 !important;
-  padding-right: 0 !important;
+  position: absolute !important;
+  right: 6px !important;      /* was 16px — pulls it flush to the edge */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  margin: 0 !important;
+  width: 40px !important;
+  height: 40px !important;
 }
