@@ -459,10 +459,13 @@ nav .nav-container {
 
 @media (max-width: 1024px) {
     nav .nav-container {
-        width: 100% !important;            /* <-- FIX: full width on mobile */
+        position: relative !important;     /* Needed for absolute positioning of hamburger */
+        width: 100% !important;
         justify-content: space-between !important;
         padding-top: 10px;
         padding-bottom: 10px;
+        padding-left: 16px;
+        padding-right: 16px;
     }
 
     .nav-links-wrapper {
@@ -617,13 +620,16 @@ nav .nav-container {
     }
 
     .hamburger {
+        position: absolute !important;
+        right: 16px !important;            /* Distance from the right edge */
+        top: 50% !important;
+        transform: translateY(-50%) !important;
         display: inline-flex !important;
-        position: relative;
         z-index: 1003;
         width: 42px;
         height: 42px;
         padding: 0;
-        margin: 0 0 0 auto !important;  /* <--- FORCES THE BUTTON TO THE RIGHT */
+        margin: 0 !important;
         background: transparent;
         border: 0;
         flex-direction: column;
