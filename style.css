@@ -622,7 +622,7 @@ nav .nav-container {
         width: 42px;
         height: 42px;
         padding: 0;
-        margin: 0;
+        margin: 0 0 0 auto !important;  /* <--- FORCES THE BUTTON TO THE RIGHT */
         background: transparent;
         border: 0;
         flex-direction: column;
