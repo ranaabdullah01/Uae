@@ -3713,3 +3713,53 @@ footer::before {
         padding: 100px 0 40px;
     }
 }
+
+/* =============================================================
+   MOBILE FIX: Move Property Details below Features on Mobile
+   ============================================================= */
+
+/* Hide/show spec blocks */
+.desktop-specs { display: block; }
+.mobile-specs { display: none; }
+
+/* ===== MOBILE OVERRIDE (max-width: 1023px) ===== */
+@media (max-width: 1023px) {
+    /* Switch container from grid to flex column */
+    .listing-detail-container {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 28px !important;
+    }
+
+    /* Left col (Gallery) goes first, Right col (all text) goes second */
+    .listing-detail-left-col {
+        order: 1 !important;
+        width: 100% !important;
+    }
+    .listing-detail-right-col {
+        order: 2 !important;
+        width: 100% !important;
+    }
+
+    /* Hide desktop specs (was in left col) */
+    .desktop-specs {
+        display: none !important;
+    }
+
+    /* Show mobile specs (now in right col, after features) */
+    .mobile-specs {
+        display: block !important;
+    }
+
+    /* Optional: remove extra top margin if the card looks off */
+    .mobile-specs .listing-detail-card {
+        margin-top: 0 !important;
+    }
+}
+
+/* Ensure mobile specs stay hidden on desktop */
+@media (min-width: 1024px) {
+    .mobile-specs {
+        display: none !important;
+    }
+}
