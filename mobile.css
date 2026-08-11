@@ -103,12 +103,14 @@
   }
 
   /* ========== HAMBURGER MENU - RIGHT SIDE ========== */
+  /* NOTE: Hamburger is now a normal flex child (not absolute) 
+     in style.css. Only minor visual tweaks here. */
   #main-header .hamburger {
     display: flex !important;
-    position: absolute !important;
-    top: 50% !important;
-    right: 6px !important;
-    transform: translateY(-50%) !important;
+    position: relative !important;      /* Not absolute anymore */
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
     z-index: 1003 !important;
     width: 40px !important;
     height: 40px !important;
