@@ -659,7 +659,8 @@ function renderListingDetail(listing) {
                 <!-- LEFT COLUMN -->
                 <div class="listing-detail-left-col">
                     ${gallery}
-                    ${propertyDetailsHtml}
+                    <!-- DESKTOP SPECS (hidden on mobile) -->
+                    <div class="desktop-specs">${propertyDetailsHtml}</div>
                 </div>
 
                 <!-- RIGHT COLUMN -->
@@ -702,6 +703,9 @@ function renderListingDetail(listing) {
                             </div>
                         </div>
                     ` : ''}
+
+                    <!-- ====== MOBILE SPECS (MOVED HERE FOR MOBILE) ====== -->
+                    <div class="mobile-specs">${propertyDetailsHtml}</div>
 
                     <!-- CTA Buttons -->
                     ${ctaHtml}
