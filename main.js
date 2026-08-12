@@ -43,6 +43,7 @@ let currentSection = 'home';
 let config = { ...CONFIG };
 let agentProfile = {};
 let currentListingId = null;
+let currentOffplanId = null;
 let isRTL = false;
 let currentBlogPost = null;
 
@@ -101,6 +102,11 @@ function handleRoute() {
         }
     } else if (section === 'listings') {
         window.showListingList({ push: false });
+    } else if (section === 'offplan' && slug) {
+        navigateTo('offplan', { push: false });
+        window.viewOffplanPage(slug, { push: false });
+    } else if (section === 'offplan') {
+        window.showOffplanList({ push: false });
     } else {
         navigateTo(section, { push: false });
     }
@@ -240,6 +246,7 @@ function updateAllSections() {
     } else if (section === 'listings') {
         if (filterBar) filterBar.style.display = 'grid';
     }
+    // Off-plan detail handled separately in viewOffplanPage/showOffplanList
 }
 
 // ============= CONFIG FUNCTIONS =============
@@ -506,10 +513,7 @@ window.showListingList = function(opts = {}) {
 
 // ============================================================
 // RENDER LISTING DETAIL - REFINED 2-COLUMN LAYOUT
-// Gallery: 16:9 with 4 thumbs + "more" card
-// Price + status inline, quick stats card, improved symmetry
-// TOP BAR: Back button + Breadcrumb aligned on same baseline
-// TRUST BADGES: full-width card with centered icons & text
+// (unchanged, full function is below)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -849,6 +853,8 @@ window.openGallery = function() {
     showToast('Gallery view coming soon!', 'info');
 };
 
+// ============= OFF-PLAN FUNCTIONS =============
+
 function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
@@ -870,13 +876,15 @@ function renderOffplanPage() {
     const container = document.getElementById('offplan-grid');
     if (!container) return;
     
-    container.innerHTML = '';
+    // Hide detail, show grid
+    document.getElementById('offplan-detail').style.display = 'none';
+    container.style.display = 'grid';
     
+    container.innerHTML = '';
     if (offplan.length === 0) {
         container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
         return;
     }
-    
     offplan.forEach(project => {
         container.appendChild(createOffplanCard(project));
     });
@@ -903,12 +911,232 @@ function createOffplanCard(project) {
                 ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
             </div>
             <div class="offplan-card-actions">
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Register Interest</a>
+                <button class="btn btn-secondary btn-sm" onclick="window.viewOffplanPage('${project.id}')">View Details</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Request Brochure</a>
             </div>
         </div>
     `;
     return card;
 }
+
+window.showOffplanList = function(opts = {}) {
+    const { push = true } = opts;
+    const grid = document.getElementById('offplan-grid');
+    const detail = document.getElementById('offplan-detail');
+    const content = document.getElementById('offplan-detail-content');
+    if (grid) grid.style.display = 'grid';
+    if (detail) detail.style.display = 'none';
+    if (content) content.innerHTML = '';
+    if (push) {
+        const path = buildPath('offplan');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'offplan', slug: null }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio');
+    navigateTo('offplan', { push: false });
+};
+
+window.viewOffplanPage = function(id, opts = {}) {
+    const { push = true } = opts;
+    const project = offplan.find(p => p.id == id || String(p.id) === String(id));
+    if (!project) {
+        showToast('Project not found.', 'error');
+        return;
+    }
+    currentOffplanId = id;
+
+    const grid = document.getElementById('offplan-grid');
+    const detailContainer = document.getElementById('offplan-detail');
+    const content = document.getElementById('offplan-detail-content');
+    if (grid) grid.style.display = 'none';
+    if (detailContainer) {
+        detailContainer.style.display = 'block';
+        if (content) {
+            content.innerHTML = renderOffplanDetail(project);
+        }
+    }
+
+    if (push) {
+        const slug = project.slug || project.id;
+        const path = buildPath('offplan', slug);
+        if (location.pathname !== path) {
+            history.pushState({ section: 'offplan', slug: slug }, '', path);
+        }
+        updateCanonical(path);
+    }
+    document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
+    
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    const offplanSection = document.getElementById('offplan');
+    if (offplanSection) offplanSection.classList.add('active');
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === 'offplan') {
+            el.classList.add('active');
+        }
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+function renderOffplanDetail(project) {
+    const imageUrl = project.image || 'https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan';
+    const hasHighlights = project.highlights && project.highlights.length > 0;
+    const hasTypes = project.types && project.types.length > 0;
+    const paymentPlan = project.paymentPlan || {};
+
+    return `
+        <div class="listing-detail-page">
+            <!-- Top Bar -->
+            <div class="listing-detail-top-bar">
+                <button class="btn btn-secondary" onclick="window.showOffplanList()">
+                    <i class="fas fa-arrow-left"></i> BACK TO OFF-PLAN
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="#" onclick="window.showOffplanList(); return false;">Home</a>
+                    <span class="separator">/</span>
+                    <a href="#" onclick="window.showOffplanList(); return false;">Off-Plan</a>
+                    <span class="separator">/</span>
+                    <span class="current">${project.projectName}</span>
+                </div>
+            </div>
+
+            <!-- Main two-column layout -->
+            <div class="listing-detail-container">
+                <!-- Left column: Gallery -->
+                <div class="listing-detail-left-col">
+                    <div class="listing-detail-gallery">
+                        <div class="gallery-main" style="aspect-ratio:16/9; background:#F0EDE8;">
+                            <img src="${imageUrl}" alt="${project.projectName}" style="width:100%; height:100%; object-fit:cover;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right column: Info -->
+                <div class="listing-detail-right-col">
+                    <h1 class="listing-detail-title">${project.projectName}</h1>
+
+                    <div class="price-status-row">
+                        <span class="listing-detail-price">From AED ${formatPrice(project.startingPrice)}</span>
+                        ${project.goldenVisaEligible ? `<span class="status-pill" style="background:var(--brass); color:var(--emerald-deep);">🏆 Golden Visa</span>` : ''}
+                    </div>
+
+                    <div class="listing-detail-location">
+                        <i class="fas fa-building"></i> ${project.developer} | ${project.community}
+                    </div>
+
+                    <!-- Description -->
+                    ${project.description ? `
+                        <div class="listing-detail-card">
+                            <h3 class="listing-detail-card-title">Description</h3>
+                            <p class="listing-detail-description">${project.description}</p>
+                        </div>
+                    ` : ''}
+
+                    <!-- Highlights -->
+                    ${hasHighlights ? `
+                        <div class="listing-detail-card">
+                            <h3 class="listing-detail-card-title">Key Highlights</h3>
+                            <div class="listing-detail-features-grid">
+                                ${project.highlights.map(h => `<span class="listing-detail-feature-item"><i class="fas fa-check-circle"></i> ${h}</span>`).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <!-- Project Details (Handover, Unit Types, Payment Plan) -->
+                    <div class="listing-detail-card">
+                        <h3 class="listing-detail-card-title">Project Details</h3>
+                        <div class="listing-detail-details-grid">
+                            <div class="listing-detail-detail-item">
+                                <span class="detail-label">Handover Date</span>
+                                <span class="detail-value">${project.handoverDate || 'TBA'}</span>
+                            </div>
+                            ${hasTypes ? `
+                                <div class="listing-detail-detail-item">
+                                    <span class="detail-label">Unit Types</span>
+                                    <span class="detail-value">${project.types.join(', ')}</span>
+                                </div>
+                            ` : ''}
+                            ${paymentPlan.downPayment ? `
+                                <div class="listing-detail-detail-item">
+                                    <span class="detail-label">Down Payment</span>
+                                    <span class="detail-value">${paymentPlan.downPayment}</span>
+                                </div>
+                            ` : ''}
+                            ${paymentPlan.duringConstruction ? `
+                                <div class="listing-detail-detail-item">
+                                    <span class="detail-label">During Construction</span>
+                                    <span class="detail-value">${paymentPlan.duringConstruction}</span>
+                                </div>
+                            ` : ''}
+                            ${paymentPlan.onHandover ? `
+                                <div class="listing-detail-detail-item">
+                                    <span class="detail-label">On Handover</span>
+                                    <span class="detail-value">${paymentPlan.onHandover}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- CTA Buttons -->
+                    <div class="listing-detail-actions-card">
+                        <h4 class="action-title">Interested in this project?</h4>
+                        <p class="action-subtitle">Get the brochure or schedule a consultation</p>
+                        <div class="listing-detail-actions">
+                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Request Brochure
+                            </a>
+                            <button class="btn btn-primary" onclick="window.scheduleConsultation('${project.projectName}')">
+                                <i class="fas fa-calendar-check"></i> Schedule Consultation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust Badges (reuse from listing) -->
+            <div class="trust-badges-full">
+                <div class="trust-badges-inner">
+                    <div class="trust-item">
+                        <i class="fas fa-shield-alt"></i>
+                        <div><strong>Secure Investment</strong><span>RERA approved off‑plan projects</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-chart-line"></i>
+                        <div><strong>High ROI Potential</strong><span>Prime locations with capital growth</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-headset"></i>
+                        <div><strong>Full Support</strong><span>From reservation to handover</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <div><strong>Flexible Payment</strong><span>Developer payment plans available</span></div>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-percent"></i>
+                        <div><strong>No Commission</strong><span>Direct from developer</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.scheduleConsultation = function(projectName) {
+    navigateTo('contact');
+    setTimeout(() => {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector('[data-tab="viewing"]')?.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-viewing')?.classList.add('active');
+        const propertyInput = document.getElementById('view-property');
+        if (propertyInput) propertyInput.value = 'Off-Plan: ' + projectName;
+    }, 100);
+};
+
+// ============= RENDER COMMUNITIES =============
 
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
@@ -966,6 +1194,8 @@ function renderCommunities(communitiesData, container) {
         container.appendChild(card);
     });
 }
+
+// ============= ABOUT PAGE =============
 
 function renderAboutPage() {
     const testimonialsContainer = document.getElementById('testimonials-grid');
@@ -1449,6 +1679,30 @@ function navigateTo(sectionId, opts = {}) {
         if (detail) detail.style.display = 'none';
     }
 
+    if (sectionId === 'offplan') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        if (routeSlug && section === 'offplan') {
+            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
+            if (project) {
+                const grid = document.getElementById('offplan-grid');
+                const detail = document.getElementById('offplan-detail');
+                if (grid) grid.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+                }
+                document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        // No slug or project not found → show list
+        const grid = document.getElementById('offplan-grid');
+        const detail = document.getElementById('offplan-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderOffplanPage();
+    }
+
     const sectionNames = {
         home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
         listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
@@ -1639,3 +1893,7 @@ window.prevImage = prevImage;
 window.nextImage = nextImage;
 window.initGallery = initGallery;
 window.openGallery = openGallery;
+window.viewOffplanPage = viewOffplanPage;
+window.showOffplanList = showOffplanList;
+window.renderOffplanDetail = renderOffplanDetail;
+window.scheduleConsultation = scheduleConsultation;
