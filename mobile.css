@@ -5,6 +5,22 @@
    ============================================================ */
 
 @media (max-width: 900px) {
+  /* ---- FIX 1: FORCE NAV TO TAKE FULL WIDTH ---- */
+  #main-header nav {
+    width: 100% !important;
+    display: block !important;
+  }
+
+  #main-header nav .nav-container {
+    width: 100% !important;
+    position: relative !important;
+    min-height: 64px !important;
+    padding: 0 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+  }
+
   #main-header {
     position: fixed !important;
     top: 0 !important;
@@ -24,22 +40,6 @@
     box-shadow: 0 8px 26px rgba(0,0,0,.08) !important;
     backdrop-filter: blur(14px) saturate(160%) !important;
     -webkit-backdrop-filter: blur(14px) saturate(160%) !important;
-  }
-
-  /* FIX: FORCE NAV FULL WIDTH ON MOBILE */
-  #main-header nav {
-    width: 100% !important;
-    display: block !important;
-  }
-
-  #main-header nav .nav-container {
-    width: 100% !important; /* FIX: Ensures hamburger pushes to far right */
-    position: relative !important;
-    min-height: 64px !important;
-    padding: 0 18px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
   }
 
   /* ========== MOBILE LOGO WITH TEXT - LEFT SIDE ========== */
@@ -480,20 +480,17 @@
     padding: 4px 12px !important;
   }
 
-  /* ============================================================
-     FIX: ABOUT SNIPPET IN MOBILE VIEW
-     Prevents text from being cut off and forces 1-column layout
-     ============================================================ */
+  /* ========== FIX 2: ABOUT SNIPPET (AGENT DETAILS) FULLY VISIBLE ON MOBILE ========== */
   .about-snippet {
     padding: 40px 0 !important;
     margin: 20px 0 !important;
-    overflow: visible !important; 
+    overflow: visible !important; /* prevents clipping */
   }
 
   .about-snippet-content {
     display: flex !important;
-    flex-direction: column !important; 
-    align-items: center !important; 
+    flex-direction: column !important;
+    align-items: center !important;
     text-align: center !important;
     padding: 0 20px !important;
     gap: 24px !important;
@@ -512,14 +509,6 @@
     gap: 20px !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
-  }
-
-  .about-snippet-text .stats span {
-    font-size: 1.4rem !important;
-  }
-
-  .about-snippet-text .stats div {
-    font-size: 11px !important;
   }
 
   .about-snippet-text .btn {
