@@ -3043,6 +3043,50 @@ nav .nav-container {
 }
 
 /* ============================================================
+   FIX: Increase spacing between hero and content sections
+   ============================================================ */
+
+/* Target containers that follow heroes on content pages */
+.offplan-hero + .container,
+.communities-hero + .container,
+.blog-hero + .container,
+.listings-hero + .container,
+.about-hero + .container,
+.contact-hero + .container,
+.goldenvisa-hero + .container,
+.valuation-hero + .container {
+    padding-top: 50px;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    .offplan-hero + .container,
+    .communities-hero + .container,
+    .blog-hero + .container,
+    .listings-hero + .container,
+    .about-hero + .container,
+    .contact-hero + .container,
+    .goldenvisa-hero + .container,
+    .valuation-hero + .container {
+        padding-top: 32px;
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .offplan-hero + .container,
+    .communities-hero + .container,
+    .blog-hero + .container,
+    .listings-hero + .container,
+    .about-hero + .container,
+    .contact-hero + .container,
+    .goldenvisa-hero + .container,
+    .valuation-hero + .container {
+        padding-top: 24px;
+    }
+}
+
+/* ============================================================
    RESPONSIVE - Listing Detail
    ============================================================ */
 
