@@ -5,7 +5,7 @@
    ============================================================ */
 
 @media (max-width: 900px) {
-  /* ---- FIX: FORCE NAV TO TAKE FULL WIDTH ---- */
+  /* ---- FIX 1: FORCE NAV TO TAKE FULL WIDTH ---- */
   #main-header nav {
     width: 100% !important;
     display: block !important;
@@ -480,17 +480,17 @@
     padding: 4px 12px !important;
   }
 
-  /* ========== ABOUT SNIPPET FIX - MOBILE ========== */
+  /* ========== FIX 2: ABOUT SNIPPET (AGENT DETAILS) FULLY VISIBLE ON MOBILE ========== */
   .about-snippet {
     padding: 40px 0 !important;
     margin: 20px 0 !important;
-    overflow: visible !important; /* Stops text from being cut off */
+    overflow: visible !important; /* prevents clipping */
   }
 
   .about-snippet-content {
     display: flex !important;
-    flex-direction: column !important; /* Stack image and text vertically */
-    align-items: center !important; /* Center everything */
+    flex-direction: column !important;
+    align-items: center !important;
     text-align: center !important;
     padding: 0 20px !important;
     gap: 24px !important;
