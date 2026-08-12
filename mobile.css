@@ -5,7 +5,7 @@
    ============================================================ */
 
 @media (max-width: 900px) {
-  /* ---- FIX 1: FORCE NAV TO TAKE FULL WIDTH ---- */
+  /* ---- FIX: FORCE NAV TO TAKE FULL WIDTH ---- */
   #main-header nav {
     width: 100% !important;
     display: block !important;
@@ -480,39 +480,28 @@
     padding: 4px 12px !important;
   }
 
-  /* ========== FIX 2: ABOUT SNIPPET (AGENT DETAILS) FULLY VISIBLE ON MOBILE ========== */
-  .about-snippet {
-    padding: 40px 0 !important;
-    margin: 20px 0 !important;
-    overflow: visible !important; /* prevents clipping */
-  }
-
+  /* About snippet mobile */
   .about-snippet-content {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    text-align: center !important;
-    padding: 0 20px !important;
+    padding: 0 16px !important;
     gap: 24px !important;
   }
 
   .about-snippet-image {
     max-width: 200px !important;
-    margin: 0 auto !important;
-  }
-
-  .about-snippet-text {
-    width: 100% !important;
   }
 
   .about-snippet-text .stats {
-    gap: 20px !important;
+    gap: 16px !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
   }
 
-  .about-snippet-text .btn {
-    margin-top: 10px !important;
+  .about-snippet-text .stats span {
+    font-size: 1.4rem !important;
+  }
+
+  .about-snippet-text .stats div {
+    font-size: 11px !important;
   }
 
   /* Golden visa highlight */
