@@ -480,28 +480,39 @@
     padding: 4px 12px !important;
   }
 
-  /* About snippet mobile */
+  /* ========== ABOUT SNIPPET FIX - MOBILE ========== */
+  .about-snippet {
+    padding: 40px 0 !important;
+    margin: 20px 0 !important;
+    overflow: visible !important; /* Stops text from being cut off */
+  }
+
   .about-snippet-content {
-    padding: 0 16px !important;
+    display: flex !important;
+    flex-direction: column !important; /* Stack image and text vertically */
+    align-items: center !important; /* Center everything */
+    text-align: center !important;
+    padding: 0 20px !important;
     gap: 24px !important;
   }
 
   .about-snippet-image {
     max-width: 200px !important;
+    margin: 0 auto !important;
+  }
+
+  .about-snippet-text {
+    width: 100% !important;
   }
 
   .about-snippet-text .stats {
-    gap: 16px !important;
+    gap: 20px !important;
     flex-wrap: wrap !important;
     justify-content: center !important;
   }
 
-  .about-snippet-text .stats span {
-    font-size: 1.4rem !important;
-  }
-
-  .about-snippet-text .stats div {
-    font-size: 11px !important;
+  .about-snippet-text .btn {
+    margin-top: 10px !important;
   }
 
   /* Golden visa highlight */
