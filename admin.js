@@ -1,6 +1,6 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
-// Typography: Plus Jakarta Sans for headings, Inter for body
+// OFF-PLAN MULTIPLE IMAGES SUPPORT
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -520,7 +520,13 @@ function renderOffplanTable() {
     
     offplanData.forEach(project => {
         const tr = document.createElement('tr');
-        const imageUrl = project.image || 'https://placehold.co/60x60/0A1628/C9A84C?text=No+Image';
+        // Use first image from images array if available, else fallback to image column
+        let imageUrl = 'https://placehold.co/60x60/0A1628/C9A84C?text=No+Image';
+        if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+            imageUrl = project.images[0];
+        } else if (project.image) {
+            imageUrl = project.image;
+        }
         
         tr.innerHTML = `
             <td><img src="${imageUrl}" alt="${project.projectName}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" onerror="this.onerror=null;this.src='https://placehold.co/60x60/0A1628/C9A84C?text=No+Image'"></td>
@@ -774,7 +780,7 @@ function buildListingForm(listing = null) {
     return buildFormHTML('listing-form', fields);
 }
 
-// ============= CRUD - OFFPLAN =============
+// ============= CRUD - OFFPLAN (with multiple images) =============
 
 window.editOffplan = function(id) {
     const project = offplanData.find(p => p.id == id);
@@ -795,6 +801,10 @@ window.deleteOffplan = async function(id) {
 };
 
 async function saveOffplan(formData) {
+    // Get images from hidden input (comma-separated)
+    const imagesStr = formData.get('images_hidden') || '';
+    let imagesArray = imagesStr.split(',').map(s => s.trim()).filter(s => s);
+    
     const project = {
         id: editingId || null,
         projectName: formData.get('projectName') || '',
@@ -812,7 +822,10 @@ async function saveOffplan(formData) {
         description: formData.get('description') || '',
         highlights: (formData.get('highlights') || '').split(',').map(h => h.trim()).filter(h => h),
         goldenVisaEligible: formData.get('goldenVisaEligible') === 'true',
-        image: formData.get('image_hidden') || '',
+        // For backward compatibility: keep 'image' as first image
+        image: imagesArray.length > 0 ? imagesArray[0] : '',
+        // New 'images' array for multiple images
+        images: imagesArray,
         brochureWhatsApp: formData.get('brochureWhatsApp') || "I'm interested in this off-plan project",
         featured: formData.get('featured') === 'true'
     };
@@ -831,6 +844,15 @@ async function saveOffplan(formData) {
 
 function buildOffplanForm(project = null) {
     const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
+    // For images: get the existing images array or fallback to single image
+    let existingImages = '';
+    if (project) {
+        if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+            existingImages = project.images.join(',');
+        } else if (project.image) {
+            existingImages = project.image;
+        }
+    }
     const fields = [
         { type: 'text', name: 'projectName', label: 'Project Name', value: project?.projectName || '' },
         { type: 'text', name: 'developer', label: 'Developer', value: project?.developer || '' },
@@ -844,7 +866,8 @@ function buildOffplanForm(project = null) {
         { type: 'textarea', name: 'description', label: 'Description', value: project?.description || '' },
         { type: 'text', name: 'highlights', label: 'Highlights (comma separated)', value: safeJoin(project?.highlights) },
         { type: 'checkbox', name: 'goldenVisaEligible', label: 'Golden Visa Eligible', value: project?.goldenVisaEligible || false },
-        { type: 'file', name: 'image', label: 'Upload Project Image', value: project?.image || '', multiple: false },
+        // Multiple images upload
+        { type: 'file', name: 'images', label: 'Upload Images (You can select multiple)', value: existingImages, multiple: true },
         { type: 'text', name: 'brochureWhatsApp', label: 'Brochure WhatsApp Text', value: project?.brochureWhatsApp || '' },
         { type: 'checkbox', name: 'featured', label: 'Featured', value: project?.featured || false }
     ];
@@ -1296,9 +1319,12 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="hidden-${fieldName}" name="${fieldName}_hidden" value="${f.value || ''}">`;
             if (f.value) {
-                html += `<div style="margin-top:8px;">`;
-                html += `<img src="${f.value}" alt="Current image" style="max-width:150px;max-height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">`;
-                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Current image will be kept unless you upload a new one.</small>`;
+                const images = f.value.split(',').filter(img => img.trim());
+                html += `<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">`;
+                images.forEach(img => {
+                    html += `<img src="${img.trim()}" alt="Current image" style="max-width:100px;max-height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">`;
+                });
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;width:100%;">Current images will be kept unless you upload new ones.</small>`;
                 html += `</div>`;
             }
         } else if (f.type === 'quill') {
@@ -1679,11 +1705,7 @@ function openModal(title, bodyHTML) {
         setupImageInput('edit-images', true);
         setupImageInput('edit-image', false);
         setupImageInput('edit-featured_image', false);
-        const communityImageInput = document.getElementById('edit-image');
-        if (communityImageInput) {
-            setupImageInput('edit-image', false);
-        }
-        // For agents photo
+        setupImageInput('edit-images', true); // For offplan multiple images
         setupImageInput('edit-photo', false);
     }, 100);
     
