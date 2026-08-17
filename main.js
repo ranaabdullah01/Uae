@@ -1,5 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
+// OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -94,23 +95,17 @@ function parseCurrentRoute() {
 function handleRoute() {
     const { section, slug, agentSlug } = parseCurrentRoute();
     if (agentSlug) {
-        // If an agent slug is in the URL, set it as current and load agent
         currentAgentSlug = agentSlug;
         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
-        // Then navigate to home with that agent context
         navigateTo('home', { push: false });
-        // Reload all data with new agent
         loadAllData();
         return;
     }
-    // If no agent slug in URL, but we have one in localStorage, use it
     if (!currentAgentSlug) {
         const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
         if (stored) {
             currentAgentSlug = stored;
-            // Reload with that agent
             loadAllData();
-            // Update URL to include agent slug if we're on home
             if (section === 'home') {
                 const newPath = '/' + currentAgentSlug;
                 if (location.pathname !== newPath) {
@@ -190,7 +185,6 @@ async function loadAllData() {
         slug = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
     }
     if (!slug) {
-        // Fallback: fetch first agent from API
         try {
             const resp = await fetch(`${API_BASE}/api/agents`);
             const data = await resp.json();
@@ -199,7 +193,7 @@ async function loadAllData() {
             }
         } catch (e) {
             console.warn('Could not fetch default agent, using hardcoded');
-            slug = 'ahmed-khan'; // fallback
+            slug = 'ahmed-khan';
         }
     }
     currentAgentSlug = slug;
@@ -213,7 +207,6 @@ async function loadAllData() {
             currentAgentData = agentData.agent;
             Object.assign(config, currentAgentData);
         } else {
-            // Agent not found -> 404
             show404();
             return;
         }
@@ -223,7 +216,7 @@ async function loadAllData() {
         return;
     }
 
-    // 3. Load other data (listings, offplan, etc.)
+    // 3. Load other data
     try {
         const profileResponse = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
         const profileData = await profileResponse.json();
@@ -231,7 +224,7 @@ async function loadAllData() {
             agentProfile = profileData.profile;
             Object.assign(config, agentProfile);
         }
-    } catch (e) { /* ignore, we have agent data */ }
+    } catch (e) { /* ignore */ }
 
     try {
         const listingsResponse = await fetch(`${API_BASE}/api/listings?t=${Date.now()}`);
@@ -339,9 +332,9 @@ function updateAllSections() {
         if (filterBar) filterBar.style.display = 'grid';
     }
 
-    // Set agent slug hidden input for forms
-    const slugInputs = document.querySelectorAll('input[name="agentSlug"]');
-    slugInputs.forEach(inp => inp.value = currentAgentSlug || '');
+    document.querySelectorAll('input[name="agentSlug"]').forEach(inp => {
+        inp.value = currentAgentSlug || '';
+    });
 }
 
 // ============= CONFIG FUNCTIONS =============
@@ -453,7 +446,6 @@ function updateConfigInDOM() {
     
     document.title = agent.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
     
-    // Update logo link to agent slug
     const logoLinks = document.querySelectorAll('.logo a, .mobile-logo a, .floating-logo a');
     logoLinks.forEach(link => {
         if (currentAgentSlug) {
@@ -463,17 +455,14 @@ function updateConfigInDOM() {
         }
     });
 
-    // Update agent slug in all forms
     document.querySelectorAll('input[name="agentSlug"]').forEach(inp => {
         inp.value = currentAgentSlug || '';
     });
 
-    // SEO meta description
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc && agent.siteDescription) {
         metaDesc.content = agent.siteDescription;
     }
-    // Open Graph
     const ogTitle = document.querySelector('meta[property="og:title"]');
     if (ogTitle && agent.siteName) {
         ogTitle.content = agent.siteName;
@@ -563,7 +552,7 @@ function getWhatsAppNumber() {
     return number.replace(/[^0-9]/g, '');
 }
 
-// ============= VIEW LISTING DETAIL (PAGE) - HIDE FILTER BAR =============
+// ============= VIEW LISTING DETAIL =============
 
 window.viewListingPage = function(id, opts = {}) {
     const { push = true } = opts;
@@ -637,7 +626,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL - REFINED 2-COLUMN LAYOUT
+// RENDER LISTING DETAIL
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -656,7 +645,6 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // ---------- GALLERY (16:9) ----------
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -688,7 +676,6 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- PROPERTY DETAILS TABLE (left column) ----------
     const details = [
         { label: 'Property Type', value: listing.type || 'N/A' },
         { label: 'Status', value: statusLabel },
@@ -718,7 +705,6 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- QUICK STATS CARD (horizontal blocks) ----------
     const quickStats = `
         <div class="quick-stats-card">
             <div class="quick-stat-block">
@@ -744,7 +730,6 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- CTA BUTTONS ----------
     const whatsappNumber = getWhatsAppNumber();
     const whatsappText = listing.whatsappText || "I'm interested in this property";
 
@@ -763,10 +748,8 @@ function renderListingDetail(listing) {
         </div>
     `;
 
-    // ---------- FULL HTML ----------
     return `
         <div class="listing-detail-page">
-            <!-- TOP BAR: Back button + Breadcrumb -->
             <div class="listing-detail-top-bar">
                 <button class="btn btn-secondary" onclick="window.showListingList()">
                     <i class="fas fa-arrow-left"></i> BACK TO PROPERTIES
@@ -782,35 +765,26 @@ function renderListingDetail(listing) {
                 </div>
             </div>
 
-            <!-- Main two-column layout -->
             <div class="listing-detail-container">
-                <!-- LEFT COLUMN -->
                 <div class="listing-detail-left-col">
                     ${gallery}
-                    <!-- DESKTOP SPECS (hidden on mobile) -->
                     <div class="desktop-specs">${propertyDetailsHtml}</div>
                 </div>
 
-                <!-- RIGHT COLUMN -->
                 <div class="listing-detail-right-col">
-                    <!-- Title -->
                     <h1 class="listing-detail-title">${listing.title}</h1>
 
-                    <!-- Price + Status inline -->
                     <div class="price-status-row">
                         <span class="listing-detail-price">AED ${formatPrice(listing.price)}</span>
                         <span class="status-pill ${statusClass}">${statusLabel}</span>
                     </div>
 
-                    <!-- Location line (community) -->
                     <div class="listing-detail-location">
                         <i class="fas fa-map-marker-alt"></i> ${listing.community || 'Dubai, UAE'}
                     </div>
 
-                    <!-- Quick Stats Card -->
                     ${quickStats}
 
-                    <!-- Description -->
                     ${listing.description ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Description</h3>
@@ -818,7 +792,6 @@ function renderListingDetail(listing) {
                         </div>
                     ` : ''}
 
-                    <!-- Features & Amenities -->
                     ${features.length > 0 ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Features & Amenities</h3>
@@ -832,15 +805,12 @@ function renderListingDetail(listing) {
                         </div>
                     ` : ''}
 
-                    <!-- ====== MOBILE SPECS (MOVED HERE FOR MOBILE) ====== -->
                     <div class="mobile-specs">${propertyDetailsHtml}</div>
 
-                    <!-- CTA Buttons -->
                     ${ctaHtml}
                 </div>
             </div>
 
-            <!-- FULL-WIDTH TRUST BADGES -->
             <div class="trust-badges-full">
                 <div class="trust-badges-inner">
                     <div class="trust-item">
@@ -971,13 +941,11 @@ function initGallery() {
     });
 }
 
-// ============= OPEN GALLERY (placeholder for "more photos") =============
-
 window.openGallery = function() {
     showToast('Gallery view coming soon!', 'info');
 };
 
-// ============= OFF-PLAN FUNCTIONS =============
+// ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
 function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
@@ -1000,7 +968,6 @@ function renderOffplanPage() {
     const container = document.getElementById('offplan-grid');
     if (!container) return;
     
-    // Hide detail, show grid
     document.getElementById('offplan-detail').style.display = 'none';
     container.style.display = 'grid';
     
@@ -1018,13 +985,21 @@ function createOffplanCard(project) {
     const card = document.createElement('div');
     card.className = 'offplan-card';
     
+    // Get first image from images array, fallback to image property
+    let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
+    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+        imageUrl = project.images[0];
+    } else if (project.image) {
+        imageUrl = project.image;
+    }
+    
     const types = project.types && typeof project.types === 'string' 
         ? project.types.split(',') 
         : (Array.isArray(project.types) ? project.types : []);
     
     card.innerHTML = `
         <div class="offplan-card-image">
-            <img src="${project.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan'}" alt="${project.projectName}" loading="lazy">
+            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
         </div>
         <div class="offplan-card-body">
             <h3>${project.projectName}</h3>
@@ -1079,6 +1054,7 @@ window.viewOffplanPage = function(id, opts = {}) {
         detailContainer.style.display = 'block';
         if (content) {
             content.innerHTML = renderOffplanDetail(project);
+            setTimeout(initOffplanGallery, 100);
         }
     }
 
@@ -1105,14 +1081,55 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 function renderOffplanDetail(project) {
-    const imageUrl = project.image || 'https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan';
+    // Get images array
+    let images = [];
+    if (project.images && Array.isArray(project.images)) {
+        images = project.images;
+    } else if (project.image) {
+        images = [project.image];
+    }
+    if (images.length === 0) {
+        images = ['https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan'];
+    }
+
+    // Build gallery HTML (same as listing detail)
+    const gallery = `
+        <div class="listing-detail-gallery" id="offplan-gallery">
+            <div class="gallery-main" id="offplan-gallery-main">
+                <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
+                <div class="gallery-controls">
+                    <button class="prev-btn" id="offplan-gallery-prev" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="next-btn" id="offplan-gallery-next" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="gallery-counter" id="offplan-gallery-counter">1 / ${images.length}</div>
+            </div>
+            <div class="gallery-thumbs" id="offplan-gallery-thumbs">
+                ${images.slice(0, 4).map((img, index) => `
+                    <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
+                         class="thumb ${index === 0 ? 'active' : ''}"
+                         data-index="${index}"
+                         onclick="window.setOffplanGalleryImage(${index})"
+                         onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+                `).join('')}
+                ${images.length > 4 ? `
+                    <div class="thumb more-photos" onclick="window.openOffplanGallery()">
+                        <span>+${images.length - 4} Photos</span>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+
     const hasHighlights = project.highlights && project.highlights.length > 0;
     const hasTypes = project.types && project.types.length > 0;
     const paymentPlan = project.paymentPlan || {};
 
     return `
         <div class="listing-detail-page">
-            <!-- Top Bar -->
             <div class="listing-detail-top-bar">
                 <button class="btn btn-secondary" onclick="window.showOffplanList()">
                     <i class="fas fa-arrow-left"></i> BACK TO OFF-PLAN
@@ -1126,18 +1143,11 @@ function renderOffplanDetail(project) {
                 </div>
             </div>
 
-            <!-- Main two-column layout -->
             <div class="listing-detail-container">
-                <!-- Left column: Gallery -->
                 <div class="listing-detail-left-col">
-                    <div class="listing-detail-gallery">
-                        <div class="gallery-main" style="aspect-ratio:16/9; background:#F0EDE8;">
-                            <img src="${imageUrl}" alt="${project.projectName}" style="width:100%; height:100%; object-fit:cover;">
-                        </div>
-                    </div>
+                    ${gallery}
                 </div>
 
-                <!-- Right column: Info -->
                 <div class="listing-detail-right-col">
                     <h1 class="listing-detail-title">${project.projectName}</h1>
 
@@ -1150,7 +1160,6 @@ function renderOffplanDetail(project) {
                         <i class="fas fa-building"></i> ${project.developer} | ${project.community}
                     </div>
 
-                    <!-- Description -->
                     ${project.description ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Description</h3>
@@ -1158,7 +1167,6 @@ function renderOffplanDetail(project) {
                         </div>
                     ` : ''}
 
-                    <!-- Highlights -->
                     ${hasHighlights ? `
                         <div class="listing-detail-card">
                             <h3 class="listing-detail-card-title">Key Highlights</h3>
@@ -1168,7 +1176,6 @@ function renderOffplanDetail(project) {
                         </div>
                     ` : ''}
 
-                    <!-- Project Details (Handover, Unit Types, Payment Plan) -->
                     <div class="listing-detail-card">
                         <h3 class="listing-detail-card-title">Project Details</h3>
                         <div class="listing-detail-details-grid">
@@ -1203,7 +1210,6 @@ function renderOffplanDetail(project) {
                         </div>
                     </div>
 
-                    <!-- CTA Buttons -->
                     <div class="listing-detail-actions-card">
                         <h4 class="action-title">Interested in this project?</h4>
                         <p class="action-subtitle">Get the brochure or schedule a consultation</p>
@@ -1219,7 +1225,6 @@ function renderOffplanDetail(project) {
                 </div>
             </div>
 
-            <!-- Trust Badges (reuse from listing) -->
             <div class="trust-badges-full">
                 <div class="trust-badges-inner">
                     <div class="trust-item">
@@ -1247,6 +1252,84 @@ function renderOffplanDetail(project) {
         </div>
     `;
 }
+
+// ============= OFF-PLAN GALLERY FUNCTIONS =============
+
+let offplanGalleryImages = [];
+let offplanCurrentImageIndex = 0;
+
+window.setOffplanGalleryImage = function(index) {
+    const images = offplanGalleryImages;
+    if (!images || images.length === 0) return;
+    
+    if (index < 0) index = images.length - 1;
+    if (index >= images.length) index = 0;
+    
+    offplanCurrentImageIndex = index;
+    
+    const mainImg = document.getElementById('offplan-gallery-main-image');
+    if (mainImg) {
+        mainImg.src = images[index];
+        mainImg.alt = `Image ${index + 1}`;
+    }
+    
+    const counter = document.getElementById('offplan-gallery-counter');
+    if (counter) {
+        counter.textContent = `${index + 1} / ${images.length}`;
+    }
+    
+    document.querySelectorAll('#offplan-gallery-thumbs .thumb').forEach((thumb, i) => {
+        thumb.classList.toggle('active', i === index);
+    });
+};
+
+window.prevOffplanImage = function() {
+    window.setOffplanGalleryImage(offplanCurrentImageIndex - 1);
+};
+
+window.nextOffplanImage = function() {
+    window.setOffplanGalleryImage(offplanCurrentImageIndex + 1);
+};
+
+function initOffplanGallery() {
+    const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb');
+    if (thumbs.length > 0) {
+        offplanGalleryImages = Array.from(thumbs).map(thumb => thumb.src);
+    } else {
+        const mainImg = document.getElementById('offplan-gallery-main-image');
+        if (mainImg) {
+            offplanGalleryImages = [mainImg.src];
+        }
+    }
+    
+    offplanCurrentImageIndex = 0;
+    
+    const counter = document.getElementById('offplan-gallery-counter');
+    if (counter && offplanGalleryImages.length > 0) {
+        counter.textContent = `1 / ${offplanGalleryImages.length}`;
+    }
+    
+    const prevBtn = document.getElementById('offplan-gallery-prev');
+    const nextBtn = document.getElementById('offplan-gallery-next');
+    
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.prevOffplanImage();
+        });
+    }
+    
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.nextOffplanImage();
+        });
+    }
+}
+
+window.openOffplanGallery = function() {
+    showToast('Full gallery view coming soon!', 'info');
+};
 
 window.scheduleConsultation = function(projectName) {
     navigateTo('contact');
@@ -1673,7 +1756,6 @@ function submitForm(formId, endpoint, successMessage) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
         data.site_id = 'agentwebstudio';
-        // Add agentSlug from hidden input or global
         if (currentAgentSlug) {
             data.agentSlug = currentAgentSlug;
         }
@@ -1818,12 +1900,12 @@ function navigateTo(sectionId, opts = {}) {
                 if (detail) {
                     detail.style.display = 'block';
                     document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+                    setTimeout(initOffplanGallery, 100);
                 }
                 document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
                 return;
             }
         }
-        // No slug or project not found → show list
         const grid = document.getElementById('offplan-grid');
         const detail = document.getElementById('offplan-detail');
         if (grid) grid.style.display = 'grid';
@@ -2032,3 +2114,8 @@ window.viewOffplanPage = viewOffplanPage;
 window.showOffplanList = showOffplanList;
 window.renderOffplanDetail = renderOffplanDetail;
 window.scheduleConsultation = scheduleConsultation;
+window.setOffplanGalleryImage = setOffplanGalleryImage;
+window.prevOffplanImage = prevOffplanImage;
+window.nextOffplanImage = nextOffplanImage;
+window.initOffplanGallery = initOffplanGallery;
+window.openOffplanGallery = openOffplanGallery;
