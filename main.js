@@ -81,9 +81,14 @@ function parseCurrentRoute() {
     const knownSections = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
     if (segments.length === 0) return { section: 'home', slug: null };
     const first = segments[0];
+    // Check for /agent/ prefix
+    if (first === 'agent' && segments.length > 1) {
+        return { section: 'agent', slug: segments[1] };
+    }
     if (knownSections.includes(first)) {
         return { section: first, slug: segments[1] || null };
     } else {
+        // Root‑level slug
         return { section: 'agent', slug: first };
     }
 }
@@ -456,20 +461,31 @@ async function loadAgentPage(slug) {
             currentAgent = defaultAgent;
             localStorage.setItem('preferred_agent', defaultAgent.slug);
             updateUIWithAgent(defaultAgent);
+            // Redirect to the default agent's root‑level URL
             history.replaceState(null, '', `/${defaultAgent.slug}`);
+            // Ensure home section is active
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('home')?.classList.add('active');
+            document.title = defaultAgent.name + ' | ' + (defaultAgent.site_name || 'Agent Web Studio');
         }
         return;
     }
     currentAgent = agent;
     localStorage.setItem('preferred_agent', agent.slug);
     updateUIWithAgent(agent);
-    // Ensure home section is active
+    // Ensure the home section is active
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     document.getElementById('home')?.classList.add('active');
     document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
         el.classList.remove('active');
         if (el.dataset && el.dataset.section === 'home') el.classList.add('active');
     });
+    // If the current URL is /agent/... redirect to root‑level slug
+    const currentPath = location.pathname;
+    const canonicalPath = `/${agent.slug}`;
+    if (currentPath !== canonicalPath && !currentPath.startsWith(canonicalPath + '/')) {
+        history.replaceState(null, '', canonicalPath);
+    }
     document.title = agent.name + ' | ' + (agent.site_name || 'Agent Web Studio');
 }
 
@@ -493,7 +509,7 @@ function navigateTo(sectionId, opts = {}) {
         if (slug) {
             loadAgentPage(slug);
             if (push) {
-                const path = `/${slug}`;
+                const path = `/${slug}`;   // root‑level, not /agent/
                 history.pushState({ section: 'agent', slug: slug }, '', path);
             }
         }
