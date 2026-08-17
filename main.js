@@ -1,6 +1,7 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY)
+// FIX: Refresh on detail pages - await loadAllData, 404 fallback
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -130,13 +131,24 @@ function handleRoute() {
             if (filterBar) filterBar.style.display = 'none';
             setTimeout(initGallery, 100);
         } else {
-            window.showListingList({ push: false });
+            showNotFound('Listing');
+            return;
         }
     } else if (section === 'listings') {
         window.showListingList({ push: false });
     } else if (section === 'offplan' && slug) {
         navigateTo('offplan', { push: false });
-        window.viewOffplanPage(slug, { push: false });
+        const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
+        if (project) {
+            document.getElementById('offplan-grid').style.display = 'none';
+            document.getElementById('offplan-detail').style.display = 'block';
+            document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+            document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            setTimeout(initOffplanGallery, 100);
+        } else {
+            showNotFound('Off-Plan Project');
+            return;
+        }
     } else if (section === 'offplan') {
         window.showOffplanList({ push: false });
     } else {
@@ -152,6 +164,20 @@ function updateCanonical(path) {
         document.head.appendChild(link);
     }
     link.setAttribute('href', location.origin + path);
+}
+
+// ============= 404 HELPERS =============
+function showNotFound(type) {
+    const main = document.getElementById('main-content');
+    if (main) {
+        main.innerHTML = `
+            <div style="text-align:center;padding:80px 20px;font-family:Inter, sans-serif;">
+                <h1 style="font-family:Plus Jakarta Sans, sans-serif;font-size:3rem;color:#0B3B2E;">404 - ${type} Not Found</h1>
+                <p style="font-size:1.2rem;color:#4A544F;">The ${type.toLowerCase()} you are looking for does not exist.</p>
+                <a href="/${currentAgentSlug || ''}" style="display:inline-block;margin-top:20px;padding:14px 34px;background:#0B3B2E;color:#F7F3EA;border-radius:100px;text-decoration:none;font-weight:600;">Go Home</a>
+            </div>
+        `;
+    }
 }
 
 // ============= TOAST NOTIFICATION =============
@@ -1081,11 +1107,16 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 function renderOffplanDetail(project) {
-    // Get images array
+    // Get images array - handle both array and string formats
     let images = [];
-    if (project.images && Array.isArray(project.images)) {
-        images = project.images;
-    } else if (project.image) {
+    if (project.images) {
+        if (Array.isArray(project.images)) {
+            images = project.images;
+        } else if (typeof project.images === 'string') {
+            images = project.images.split(',').map(s => s.trim()).filter(s => s);
+        }
+    }
+    if (images.length === 0 && project.image) {
         images = [project.image];
     }
     if (images.length === 0) {
@@ -1998,7 +2029,8 @@ function initFAQ() {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
-    await loadAllData();
+    await loadAllData();  // Ensure data is loaded before routing
+    handleRoute();
     
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
@@ -2059,8 +2091,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         handleRoute();
     });
 
-    handleRoute();
-
+    // handleRoute is already called above, but we also need to set initial state for the filter bar, etc.
     const filterBar = document.getElementById('filter-bar');
     const listingDetail = document.getElementById('listing-detail');
     if (listingDetail && listingDetail.style.display === 'block') {
