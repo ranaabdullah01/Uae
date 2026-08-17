@@ -60,7 +60,6 @@
                     <span class="nav-label">Manage</span>
                     <a class="nav-link" data-tab="leads"><i class="fas fa-address-book"></i><span>Leads</span><span id="sidebar-leads-count" class="nav-badge">0</span></a>
                     <a class="nav-link" data-tab="agents"><i class="fas fa-users"></i><span>Agents</span><span id="sidebar-agents-count" class="nav-badge">0</span></a>
-                    <a class="nav-link" data-tab="profile"><i class="fas fa-user-gear"></i><span>Agent Profile</span></a>
                 </div>
             </nav>
 
@@ -131,6 +130,13 @@
                             <span class="stat-value" id="blog-count">0</span>
                         </div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <span class="stat-label">Agents</span>
+                            <span class="stat-value" id="agents-count">0</span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="dashboard-quick-actions">
@@ -154,10 +160,10 @@
                         <h4>Manage Blog</h4>
                         <p>Write and publish blog posts</p>
                     </div>
-                    <div class="quick-action-card" onclick="window.navigateTab('profile')">
-                        <div class="quick-action-icon"><i class="fas fa-user-gear"></i></div>
-                        <h4>Edit Profile</h4>
-                        <p>Update agent & agency info</p>
+                    <div class="quick-action-card" onclick="window.navigateTab('agents')">
+                        <div class="quick-action-icon"><i class="fas fa-users"></i></div>
+                        <h4>Manage Agents</h4>
+                        <p>Add or edit agent profiles</p>
                     </div>
                     <div class="quick-action-card" onclick="window.navigateTab('leads')">
                         <div class="quick-action-icon"><i class="fas fa-address-book"></i></div>
@@ -310,7 +316,7 @@
                 <div id="tab-agents" class="tab-content">
                     <div class="tab-header">
                         <h2>Manage Agents</h2>
-                        <button id="add-agent-btn" class="btn btn-primary">Add New Agent</button>
+                        <button id="add-agent-btn" class="btn btn-primary">+ Add Agent</button>
                     </div>
                     <div class="table-container">
                         <table class="admin-table">
@@ -319,159 +325,13 @@
                                     <th>Photo</th>
                                     <th>Name</th>
                                     <th>Slug</th>
-                                    <th>Default</th>
+                                    <th>Title</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="agents-table-body"></tbody>
                         </table>
                     </div>
-                </div>
-
-                <!-- Tab: Agent Profile -->
-                <div id="tab-profile" class="tab-content">
-                    <div class="tab-header"><h2>Agent Profile & Settings</h2></div>
-                    <form id="profile-form" class="profile-form">
-                        <div class="form-section">
-                            <h3>Agent Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-agent-name">Agent Name</label>
-                                    <input type="text" id="prof-agent-name" name="agentName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-agent-title">Agent Title</label>
-                                    <input type="text" id="prof-agent-title" name="agentTitle">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-rerna">RERA BRN</label>
-                                    <input type="text" id="prof-rerna" name="rerna">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-experience">Years Experience</label>
-                                    <input type="number" id="prof-experience" name="experience">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="prof-bio">Bio</label>
-                                <textarea id="prof-bio" name="bio" rows="4"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="prof-languages">Languages (comma separated)</label>
-                                <input type="text" id="prof-languages" name="languages">
-                            </div>
-                            <div class="form-group">
-                                <label for="prof-specialties">Specialties (comma separated)</label>
-                                <input type="text" id="prof-specialties" name="specialties">
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h3>Agency Information</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-agency-name">Agency Name</label>
-                                    <input type="text" id="prof-agency-name" name="agencyName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-agency-logo">Agency Logo URL</label>
-                                    <input type="text" id="prof-agency-logo" name="agencyLogo">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-address">Office Address</label>
-                                    <input type="text" id="prof-address" name="address">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-rerna-number">RERA Number</label>
-                                    <input type="text" id="prof-rerna-number" name="rernaNumber">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-phone">Phone</label>
-                                    <input type="text" id="prof-phone" name="phone">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-whatsapp">WhatsApp</label>
-                                    <input type="text" id="prof-whatsapp" name="whatsapp">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-email">Email</label>
-                                    <input type="email" id="prof-email" name="email">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-whatsapp-greeting">WhatsApp Greeting</label>
-                                    <input type="text" id="prof-whatsapp-greeting" name="whatsappGreeting">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-propertyfinder">Property Finder URL</label>
-                                    <input type="text" id="prof-propertyfinder" name="propertyfinder">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-bayut">Bayut URL</label>
-                                    <input type="text" id="prof-bayut" name="bayut">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-worker-url">Worker URL</label>
-                                    <input type="text" id="prof-worker-url" name="workerUrl">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-ga-id">GA Tracking ID</label>
-                                    <input type="text" id="prof-ga-id" name="gaId">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h3>Social Links</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-facebook">Facebook</label>
-                                    <input type="text" id="prof-facebook" name="facebook">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-instagram">Instagram</label>
-                                    <input type="text" id="prof-instagram" name="instagram">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-linkedin">LinkedIn</label>
-                                    <input type="text" id="prof-linkedin" name="linkedin">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-youtube">YouTube</label>
-                                    <input type="text" id="prof-youtube" name="youtube">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h3>Site Settings</h3>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="prof-site-name">Site Name</label>
-                                    <input type="text" id="prof-site-name" name="siteName">
-                                </div>
-                                <div class="form-group">
-                                    <label for="prof-site-description">Site Description</label>
-                                    <input type="text" id="prof-site-description" name="siteDescription">
-                                </div>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="btn btn-primary">Save Profile Changes</button>
-                    </form>
                 </div>
 
             </section>
