@@ -1,5 +1,5 @@
 // ================================================
-// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG & LISTING PAGES)
+// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG & LISTING PAGES & MULTI-AGENT)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -47,6 +47,10 @@ let currentOffplanId = null;
 let isRTL = false;
 let currentBlogPost = null;
 
+// ============= AGENT STATE =============
+let currentAgent = null;
+let allAgents = [];
+
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
 
@@ -62,7 +66,7 @@ const BASE_PATH = (() => {
 function buildPath(sectionId, slug) {
     const parts = [];
     if (BASE_PATH) parts.push(BASE_PATH.replace(/^\//, ''));
-    if (sectionId && sectionId !== 'home') parts.push(sectionId);
+    if (sectionId && sectionId !== 'home' && sectionId !== 'agent') parts.push(sectionId);
     if (slug) parts.push(String(slug));
     const path = '/' + parts.join('/');
     return path.length > 1 ? path : '/';
@@ -76,39 +80,11 @@ function parseCurrentRoute() {
     const segments = path.split('/').filter(Boolean);
     const knownSections = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
     if (segments.length === 0) return { section: 'home', slug: null };
-    const section = knownSections.includes(segments[0]) ? segments[0] : 'home';
-    const slug = segments[1] || null;
-    return { section, slug };
-}
-
-function handleRoute() {
-    const { section, slug } = parseCurrentRoute();
-    if (section === 'blog' && slug) {
-        navigateTo('blog', { push: false });
-        window.viewBlogPost(slug, { push: false });
-    } else if (section === 'listings' && slug) {
-        navigateTo('listings', { push: false });
-        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-        const filterBar = document.getElementById('filter-bar');
-        if (listing) {
-            document.getElementById('listings-grid').style.display = 'none';
-            document.getElementById('listing-detail').style.display = 'block';
-            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-            document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-            if (filterBar) filterBar.style.display = 'none';
-            setTimeout(initGallery, 100);
-        } else {
-            window.showListingList({ push: false });
-        }
-    } else if (section === 'listings') {
-        window.showListingList({ push: false });
-    } else if (section === 'offplan' && slug) {
-        navigateTo('offplan', { push: false });
-        window.viewOffplanPage(slug, { push: false });
-    } else if (section === 'offplan') {
-        window.showOffplanList({ push: false });
+    const first = segments[0];
+    if (knownSections.includes(first)) {
+        return { section: first, slug: segments[1] || null };
     } else {
-        navigateTo(section, { push: false });
+        return { section: 'agent', slug: first };
     }
 }
 
@@ -357,6 +333,305 @@ function updateConfigInDOM() {
     }
     
     document.title = profile.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
+}
+
+// ============= AGENT API =============
+async function fetchAgentBySlug(slug) {
+    try {
+        const response = await fetch(`${API_BASE}/api/agent/${slug}`);
+        const data = await response.json();
+        if (data.success) return data.agent;
+        return null;
+    } catch (e) { return null; }
+}
+
+async function fetchDefaultAgent() {
+    try {
+        const response = await fetch(`${API_BASE}/api/agent/default`);
+        const data = await response.json();
+        if (data.success) return data.agent;
+        return null;
+    } catch (e) { return null; }
+}
+
+// ============= UPDATE UI WITH AGENT =============
+function updateUIWithAgent(agent) {
+    if (!agent) return;
+    // Agent name
+    document.querySelectorAll('#agent-name-home, #agent-name-about').forEach(el => {
+        if (el) el.textContent = agent.name || 'Agent';
+    });
+    // Tagline
+    const tagline = document.getElementById('agent-tagline');
+    if (tagline) tagline.textContent = agent.title || '';
+    // RERA numbers
+    document.querySelectorAll('#rerna-number, #rerna-number-about, #footer-rerna').forEach(el => {
+        if (el) el.textContent = agent.rerna_number || '';
+    });
+    // Bio
+    document.querySelectorAll('#agent-bio-home, #agent-full-bio').forEach(el => {
+        if (el) el.textContent = agent.bio || '';
+    });
+    // Experience
+    document.getElementById('years-exp')?.textContent = agent.experience || '0';
+    document.getElementById('years-exp-about')?.textContent = agent.experience || '0';
+    // Photo
+    const photo = agent.photo || 'https://placehold.co/400x400/0A1628/C9A84C?text=Agent';
+    document.querySelectorAll('#agent-photo-home, #agent-photo-about').forEach(el => {
+        if (el) el.src = photo;
+    });
+    // Specialties
+    const specialtiesList = document.getElementById('specialties-list');
+    if (specialtiesList) {
+        specialtiesList.innerHTML = '';
+        (agent.specialties || '').split(',').forEach(s => {
+            if (s.trim()) {
+                const tag = document.createElement('span');
+                tag.className = 'specialty-tag';
+                tag.textContent = s.trim();
+                specialtiesList.appendChild(tag);
+            }
+        });
+    }
+    // Languages
+    const languagesList = document.getElementById('languages-list');
+    if (languagesList) {
+        languagesList.innerHTML = '';
+        (agent.languages || '').split(',').forEach(l => {
+            if (l.trim()) {
+                const tag = document.createElement('span');
+                tag.className = 'language-tag';
+                tag.textContent = l.trim();
+                languagesList.appendChild(tag);
+            }
+        });
+    }
+    // Contact info
+    document.getElementById('office-address').textContent = agent.address || '';
+    document.getElementById('office-phone').textContent = agent.phone || '';
+    document.getElementById('office-email').textContent = agent.email || '';
+    document.getElementById('office-whatsapp').textContent = agent.whatsapp || '';
+    document.getElementById('footer-address').textContent = agent.address || '';
+    document.getElementById('footer-phone').textContent = agent.phone || '';
+    document.getElementById('footer-email').textContent = agent.email || '';
+    if (agent.whatsapp) {
+        document.getElementById('footer-whatsapp')?.setAttribute('href', `https://wa.me/${agent.whatsapp.replace(/[^0-9]/g, '')}`);
+    }
+    // Social links
+    const socialKeys = ['facebook', 'instagram', 'linkedin', 'youtube'];
+    document.querySelectorAll('.social-links a').forEach((link, index) => {
+        if (index < socialKeys.length) {
+            const key = socialKeys[index];
+            link.href = agent[key] || '#';
+        }
+    });
+    // Portal URLs
+    document.querySelectorAll('.portal-btn.propertyfinder').forEach(el => el.href = agent.property_finder_url || '#');
+    document.querySelectorAll('.portal-btn.bayut').forEach(el => el.href = agent.bayut_url || '#');
+    // WhatsApp greeting and number
+    const greeting = agent.whatsapp_greeting || 'Hello!';
+    const cleanNumber = agent.whatsapp?.replace(/[^0-9]/g, '') || '';
+    document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
+        if (link.href) {
+            link.href = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`;
+        }
+    });
+    document.querySelector('.float-whatsapp')?.setAttribute('href', `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`);
+    // Site title
+    document.title = agent.site_name || 'Agent Web Studio - Luxury Real Estate Dubai';
+    // Meta description (optional)
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && agent.site_description) {
+        metaDesc.setAttribute('content', agent.site_description);
+    }
+}
+
+// ============= AGENT PAGE LOADING =============
+async function loadAgentPage(slug) {
+    const agent = await fetchAgentBySlug(slug);
+    if (!agent) {
+        showToast('Agent not found, showing default.', 'warning');
+        const defaultAgent = await fetchDefaultAgent();
+        if (defaultAgent) {
+            currentAgent = defaultAgent;
+            localStorage.setItem('preferred_agent', defaultAgent.slug);
+            updateUIWithAgent(defaultAgent);
+            history.replaceState(null, '', `/${defaultAgent.slug}`);
+        }
+        return;
+    }
+    currentAgent = agent;
+    localStorage.setItem('preferred_agent', agent.slug);
+    updateUIWithAgent(agent);
+    // Ensure home section is active
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    document.getElementById('home')?.classList.add('active');
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === 'home') el.classList.add('active');
+    });
+    document.title = agent.name + ' | ' + (agent.site_name || 'Agent Web Studio');
+}
+
+// ============= NAVIGATION =============
+function navigateToAgentHome() {
+    const slug = currentAgent ? currentAgent.slug : null;
+    if (slug && slug !== 'default') {
+        const path = `/${slug}`;
+        history.pushState({ section: 'agent', slug: slug }, '', path);
+        loadAgentPage(slug);
+    } else {
+        navigateTo('home', { push: true });
+    }
+}
+
+function navigateTo(sectionId, opts = {}) {
+    const { push = true, slug = null } = opts;
+
+    // Handle agent section specially
+    if (sectionId === 'agent') {
+        if (slug) {
+            loadAgentPage(slug);
+            if (push) {
+                const path = `/${slug}`;
+                history.pushState({ section: 'agent', slug: slug }, '', path);
+            }
+        }
+        return;
+    }
+
+    document.querySelectorAll('.section').forEach(el => {
+        el.classList.remove('active');
+    });
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    }
+
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+            el.classList.add('active');
+        }
+    });
+
+    document.querySelectorAll('.floating-nav a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+    });
+
+    currentSection = sectionId;
+
+    if (sectionId === 'blog') {
+        const grid = document.getElementById('blog-grid');
+        const detail = document.getElementById('blog-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        currentBlogPost = null;
+    }
+
+    if (sectionId === 'listings') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        const filterBar = document.getElementById('filter-bar');
+        
+        if (routeSlug && section === 'listings') {
+            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
+            if (listing) {
+                const grid = document.getElementById('listings-grid');
+                const detail = document.getElementById('listing-detail');
+                if (grid) grid.style.display = 'none';
+                if (filterBar) filterBar.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                    setTimeout(initGallery, 100);
+                }
+                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        const grid = document.getElementById('listings-grid');
+        const detail = document.getElementById('listing-detail');
+        if (grid) grid.style.display = 'grid';
+        if (filterBar) filterBar.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+    }
+
+    if (sectionId === 'offplan') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        if (routeSlug && section === 'offplan') {
+            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
+            if (project) {
+                const grid = document.getElementById('offplan-grid');
+                const detail = document.getElementById('offplan-detail');
+                if (grid) grid.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+                }
+                document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        // No slug or project not found → show list
+        const grid = document.getElementById('offplan-grid');
+        const detail = document.getElementById('offplan-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderOffplanPage();
+    }
+
+    const sectionNames = {
+        home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+        listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
+        offplan: 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio'),
+        communities: 'Communities | ' + (config.siteName || 'Agent Web Studio'),
+        about: 'About | ' + (config.siteName || 'Agent Web Studio'),
+        contact: 'Contact | ' + (config.siteName || 'Agent Web Studio'),
+        valuation: 'Valuation | ' + (config.siteName || 'Agent Web Studio'),
+        goldenvisa: 'Golden Visa | ' + (config.siteName || 'Agent Web Studio'),
+        blog: 'Blog | ' + (config.siteName || 'Agent Web Studio')
+    };
+    document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
+
+    if (sectionId === 'listings') {
+        populateCommunityFilter();
+        filterListings();
+    } else if (sectionId === 'valuation') {
+        populateCommunityFilter();
+    } else if (sectionId === 'home') {
+        renderFeaturedListings();
+        renderFeaturedOffplan();
+        renderHomeCommunities();
+    } else if (sectionId === 'offplan') {
+        renderOffplanPage();
+    } else if (sectionId === 'communities') {
+        renderCommunitiesPage();
+    } else if (sectionId === 'about') {
+        renderAboutPage();
+    } else if (sectionId === 'blog') {
+        loadBlog();
+    }
+
+    if (push) {
+        const path = buildPath(sectionId, slug);
+        if (location.pathname + location.search !== path) {
+            history.pushState({ section: sectionId, slug: slug || null }, '', path);
+        }
+        updateCanonical(path);
+    }
+
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.getElementById('hamburger');
+    if (navMenu) navMenu.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ============= RENDER FUNCTIONS =============
@@ -1612,143 +1887,52 @@ function formatDate(date) {
     }
 }
 
-// ============= SPA NAVIGATION =============
-
-function navigateTo(sectionId, opts = {}) {
-    const { push = true, slug = null } = opts;
-
-    document.querySelectorAll('.section').forEach(el => {
-        el.classList.remove('active');
-    });
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-        targetSection.classList.add('active');
+// ============= HANDLE ROUTE =============
+async function handleRoute() {
+    const { section, slug } = parseCurrentRoute();
+    if (section === 'agent') {
+        await loadAgentPage(slug);
+        return;
     }
-
-    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset && el.dataset.section === sectionId) {
-            el.classList.add('active');
-        }
-        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
-            el.classList.add('active');
-        }
-    });
-
-    document.querySelectorAll('.floating-nav a').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset.section === sectionId) {
-            el.classList.add('active');
-        }
-    });
-
-    currentSection = sectionId;
-
-    if (sectionId === 'blog') {
-        const grid = document.getElementById('blog-grid');
-        const detail = document.getElementById('blog-detail');
-        if (grid) grid.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
-        currentBlogPost = null;
+    if (section === 'blog' && slug) {
+        navigateTo('blog', { push: false });
+        window.viewBlogPost(slug, { push: false });
+        return;
     }
-
-    if (sectionId === 'listings') {
-        const { section, slug: routeSlug } = parseCurrentRoute();
-        const filterBar = document.getElementById('filter-bar');
-        
-        if (routeSlug && section === 'listings') {
-            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
-            if (listing) {
-                const grid = document.getElementById('listings-grid');
-                const detail = document.getElementById('listing-detail');
-                if (grid) grid.style.display = 'none';
-                if (filterBar) filterBar.style.display = 'none';
-                if (detail) {
-                    detail.style.display = 'block';
-                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                    setTimeout(initGallery, 100);
-                }
+    if (section === 'listings' && slug) {
+        navigateTo('listings', { push: false });
+        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        if (listing) {
+            const grid = document.getElementById('listings-grid');
+            const detail = document.getElementById('listing-detail');
+            const filterBar = document.getElementById('filter-bar');
+            if (grid) grid.style.display = 'none';
+            if (filterBar) filterBar.style.display = 'none';
+            if (detail) {
+                detail.style.display = 'block';
+                document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
                 document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-                return;
+                setTimeout(initGallery, 100);
             }
+        } else {
+            window.showListingList({ push: false });
         }
-        const grid = document.getElementById('listings-grid');
-        const detail = document.getElementById('listing-detail');
-        if (grid) grid.style.display = 'grid';
-        if (filterBar) filterBar.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
+        return;
     }
-
-    if (sectionId === 'offplan') {
-        const { section, slug: routeSlug } = parseCurrentRoute();
-        if (routeSlug && section === 'offplan') {
-            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
-            if (project) {
-                const grid = document.getElementById('offplan-grid');
-                const detail = document.getElementById('offplan-detail');
-                if (grid) grid.style.display = 'none';
-                if (detail) {
-                    detail.style.display = 'block';
-                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-                }
-                document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
-                return;
-            }
+    if (section === 'offplan' && slug) {
+        navigateTo('offplan', { push: false });
+        window.viewOffplanPage(slug, { push: false });
+        return;
+    }
+    // For other sections, load default agent if not set
+    if (!currentAgent) {
+        const defaultAgent = await fetchDefaultAgent();
+        if (defaultAgent) {
+            currentAgent = defaultAgent;
+            updateUIWithAgent(defaultAgent);
         }
-        // No slug or project not found → show list
-        const grid = document.getElementById('offplan-grid');
-        const detail = document.getElementById('offplan-detail');
-        if (grid) grid.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
-        renderOffplanPage();
     }
-
-    const sectionNames = {
-        home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
-        listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
-        offplan: 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio'),
-        communities: 'Communities | ' + (config.siteName || 'Agent Web Studio'),
-        about: 'About | ' + (config.siteName || 'Agent Web Studio'),
-        contact: 'Contact | ' + (config.siteName || 'Agent Web Studio'),
-        valuation: 'Valuation | ' + (config.siteName || 'Agent Web Studio'),
-        goldenvisa: 'Golden Visa | ' + (config.siteName || 'Agent Web Studio'),
-        blog: 'Blog | ' + (config.siteName || 'Agent Web Studio')
-    };
-    document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
-
-    if (sectionId === 'listings') {
-        populateCommunityFilter();
-        filterListings();
-    } else if (sectionId === 'valuation') {
-        populateCommunityFilter();
-    } else if (sectionId === 'home') {
-        renderFeaturedListings();
-        renderFeaturedOffplan();
-        renderHomeCommunities();
-    } else if (sectionId === 'offplan') {
-        renderOffplanPage();
-    } else if (sectionId === 'communities') {
-        renderCommunitiesPage();
-    } else if (sectionId === 'about') {
-        renderAboutPage();
-    } else if (sectionId === 'blog') {
-        loadBlog();
-    }
-
-    if (push) {
-        const path = buildPath(sectionId, slug);
-        if (location.pathname + location.search !== path) {
-            history.pushState({ section: sectionId, slug: slug || null }, '', path);
-        }
-        updateCanonical(path);
-    }
-
-    const navMenu = document.getElementById('nav-menu');
-    const hamburger = document.getElementById('hamburger');
-    if (navMenu) navMenu.classList.remove('active');
-    if (hamburger) hamburger.classList.remove('active');
-    
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    navigateTo(section, { push: false });
 }
 
 // ============= MOBILE MENU =============
@@ -1839,6 +2023,35 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
+    // ===== HANDLE ROUTE AND AGENT =====
+    const { section, slug } = parseCurrentRoute();
+    if (section === 'agent') {
+        await loadAgentPage(slug);
+    } else {
+        // Check localStorage preference
+        const preferred = localStorage.getItem('preferred_agent');
+        if (preferred && section === 'home') {
+            // Redirect to that agent's page
+            history.replaceState(null, '', `/${preferred}`);
+            await loadAgentPage(preferred);
+            // but we still want to render the home content? Actually loadAgentPage sets home active and updates UI.
+            // But we should not double-render the home section.
+            // After loadAgentPage, the home section is active, so we can return.
+            // However, we may want to show the normal content. loadAgentPage updates the UI but doesn't load listings etc.
+            // The listings are already loaded via loadAllData, so they will show in featured section.
+            // So we can just return.
+            return;
+        }
+        // Otherwise load default
+        const defaultAgent = await fetchDefaultAgent();
+        if (defaultAgent) {
+            currentAgent = defaultAgent;
+            updateUIWithAgent(defaultAgent);
+        }
+        // Continue with normal navigation
+        handleRoute();
+    }
+
     window.addEventListener('popstate', function() {
         document.getElementById('modal').style.display = 'none';
         handleRoute();
@@ -1871,11 +2084,13 @@ window.communities = communities;
 window.blogPosts = blogPosts;
 window.config = config;
 window.agentProfile = agentProfile;
+window.currentAgent = currentAgent;
 window.loadAllData = loadAllData;
 window.formatPrice = formatPrice;
 window.filterListings = filterListings;
 window.filterByCommunity = filterByCommunity;
 window.navigateTo = navigateTo;
+window.navigateToAgentHome = navigateToAgentHome;
 window.viewListing = window.viewListing;
 window.viewListingPage = window.viewListingPage;
 window.showListingList = window.showListingList;
