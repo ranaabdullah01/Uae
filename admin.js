@@ -1,5 +1,5 @@
 // ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL
+// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + AGENTS
 // Typography: Plus Jakarta Sans for headings, Inter for body
 // ================================================
 
@@ -16,6 +16,7 @@ let offplanData = [];
 let communitiesData = [];
 let blogData = [];
 let profileData = {};
+let agentsData = [];
 let sidebarCollapsed = false;
 
 // ============= QUILL EDITOR REFERENCE =============
@@ -321,6 +322,7 @@ function navigateTab(tab) {
         communities: 'Communities',
         blog: 'Blog',
         leads: 'Leads',
+        agents: 'Agents',
         profile: 'Profile'
     };
     document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
@@ -333,6 +335,7 @@ function navigateTab(tab) {
     if (tab === 'communities') loadCommunities();
     if (tab === 'blog') loadBlog();
     if (tab === 'profile') loadProfile();
+    if (tab === 'agents') loadAgents();
     if (tab === 'dashboard') updateStats();
     
     closeSidebar();
@@ -349,7 +352,8 @@ async function loadAllData() {
         loadCommunities(),
         loadProfile(),
         loadLeads(),
-        loadBlog()
+        loadBlog(),
+        loadAgents()
     ]);
     updateStats();
     updateSidebarBadges();
@@ -454,6 +458,25 @@ async function loadLeads() {
     }
 }
 
+async function loadAgents() {
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        if (!token) return;
+        const response = await fetch(`${API_BASE}/api/agents`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            agentsData = data.agents || [];
+            renderAgentsTable();
+            updateSidebarBadges();
+        }
+    } catch (error) {
+        console.error('Error loading agents:', error);
+        showError('agents-table-body', 'Failed to load agents');
+    }
+}
+
 // ============= UPDATE SIDEBAR BADGES =============
 
 function updateSidebarBadges() {
@@ -461,6 +484,7 @@ function updateSidebarBadges() {
     document.getElementById('sidebar-offplan-count').textContent = offplanData.length || 0;
     document.getElementById('sidebar-communities-count').textContent = communitiesData.length || 0;
     document.getElementById('sidebar-leads-count').textContent = leadsData.length || 0;
+    document.getElementById('sidebar-agents-count').textContent = agentsData.length || 0;
     const blogBadge = document.getElementById('sidebar-blog-count');
     if (blogBadge) blogBadge.textContent = blogData.length || 0;
 }
@@ -498,7 +522,6 @@ function renderListingsTable() {
     });
 }
 
-// ============= RENDER OFFPLAN TABLE WITH IMAGE =============
 function renderOffplanTable() {
     const tbody = document.getElementById('offplan-table-body');
     if (!tbody) return;
@@ -659,6 +682,167 @@ function showError(elementId, message) {
     const element = document.getElementById(elementId);
     if (element) {
         element.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#DC3545;font-family:Inter, sans-serif;">${message}</td></tr>`;
+    }
+}
+
+// ============= AGENTS MANAGEMENT =============
+
+function renderAgentsTable() {
+    const tbody = document.getElementById('agents-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (agentsData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No agents added yet. Click "Add New Agent" to create one.</td></tr>';
+        return;
+    }
+    agentsData.forEach(agent => {
+        const tr = document.createElement('tr');
+        const photo = agent.photo || 'https://placehold.co/60x60/0A1628/C9A84C?text=Agent';
+        tr.innerHTML = `
+            <td><img src="${photo}" alt="${agent.name}" style="width:56px;height:56px;object-fit:cover;border-radius:50%;border:2px solid var(--line);"></td>
+            <td><strong>${agent.name}</strong></td>
+            <td><code>/${agent.slug}</code></td>
+            <td>${agent.is_default ? '⭐' : ''}</td>
+            <td class="actions">
+                <button class="btn btn-primary btn-sm" onclick="window.editAgent('${agent.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="window.deleteAgent('${agent.id}')">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function buildAgentForm(agent = null) {
+    const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
+    const fields = [
+        { type: 'text', name: 'slug', label: 'Slug (URL)', value: agent?.slug || '' },
+        { type: 'text', name: 'name', label: 'Full Name', value: agent?.name || '' },
+        { type: 'text', name: 'title', label: 'Title / Tagline', value: agent?.title || '' },
+        { type: 'textarea', name: 'bio', label: 'Bio', value: agent?.bio || '', rows: 4 },
+        { type: 'text', name: 'photo', label: 'Photo URL', value: agent?.photo || '' },
+        { type: 'text', name: 'experience', label: 'Years Experience', value: agent?.experience || '' },
+        { type: 'text', name: 'languages', label: 'Languages (comma separated)', value: agent?.languages || '' },
+        { type: 'text', name: 'specialties', label: 'Specialties (comma separated)', value: agent?.specialties || '' },
+        { type: 'text', name: 'agency_name', label: 'Agency Name', value: agent?.agency_name || '' },
+        { type: 'text', name: 'agency_logo', label: 'Agency Logo URL', value: agent?.agency_logo || '' },
+        { type: 'text', name: 'address', label: 'Office Address', value: agent?.address || '' },
+        { type: 'text', name: 'rerna_number', label: 'RERA Number', value: agent?.rerna_number || '' },
+        { type: 'text', name: 'phone', label: 'Phone', value: agent?.phone || '' },
+        { type: 'text', name: 'whatsapp', label: 'WhatsApp', value: agent?.whatsapp || '' },
+        { type: 'text', name: 'email', label: 'Email', value: agent?.email || '' },
+        { type: 'text', name: 'whatsapp_greeting', label: 'WhatsApp Greeting', value: agent?.whatsapp_greeting || '' },
+        { type: 'text', name: 'property_finder_url', label: 'Property Finder URL', value: agent?.property_finder_url || '' },
+        { type: 'text', name: 'bayut_url', label: 'Bayut URL', value: agent?.bayut_url || '' },
+        { type: 'text', name: 'facebook', label: 'Facebook', value: agent?.facebook || '' },
+        { type: 'text', name: 'instagram', label: 'Instagram', value: agent?.instagram || '' },
+        { type: 'text', name: 'linkedin', label: 'LinkedIn', value: agent?.linkedin || '' },
+        { type: 'text', name: 'youtube', label: 'YouTube', value: agent?.youtube || '' },
+        { type: 'text', name: 'site_name', label: 'Site Name', value: agent?.site_name || '' },
+        { type: 'text', name: 'site_description', label: 'Site Description', value: agent?.site_description || '' },
+        { type: 'checkbox', name: 'is_default', label: 'Set as Default Agent', value: agent?.is_default || false }
+    ];
+    return buildFormHTML('agent-form', fields);
+}
+
+window.editAgent = async function(id) {
+    const token = localStorage.getItem('ak_admin_token');
+    if (!token) return;
+    try {
+        const response = await fetch(`${API_BASE}/api/agents/${id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            const agent = data.agent;
+            editingId = id;
+            editingType = 'agent';
+            openModal('Edit Agent', buildAgentForm(agent));
+        } else {
+            showToast('Failed to load agent', 'error');
+        }
+    } catch (error) {
+        console.error('Error loading agent:', error);
+        showToast('Error loading agent', 'error');
+    }
+};
+
+window.deleteAgent = async function(id) {
+    if (!confirm('Are you sure you want to delete this agent? (Cannot delete default agent)')) return;
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        if (!token) return;
+        const response = await fetch(`${API_BASE}/api/agents/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            showToast('Agent deleted successfully', 'success');
+            await loadAgents();
+        } else {
+            showToast(data.message || 'Failed to delete', 'error');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Error deleting agent', 'error');
+    }
+};
+
+async function saveAgent(formData) {
+    const agent = {
+        id: editingId || null,
+        slug: formData.get('slug') || '',
+        name: formData.get('name') || '',
+        title: formData.get('title') || '',
+        bio: formData.get('bio') || '',
+        photo: formData.get('photo') || '',
+        experience: formData.get('experience') || '',
+        languages: formData.get('languages') || '',
+        specialties: formData.get('specialties') || '',
+        agency_name: formData.get('agency_name') || '',
+        agency_logo: formData.get('agency_logo') || '',
+        address: formData.get('address') || '',
+        rerna_number: formData.get('rerna_number') || '',
+        phone: formData.get('phone') || '',
+        whatsapp: formData.get('whatsapp') || '',
+        email: formData.get('email') || '',
+        whatsapp_greeting: formData.get('whatsapp_greeting') || '',
+        property_finder_url: formData.get('property_finder_url') || '',
+        bayut_url: formData.get('bayut_url') || '',
+        facebook: formData.get('facebook') || '',
+        instagram: formData.get('instagram') || '',
+        linkedin: formData.get('linkedin') || '',
+        youtube: formData.get('youtube') || '',
+        site_name: formData.get('site_name') || '',
+        site_description: formData.get('site_description') || '',
+        is_default: formData.get('is_default') === 'true'
+    };
+    Object.keys(agent).forEach(key => { if (agent[key] === undefined) agent[key] = null; });
+
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        if (!token) { showToast('Please login again', 'error'); return; }
+        const response = await fetch(`${API_BASE}/api/agents`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(agent)
+        });
+        const data = await response.json();
+        if (data.success) {
+            closeModal();
+            editingId = null;
+            editingType = null;
+            await loadAgents();
+            showToast('Agent saved successfully!', 'success');
+        } else {
+            showToast(data.message || 'Failed to save agent', 'error');
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showToast('Error saving agent', 'error');
     }
 }
 
@@ -1570,6 +1754,7 @@ function openModal(title, bodyHTML) {
         else if (editingType === 'offplan') saveOffplan(formData);
         else if (editingType === 'community') saveCommunity(formData);
         else if (editingType === 'blog') saveBlog(formData);
+        else if (editingType === 'agent') saveAgent(formData);
     };
 }
 
@@ -1640,6 +1825,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-offplan-btn')?.addEventListener('click', () => { editingId = null; editingType = 'offplan'; openModal('Add New Off-Plan Project', buildOffplanForm()); });
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     document.getElementById('add-blog-btn')?.addEventListener('click', () => { editingId = null; editingType = 'blog'; openModal('Add New Blog Post', buildBlogForm()); });
+    document.getElementById('add-agent-btn')?.addEventListener('click', () => { editingId = null; editingType = 'agent'; openModal('Add New Agent', buildAgentForm()); });
     
     document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
     
