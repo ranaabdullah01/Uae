@@ -1,6 +1,6 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
-// OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION DURING EDIT
+// OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION + DRAG-AND-DROP REORDERING
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -172,8 +172,9 @@ async function setupImageInput(inputId, isMultiple = false) {
                 hiddenInput.value = uploadedUrls[0];
             }
             showToast('✅ Image(s) uploaded successfully!', 'success');
-            // Refresh the preview
+            // Refresh the preview and reordering
             setupImageRemoval();
+            setupImageReordering();
         }
     });
 }
@@ -207,6 +208,83 @@ function handleRemoveImage(e) {
     if (container && container.children.length === 0) {
         container.innerHTML = `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">No images yet. Upload to add.</small>`;
     }
+}
+
+// ============= DRAG-AND-DROP REORDERING =============
+
+let draggedItem = null;
+
+function setupImageReordering() {
+    const wrappers = document.querySelectorAll('.image-preview-wrapper');
+    wrappers.forEach(wrapper => {
+        wrapper.setAttribute('draggable', 'true');
+        wrapper.removeEventListener('dragstart', handleDragStart);
+        wrapper.removeEventListener('dragend', handleDragEnd);
+        wrapper.removeEventListener('dragover', handleDragOver);
+        wrapper.removeEventListener('dragenter', handleDragEnter);
+        wrapper.removeEventListener('dragleave', handleDragLeave);
+        wrapper.removeEventListener('drop', handleDrop);
+        wrapper.addEventListener('dragstart', handleDragStart);
+        wrapper.addEventListener('dragend', handleDragEnd);
+        wrapper.addEventListener('dragover', handleDragOver);
+        wrapper.addEventListener('dragenter', handleDragEnter);
+        wrapper.addEventListener('dragleave', handleDragLeave);
+        wrapper.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    draggedItem = this;
+    this.style.opacity = '0.4';
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/html', this.outerHTML);
+}
+
+function handleDragEnd(e) {
+    this.style.opacity = '1';
+    document.querySelectorAll('.image-preview-wrapper').forEach(el => {
+        el.classList.remove('drag-over');
+    });
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+}
+
+function handleDragEnter(e) {
+    e.preventDefault();
+    this.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    this.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    if (draggedItem && draggedItem !== this) {
+        const parent = this.parentNode;
+        const children = Array.from(parent.children);
+        const draggedIndex = children.indexOf(draggedItem);
+        const targetIndex = children.indexOf(this);
+        if (draggedIndex < targetIndex) {
+            parent.insertBefore(draggedItem, this.nextSibling);
+        } else {
+            parent.insertBefore(draggedItem, this);
+        }
+        // Update hidden input after reorder
+        updateHiddenOrder(parent);
+    }
+}
+
+function updateHiddenOrder(container) {
+    const hiddenInput = container.closest('.form-group').querySelector('input[type="hidden"]');
+    if (!hiddenInput) return;
+    const wrappers = container.querySelectorAll('.image-preview-wrapper');
+    const urls = Array.from(wrappers).map(w => w.dataset.url);
+    hiddenInput.value = urls.join(',');
 }
 
 // ============= AUTHENTICATION =============
@@ -1330,7 +1408,7 @@ async function saveAgent(formData) {
     }
 }
 
-// ============= HELPER FOR FORM HTML WITH IMAGE DELETION =============
+// ============= HELPER FOR FORM HTML WITH IMAGE DELETION AND REORDERING =============
 
 function buildFormHTML(formId, fields, isBlogForm = false) {
     let html = `<form id="${formId}">`;
@@ -1356,19 +1434,19 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="${hiddenId}" name="${fieldName}_hidden" value="${hiddenValue}">`;
 
-            // Preview existing images with remove buttons
+            // Preview existing images with remove buttons and drag-to-reorder
             if (images.length > 0) {
                 html += `<div class="existing-images-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">`;
                 images.forEach(img => {
                     html += `
-                        <div class="image-preview-wrapper" data-url="${img.trim()}" style="position:relative;width:100px;height:100px;border:1px solid var(--line);border-radius:8px;overflow:hidden;">
+                        <div class="image-preview-wrapper" data-url="${img.trim()}" style="position:relative;width:100px;height:100px;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:grab;">
                             <img src="${img.trim()}" style="width:100%;height:100%;object-fit:cover;">
                             <button type="button" class="remove-image-btn" data-target="${hiddenId}" data-url="${img.trim()}" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(198,57,44,0.9);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
                         </div>
                     `;
                 });
                 html += `</div>`;
-                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Click × to remove an image. Upload new images to add more.</small>`;
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Drag images to reorder. Click × to remove.</small>`;
             } else {
                 html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">No images yet. Upload to add.</small>`;
             }
@@ -1753,8 +1831,9 @@ function openModal(title, bodyHTML) {
         setupImageInput('edit-featured_image', false);
         setupImageInput('edit-images', true); // For offplan multiple images
         setupImageInput('edit-photo', false);
-        // Enable removal buttons
+        // Enable removal and reordering
         setupImageRemoval();
+        setupImageReordering();
     }, 100);
     
     if (editingType === 'blog') {
