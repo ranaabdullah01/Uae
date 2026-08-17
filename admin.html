@@ -59,6 +59,7 @@
                 <div class="nav-section">
                     <span class="nav-label">Manage</span>
                     <a class="nav-link" data-tab="leads"><i class="fas fa-address-book"></i><span>Leads</span><span id="sidebar-leads-count" class="nav-badge">0</span></a>
+                    <a class="nav-link" data-tab="agents"><i class="fas fa-users"></i><span>Agents</span><span id="sidebar-agents-count" class="nav-badge">0</span></a>
                     <a class="nav-link" data-tab="profile"><i class="fas fa-user-gear"></i><span>Agent Profile</span></a>
                 </div>
             </nav>
@@ -270,6 +271,63 @@
                     </div>
                 </div>
 
+                <!-- Tab: Leads Viewer -->
+                <div id="tab-leads" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Lead Management</h2>
+                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                            <select id="lead-type">
+                                <option value="all">All Types</option>
+                                <option value="contact">Contact</option>
+                                <option value="valuation">Valuation</option>
+                                <option value="viewing">Viewing</option>
+                                <option value="goldenvisa">Golden Visa</option>
+                            </select>
+                            <button id="filter-leads-btn" class="btn btn-secondary">Filter</button>
+                            <button id="export-leads-btn" class="btn btn-secondary">Export CSV</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Date/Time</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Email</th>
+                                    <th>Type</th>
+                                    <th>Details</th>
+                                    <th>WhatsApp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="leads-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab: Agents Manager -->
+                <div id="tab-agents" class="tab-content">
+                    <div class="tab-header">
+                        <h2>Manage Agents</h2>
+                        <button id="add-agent-btn" class="btn btn-primary">Add New Agent</button>
+                    </div>
+                    <div class="table-container">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Photo</th>
+                                    <th>Name</th>
+                                    <th>Slug</th>
+                                    <th>Default</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agents-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Tab: Agent Profile -->
                 <div id="tab-profile" class="tab-content">
                     <div class="tab-header"><h2>Agent Profile & Settings</h2></div>
@@ -414,41 +472,6 @@
 
                         <button type="submit" class="btn btn-primary">Save Profile Changes</button>
                     </form>
-                </div>
-
-                <!-- Tab: Leads Viewer -->
-                <div id="tab-leads" class="tab-content">
-                    <div class="tab-header">
-                        <h2>Lead Management</h2>
-                        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                            <select id="lead-type">
-                                <option value="all">All Types</option>
-                                <option value="contact">Contact</option>
-                                <option value="valuation">Valuation</option>
-                                <option value="viewing">Viewing</option>
-                                <option value="goldenvisa">Golden Visa</option>
-                            </select>
-                            <button id="filter-leads-btn" class="btn btn-secondary">Filter</button>
-                            <button id="export-leads-btn" class="btn btn-secondary">Export CSV</button>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>Date/Time</th>
-                                    <th>Name</th>
-                                    <th>Phone</th>
-                                    <th>Email</th>
-                                    <th>Type</th>
-                                    <th>Details</th>
-                                    <th>WhatsApp</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="leads-table-body"></tbody>
-                        </table>
-                    </div>
                 </div>
 
             </section>
