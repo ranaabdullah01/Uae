@@ -1,6 +1,6 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
-// OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION + DRAG-AND-DROP REORDERING
+// OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION + DRAG-AND-DROP REORDERING (FIXED)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -210,7 +210,7 @@ function handleRemoveImage(e) {
     }
 }
 
-// ============= DRAG-AND-DROP REORDERING =============
+// ============= DRAG-AND-DROP REORDERING (FIXED) =============
 
 let draggedItem = null;
 
@@ -237,6 +237,8 @@ function handleDragStart(e) {
     draggedItem = this;
     this.style.opacity = '0.4';
     e.dataTransfer.effectAllowed = 'move';
+    // Store the wrapper's dataset.url or HTML to identify it on drop
+    e.dataTransfer.setData('text/plain', this.dataset.url);
     e.dataTransfer.setData('text/html', this.outerHTML);
 }
 
@@ -263,16 +265,17 @@ function handleDragLeave(e) {
 
 function handleDrop(e) {
     e.preventDefault();
-    this.classList.remove('drag-over');
-    if (draggedItem && draggedItem !== this) {
-        const parent = this.parentNode;
+    const targetWrapper = e.currentTarget; // always the wrapper
+    targetWrapper.classList.remove('drag-over');
+    if (draggedItem && draggedItem !== targetWrapper) {
+        const parent = targetWrapper.parentNode;
         const children = Array.from(parent.children);
         const draggedIndex = children.indexOf(draggedItem);
-        const targetIndex = children.indexOf(this);
+        const targetIndex = children.indexOf(targetWrapper);
         if (draggedIndex < targetIndex) {
-            parent.insertBefore(draggedItem, this.nextSibling);
+            parent.insertBefore(draggedItem, targetWrapper.nextSibling);
         } else {
-            parent.insertBefore(draggedItem, this);
+            parent.insertBefore(draggedItem, targetWrapper);
         }
         // Update hidden input after reorder
         updateHiddenOrder(parent);
@@ -1440,8 +1443,8 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
                 images.forEach(img => {
                     html += `
                         <div class="image-preview-wrapper" data-url="${img.trim()}" style="position:relative;width:100px;height:100px;border:1px solid var(--line);border-radius:8px;overflow:hidden;cursor:grab;">
-                            <img src="${img.trim()}" style="width:100%;height:100%;object-fit:cover;">
-                            <button type="button" class="remove-image-btn" data-target="${hiddenId}" data-url="${img.trim()}" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(198,57,44,0.9);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+                            <img src="${img.trim()}" style="width:100%;height:100%;object-fit:cover;" draggable="false">
+                            <button type="button" class="remove-image-btn" data-target="${hiddenId}" data-url="${img.trim()}" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(198,57,44,0.9);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;" draggable="false">×</button>
                         </div>
                     `;
                 });
