@@ -528,7 +528,7 @@
 
     <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
     <div class="floating-logo" id="floating-logo">
-        <a href="#" onclick="event.preventDefault(); navigateToAgentHome();">
+        <a href="#home" data-section="home">
             <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
             <div class="floating-logo-text">
                 <span class="floating-logo-main">Agent Web Studio</span>
@@ -554,7 +554,7 @@
         <nav>
             <div class="container nav-container">
                 <div class="mobile-logo">
-                    <a href="#" onclick="event.preventDefault(); navigateToAgentHome();">
+                    <a href="#home" data-section="home">
                         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
                         <div class="mobile-logo-text">
                             <span class="mobile-logo-main">Agent Web Studio</span>
@@ -572,7 +572,7 @@
                     </ul>
                     
                     <div class="logo">
-                        <a href="#" onclick="event.preventDefault(); navigateToAgentHome();">
+                        <a href="#home" data-section="home">
                             <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
                             <div class="logo-text">
                                 <span class="logo-main">Agent Web Studio</span>
@@ -1026,6 +1026,7 @@
                     <h3>SEND AN INQUIRY</h3>
                     <form id="inquiry-form" class="contact-form">
                         <input type="hidden" name="site_id" value="agentwebstudio">
+                        <input type="hidden" name="agentSlug" id="agent-slug-input-inquiry" value="">
                         <div class="form-group">
                             <label for="inq-name">FULL NAME *</label>
                             <input type="text" id="inq-name" name="name" required>
@@ -1059,6 +1060,7 @@
                     <h3>SCHEDULE A VIEWING</h3>
                     <form id="viewing-form" class="contact-form">
                         <input type="hidden" name="site_id" value="agentwebstudio">
+                        <input type="hidden" name="agentSlug" id="agent-slug-input-viewing" value="">
                         <div class="form-group">
                             <label for="view-name">FULL NAME *</label>
                             <input type="text" id="view-name" name="name" required>
@@ -1117,6 +1119,7 @@
                     </div>
                     <form id="valuation-form" class="valuation-form">
                         <input type="hidden" name="site_id" value="agentwebstudio">
+                        <input type="hidden" name="agentSlug" id="agent-slug-input-valuation" value="">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="val-name">FULL NAME *</label>
@@ -1295,6 +1298,7 @@
                     <p>Contact us for a free consultation on Golden Visa eligibility</p>
                     <form id="goldenvisa-form" class="gv-form">
                         <input type="hidden" name="site_id" value="agentwebstudio">
+                        <input type="hidden" name="agentSlug" id="agent-slug-input-goldenvisa" value="">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="gv-name">FULL NAME *</label>
@@ -1380,29 +1384,6 @@
 
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
-
-    <!-- ===== FORCED PRELOADER HIDE FALLBACK ===== -->
-    <script>
-        (function() {
-            // Hide preloader after 5 seconds regardless of main.js execution
-            setTimeout(function() {
-                var preloader = document.getElementById('preloader');
-                if (preloader && !preloader.classList.contains('hide')) {
-                    preloader.classList.add('hide');
-                    console.log('Preloader forced hidden by fallback.');
-                }
-            }, 5000);
-
-            // Also hide on window load (if not already hidden)
-            window.addEventListener('load', function() {
-                var preloader = document.getElementById('preloader');
-                if (preloader && !preloader.classList.contains('hide')) {
-                    preloader.classList.add('hide');
-                    console.log('Preloader hidden on window load (fallback).');
-                }
-            });
-        })();
-    </script>
 
     <!-- Inline script to sync hero search with listings -->
     <script>
