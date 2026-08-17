@@ -1381,6 +1381,29 @@
     <script type="module" src="config.js"></script>
     <script type="module" src="main.js"></script>
 
+    <!-- ===== FORCED PRELOADER HIDE FALLBACK ===== -->
+    <script>
+        (function() {
+            // Hide preloader after 5 seconds regardless of main.js execution
+            setTimeout(function() {
+                var preloader = document.getElementById('preloader');
+                if (preloader && !preloader.classList.contains('hide')) {
+                    preloader.classList.add('hide');
+                    console.log('Preloader forced hidden by fallback.');
+                }
+            }, 5000);
+
+            // Also hide on window load (if not already hidden)
+            window.addEventListener('load', function() {
+                var preloader = document.getElementById('preloader');
+                if (preloader && !preloader.classList.contains('hide')) {
+                    preloader.classList.add('hide');
+                    console.log('Preloader hidden on window load (fallback).');
+                }
+            });
+        })();
+    </script>
+
     <!-- Inline script to sync hero search with listings -->
     <script>
         (function() {
