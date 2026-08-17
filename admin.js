@@ -1,6 +1,6 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
-// OFF-PLAN MULTIPLE IMAGES SUPPORT
+// OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION DURING EDIT
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -172,8 +172,41 @@ async function setupImageInput(inputId, isMultiple = false) {
                 hiddenInput.value = uploadedUrls[0];
             }
             showToast('✅ Image(s) uploaded successfully!', 'success');
+            // Refresh the preview
+            setupImageRemoval();
         }
     });
+}
+
+// ============= IMAGE REMOVAL DURING EDIT =============
+
+function setupImageRemoval() {
+    document.querySelectorAll('.remove-image-btn').forEach(btn => {
+        btn.removeEventListener('click', handleRemoveImage);
+        btn.addEventListener('click', handleRemoveImage);
+    });
+}
+
+function handleRemoveImage(e) {
+    const btn = e.currentTarget;
+    const hiddenId = btn.dataset.target;
+    const urlToRemove = btn.dataset.url;
+    const hiddenInput = document.getElementById(hiddenId);
+    if (!hiddenInput) return;
+
+    let current = hiddenInput.value.split(',').map(s => s.trim()).filter(s => s);
+    const newList = current.filter(url => url !== urlToRemove);
+    hiddenInput.value = newList.join(',');
+
+    // Remove the preview wrapper
+    const wrapper = btn.closest('.image-preview-wrapper');
+    if (wrapper) wrapper.remove();
+
+    // If no images left, show a message
+    const container = btn.closest('.existing-images-preview');
+    if (container && container.children.length === 0) {
+        container.innerHTML = `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">No images yet. Upload to add.</small>`;
+    }
 }
 
 // ============= AUTHENTICATION =============
@@ -866,7 +899,7 @@ function buildOffplanForm(project = null) {
         { type: 'textarea', name: 'description', label: 'Description', value: project?.description || '' },
         { type: 'text', name: 'highlights', label: 'Highlights (comma separated)', value: safeJoin(project?.highlights) },
         { type: 'checkbox', name: 'goldenVisaEligible', label: 'Golden Visa Eligible', value: project?.goldenVisaEligible || false },
-        // Multiple images upload
+        // Multiple images upload with preview and deletion
         { type: 'file', name: 'images', label: 'Upload Images (You can select multiple)', value: existingImages, multiple: true },
         { type: 'text', name: 'brochureWhatsApp', label: 'Brochure WhatsApp Text', value: project?.brochureWhatsApp || '' },
         { type: 'checkbox', name: 'featured', label: 'Featured', value: project?.featured || false }
@@ -1297,7 +1330,7 @@ async function saveAgent(formData) {
     }
 }
 
-// ============= HELPER FOR FORM HTML =============
+// ============= HELPER FOR FORM HTML WITH IMAGE DELETION =============
 
 function buildFormHTML(formId, fields, isBlogForm = false) {
     let html = `<form id="${formId}">`;
@@ -1316,16 +1349,28 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
             html += `<input type="checkbox" id="edit-${f.name}" name="${f.name}" value="true" ${f.value ? 'checked' : ''}>`;
         } else if (f.type === 'file') {
             const fieldName = f.name;
+            const hiddenId = `hidden-${fieldName}`;
+            const hiddenValue = f.value || '';
+            const images = hiddenValue.split(',').filter(img => img.trim());
+
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
-            html += `<input type="hidden" id="hidden-${fieldName}" name="${fieldName}_hidden" value="${f.value || ''}">`;
-            if (f.value) {
-                const images = f.value.split(',').filter(img => img.trim());
-                html += `<div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">`;
+            html += `<input type="hidden" id="${hiddenId}" name="${fieldName}_hidden" value="${hiddenValue}">`;
+
+            // Preview existing images with remove buttons
+            if (images.length > 0) {
+                html += `<div class="existing-images-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">`;
                 images.forEach(img => {
-                    html += `<img src="${img.trim()}" alt="Current image" style="max-width:100px;max-height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--line);">`;
+                    html += `
+                        <div class="image-preview-wrapper" data-url="${img.trim()}" style="position:relative;width:100px;height:100px;border:1px solid var(--line);border-radius:8px;overflow:hidden;">
+                            <img src="${img.trim()}" style="width:100%;height:100%;object-fit:cover;">
+                            <button type="button" class="remove-image-btn" data-target="${hiddenId}" data-url="${img.trim()}" style="position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:none;background:rgba(198,57,44,0.9);color:#fff;font-size:16px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">×</button>
+                        </div>
+                    `;
                 });
-                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;width:100%;">Current images will be kept unless you upload new ones.</small>`;
                 html += `</div>`;
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">Click × to remove an image. Upload new images to add more.</small>`;
+            } else {
+                html += `<small style="display:block;margin-top:4px;color:var(--dark-grey);font-family:Inter, sans-serif;">No images yet. Upload to add.</small>`;
             }
         } else if (f.type === 'quill') {
             html += `<div id="quill-editor-container" style="min-height:300px;background:var(--white);border-radius:var(--radius-sm);border:1px solid var(--line);"></div>`;
@@ -1701,12 +1746,15 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
+    // Set up image uploads and removal after the modal is rendered
     setTimeout(() => {
         setupImageInput('edit-images', true);
         setupImageInput('edit-image', false);
         setupImageInput('edit-featured_image', false);
         setupImageInput('edit-images', true); // For offplan multiple images
         setupImageInput('edit-photo', false);
+        // Enable removal buttons
+        setupImageRemoval();
     }, 100);
     
     if (editingType === 'blog') {
