@@ -1,5 +1,5 @@
 // ================================================
-// MAIN.JS - FULL LUXURY UI INTEGRATION (WITH BLOG & LISTING PAGES & MULTI-AGENT)
+// MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -47,9 +47,10 @@ let currentOffplanId = null;
 let isRTL = false;
 let currentBlogPost = null;
 
-// ============= AGENT STATE =============
-let currentAgent = null;
-let allAgents = [];
+// Multi-agent state
+let currentAgentSlug = null;
+let currentAgentData = null;
+const DEFAULT_AGENT_SLUG_KEY = 'ak_current_agent_slug';
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -63,10 +64,12 @@ const BASE_PATH = (() => {
     return '';
 })();
 
+const KNOWN_SECTIONS = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
+
 function buildPath(sectionId, slug) {
     const parts = [];
     if (BASE_PATH) parts.push(BASE_PATH.replace(/^\//, ''));
-    if (sectionId && sectionId !== 'home' && sectionId !== 'agent') parts.push(sectionId);
+    if (sectionId && sectionId !== 'home') parts.push(sectionId);
     if (slug) parts.push(String(slug));
     const path = '/' + parts.join('/');
     return path.length > 1 ? path : '/';
@@ -78,18 +81,71 @@ function parseCurrentRoute() {
         path = path.slice(BASE_PATH.length);
     }
     const segments = path.split('/').filter(Boolean);
-    const knownSections = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
-    if (segments.length === 0) return { section: 'home', slug: null };
+    if (segments.length === 0) return { section: 'home', slug: null, agentSlug: null };
+
     const first = segments[0];
-    // Check for /agent/ prefix
-    if (first === 'agent' && segments.length > 1) {
-        return { section: 'agent', slug: segments[1] };
-    }
-    if (knownSections.includes(first)) {
-        return { section: first, slug: segments[1] || null };
+    if (KNOWN_SECTIONS.includes(first)) {
+        return { section: first, slug: segments[1] || null, agentSlug: null };
     } else {
-        // Root‑level slug
-        return { section: 'agent', slug: first };
+        return { section: 'home', slug: null, agentSlug: first };
+    }
+}
+
+function handleRoute() {
+    const { section, slug, agentSlug } = parseCurrentRoute();
+    if (agentSlug) {
+        // If an agent slug is in the URL, set it as current and load agent
+        currentAgentSlug = agentSlug;
+        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
+        // Then navigate to home with that agent context
+        navigateTo('home', { push: false });
+        // Reload all data with new agent
+        loadAllData();
+        return;
+    }
+    // If no agent slug in URL, but we have one in localStorage, use it
+    if (!currentAgentSlug) {
+        const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
+        if (stored) {
+            currentAgentSlug = stored;
+            // Reload with that agent
+            loadAllData();
+            // Update URL to include agent slug if we're on home
+            if (section === 'home') {
+                const newPath = '/' + currentAgentSlug;
+                if (location.pathname !== newPath) {
+                    history.replaceState({ section: 'home', slug: null, agentSlug: currentAgentSlug }, '', newPath);
+                }
+            }
+        }
+    }
+
+    if (section === 'blog' && slug) {
+        navigateTo('blog', { push: false });
+        window.viewBlogPost(slug, { push: false });
+    } else if (section === 'listings' && slug) {
+        navigateTo('listings', { push: false });
+        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        const filterBar = document.getElementById('filter-bar');
+        if (listing) {
+            document.getElementById('listings-grid').style.display = 'none';
+            document.getElementById('listing-detail').style.display = 'block';
+            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            if (filterBar) filterBar.style.display = 'none';
+            setTimeout(initGallery, 100);
+        } else {
+            window.showListingList({ push: false });
+        }
+    } else if (section === 'listings') {
+        window.showListingList({ push: false });
+    } else if (section === 'offplan' && slug) {
+        navigateTo('offplan', { push: false });
+        window.viewOffplanPage(slug, { push: false });
+    } else if (section === 'offplan') {
+        window.showOffplanList({ push: false });
+    } else {
+        navigateTo(section, { push: false });
     }
 }
 
@@ -126,7 +182,48 @@ async function loadAllData() {
     const featuredContainer = document.getElementById('featured-listings');
     if (listingsContainer) listingsContainer.innerHTML = createSkeletons(3);
     if (featuredContainer) featuredContainer.innerHTML = createSkeletons(3);
-    
+
+    // 1. Resolve agent slug from URL or localStorage or default
+    const route = parseCurrentRoute();
+    let slug = route.agentSlug;
+    if (!slug) {
+        slug = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
+    }
+    if (!slug) {
+        // Fallback: fetch first agent from API
+        try {
+            const resp = await fetch(`${API_BASE}/api/agents`);
+            const data = await resp.json();
+            if (data.success && data.agents && data.agents.length > 0) {
+                slug = data.agents[0].slug;
+            }
+        } catch (e) {
+            console.warn('Could not fetch default agent, using hardcoded');
+            slug = 'ahmed-khan'; // fallback
+        }
+    }
+    currentAgentSlug = slug;
+    localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, slug);
+
+    // 2. Load agent profile
+    try {
+        const agentResp = await fetch(`${API_BASE}/api/agents/${slug}`);
+        const agentData = await agentResp.json();
+        if (agentData.success) {
+            currentAgentData = agentData.agent;
+            Object.assign(config, currentAgentData);
+        } else {
+            // Agent not found -> 404
+            show404();
+            return;
+        }
+    } catch (e) {
+        console.error('Failed to load agent:', e);
+        show404();
+        return;
+    }
+
+    // 3. Load other data (listings, offplan, etc.)
     try {
         const profileResponse = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
         const profileData = await profileResponse.json();
@@ -134,37 +231,41 @@ async function loadAllData() {
             agentProfile = profileData.profile;
             Object.assign(config, agentProfile);
         }
-        
+    } catch (e) { /* ignore, we have agent data */ }
+
+    try {
         const listingsResponse = await fetch(`${API_BASE}/api/listings?t=${Date.now()}`);
         const listingsData = await listingsResponse.json();
         if (listingsData.success) {
             listings = listingsData.listings;
         }
-        
+    } catch (e) { console.error('Error loading listings:', e); }
+
+    try {
         const offplanResponse = await fetch(`${API_BASE}/api/offplan?t=${Date.now()}`);
         const offplanData = await offplanResponse.json();
         if (offplanData.success) {
             offplan = offplanData.projects;
         }
-        
+    } catch (e) { console.error('Error loading offplan:', e); }
+
+    try {
         const communitiesResponse = await fetch(`${API_BASE}/api/communities?t=${Date.now()}`);
         const communitiesData = await communitiesResponse.json();
         if (communitiesData.success) {
             communities = communitiesData.communities;
         }
-        
+    } catch (e) { console.error('Error loading communities:', e); }
+
+    try {
         const blogResponse = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
         const blogData = await blogResponse.json();
         if (blogData.success) {
             blogPosts = blogData.posts;
         }
-        
-        updateAllSections();
-        
-    } catch (error) {
-        console.error('Error loading data from API:', error);
-        loadFromLocalStorage();
-    }
+    } catch (e) { console.error('Error loading blog:', e); }
+
+    updateAllSections();
 }
 
 function loadFromLocalStorage() {
@@ -178,6 +279,16 @@ function loadFromLocalStorage() {
     } catch (e) {
         console.error('Error loading from localStorage:', e);
     }
+}
+
+function show404() {
+    document.body.innerHTML = `
+        <div style="text-align:center;padding:80px 20px;font-family:Inter, sans-serif;">
+            <h1 style="font-family:Plus Jakarta Sans, sans-serif;font-size:3rem;color:#0B3B2E;">404 - Agent Not Found</h1>
+            <p style="font-size:1.2rem;color:#4A544F;">The agent you are looking for does not exist.</p>
+            <a href="/" style="display:inline-block;margin-top:20px;padding:14px 34px;background:#0B3B2E;color:#F7F3EA;border-radius:100px;text-decoration:none;font-weight:600;">Go Home</a>
+        </div>
+    `;
 }
 
 function createSkeletons(count) {
@@ -220,44 +331,47 @@ function updateAllSections() {
             document.getElementById('listings-grid').style.display = 'none';
             document.getElementById('listing-detail').style.display = 'block';
             document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-            document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
             if (filterBar) filterBar.style.display = 'none';
             setTimeout(initGallery, 100);
         }
     } else if (section === 'listings') {
         if (filterBar) filterBar.style.display = 'grid';
     }
-    // Off-plan detail handled separately in viewOffplanPage/showOffplanList
+
+    // Set agent slug hidden input for forms
+    const slugInputs = document.querySelectorAll('input[name="agentSlug"]');
+    slugInputs.forEach(inp => inp.value = currentAgentSlug || '');
 }
 
 // ============= CONFIG FUNCTIONS =============
 
 function updateConfigInDOM() {
-    const profile = agentProfile || config;
+    const agent = currentAgentData || agentProfile || config;
     
     document.querySelectorAll('#agent-name-home, #agent-name-about').forEach(el => {
-        if (el) el.textContent = profile.agentName || config.agentName || 'Ahmed Khan';
+        if (el) el.textContent = agent.agentName || config.agentName || 'Ahmed Khan';
     });
     
     const titleEl = document.getElementById('agent-tagline');
     if (titleEl && !titleEl.dataset.custom) {
-        titleEl.textContent = profile.agentTitle || config.agentTitle || 'Luxury Real Estate Specialist';
+        titleEl.textContent = agent.agentTitle || config.agentTitle || 'Luxury Real Estate Specialist';
     }
     
     document.querySelectorAll('#rerna-number, #rerna-number-about, #footer-rerna').forEach(el => {
-        if (el) el.textContent = profile.rernaBRN || config.rernaBRN || '123456';
+        if (el) el.textContent = agent.reraBRN || config.rernaBRN || '123456';
     });
     
     document.querySelectorAll('#agent-bio-home, #agent-full-bio').forEach(el => {
-        if (el) el.textContent = profile.bio || config.bio || '';
+        if (el) el.textContent = agent.bio || config.bio || '';
     });
     
     const statIds = ['years-exp', 'properties-sold', 'happy-clients', 'years-exp-about', 'properties-sold-about', 'happy-clients-about'];
     statIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            if (id.includes('years')) el.textContent = profile.experience || config.experience || '12';
-            else if (id.includes('properties')) el.textContent = '850';
+            if (id.includes('years')) el.textContent = agent.yearsExperience || agent.experience || config.experience || '12';
+            else if (id.includes('properties')) el.textContent = agent.propertiesSold || '850';
             else if (id.includes('happy')) el.textContent = '1200';
         }
     });
@@ -265,7 +379,7 @@ function updateConfigInDOM() {
     const specialtiesList = document.getElementById('specialties-list');
     if (specialtiesList) {
         specialtiesList.innerHTML = '';
-        (profile.specialties || config.specialties || '').split(',').forEach(s => {
+        (agent.specialties || config.specialties || '').split(',').forEach(s => {
             if (s.trim()) {
                 const tag = document.createElement('span');
                 tag.className = 'specialty-tag';
@@ -278,7 +392,7 @@ function updateConfigInDOM() {
     const languagesList = document.getElementById('languages-list');
     if (languagesList) {
         languagesList.innerHTML = '';
-        (profile.languages || config.languages || '').split(',').forEach(l => {
+        (agent.languages || config.languages || '').split(',').forEach(l => {
             if (l.trim()) {
                 const tag = document.createElement('span');
                 tag.className = 'language-tag';
@@ -288,15 +402,15 @@ function updateConfigInDOM() {
         });
     }
     
-    const photo = profile.photo || config.photo || 'https://placehold.co/400x400/0A1628/C9A84C?text=Agent';
+    const photo = agent.photo || config.photo || 'https://placehold.co/400x400/0A1628/C9A84C?text=Agent';
     document.querySelectorAll('#agent-photo-home, #agent-photo-about').forEach(el => {
         if (el) el.src = photo;
     });
     
-    const address = profile.address || config.address || 'Dubai, UAE';
-    const phone = profile.phone || config.phone || '+971501234567';
-    const email = profile.email || config.email || 'info@agentwebstudio.com';
-    const whatsapp = profile.whatsapp || config.whatsapp || '+971501234567';
+    const address = agent.address || config.address || 'Dubai, UAE';
+    const phone = agent.phone || config.phone || '+971501234567';
+    const email = agent.email || config.email || 'info@agentwebstudio.com';
+    const whatsapp = agent.whatsapp || config.whatsapp || '+971501234567';
     
     document.getElementById('office-address').textContent = address;
     document.getElementById('office-phone').textContent = phone;
@@ -305,13 +419,13 @@ function updateConfigInDOM() {
     document.getElementById('footer-address').textContent = address;
     document.getElementById('footer-phone').textContent = phone;
     document.getElementById('footer-email').textContent = email;
-    document.getElementById('footer-whatsapp').href = `https://wa.me/${whatsapp}`;
+    document.getElementById('footer-whatsapp').href = `https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`;
     document.getElementById('footer-year').textContent = new Date().getFullYear();
     
-    document.querySelectorAll('.portal-btn.propertyfinder').forEach(el => el.href = profile.propertyFinderURL || config.propertyFinderURL || '#');
-    document.querySelectorAll('.portal-btn.bayut').forEach(el => el.href = profile.bayutURL || config.bayutURL || '#');
+    document.querySelectorAll('.portal-btn.propertyfinder').forEach(el => el.href = agent.propertyFinderURL || config.propertyFinderURL || '#');
+    document.querySelectorAll('.portal-btn.bayut').forEach(el => el.href = agent.bayutURL || config.bayutURL || '#');
     
-    const social = profile.social || config.social || {};
+    const social = agent.social || config.social || {};
     const socialKeys = ['facebook', 'instagram', 'linkedin', 'youtube'];
     document.querySelectorAll('.social-links a').forEach((link, index) => {
         if (index < socialKeys.length) {
@@ -320,7 +434,7 @@ function updateConfigInDOM() {
         }
     });
     
-    const greeting = profile.whatsappGreeting || config.whatsappGreeting || 'Hello! I\'m interested in your real estate services.';
+    const greeting = agent.whatsappGreeting || config.whatsappGreeting || 'Hello! I\'m interested in your real estate services.';
     const cleanNumber = whatsapp.replace(/[^0-9]/g, '');
     
     document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
@@ -337,317 +451,37 @@ function updateConfigInDOM() {
         floatBtn.href = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`;
     }
     
-    document.title = profile.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
-}
-
-// ============= AGENT API =============
-async function fetchAgentBySlug(slug) {
-    try {
-        const response = await fetch(`${API_BASE}/api/agent/${slug}`);
-        const data = await response.json();
-        if (data.success) return data.agent;
-        return null;
-    } catch (e) { return null; }
-}
-
-async function fetchDefaultAgent() {
-    try {
-        const response = await fetch(`${API_BASE}/api/agent/default`);
-        const data = await response.json();
-        if (data.success) return data.agent;
-        return null;
-    } catch (e) { return null; }
-}
-
-// ============= UPDATE UI WITH AGENT =============
-function updateUIWithAgent(agent) {
-    if (!agent) return;
-    // Agent name
-    document.querySelectorAll('#agent-name-home, #agent-name-about').forEach(el => {
-        if (el) el.textContent = agent.name || 'Agent';
-    });
-    // Tagline
-    const tagline = document.getElementById('agent-tagline');
-    if (tagline) tagline.textContent = agent.title || '';
-    // RERA numbers
-    document.querySelectorAll('#rerna-number, #rerna-number-about, #footer-rerna').forEach(el => {
-        if (el) el.textContent = agent.rerna_number || '';
-    });
-    // Bio
-    document.querySelectorAll('#agent-bio-home, #agent-full-bio').forEach(el => {
-        if (el) el.textContent = agent.bio || '';
-    });
-    // Experience
-    document.getElementById('years-exp')?.textContent = agent.experience || '0';
-    document.getElementById('years-exp-about')?.textContent = agent.experience || '0';
-    // Photo
-    const photo = agent.photo || 'https://placehold.co/400x400/0A1628/C9A84C?text=Agent';
-    document.querySelectorAll('#agent-photo-home, #agent-photo-about').forEach(el => {
-        if (el) el.src = photo;
-    });
-    // Specialties
-    const specialtiesList = document.getElementById('specialties-list');
-    if (specialtiesList) {
-        specialtiesList.innerHTML = '';
-        (agent.specialties || '').split(',').forEach(s => {
-            if (s.trim()) {
-                const tag = document.createElement('span');
-                tag.className = 'specialty-tag';
-                tag.textContent = s.trim();
-                specialtiesList.appendChild(tag);
-            }
-        });
-    }
-    // Languages
-    const languagesList = document.getElementById('languages-list');
-    if (languagesList) {
-        languagesList.innerHTML = '';
-        (agent.languages || '').split(',').forEach(l => {
-            if (l.trim()) {
-                const tag = document.createElement('span');
-                tag.className = 'language-tag';
-                tag.textContent = l.trim();
-                languagesList.appendChild(tag);
-            }
-        });
-    }
-    // Contact info
-    document.getElementById('office-address').textContent = agent.address || '';
-    document.getElementById('office-phone').textContent = agent.phone || '';
-    document.getElementById('office-email').textContent = agent.email || '';
-    document.getElementById('office-whatsapp').textContent = agent.whatsapp || '';
-    document.getElementById('footer-address').textContent = agent.address || '';
-    document.getElementById('footer-phone').textContent = agent.phone || '';
-    document.getElementById('footer-email').textContent = agent.email || '';
-    if (agent.whatsapp) {
-        document.getElementById('footer-whatsapp')?.setAttribute('href', `https://wa.me/${agent.whatsapp.replace(/[^0-9]/g, '')}`);
-    }
-    // Social links
-    const socialKeys = ['facebook', 'instagram', 'linkedin', 'youtube'];
-    document.querySelectorAll('.social-links a').forEach((link, index) => {
-        if (index < socialKeys.length) {
-            const key = socialKeys[index];
-            link.href = agent[key] || '#';
-        }
-    });
-    // Portal URLs
-    document.querySelectorAll('.portal-btn.propertyfinder').forEach(el => el.href = agent.property_finder_url || '#');
-    document.querySelectorAll('.portal-btn.bayut').forEach(el => el.href = agent.bayut_url || '#');
-    // WhatsApp greeting and number
-    const greeting = agent.whatsapp_greeting || 'Hello!';
-    const cleanNumber = agent.whatsapp?.replace(/[^0-9]/g, '') || '';
-    document.querySelectorAll('a[href*="wa.me"]').forEach(link => {
-        if (link.href) {
-            link.href = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`;
-        }
-    });
-    document.querySelector('.float-whatsapp')?.setAttribute('href', `https://wa.me/${cleanNumber}?text=${encodeURIComponent(greeting)}`);
-    // Site title
-    document.title = agent.site_name || 'Agent Web Studio - Luxury Real Estate Dubai';
-    // Meta description (optional)
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc && agent.site_description) {
-        metaDesc.setAttribute('content', agent.site_description);
-    }
-}
-
-// ============= AGENT PAGE LOADING =============
-async function loadAgentPage(slug) {
-    const agent = await fetchAgentBySlug(slug);
-    if (!agent) {
-        showToast('Agent not found, showing default.', 'warning');
-        const defaultAgent = await fetchDefaultAgent();
-        if (defaultAgent) {
-            currentAgent = defaultAgent;
-            localStorage.setItem('preferred_agent', defaultAgent.slug);
-            updateUIWithAgent(defaultAgent);
-            // Redirect to the default agent's root‑level URL
-            history.replaceState(null, '', `/${defaultAgent.slug}`);
-            // Ensure home section is active
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById('home')?.classList.add('active');
-            document.title = defaultAgent.name + ' | ' + (defaultAgent.site_name || 'Agent Web Studio');
-        }
-        return;
-    }
-    currentAgent = agent;
-    localStorage.setItem('preferred_agent', agent.slug);
-    updateUIWithAgent(agent);
-    // Ensure the home section is active
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-    document.getElementById('home')?.classList.add('active');
-    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset && el.dataset.section === 'home') el.classList.add('active');
-    });
-    // If the current URL is /agent/... redirect to root‑level slug
-    const currentPath = location.pathname;
-    const canonicalPath = `/${agent.slug}`;
-    if (currentPath !== canonicalPath && !currentPath.startsWith(canonicalPath + '/')) {
-        history.replaceState(null, '', canonicalPath);
-    }
-    document.title = agent.name + ' | ' + (agent.site_name || 'Agent Web Studio');
-}
-
-// ============= NAVIGATION =============
-function navigateToAgentHome() {
-    const slug = currentAgent ? currentAgent.slug : null;
-    if (slug && slug !== 'default') {
-        const path = `/${slug}`;
-        history.pushState({ section: 'agent', slug: slug }, '', path);
-        loadAgentPage(slug);
-    } else {
-        navigateTo('home', { push: true });
-    }
-}
-
-function navigateTo(sectionId, opts = {}) {
-    const { push = true, slug = null } = opts;
-
-    // Handle agent section specially
-    if (sectionId === 'agent') {
-        if (slug) {
-            loadAgentPage(slug);
-            if (push) {
-                const path = `/${slug}`;   // root‑level, not /agent/
-                history.pushState({ section: 'agent', slug: slug }, '', path);
-            }
-        }
-        return;
-    }
-
-    document.querySelectorAll('.section').forEach(el => {
-        el.classList.remove('active');
-    });
-    const targetSection = document.getElementById(sectionId);
-    if (targetSection) {
-        targetSection.classList.add('active');
-    }
-
-    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset && el.dataset.section === sectionId) {
-            el.classList.add('active');
-        }
-        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
-            el.classList.add('active');
-        }
-    });
-
-    document.querySelectorAll('.floating-nav a').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset.section === sectionId) {
-            el.classList.add('active');
-        }
-    });
-
-    currentSection = sectionId;
-
-    if (sectionId === 'blog') {
-        const grid = document.getElementById('blog-grid');
-        const detail = document.getElementById('blog-detail');
-        if (grid) grid.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
-        currentBlogPost = null;
-    }
-
-    if (sectionId === 'listings') {
-        const { section, slug: routeSlug } = parseCurrentRoute();
-        const filterBar = document.getElementById('filter-bar');
-        
-        if (routeSlug && section === 'listings') {
-            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
-            if (listing) {
-                const grid = document.getElementById('listings-grid');
-                const detail = document.getElementById('listing-detail');
-                if (grid) grid.style.display = 'none';
-                if (filterBar) filterBar.style.display = 'none';
-                if (detail) {
-                    detail.style.display = 'block';
-                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                    setTimeout(initGallery, 100);
-                }
-                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-                return;
-            }
-        }
-        const grid = document.getElementById('listings-grid');
-        const detail = document.getElementById('listing-detail');
-        if (grid) grid.style.display = 'grid';
-        if (filterBar) filterBar.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
-    }
-
-    if (sectionId === 'offplan') {
-        const { section, slug: routeSlug } = parseCurrentRoute();
-        if (routeSlug && section === 'offplan') {
-            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
-            if (project) {
-                const grid = document.getElementById('offplan-grid');
-                const detail = document.getElementById('offplan-detail');
-                if (grid) grid.style.display = 'none';
-                if (detail) {
-                    detail.style.display = 'block';
-                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-                }
-                document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
-                return;
-            }
-        }
-        // No slug or project not found → show list
-        const grid = document.getElementById('offplan-grid');
-        const detail = document.getElementById('offplan-detail');
-        if (grid) grid.style.display = 'grid';
-        if (detail) detail.style.display = 'none';
-        renderOffplanPage();
-    }
-
-    const sectionNames = {
-        home: config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
-        listings: 'Properties | ' + (config.siteName || 'Agent Web Studio'),
-        offplan: 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio'),
-        communities: 'Communities | ' + (config.siteName || 'Agent Web Studio'),
-        about: 'About | ' + (config.siteName || 'Agent Web Studio'),
-        contact: 'Contact | ' + (config.siteName || 'Agent Web Studio'),
-        valuation: 'Valuation | ' + (config.siteName || 'Agent Web Studio'),
-        goldenvisa: 'Golden Visa | ' + (config.siteName || 'Agent Web Studio'),
-        blog: 'Blog | ' + (config.siteName || 'Agent Web Studio')
-    };
-    document.title = sectionNames[sectionId] || config.siteName || 'Agent Web Studio';
-
-    if (sectionId === 'listings') {
-        populateCommunityFilter();
-        filterListings();
-    } else if (sectionId === 'valuation') {
-        populateCommunityFilter();
-    } else if (sectionId === 'home') {
-        renderFeaturedListings();
-        renderFeaturedOffplan();
-        renderHomeCommunities();
-    } else if (sectionId === 'offplan') {
-        renderOffplanPage();
-    } else if (sectionId === 'communities') {
-        renderCommunitiesPage();
-    } else if (sectionId === 'about') {
-        renderAboutPage();
-    } else if (sectionId === 'blog') {
-        loadBlog();
-    }
-
-    if (push) {
-        const path = buildPath(sectionId, slug);
-        if (location.pathname + location.search !== path) {
-            history.pushState({ section: sectionId, slug: slug || null }, '', path);
-        }
-        updateCanonical(path);
-    }
-
-    const navMenu = document.getElementById('nav-menu');
-    const hamburger = document.getElementById('hamburger');
-    if (navMenu) navMenu.classList.remove('active');
-    if (hamburger) hamburger.classList.remove('active');
+    document.title = agent.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
     
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Update logo link to agent slug
+    const logoLinks = document.querySelectorAll('.logo a, .mobile-logo a, .floating-logo a');
+    logoLinks.forEach(link => {
+        if (currentAgentSlug) {
+            link.href = '/' + currentAgentSlug;
+        } else {
+            link.href = '/';
+        }
+    });
+
+    // Update agent slug in all forms
+    document.querySelectorAll('input[name="agentSlug"]').forEach(inp => {
+        inp.value = currentAgentSlug || '';
+    });
+
+    // SEO meta description
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && agent.siteDescription) {
+        metaDesc.content = agent.siteDescription;
+    }
+    // Open Graph
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle && agent.siteName) {
+        ogTitle.content = agent.siteName;
+    }
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc && agent.siteDescription) {
+        ogDesc.content = agent.siteDescription;
+    }
 }
 
 // ============= RENDER FUNCTIONS =============
@@ -725,7 +559,7 @@ function createListingCard(listing) {
 }
 
 function getWhatsAppNumber() {
-    const number = config.whatsapp || '+971501234567';
+    const number = currentAgentData?.whatsapp || config.whatsapp || '+971501234567';
     return number.replace(/[^0-9]/g, '');
 }
 
@@ -762,7 +596,7 @@ window.viewListingPage = function(id, opts = {}) {
         updateCanonical(path);
     }
     
-    document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
+    document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     const listingsSection = document.getElementById('listings');
@@ -797,14 +631,13 @@ window.showListingList = function(opts = {}) {
         }
         updateCanonical(path);
     }
-    document.title = 'Properties | ' + (config.siteName || 'Agent Web Studio');
+    document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     
     navigateTo('listings', { push: false });
 };
 
 // ============================================================
 // RENDER LISTING DETAIL - REFINED 2-COLUMN LAYOUT
-// (unchanged, full function is below)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -1225,7 +1058,7 @@ window.showOffplanList = function(opts = {}) {
         }
         updateCanonical(path);
     }
-    document.title = 'Off-Plan Projects | ' + (config.siteName || 'Agent Web Studio');
+    document.title = 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     navigateTo('offplan', { push: false });
 };
 
@@ -1257,7 +1090,7 @@ window.viewOffplanPage = function(id, opts = {}) {
         }
         updateCanonical(path);
     }
-    document.title = project.projectName + ' | ' + (config.siteName || 'Agent Web Studio');
+    document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     
     document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
     const offplanSection = document.getElementById('offplan');
@@ -1622,7 +1455,7 @@ window.viewBlogPost = async function(idOrSlug, opts = {}) {
         }
         updateCanonical(path);
     }
-    document.title = post.title + ' | ' + (config.siteName || 'Agent Web Studio');
+    document.title = post.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     
     const content = document.getElementById('blog-detail-content');
     const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -1671,7 +1504,7 @@ window.showBlogList = function(opts = {}) {
     document.getElementById('blog-grid').style.display = 'grid';
     document.getElementById('blog-detail').style.display = 'none';
     currentBlogPost = null;
-    document.title = 'Blog | ' + (config.siteName || 'Agent Web Studio');
+    document.title = 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
 
     if (push) {
         const path = buildPath('blog');
@@ -1840,6 +1673,10 @@ function submitForm(formId, endpoint, successMessage) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
         data.site_id = 'agentwebstudio';
+        // Add agentSlug from hidden input or global
+        if (currentAgentSlug) {
+            data.agentSlug = currentAgentSlug;
+        }
         
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalBtnText = submitBtn ? submitBtn.textContent : 'Submit';
@@ -1903,52 +1740,148 @@ function formatDate(date) {
     }
 }
 
-// ============= HANDLE ROUTE =============
-async function handleRoute() {
-    const { section, slug } = parseCurrentRoute();
-    if (section === 'agent') {
-        await loadAgentPage(slug);
-        return;
+// ============= SPA NAVIGATION =============
+
+function navigateTo(sectionId, opts = {}) {
+    const { push = true, slug = null } = opts;
+
+    document.querySelectorAll('.section').forEach(el => {
+        el.classList.remove('active');
+    });
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
     }
-    if (section === 'blog' && slug) {
-        navigateTo('blog', { push: false });
-        window.viewBlogPost(slug, { push: false });
-        return;
+
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+            el.classList.add('active');
+        }
+    });
+
+    document.querySelectorAll('.floating-nav a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+    });
+
+    currentSection = sectionId;
+
+    if (sectionId === 'blog') {
+        const grid = document.getElementById('blog-grid');
+        const detail = document.getElementById('blog-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        currentBlogPost = null;
     }
-    if (section === 'listings' && slug) {
-        navigateTo('listings', { push: false });
-        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-        if (listing) {
-            const grid = document.getElementById('listings-grid');
-            const detail = document.getElementById('listing-detail');
-            const filterBar = document.getElementById('filter-bar');
-            if (grid) grid.style.display = 'none';
-            if (filterBar) filterBar.style.display = 'none';
-            if (detail) {
-                detail.style.display = 'block';
-                document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                document.title = listing.title + ' | ' + (config.siteName || 'Agent Web Studio');
-                setTimeout(initGallery, 100);
+
+    if (sectionId === 'listings') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        const filterBar = document.getElementById('filter-bar');
+        
+        if (routeSlug && section === 'listings') {
+            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
+            if (listing) {
+                const grid = document.getElementById('listings-grid');
+                const detail = document.getElementById('listing-detail');
+                if (grid) grid.style.display = 'none';
+                if (filterBar) filterBar.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                    setTimeout(initGallery, 100);
+                }
+                document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+                return;
             }
+        }
+        const grid = document.getElementById('listings-grid');
+        const detail = document.getElementById('listing-detail');
+        if (grid) grid.style.display = 'grid';
+        if (filterBar) filterBar.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+    }
+
+    if (sectionId === 'offplan') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        if (routeSlug && section === 'offplan') {
+            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
+            if (project) {
+                const grid = document.getElementById('offplan-grid');
+                const detail = document.getElementById('offplan-detail');
+                if (grid) grid.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+                }
+                document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        // No slug or project not found → show list
+        const grid = document.getElementById('offplan-grid');
+        const detail = document.getElementById('offplan-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderOffplanPage();
+    }
+
+    const sectionNames = {
+        home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+        listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
+    };
+    document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
+
+    if (sectionId === 'listings') {
+        populateCommunityFilter();
+        filterListings();
+    } else if (sectionId === 'valuation') {
+        populateCommunityFilter();
+    } else if (sectionId === 'home') {
+        renderFeaturedListings();
+        renderFeaturedOffplan();
+        renderHomeCommunities();
+    } else if (sectionId === 'offplan') {
+        renderOffplanPage();
+    } else if (sectionId === 'communities') {
+        renderCommunitiesPage();
+    } else if (sectionId === 'about') {
+        renderAboutPage();
+    } else if (sectionId === 'blog') {
+        loadBlog();
+    }
+
+    if (push) {
+        let path;
+        if (sectionId === 'home' && currentAgentSlug) {
+            path = '/' + currentAgentSlug;
         } else {
-            window.showListingList({ push: false });
+            path = buildPath(sectionId, slug);
         }
-        return;
-    }
-    if (section === 'offplan' && slug) {
-        navigateTo('offplan', { push: false });
-        window.viewOffplanPage(slug, { push: false });
-        return;
-    }
-    // For other sections, load default agent if not set
-    if (!currentAgent) {
-        const defaultAgent = await fetchDefaultAgent();
-        if (defaultAgent) {
-            currentAgent = defaultAgent;
-            updateUIWithAgent(defaultAgent);
+        if (location.pathname + location.search !== path) {
+            history.pushState({ section: sectionId, slug: slug || null, agentSlug: currentAgentSlug || null }, '', path);
         }
+        updateCanonical(path);
     }
-    navigateTo(section, { push: false });
+
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.getElementById('hamburger');
+    if (navMenu) navMenu.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ============= MOBILE MENU =============
@@ -2039,35 +1972,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
-    // ===== HANDLE ROUTE AND AGENT =====
-    const { section, slug } = parseCurrentRoute();
-    if (section === 'agent') {
-        await loadAgentPage(slug);
-    } else {
-        // Check localStorage preference
-        const preferred = localStorage.getItem('preferred_agent');
-        if (preferred && section === 'home') {
-            // Redirect to that agent's page
-            history.replaceState(null, '', `/${preferred}`);
-            await loadAgentPage(preferred);
-            // but we still want to render the home content? Actually loadAgentPage sets home active and updates UI.
-            // But we should not double-render the home section.
-            // After loadAgentPage, the home section is active, so we can return.
-            // However, we may want to show the normal content. loadAgentPage updates the UI but doesn't load listings etc.
-            // The listings are already loaded via loadAllData, so they will show in featured section.
-            // So we can just return.
-            return;
-        }
-        // Otherwise load default
-        const defaultAgent = await fetchDefaultAgent();
-        if (defaultAgent) {
-            currentAgent = defaultAgent;
-            updateUIWithAgent(defaultAgent);
-        }
-        // Continue with normal navigation
-        handleRoute();
-    }
-
     window.addEventListener('popstate', function() {
         document.getElementById('modal').style.display = 'none';
         handleRoute();
@@ -2100,13 +2004,13 @@ window.communities = communities;
 window.blogPosts = blogPosts;
 window.config = config;
 window.agentProfile = agentProfile;
-window.currentAgent = currentAgent;
+window.currentAgentData = currentAgentData;
+window.currentAgentSlug = currentAgentSlug;
 window.loadAllData = loadAllData;
 window.formatPrice = formatPrice;
 window.filterListings = filterListings;
 window.filterByCommunity = filterByCommunity;
 window.navigateTo = navigateTo;
-window.navigateToAgentHome = navigateToAgentHome;
 window.viewListing = window.viewListing;
 window.viewListingPage = window.viewListingPage;
 window.showListingList = window.showListingList;
