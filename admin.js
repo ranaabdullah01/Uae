@@ -1,5 +1,5 @@
 // ================================================
-// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + AGENTS
+// ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
 // Typography: Plus Jakarta Sans for headings, Inter for body
 // ================================================
 
@@ -15,7 +15,6 @@ let listingsData = [];
 let offplanData = [];
 let communitiesData = [];
 let blogData = [];
-let profileData = {};
 let agentsData = [];
 let sidebarCollapsed = false;
 
@@ -322,8 +321,7 @@ function navigateTab(tab) {
         communities: 'Communities',
         blog: 'Blog',
         leads: 'Leads',
-        agents: 'Agents',
-        profile: 'Profile'
+        agents: 'Agents'
     };
     document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
     
@@ -334,7 +332,6 @@ function navigateTab(tab) {
     if (tab === 'offplan') loadOffplan();
     if (tab === 'communities') loadCommunities();
     if (tab === 'blog') loadBlog();
-    if (tab === 'profile') loadProfile();
     if (tab === 'agents') loadAgents();
     if (tab === 'dashboard') updateStats();
     
@@ -350,7 +347,6 @@ async function loadAllData() {
         loadListings(),
         loadOffplan(),
         loadCommunities(),
-        loadProfile(),
         loadLeads(),
         loadBlog(),
         loadAgents()
@@ -424,19 +420,6 @@ async function loadBlog() {
     }
 }
 
-async function loadProfile() {
-    try {
-        const response = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
-        const data = await response.json();
-        if (data.success) {
-            profileData = data.profile;
-            renderProfileForm();
-        }
-    } catch (error) {
-        console.error('Error loading profile:', error);
-    }
-}
-
 async function loadLeads() {
     try {
         const token = localStorage.getItem('ak_admin_token');
@@ -470,6 +453,7 @@ async function loadAgents() {
             agentsData = data.agents || [];
             renderAgentsTable();
             updateSidebarBadges();
+            updateStats();
         }
     } catch (error) {
         console.error('Error loading agents:', error);
@@ -484,9 +468,10 @@ function updateSidebarBadges() {
     document.getElementById('sidebar-offplan-count').textContent = offplanData.length || 0;
     document.getElementById('sidebar-communities-count').textContent = communitiesData.length || 0;
     document.getElementById('sidebar-leads-count').textContent = leadsData.length || 0;
-    document.getElementById('sidebar-agents-count').textContent = agentsData.length || 0;
     const blogBadge = document.getElementById('sidebar-blog-count');
     if (blogBadge) blogBadge.textContent = blogData.length || 0;
+    const agentsBadge = document.getElementById('sidebar-agents-count');
+    if (agentsBadge) agentsBadge.textContent = agentsData.length || 0;
 }
 
 // ============= RENDER TABLES =============
@@ -522,6 +507,7 @@ function renderListingsTable() {
     });
 }
 
+// ============= RENDER OFFPLAN TABLE WITH IMAGE =============
 function renderOffplanTable() {
     const tbody = document.getElementById('offplan-table-body');
     if (!tbody) return;
@@ -617,34 +603,6 @@ function renderBlogTable() {
     });
 }
 
-function renderProfileForm() {
-    if (!profileData) return;
-    document.getElementById('prof-agent-name').value = profileData.agentName || '';
-    document.getElementById('prof-agent-title').value = profileData.agentTitle || '';
-    document.getElementById('prof-rerna').value = profileData.rernaBRN || '';
-    document.getElementById('prof-experience').value = profileData.experience || '';
-    document.getElementById('prof-bio').value = profileData.bio || '';
-    document.getElementById('prof-languages').value = profileData.languages || '';
-    document.getElementById('prof-specialties').value = profileData.specialties || '';
-    document.getElementById('prof-agency-name').value = profileData.agencyName || '';
-    document.getElementById('prof-address').value = profileData.address || '';
-    document.getElementById('prof-rerna-number').value = profileData.rernaNumber || '';
-    document.getElementById('prof-phone').value = profileData.phone || '';
-    document.getElementById('prof-whatsapp').value = profileData.whatsapp || '';
-    document.getElementById('prof-email').value = profileData.email || '';
-    document.getElementById('prof-whatsapp-greeting').value = profileData.whatsappGreeting || '';
-    document.getElementById('prof-propertyfinder').value = profileData.propertyFinderURL || '';
-    document.getElementById('prof-bayut').value = profileData.bayutURL || '';
-    document.getElementById('prof-worker-url').value = profileData.workerURL || '';
-    document.getElementById('prof-ga-id').value = profileData.gaTrackingID || '';
-    document.getElementById('prof-facebook').value = profileData.facebook || '';
-    document.getElementById('prof-instagram').value = profileData.instagram || '';
-    document.getElementById('prof-linkedin').value = profileData.linkedin || '';
-    document.getElementById('prof-youtube').value = profileData.youtube || '';
-    document.getElementById('prof-site-name').value = profileData.siteName || '';
-    document.getElementById('prof-site-description').value = profileData.siteDescription || '';
-}
-
 function renderLeadsTable() {
     const tbody = document.getElementById('leads-table-body');
     if (!tbody) return;
@@ -678,33 +636,28 @@ function renderLeadsTable() {
     });
 }
 
-function showError(elementId, message) {
-    const element = document.getElementById(elementId);
-    if (element) {
-        element.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#DC3545;font-family:Inter, sans-serif;">${message}</td></tr>`;
-    }
-}
-
-// ============= AGENTS MANAGEMENT =============
-
 function renderAgentsTable() {
     const tbody = document.getElementById('agents-table-body');
     if (!tbody) return;
     tbody.innerHTML = '';
-    if (agentsData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No agents added yet. Click "Add New Agent" to create one.</td></tr>';
+    
+    if (!agentsData || agentsData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No agents found. Click "Add Agent" to create one.</td></tr>';
         return;
     }
+    
     agentsData.forEach(agent => {
         const tr = document.createElement('tr');
         const photo = agent.photo || 'https://placehold.co/60x60/0A1628/C9A84C?text=Agent';
         tr.innerHTML = `
-            <td><img src="${photo}" alt="${agent.name}" style="width:56px;height:56px;object-fit:cover;border-radius:50%;border:2px solid var(--line);"></td>
-            <td><strong>${agent.name}</strong></td>
+            <td><img src="${photo}" alt="${agent.agentName}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);"></td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${agent.agentName}</strong></td>
             <td><code>/${agent.slug}</code></td>
-            <td>${agent.is_default ? '⭐' : ''}</td>
+            <td>${agent.agentTitle || ''}</td>
             <td class="actions">
+                <button class="btn btn-secondary btn-sm" onclick="window.viewAgent('${agent.slug}')">View</button>
                 <button class="btn btn-primary btn-sm" onclick="window.editAgent('${agent.id}')">Edit</button>
+                <button class="btn btn-secondary btn-sm" onclick="window.copyAgentLink('${agent.slug}')">Copy Link</button>
                 <button class="btn btn-danger btn-sm" onclick="window.deleteAgent('${agent.id}')">Delete</button>
             </td>
         `;
@@ -712,137 +665,10 @@ function renderAgentsTable() {
     });
 }
 
-function buildAgentForm(agent = null) {
-    const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
-    const fields = [
-        { type: 'text', name: 'slug', label: 'Slug (URL)', value: agent?.slug || '' },
-        { type: 'text', name: 'name', label: 'Full Name', value: agent?.name || '' },
-        { type: 'text', name: 'title', label: 'Title / Tagline', value: agent?.title || '' },
-        { type: 'textarea', name: 'bio', label: 'Bio', value: agent?.bio || '', rows: 4 },
-        { type: 'text', name: 'photo', label: 'Photo URL', value: agent?.photo || '' },
-        { type: 'text', name: 'experience', label: 'Years Experience', value: agent?.experience || '' },
-        { type: 'text', name: 'languages', label: 'Languages (comma separated)', value: agent?.languages || '' },
-        { type: 'text', name: 'specialties', label: 'Specialties (comma separated)', value: agent?.specialties || '' },
-        { type: 'text', name: 'agency_name', label: 'Agency Name', value: agent?.agency_name || '' },
-        { type: 'text', name: 'agency_logo', label: 'Agency Logo URL', value: agent?.agency_logo || '' },
-        { type: 'text', name: 'address', label: 'Office Address', value: agent?.address || '' },
-        { type: 'text', name: 'rerna_number', label: 'RERA Number', value: agent?.rerna_number || '' },
-        { type: 'text', name: 'phone', label: 'Phone', value: agent?.phone || '' },
-        { type: 'text', name: 'whatsapp', label: 'WhatsApp', value: agent?.whatsapp || '' },
-        { type: 'text', name: 'email', label: 'Email', value: agent?.email || '' },
-        { type: 'text', name: 'whatsapp_greeting', label: 'WhatsApp Greeting', value: agent?.whatsapp_greeting || '' },
-        { type: 'text', name: 'property_finder_url', label: 'Property Finder URL', value: agent?.property_finder_url || '' },
-        { type: 'text', name: 'bayut_url', label: 'Bayut URL', value: agent?.bayut_url || '' },
-        { type: 'text', name: 'facebook', label: 'Facebook', value: agent?.facebook || '' },
-        { type: 'text', name: 'instagram', label: 'Instagram', value: agent?.instagram || '' },
-        { type: 'text', name: 'linkedin', label: 'LinkedIn', value: agent?.linkedin || '' },
-        { type: 'text', name: 'youtube', label: 'YouTube', value: agent?.youtube || '' },
-        { type: 'text', name: 'site_name', label: 'Site Name', value: agent?.site_name || '' },
-        { type: 'text', name: 'site_description', label: 'Site Description', value: agent?.site_description || '' },
-        { type: 'checkbox', name: 'is_default', label: 'Set as Default Agent', value: agent?.is_default || false }
-    ];
-    return buildFormHTML('agent-form', fields);
-}
-
-window.editAgent = async function(id) {
-    const token = localStorage.getItem('ak_admin_token');
-    if (!token) return;
-    try {
-        const response = await fetch(`${API_BASE}/api/agents/${id}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        if (data.success) {
-            const agent = data.agent;
-            editingId = id;
-            editingType = 'agent';
-            openModal('Edit Agent', buildAgentForm(agent));
-        } else {
-            showToast('Failed to load agent', 'error');
-        }
-    } catch (error) {
-        console.error('Error loading agent:', error);
-        showToast('Error loading agent', 'error');
-    }
-};
-
-window.deleteAgent = async function(id) {
-    if (!confirm('Are you sure you want to delete this agent? (Cannot delete default agent)')) return;
-    try {
-        const token = localStorage.getItem('ak_admin_token');
-        if (!token) return;
-        const response = await fetch(`${API_BASE}/api/agents/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const data = await response.json();
-        if (data.success) {
-            showToast('Agent deleted successfully', 'success');
-            await loadAgents();
-        } else {
-            showToast(data.message || 'Failed to delete', 'error');
-        }
-    } catch (error) {
-        console.error('Delete error:', error);
-        showToast('Error deleting agent', 'error');
-    }
-};
-
-async function saveAgent(formData) {
-    const agent = {
-        id: editingId || null,
-        slug: formData.get('slug') || '',
-        name: formData.get('name') || '',
-        title: formData.get('title') || '',
-        bio: formData.get('bio') || '',
-        photo: formData.get('photo') || '',
-        experience: formData.get('experience') || '',
-        languages: formData.get('languages') || '',
-        specialties: formData.get('specialties') || '',
-        agency_name: formData.get('agency_name') || '',
-        agency_logo: formData.get('agency_logo') || '',
-        address: formData.get('address') || '',
-        rerna_number: formData.get('rerna_number') || '',
-        phone: formData.get('phone') || '',
-        whatsapp: formData.get('whatsapp') || '',
-        email: formData.get('email') || '',
-        whatsapp_greeting: formData.get('whatsapp_greeting') || '',
-        property_finder_url: formData.get('property_finder_url') || '',
-        bayut_url: formData.get('bayut_url') || '',
-        facebook: formData.get('facebook') || '',
-        instagram: formData.get('instagram') || '',
-        linkedin: formData.get('linkedin') || '',
-        youtube: formData.get('youtube') || '',
-        site_name: formData.get('site_name') || '',
-        site_description: formData.get('site_description') || '',
-        is_default: formData.get('is_default') === 'true'
-    };
-    Object.keys(agent).forEach(key => { if (agent[key] === undefined) agent[key] = null; });
-
-    try {
-        const token = localStorage.getItem('ak_admin_token');
-        if (!token) { showToast('Please login again', 'error'); return; }
-        const response = await fetch(`${API_BASE}/api/agents`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(agent)
-        });
-        const data = await response.json();
-        if (data.success) {
-            closeModal();
-            editingId = null;
-            editingType = null;
-            await loadAgents();
-            showToast('Agent saved successfully!', 'success');
-        } else {
-            showToast(data.message || 'Failed to save agent', 'error');
-        }
-    } catch (error) {
-        console.error('Save error:', error);
-        showToast('Error saving agent', 'error');
+function showError(elementId, message) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;color:#DC3545;font-family:Inter, sans-serif;">${message}</td></tr>`;
     }
 }
 
@@ -855,6 +681,7 @@ function updateStats() {
     document.getElementById('communities-count').textContent = communitiesData.length;
     document.getElementById('blog-count').textContent = blogData.length || 0;
     document.getElementById('total-leads').textContent = leadsData.length || 0;
+    document.getElementById('agents-count').textContent = agentsData.length || 0;
     
     if (leadsData.length > 0) {
         const now = new Date();
@@ -1292,6 +1119,161 @@ function buildBlogForm(post = null) {
     return buildFormHTML('blog-form', fields, true);
 }
 
+// ============= AGENTS CRUD =============
+
+window.viewAgent = function(slug) {
+    window.open(`${window.location.origin}/${slug}`, '_blank');
+};
+
+window.copyAgentLink = function(slug) {
+    const url = `${window.location.origin}/${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast('Link copied to clipboard!', 'success');
+    }).catch(() => {
+        const input = document.createElement('input');
+        input.value = url;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        showToast('Link copied!', 'success');
+    });
+};
+
+window.editAgent = function(id) {
+    const agent = agentsData.find(a => a.id == id);
+    if (!agent) return;
+    editingId = id;
+    editingType = 'agent';
+    openModal('Edit Agent', buildAgentForm(agent));
+};
+
+window.deleteAgent = async function(id) {
+    if (!confirm('Are you sure you want to delete this agent?')) return;
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        const response = await fetch(`${API_BASE}/api/agents/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            await loadAgents();
+            showToast('Agent deleted successfully!', 'success');
+        } else {
+            showToast('Failed to delete: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Error deleting agent.', 'error');
+    }
+};
+
+function buildAgentForm(agent = null) {
+    const fields = [
+        { type: 'text', name: 'agentName', label: 'Agent Name', value: agent?.agentName || '', required: true },
+        { type: 'text', name: 'slug', label: 'Slug (URL)', value: agent?.slug || '', required: true },
+        { type: 'text', name: 'agentTitle', label: 'Agent Title', value: agent?.agentTitle || '' },
+        { type: 'text', name: 'experience', label: 'Experience (years)', value: agent?.experience || '' },
+        { type: 'textarea', name: 'bio', label: 'Bio', value: agent?.bio || '', rows: 4 },
+        { type: 'text', name: 'languages', label: 'Languages (comma separated)', value: agent?.languages || '' },
+        { type: 'text', name: 'specialties', label: 'Specialties (comma separated)', value: agent?.specialties || '' },
+        { type: 'text', name: 'reraBRN', label: 'RERA BRN', value: agent?.reraBRN || '' },
+        { type: 'text', name: 'rernaNumber', label: 'RERA Number', value: agent?.rernaNumber || '' },
+        { type: 'text', name: 'agencyName', label: 'Agency Name', value: agent?.agencyName || '' },
+        { type: 'text', name: 'agencyLogo', label: 'Agency Logo URL', value: agent?.agencyLogo || '' },
+        { type: 'text', name: 'address', label: 'Office Address', value: agent?.address || '' },
+        { type: 'text', name: 'phone', label: 'Phone', value: agent?.phone || '' },
+        { type: 'text', name: 'whatsapp', label: 'WhatsApp', value: agent?.whatsapp || '' },
+        { type: 'email', name: 'email', label: 'Email', value: agent?.email || '' },
+        { type: 'text', name: 'whatsappGreeting', label: 'WhatsApp Greeting', value: agent?.whatsappGreeting || '' },
+        { type: 'url', name: 'facebook', label: 'Facebook URL', value: agent?.facebook || '' },
+        { type: 'url', name: 'instagram', label: 'Instagram URL', value: agent?.instagram || '' },
+        { type: 'url', name: 'linkedin', label: 'LinkedIn URL', value: agent?.linkedin || '' },
+        { type: 'url', name: 'youtube', label: 'YouTube URL', value: agent?.youtube || '' },
+        { type: 'url', name: 'propertyFinderURL', label: 'Property Finder URL', value: agent?.propertyFinderURL || '' },
+        { type: 'url', name: 'bayutURL', label: 'Bayut URL', value: agent?.bayutURL || '' },
+        { type: 'text', name: 'totalSalesValue', label: 'Total Sales Value (e.g., AED 120M+)', value: agent?.totalSalesValue || '' },
+        { type: 'text', name: 'propertiesSold', label: 'Properties Sold (e.g., 45+)', value: agent?.propertiesSold || '' },
+        { type: 'text', name: 'yearsExperience', label: 'Years Experience (e.g., 8+)', value: agent?.yearsExperience || agent?.experience || '' },
+        { type: 'text', name: 'propertiesListed', label: 'Properties Listed (e.g., 30+)', value: agent?.propertiesListed || '' },
+        { type: 'text', name: 'siteName', label: 'Site Name (SEO Title)', value: agent?.siteName || '' },
+        { type: 'text', name: 'siteDescription', label: 'Site Description (SEO Description)', value: agent?.siteDescription || '' },
+        { type: 'file', name: 'photo', label: 'Profile Photo', value: agent?.photo || '', multiple: false },
+        { type: 'text', name: 'workerURL', label: 'Worker URL (optional)', value: agent?.workerURL || '' },
+        { type: 'text', name: 'gaTrackingID', label: 'GA Tracking ID (optional)', value: agent?.gaTrackingID || '' }
+    ];
+    return buildFormHTML('agent-form', fields);
+}
+
+async function saveAgent(formData) {
+    const agent = {
+        id: editingId || null,
+        agentName: formData.get('agentName') || '',
+        slug: formData.get('slug') || '',
+        agentTitle: formData.get('agentTitle') || '',
+        experience: formData.get('experience') || '',
+        bio: formData.get('bio') || '',
+        languages: formData.get('languages') || '',
+        specialties: formData.get('specialties') || '',
+        reraBRN: formData.get('reraBRN') || '',
+        rernaNumber: formData.get('rernaNumber') || '',
+        agencyName: formData.get('agencyName') || '',
+        agencyLogo: formData.get('agencyLogo') || '',
+        address: formData.get('address') || '',
+        phone: formData.get('phone') || '',
+        whatsapp: formData.get('whatsapp') || '',
+        email: formData.get('email') || '',
+        whatsappGreeting: formData.get('whatsappGreeting') || '',
+        facebook: formData.get('facebook') || '',
+        instagram: formData.get('instagram') || '',
+        linkedin: formData.get('linkedin') || '',
+        youtube: formData.get('youtube') || '',
+        propertyFinderURL: formData.get('propertyFinderURL') || '',
+        bayutURL: formData.get('bayutURL') || '',
+        totalSalesValue: formData.get('totalSalesValue') || '',
+        propertiesSold: formData.get('propertiesSold') || '',
+        yearsExperience: formData.get('yearsExperience') || '',
+        propertiesListed: formData.get('propertiesListed') || '',
+        siteName: formData.get('siteName') || '',
+        siteDescription: formData.get('siteDescription') || '',
+        photo: formData.get('photo_hidden') || '',
+        workerURL: formData.get('workerURL') || '',
+        gaTrackingID: formData.get('gaTrackingID') || ''
+    };
+    
+    if (!agent.agentName) { showToast('Agent Name is required.', 'error'); return; }
+    if (!agent.slug) { showToast('Slug is required.', 'error'); return; }
+
+    const token = localStorage.getItem('ak_admin_token');
+    const url = editingId ? `${API_BASE}/api/agents/${editingId}` : `${API_BASE}/api/agents`;
+    const method = editingId ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(agent)
+        });
+        const data = await response.json();
+        if (data.success) {
+            closeModal();
+            await loadAgents();
+            showToast(editingId ? 'Agent updated successfully!' : 'Agent created successfully!', 'success');
+            editingId = null;
+            editingType = null;
+        } else {
+            showToast('Failed to save: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Save agent error:', error);
+        showToast('Error saving agent.', 'error');
+    }
+}
+
 // ============= HELPER FOR FORM HTML =============
 
 function buildFormHTML(formId, fields, isBlogForm = false) {
@@ -1411,48 +1393,6 @@ function initializeQuill(content) {
     }
 }
 
-// ============= PROFILE SAVE =============
-
-async function saveProfile(formData) {
-    const config = {
-        agentName: formData.get('agentName') || '',
-        agentTitle: formData.get('agentTitle') || '',
-        rernaBRN: formData.get('rerna') || '',
-        experience: formData.get('experience') || '',
-        bio: formData.get('bio') || '',
-        languages: formData.get('languages') || '',
-        specialties: formData.get('specialties') || '',
-        agencyName: formData.get('agencyName') || '',
-        agencyLogo: formData.get('agencyLogo') || '',
-        address: formData.get('address') || '',
-        rernaNumber: formData.get('rernaNumber') || '',
-        phone: formData.get('phone') || '',
-        whatsapp: formData.get('whatsapp') || '',
-        email: formData.get('email') || '',
-        whatsappGreeting: formData.get('whatsappGreeting') || '',
-        propertyFinderURL: formData.get('propertyfinder') || '',
-        bayutURL: formData.get('bayut') || '',
-        workerURL: formData.get('workerUrl') || '',
-        gaTrackingID: formData.get('gaId') || '',
-        facebook: formData.get('facebook') || '',
-        instagram: formData.get('instagram') || '',
-        linkedin: formData.get('linkedin') || '',
-        youtube: formData.get('youtube') || '',
-        siteName: formData.get('siteName') || '',
-        siteDescription: formData.get('siteDescription') || '',
-        photo: formData.get('photo') || ''
-    };
-    
-    try {
-        const response = await fetch(`${API_BASE}/api/agent-profile`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(config) });
-        const data = await response.json();
-        if (data.success) {
-            showToast('✅ Profile saved successfully! Changes are live.', 'success');
-            await loadProfile();
-        } else { showToast('❌ Failed to save: ' + data.message, 'error'); }
-    } catch (error) { console.error('Save error:', error); showToast('❌ Error saving profile.', 'error'); }
-}
-
 // ============= LEAD MANAGEMENT =============
 
 window.viewLeadDetails = function(id) {
@@ -1493,10 +1433,11 @@ window.viewLeadDetails = function(id) {
         date: 'Preferred Date',
         time: 'Preferred Time',
         budget: 'Budget Range',
-        site_id: 'Site ID'
+        site_id: 'Site ID',
+        agent_slug: 'Agent Slug'
     };
     
-    const mainFields = ['name', 'phone', 'email', 'created_at', 'createdAt', 'type', 'contacted'];
+    const mainFields = ['name', 'phone', 'email', 'created_at', 'createdAt', 'type', 'contacted', 'agent_slug'];
     let mainInfoHtml = '';
     const mainData = {};
     
@@ -1599,7 +1540,8 @@ function getIconForField(label) {
         'Email': '✉️',
         'Received': '📅',
         'Status': '🔄',
-        'Lead Type': '📌'
+        'Lead Type': '📌',
+        'Agent Slug': '👤'
     };
     return iconMap[label] || '📄';
 }
@@ -1679,8 +1621,16 @@ function getSourceTableForLead(lead) {
 
 function exportCSV() {
     if (leadsData.length === 0) { showToast('No leads to export.', 'info'); return; }
-    const headers = ['Date', 'Name', 'Phone', 'Email', 'Type', 'Status'];
-    const rows = leadsData.map(lead => [formatDate(lead.created_at || lead.createdAt), lead.name || '', lead.phone || '', lead.email || '', lead.type || '', lead.contacted ? 'Contacted' : 'Pending']);
+    const headers = ['Date', 'Name', 'Phone', 'Email', 'Type', 'Status', 'Agent Slug'];
+    const rows = leadsData.map(lead => [
+        formatDate(lead.created_at || lead.createdAt),
+        lead.name || '',
+        lead.phone || '',
+        lead.email || '',
+        lead.type || '',
+        lead.contacted ? 'Contacted' : 'Pending',
+        lead.agent_slug || ''
+    ]);
     const csv = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
@@ -1733,6 +1683,8 @@ function openModal(title, bodyHTML) {
         if (communityImageInput) {
             setupImageInput('edit-image', false);
         }
+        // For agents photo
+        setupImageInput('edit-photo', false);
     }, 100);
     
     if (editingType === 'blog') {
@@ -1826,8 +1778,6 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     document.getElementById('add-blog-btn')?.addEventListener('click', () => { editingId = null; editingType = 'blog'; openModal('Add New Blog Post', buildBlogForm()); });
     document.getElementById('add-agent-btn')?.addEventListener('click', () => { editingId = null; editingType = 'agent'; openModal('Add New Agent', buildAgentForm()); });
-    
-    document.getElementById('profile-form')?.addEventListener('submit', function(e) { e.preventDefault(); saveProfile(new FormData(this)); });
     
     document.getElementById('filter-leads-btn')?.addEventListener('click', filterLeads);
     document.getElementById('export-leads-btn')?.addEventListener('click', exportCSV);
