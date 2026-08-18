@@ -3823,3 +3823,13 @@ footer::before {
 #lightbox-image {
     transition: opacity 0.3s ease;
 }
+/* For scrolling*/
+/* Off-Plan Gallery Sticky on Desktop */
+@media (min-width: 1024px) {
+    .listing-detail-left-col {
+        position: sticky;
+        top: 30px;
+        align-self: flex-start;
+        height: fit-content;
+    }
+}
