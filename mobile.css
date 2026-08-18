@@ -619,6 +619,8 @@
 
     /* ============================================================
        MOBILE GALLERY — SHOW ONLY 3 THUMBNAILS + "+N Photos" TILE
+       (The CSS hiding rule has been removed because the JS now
+        generates exactly the visible thumbnails.)
        ============================================================ */
     .gallery-thumbs {
         display: flex !important;
@@ -641,10 +643,6 @@
     .gallery-thumbs .thumb.active {
         border-color: var(--brass) !important;
         transform: scale(1.05) !important;
-    }
-    /* Hide all regular thumbnails from the 4th onward */
-    .gallery-thumbs .thumb:not(.more-photos):nth-child(n+4) {
-        display: none !important;
     }
     /* "+N Photos" tile - visible on mobile, styled like a thumbnail */
     .gallery-thumbs .thumb.more-photos {
