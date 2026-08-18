@@ -618,7 +618,7 @@
     }
 
     /* ============================================================
-       MOBILE GALLERY — FORCE THUMBNAILS TO APPEAR
+       MOBILE GALLERY — SHOW ONLY FIRST 4 THUMBNAILS + "+N Photos"
        ============================================================ */
     .gallery-thumbs {
         display: flex !important;
@@ -642,11 +642,25 @@
         border-color: var(--brass) !important;
         transform: scale(1.05) !important;
     }
-    /* Hide the "+N Photos" tile on mobile */
+    /* "+N Photos" tile - visible on mobile, styled like a thumbnail */
     .gallery-thumbs .thumb.more-photos {
-        display: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: var(--emerald-deep) !important;
+        color: var(--cream) !important;
+        font-family: 'Inter', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 14px !important;
+        text-align: center !important;
+        border: 2px solid var(--line) !important;
+        cursor: pointer !important;
     }
-    /* Ensure thumbs container is visible even if previously hidden */
+    .gallery-thumbs .thumb.more-photos span {
+        display: block !important;
+        line-height: 1.2 !important;
+    }
+    /* Ensure thumbs container is visible */
     .gallery-thumbs {
         display: flex !important;
     }
@@ -719,6 +733,9 @@
     .gallery-thumbs .thumb {
         width: 55px !important;
         height: 55px !important;
+    }
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 11px !important;
     }
 }
 
@@ -803,6 +820,9 @@
     .gallery-thumbs .thumb {
         width: 80px !important;
         height: 80px !important;
+    }
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 13px !important;
     }
 }
 
