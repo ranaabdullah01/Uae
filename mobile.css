@@ -642,8 +642,8 @@
         border-color: var(--brass) !important;
         transform: scale(1.05) !important;
     }
-    /* Hide the 4th thumbnail on mobile */
-    .gallery-thumbs .thumb:nth-child(4) {
+    /* Hide all regular thumbnails from the 4th onward */
+    .gallery-thumbs .thumb:not(.more-photos):nth-child(n+4) {
         display: none !important;
     }
     /* "+N Photos" tile - visible on mobile, styled like a thumbnail */
