@@ -3807,3 +3807,19 @@ footer::before {
         display: none !important;
     }
 }
+/* For gallery */
+
+/* Lightbox gallery */
+#lightbox-overlay {
+    display: none;
+}
+#lightbox-prev:hover, #lightbox-next:hover {
+    background: rgba(255,255,255,0.4);
+}
+#lightbox-close:hover {
+    transform: scale(1.2);
+    color: #fff;
+}
+#lightbox-image {
+    transition: opacity 0.3s ease;
+}
