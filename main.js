@@ -27,14 +27,6 @@ function hidePreloader() {
     }, 800);
 }
 
-setTimeout(hidePreloader, 2000);
-
-window.addEventListener('load', function() {
-    setTimeout(hidePreloader, 300);
-});
-
-setTimeout(hidePreloader, 3500);
-
 // ============= STATE =============
 let listings = [];
 let offplan = [];
@@ -2362,8 +2354,9 @@ document.addEventListener('keydown', function(e) {
 
 document.addEventListener('DOMContentLoaded', async function() {
     await loadAllData();  // Ensure data is loaded before routing
-    handleRoute();
-    
+    handleRoute();        // Now show the correct section
+    hidePreloader();      // Hide preloader AFTER everything is ready
+
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
         isRTL = true;
