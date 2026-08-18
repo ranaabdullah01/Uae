@@ -1,6 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN / LISTING GALLERY: mobile dots + swipe + smooth transition
+// OFF-PLAN / LISTING GALLERY: mobile dots + swipe + smooth transition + duplicate event fix
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -52,6 +52,10 @@ let currentBlogPost = null;
 let currentAgentSlug = null;
 let currentAgentData = null;
 const DEFAULT_AGENT_SLUG_KEY = 'ak_current_agent_slug';
+
+// Gallery controllers for AbortController (to prevent duplicate events)
+let galleryController = null;
+let offplanGalleryController = null;
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -1105,35 +1109,34 @@ function initGallery() {
         counter.textContent = `1 / ${galleryImages.length}`;
     }
     updateDots('gallery-dots', galleryImages.length, 0);
+
+    // Abort previous gallery controller to remove old event listeners
+    if (galleryController) {
+        galleryController.abort();
+    }
+    galleryController = new AbortController();
+    const signal = galleryController.signal;
     
     const prevBtn = document.getElementById('gallery-prev');
     const nextBtn = document.getElementById('gallery-next');
     
     if (prevBtn) {
-        prevBtn.removeEventListener('click', window.prevImage);
-        prevBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.prevImage();
-        });
+        prevBtn.addEventListener('click', window.prevImage, { signal });
     }
     
     if (nextBtn) {
-        nextBtn.removeEventListener('click', window.nextImage);
-        nextBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.nextImage();
-        });
+        nextBtn.addEventListener('click', window.nextImage, { signal });
     }
     
     // Swipe support for mobile
     const mainContainer = document.querySelector('#gallery-main');
     if (mainContainer) {
         let startX = 0, startY = 0;
-        mainContainer.addEventListener('touchstart', (e) => {
+        const touchStartHandler = (e) => {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
-        }, { passive: true });
-        mainContainer.addEventListener('touchend', (e) => {
+        };
+        const touchEndHandler = (e) => {
             const endX = e.changedTouches[0].clientX;
             const endY = e.changedTouches[0].clientY;
             const deltaX = endX - startX;
@@ -1145,21 +1148,10 @@ function initGallery() {
                     window.nextImage();
                 }
             }
-        }, { passive: true });
+        };
+        mainContainer.addEventListener('touchstart', touchStartHandler, { signal, passive: true });
+        mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
-
-    document.addEventListener('keydown', function(e) {
-        const detailVisible = document.getElementById('listing-detail')?.style.display === 'block';
-        if (!detailVisible) return;
-        
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            window.prevImage();
-        } else if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            window.nextImage();
-        }
-    });
 }
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
@@ -1558,35 +1550,34 @@ function initOffplanGallery() {
         counter.textContent = `1 / ${offplanGalleryImages.length}`;
     }
     updateDots('offplan-gallery-dots', offplanGalleryImages.length, 0);
+
+    // Abort previous offplan gallery controller to remove old event listeners
+    if (offplanGalleryController) {
+        offplanGalleryController.abort();
+    }
+    offplanGalleryController = new AbortController();
+    const signal = offplanGalleryController.signal;
     
     const prevBtn = document.getElementById('offplan-gallery-prev');
     const nextBtn = document.getElementById('offplan-gallery-next');
     
     if (prevBtn) {
-        prevBtn.removeEventListener('click', window.prevOffplanImage);
-        prevBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.prevOffplanImage();
-        });
+        prevBtn.addEventListener('click', window.prevOffplanImage, { signal });
     }
     
     if (nextBtn) {
-        nextBtn.removeEventListener('click', window.nextOffplanImage);
-        nextBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.nextOffplanImage();
-        });
+        nextBtn.addEventListener('click', window.nextOffplanImage, { signal });
     }
-
+    
     // Swipe support for mobile
     const mainContainer = document.querySelector('#offplan-gallery-main');
     if (mainContainer) {
         let startX = 0, startY = 0;
-        mainContainer.addEventListener('touchstart', (e) => {
+        const touchStartHandler = (e) => {
             startX = e.touches[0].clientX;
             startY = e.touches[0].clientY;
-        }, { passive: true });
-        mainContainer.addEventListener('touchend', (e) => {
+        };
+        const touchEndHandler = (e) => {
             const endX = e.changedTouches[0].clientX;
             const endY = e.changedTouches[0].clientY;
             const deltaX = endX - startX;
@@ -1598,7 +1589,9 @@ function initOffplanGallery() {
                     window.nextOffplanImage();
                 }
             }
-        }, { passive: true });
+        };
+        mainContainer.addEventListener('touchstart', touchStartHandler, { signal, passive: true });
+        mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
 }
 
@@ -2265,6 +2258,31 @@ function initFAQ() {
         });
     });
 }
+
+// ============= KEYBOARD NAVIGATION =============
+
+document.addEventListener('keydown', function(e) {
+    // Only if a detail view is visible
+    const listingDetail = document.getElementById('listing-detail');
+    const offplanDetail = document.getElementById('offplan-detail');
+    if (listingDetail && listingDetail.style.display === 'block') {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            window.prevImage();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            window.nextImage();
+        }
+    } else if (offplanDetail && offplanDetail.style.display === 'block') {
+        if (e.key === 'ArrowLeft') {
+            e.preventDefault();
+            window.prevOffplanImage();
+        } else if (e.key === 'ArrowRight') {
+            e.preventDefault();
+            window.nextOffplanImage();
+        }
+    }
+});
 
 // ============= INIT =============
 
