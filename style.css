@@ -220,7 +220,6 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: 0 16px 40px rgba(11, 59, 46, 0.35);
 }
 
-/* FIXED: Button text color changed to white (cream) for better contrast */
 .btn-gold, .btn-secondary {
     background: linear-gradient(135deg, var(--brass-light), var(--brass));
     color: var(--cream);
@@ -2477,18 +2476,16 @@ nav .nav-container {
     margin-bottom: 24px;
 }
 
+/* FIX: "Back to Properties" now uses the global gradient gold button style */
 .listing-detail-top-bar .btn-secondary {
     margin-bottom: 0;
     padding: 10px 24px;
     font-size: 12px;
-    background: var(--brass);
-    color: var(--white);
-    border: none;
+    /* Removed custom background/color – now inherits from .btn-secondary */
     box-shadow: 0 4px 16px rgba(176, 138, 62, 0.25);
 }
 
 .listing-detail-top-bar .btn-secondary:hover {
-    background: var(--brass-dark);
     transform: translateY(-2px);
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.35);
 }
