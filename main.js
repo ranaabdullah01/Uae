@@ -1,7 +1,7 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY) + LIGHTBOX
-// FIX: Lightbox shows all images, not just first 4
+// FIX: Gallery carousel and counter use full images array (not just first 4)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -761,7 +761,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL (FIXED: lightbox uses full images array)
+// RENDER LISTING DETAIL (FIXED: lightbox and carousel use full images)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -773,6 +773,9 @@ function renderListingDetail(listing) {
         images.push('https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image');
     }
 
+    // Store full images array globally for the gallery functions
+    window.galleryImages = images;
+
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
         : (Array.isArray(listing.features) ? listing.features : []);
@@ -780,12 +783,11 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // Gallery HTML with click handlers for lightbox - uses JSON.stringify(images) to pass full list
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
                 <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" 
-                     onclick="window.openLightbox(${JSON.stringify(images)}, 0)" 
+                     onclick="window.openLightbox(window.galleryImages, 0)" 
                      style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
@@ -802,12 +804,12 @@ function renderListingDetail(listing) {
                     <img src="${img}" alt="${listing.title} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setGalleryImage(${index}); window.openLightbox(${JSON.stringify(images)}, ${index});"
+                         onclick="window.setGalleryImage(${index}); window.openLightbox(window.galleryImages, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(${JSON.stringify(images)}, 0)">
+                    <div class="thumb more-photos" onclick="window.openLightbox(window.galleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
@@ -1032,13 +1034,19 @@ window.nextImage = function() {
 };
 
 function initGallery() {
-    const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
-    if (thumbs.length > 0) {
-        galleryImages = Array.from(thumbs).map(thumb => thumb.src);
+    // Use the full images array if available (set in renderListingDetail)
+    if (window.galleryImages && window.galleryImages.length > 0) {
+        galleryImages = window.galleryImages;
     } else {
-        const mainImg = document.getElementById('gallery-main-image');
-        if (mainImg) {
-            galleryImages = [mainImg.src];
+        // Fallback: read from thumbnails
+        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+        if (thumbs.length > 0) {
+            galleryImages = Array.from(thumbs).map(thumb => thumb.src);
+        } else {
+            const mainImg = document.getElementById('gallery-main-image');
+            if (mainImg) {
+                galleryImages = [mainImg.src];
+            }
         }
     }
     
@@ -1218,7 +1226,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL (FIXED: lightbox uses full images array)
+// RENDER OFFPLAN DETAIL (FIXED: carousel and counter use full images)
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1238,12 +1246,15 @@ function renderOffplanDetail(project) {
         images = ['https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan'];
     }
 
-    // Build gallery HTML with lightbox support - uses JSON.stringify(images) to pass full list
+    // Store full images array globally for the gallery functions
+    window.offplanGalleryImages = images;
+
+    // Build gallery HTML with lightbox support - uses the full images array
     const gallery = `
         <div class="listing-detail-gallery" id="offplan-gallery">
             <div class="gallery-main" id="offplan-gallery-main">
                 <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" 
-                     onclick="window.openLightbox(${JSON.stringify(images)}, 0)" 
+                     onclick="window.openLightbox(window.offplanGalleryImages, 0)" 
                      style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="offplan-gallery-prev" aria-label="Previous image">
@@ -1260,12 +1271,12 @@ function renderOffplanDetail(project) {
                     <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(${JSON.stringify(images)}, ${index});"
+                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(window.offplanGalleryImages, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(${JSON.stringify(images)}, 0)">
+                    <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
@@ -1441,13 +1452,19 @@ window.nextOffplanImage = function() {
 };
 
 function initOffplanGallery() {
-    const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb');
-    if (thumbs.length > 0) {
-        offplanGalleryImages = Array.from(thumbs).map(thumb => thumb.src);
+    // Use the full images array if available (set in renderOffplanDetail)
+    if (window.offplanGalleryImages && window.offplanGalleryImages.length > 0) {
+        offplanGalleryImages = window.offplanGalleryImages;
     } else {
-        const mainImg = document.getElementById('offplan-gallery-main-image');
-        if (mainImg) {
-            offplanGalleryImages = [mainImg.src];
+        // Fallback: read from thumbnails
+        const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb');
+        if (thumbs.length > 0) {
+            offplanGalleryImages = Array.from(thumbs).map(thumb => thumb.src);
+        } else {
+            const mainImg = document.getElementById('offplan-gallery-main-image');
+            if (mainImg) {
+                offplanGalleryImages = [mainImg.src];
+            }
         }
     }
     
