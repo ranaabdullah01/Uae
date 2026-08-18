@@ -1,7 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY) + LIGHTBOX
-// FIX: Gallery carousel and counter use full images array (not just first 4)
+// OFF-PLAN / LISTING GALLERY: mobile dots + swipe + smooth transition
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -302,6 +301,44 @@ function updateLightbox() {
     }
     if (counter) {
         counter.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    }
+}
+
+// ============= GALLERY DOTS =============
+
+function updateDots(containerId, total, activeIndex) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    // For many dots, limit to a reasonable number and show compact style
+    const maxDots = Math.min(total, 8);
+    for (let i = 0; i < maxDots; i++) {
+        const dot = document.createElement('span');
+        dot.className = `gallery-dot ${i === activeIndex % maxDots ? 'active' : ''}`;
+        dot.setAttribute('data-index', i);
+        dot.addEventListener('click', () => {
+            // Determine which gallery we're in based on containerId
+            if (containerId === 'gallery-dots') {
+                window.setGalleryImage(i);
+            } else if (containerId === 'offplan-gallery-dots') {
+                window.setOffplanGalleryImage(i);
+            }
+        });
+        container.appendChild(dot);
+    }
+    // If more than 8, show a + indicator
+    if (total > 8) {
+        const extra = document.createElement('span');
+        extra.className = 'gallery-dot extra';
+        extra.textContent = '+';
+        extra.style.cursor = 'default';
+        extra.style.background = 'var(--brass)';
+        extra.style.color = '#fff';
+        extra.style.width = 'auto';
+        extra.style.padding = '0 8px';
+        extra.style.fontSize = '10px';
+        extra.style.fontWeight = '600';
+        container.appendChild(extra);
     }
 }
 
@@ -761,7 +798,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL (FIXED: lightbox and carousel use full images)
+// RENDER LISTING DETAIL
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -813,6 +850,12 @@ function renderListingDetail(listing) {
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
+            </div>
+            <!-- Mobile dots -->
+            <div class="gallery-dots" id="gallery-dots"></div>
+            <!-- View all button (mobile only) -->
+            <div class="gallery-view-all">
+                <button class="btn btn-secondary btn-sm" onclick="window.openLightbox(window.galleryImages, 0)">View all ${images.length} photos</button>
             </div>
         </div>
     `;
@@ -1003,26 +1046,31 @@ let galleryImages = [];
 window.setGalleryImage = function(index) {
     const images = galleryImages;
     if (!images || images.length === 0) return;
-    
     if (index < 0) index = images.length - 1;
     if (index >= images.length) index = 0;
-    
-    currentImageIndex = index;
-    
     const mainImg = document.getElementById('gallery-main-image');
-    if (mainImg) {
-        mainImg.src = images[index];
-        mainImg.alt = `Image ${index + 1}`;
-    }
-    
+    if (!mainImg) return;
+    // Fade out
+    mainImg.style.opacity = '0';
+    mainImg.style.transform = 'scale(1.02)';
+    currentImageIndex = index;
+    // Update counter and dots immediately
     const counter = document.getElementById('gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    
+    updateDots('gallery-dots', images.length, index);
+    // Update thumbnails active class
     document.querySelectorAll('.gallery-thumbs .thumb').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
+    // Change src after fade
+    setTimeout(() => {
+        mainImg.src = images[index];
+        mainImg.alt = `Image ${index + 1}`;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+    }, 200);
 };
 
 window.prevImage = function() {
@@ -1056,6 +1104,7 @@ function initGallery() {
     if (counter && galleryImages.length > 0) {
         counter.textContent = `1 / ${galleryImages.length}`;
     }
+    updateDots('gallery-dots', galleryImages.length, 0);
     
     const prevBtn = document.getElementById('gallery-prev');
     const nextBtn = document.getElementById('gallery-next');
@@ -1076,6 +1125,29 @@ function initGallery() {
         });
     }
     
+    // Swipe support for mobile
+    const mainContainer = document.querySelector('#gallery-main');
+    if (mainContainer) {
+        let startX = 0, startY = 0;
+        mainContainer.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+        mainContainer.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    window.prevImage();
+                } else {
+                    window.nextImage();
+                }
+            }
+        }, { passive: true });
+    }
+
     document.addEventListener('keydown', function(e) {
         const detailVisible = document.getElementById('listing-detail')?.style.display === 'block';
         if (!detailVisible) return;
@@ -1226,7 +1298,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL (FIXED: carousel and counter use full images)
+// RENDER OFFPLAN DETAIL
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1280,6 +1352,12 @@ function renderOffplanDetail(project) {
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
+            </div>
+            <!-- Mobile dots -->
+            <div class="gallery-dots" id="offplan-gallery-dots"></div>
+            <!-- View all button (mobile only) -->
+            <div class="gallery-view-all">
+                <button class="btn btn-secondary btn-sm" onclick="window.openLightbox(window.offplanGalleryImages, 0)">View all ${images.length} photos</button>
             </div>
         </div>
     `;
@@ -1421,26 +1499,31 @@ let offplanCurrentImageIndex = 0;
 window.setOffplanGalleryImage = function(index) {
     const images = offplanGalleryImages;
     if (!images || images.length === 0) return;
-    
     if (index < 0) index = images.length - 1;
     if (index >= images.length) index = 0;
-    
-    offplanCurrentImageIndex = index;
-    
     const mainImg = document.getElementById('offplan-gallery-main-image');
-    if (mainImg) {
-        mainImg.src = images[index];
-        mainImg.alt = `Image ${index + 1}`;
-    }
-    
+    if (!mainImg) return;
+    // Fade out
+    mainImg.style.opacity = '0';
+    mainImg.style.transform = 'scale(1.02)';
+    offplanCurrentImageIndex = index;
+    // Update counter and dots immediately
     const counter = document.getElementById('offplan-gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    
+    updateDots('offplan-gallery-dots', images.length, index);
+    // Update thumbnails active class
     document.querySelectorAll('#offplan-gallery-thumbs .thumb').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
+    // Change src after fade
+    setTimeout(() => {
+        mainImg.src = images[index];
+        mainImg.alt = `Image ${index + 1}`;
+        mainImg.style.opacity = '1';
+        mainImg.style.transform = 'scale(1)';
+    }, 200);
 };
 
 window.prevOffplanImage = function() {
@@ -1474,6 +1557,7 @@ function initOffplanGallery() {
     if (counter && offplanGalleryImages.length > 0) {
         counter.textContent = `1 / ${offplanGalleryImages.length}`;
     }
+    updateDots('offplan-gallery-dots', offplanGalleryImages.length, 0);
     
     const prevBtn = document.getElementById('offplan-gallery-prev');
     const nextBtn = document.getElementById('offplan-gallery-next');
@@ -1492,6 +1576,29 @@ function initOffplanGallery() {
             e.stopPropagation();
             window.nextOffplanImage();
         });
+    }
+
+    // Swipe support for mobile
+    const mainContainer = document.querySelector('#offplan-gallery-main');
+    if (mainContainer) {
+        let startX = 0, startY = 0;
+        mainContainer.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+        }, { passive: true });
+        mainContainer.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
+            const deltaX = endX - startX;
+            const deltaY = endY - startY;
+            if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+                if (deltaX > 0) {
+                    window.prevOffplanImage();
+                } else {
+                    window.nextOffplanImage();
+                }
+            }
+        }, { passive: true });
     }
 }
 
