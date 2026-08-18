@@ -1265,7 +1265,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL — FIXED THUMBNAIL LOGIC
+// RENDER OFFPLAN DETAIL — WITH DESKTOP 4 / MOBILE 3 THUMBNAILS
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1288,10 +1288,11 @@ function renderOffplanDetail(project) {
     // Store full images array globally for the gallery functions
     window.offplanGalleryImages = images;
 
-    // --- THUMBNAIL GENERATION (fixed) ---
-    // Show only first 3 real thumbnails, then a "+N Photos" tile if more than 3
-    const visibleThumbs = images.slice(0, 3);
-    const remainingCount = Math.max(0, images.length - 3);
+    // --- THUMBNAIL GENERATION (desktop 4, mobile 3) ---
+    const isDesktop = window.innerWidth >= 768;
+    const visibleCount = isDesktop ? 4 : 3;
+    const visibleThumbs = images.slice(0, visibleCount);
+    const remainingCount = Math.max(0, images.length - visibleCount);
 
     let thumbsHtml = visibleThumbs.map((img, index) => `
         <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
@@ -1303,7 +1304,7 @@ function renderOffplanDetail(project) {
 
     if (remainingCount > 0) {
         thumbsHtml += `
-            <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, 3)">
+            <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, ${visibleCount})">
                 <span>+${remainingCount} Photos</span>
             </div>
         `;
@@ -1466,6 +1467,9 @@ function renderOffplanDetail(project) {
 let offplanGalleryImages = [];
 let offplanCurrentImageIndex = 0;
 
+// Store the visible count for active highlighting
+let offplanVisibleCount = 3; // default, updated in init
+
 window.setOffplanGalleryImage = function(index) {
     const images = offplanGalleryImages;
     if (!images || images.length === 0) return;
@@ -1483,8 +1487,14 @@ window.setOffplanGalleryImage = function(index) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
     // Update thumbnails active class
-    document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)').forEach((thumb, i) => {
-        thumb.classList.toggle('active', i === index);
+    const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)');
+    thumbs.forEach((thumb, i) => {
+        // Only activate if the thumb index is less than visibleCount and matches current index
+        if (i < offplanVisibleCount && i === index) {
+            thumb.classList.add('active');
+        } else {
+            thumb.classList.remove('active');
+        }
     });
     // Change src after fade
     setTimeout(() => {
@@ -1522,6 +1532,9 @@ function initOffplanGallery() {
     
     offplanCurrentImageIndex = 0;
     
+    // Determine visible count based on current window width
+    offplanVisibleCount = window.innerWidth >= 768 ? 4 : 3;
+    
     const counter = document.getElementById('offplan-gallery-counter');
     if (counter && offplanGalleryImages.length > 0) {
         counter.textContent = `1 / ${offplanGalleryImages.length}`;
@@ -1555,7 +1568,7 @@ function initOffplanGallery() {
         }, { signal });
     }
 
-    // Click on thumbnails
+    // Click on thumbnails (only the real thumbnails, not the more-photos tile)
     document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
         thumb.addEventListener('click', function() {
             const index = parseInt(this.dataset.index);
