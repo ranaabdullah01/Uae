@@ -616,6 +616,30 @@
         bottom: 20px !important;
         right: 20px !important;
     }
+
+    /* ========== THUMBNAILS ON MOBILE ========== */
+    .gallery-thumbs {
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: 6px;
+        justify-content: center;
+        padding: 10px 0;
+    }
+    .gallery-thumbs .thumb {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        transition: border 0.2s;
+    }
+    .gallery-thumbs .thumb.active {
+        border-color: var(--brass);
+    }
+    /* Hide the "+N Photos" tile on mobile */
+    .gallery-thumbs .thumb.more-photos {
+        display: none !important;
+    }
 }
 
 /* ========== VERY SMALL SCREENS (<= 380px) ========== */
@@ -680,6 +704,11 @@
     }
     .about-snippet-text .stats div {
         font-size: 10px !important;
+    }
+
+    .gallery-thumbs .thumb {
+        width: 48px;
+        height: 48px;
     }
 }
 
@@ -760,6 +789,11 @@
     .about-snippet-text .btn {
         margin: 0 !important;
     }
+
+    .gallery-thumbs .thumb {
+        width: 72px;
+        height: 72px;
+    }
 }
 
 /* ========== BLOG ADDITIONAL MOBILE FIXES ========== */
@@ -836,62 +870,5 @@
     .property-details-card .listing-detail-card-title {
         font-size: 1rem !important;
         margin-bottom: 10px !important;
-    }
-}
-/* 18/08/2026 10:37 update*/
-@media (max-width: 767px) {
-    /* Hide desktop thumbnails on mobile */
-    .gallery-thumbs {
-        display: none !important;
-    }
-    /* Show dots and view all */
-    .gallery-dots,
-    .gallery-view-all {
-        display: flex !important;
-        justify-content: center;
-        gap: 8px;
-    }
-    .gallery-view-all {
-        display: block !important;
-        text-align: center;
-        padding: 8px 0 16px 0;
-    }
-    .gallery-view-all .btn {
-        font-size: 13px;
-        padding: 8px 20px;
-        min-width: 140px;
-    }
-    /* Adjust counter position (optional) */
-    .gallery-counter {
-        bottom: 12px;
-        right: 12px;
-        font-size: 12px;
-        padding: 4px 14px;
-    }
-    /* Make the main image container full width */
-    .gallery-main {
-        aspect-ratio: 4/3;
-        min-height: 200px;
-    }
-    /* Gallery controls (prev/next) on mobile – keep them clean */
-    .gallery-controls button {
-        width: 38px;
-        height: 38px;
-        font-size: 14px;
-        opacity: 0.9;
-        background: rgba(255,255,255,0.85);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255,255,255,0.3);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    }
-    .gallery-controls button:hover {
-        opacity: 1;
-        transform: scale(1.05);
-    }
-    /* Ensure the gallery container is not sticky on mobile */
-    .listing-detail-left-col {
-        position: static !important;
-        top: auto !important;
-        align-self: auto !important;
     }
 }
