@@ -3833,3 +3833,44 @@ footer::before {
         height: fit-content;
     }
 }
+/* 18/08/2026 10:37 Update*/
+/* Gallery dots and view all button */
+.gallery-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 0 6px 0;
+}
+.gallery-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--line);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+.gallery-dot.active {
+    background: var(--brass);
+    transform: scale(1.2);
+}
+.gallery-view-all {
+    text-align: center;
+    padding: 8px 0 12px 0;
+}
+.gallery-view-all .btn {
+    font-size: 13px;
+    min-width: 120px;
+}
+/* Hide dots and view all on desktop (they are shown on mobile) */
+@media (min-width: 768px) {
+    .gallery-dots,
+    .gallery-view-all {
+        display: none !important;
+    }
+}
+/* Smooth transition for main image */
+#gallery-main-image,
+#offplan-gallery-main-image {
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    will-change: opacity, transform;
+}
