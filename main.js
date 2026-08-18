@@ -1,7 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY)
-// FIX: Refresh on detail pages - await loadAllData, 404 fallback
+// OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY) + LIGHTBOX
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -194,6 +193,115 @@ function showToast(message, type = 'success') {
         toast.classList.add('fadeout');
         setTimeout(() => toast.remove(), 300);
     }, 4000);
+}
+
+// ============= LIGHTBOX GALLERY =============
+
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+function createLightbox() {
+    if (document.getElementById('lightbox-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.id = 'lightbox-overlay';
+    overlay.style.cssText = `
+        position: fixed; inset: 0; z-index: 9999;
+        background: rgba(0,0,0,0.92);
+        display: none; align-items: center; justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+        backdrop-filter: blur(8px);
+    `;
+    overlay.innerHTML = `
+        <button id="lightbox-close" style="
+            position: absolute; top: 20px; right: 30px;
+            background: none; border: none; color: #fff;
+            font-size: 2.5rem; cursor: pointer; z-index: 10;
+            font-family: 'Inter', sans-serif;
+            transition: transform 0.2s;
+        ">&times;</button>
+        <button id="lightbox-prev" style="
+            position: absolute; left: 20px; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); border: none;
+            color: #fff; font-size: 2.5rem; padding: 12px 18px;
+            border-radius: 50%; cursor: pointer; z-index: 10;
+            transition: background 0.3s;
+        ">&#10094;</button>
+        <button id="lightbox-next" style="
+            position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.2); border: none;
+            color: #fff; font-size: 2.5rem; padding: 12px 18px;
+            border-radius: 50%; cursor: pointer; z-index: 10;
+            transition: background 0.3s;
+        ">&#10095;</button>
+        <img id="lightbox-image" style="
+            max-width: 90%; max-height: 80vh;
+            object-fit: contain; border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        " alt="Gallery image">
+        <div id="lightbox-counter" style="
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem; letter-spacing: 0.04em;
+            background: rgba(0,0,0,0.4); padding: 8px 20px;
+            border-radius: 100px;
+            backdrop-filter: blur(4px);
+        "></div>
+    `;
+    document.body.appendChild(overlay);
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', () => navigateLightbox(-1));
+    document.getElementById('lightbox-next').addEventListener('click', () => navigateLightbox(1));
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+        const overlay = document.getElementById('lightbox-overlay');
+        if (!overlay || overlay.style.display === 'none') return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') navigateLightbox(-1);
+        if (e.key === 'ArrowRight') navigateLightbox(1);
+    });
+}
+
+function openLightbox(images, startIndex = 0) {
+    if (!images || images.length === 0) {
+        showToast('No images to display.', 'info');
+        return;
+    }
+    createLightbox();
+    lightboxImages = images;
+    lightboxIndex = startIndex;
+    const overlay = document.getElementById('lightbox-overlay');
+    overlay.style.display = 'flex';
+    updateLightbox();
+}
+
+function closeLightbox() {
+    const overlay = document.getElementById('lightbox-overlay');
+    if (overlay) overlay.style.display = 'none';
+}
+
+function navigateLightbox(delta) {
+    const newIndex = lightboxIndex + delta;
+    if (newIndex < 0 || newIndex >= lightboxImages.length) return;
+    lightboxIndex = newIndex;
+    updateLightbox();
+}
+
+function updateLightbox() {
+    const img = document.getElementById('lightbox-image');
+    const counter = document.getElementById('lightbox-counter');
+    if (img && lightboxImages.length > 0) {
+        img.src = lightboxImages[lightboxIndex];
+        img.alt = `Image ${lightboxIndex + 1}`;
+    }
+    if (counter) {
+        counter.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+    }
 }
 
 // ============= LOAD DATA FROM API =============
@@ -671,10 +779,11 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
+    // Gallery HTML with click handlers for lightbox
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
-                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
+                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" onclick="window.openLightbox(window.galleryImages, 0)" style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
                         <i class="fas fa-chevron-left"></i>
@@ -690,11 +799,12 @@ function renderListingDetail(listing) {
                     <img src="${img}" alt="${listing.title} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setGalleryImage(${index})"
+                         onclick="window.setGalleryImage(${index}); window.openLightbox(window.galleryImages, ${index});"
+                         style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openGallery()">
+                    <div class="thumb more-photos" onclick="window.openLightbox(window.galleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
@@ -940,6 +1050,7 @@ function initGallery() {
     const nextBtn = document.getElementById('gallery-next');
     
     if (prevBtn) {
+        prevBtn.removeEventListener('click', window.prevImage);
         prevBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             window.prevImage();
@@ -947,6 +1058,7 @@ function initGallery() {
     }
     
     if (nextBtn) {
+        nextBtn.removeEventListener('click', window.nextImage);
         nextBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             window.nextImage();
@@ -966,10 +1078,6 @@ function initGallery() {
         }
     });
 }
-
-window.openGallery = function() {
-    showToast('Gallery view coming soon!', 'info');
-};
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
@@ -1123,11 +1231,11 @@ function renderOffplanDetail(project) {
         images = ['https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan'];
     }
 
-    // Build gallery HTML (same as listing detail)
+    // Build gallery HTML with lightbox support
     const gallery = `
         <div class="listing-detail-gallery" id="offplan-gallery">
             <div class="gallery-main" id="offplan-gallery-main">
-                <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
+                <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" onclick="window.openLightbox(window.offplanGalleryImages, 0)" style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="offplan-gallery-prev" aria-label="Previous image">
                         <i class="fas fa-chevron-left"></i>
@@ -1143,11 +1251,12 @@ function renderOffplanDetail(project) {
                     <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setOffplanGalleryImage(${index})"
+                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(window.offplanGalleryImages, ${index});"
+                         style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openOffplanGallery()">
+                    <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
@@ -1344,6 +1453,7 @@ function initOffplanGallery() {
     const nextBtn = document.getElementById('offplan-gallery-next');
     
     if (prevBtn) {
+        prevBtn.removeEventListener('click', window.prevOffplanImage);
         prevBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             window.prevOffplanImage();
@@ -1351,16 +1461,13 @@ function initOffplanGallery() {
     }
     
     if (nextBtn) {
+        nextBtn.removeEventListener('click', window.nextOffplanImage);
         nextBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             window.nextOffplanImage();
         });
     }
 }
-
-window.openOffplanGallery = function() {
-    showToast('Full gallery view coming soon!', 'info');
-};
 
 window.scheduleConsultation = function(projectName) {
     navigateTo('contact');
@@ -2140,7 +2247,6 @@ window.setGalleryImage = setGalleryImage;
 window.prevImage = prevImage;
 window.nextImage = nextImage;
 window.initGallery = initGallery;
-window.openGallery = openGallery;
 window.viewOffplanPage = viewOffplanPage;
 window.showOffplanList = showOffplanList;
 window.renderOffplanDetail = renderOffplanDetail;
@@ -2149,4 +2255,5 @@ window.setOffplanGalleryImage = setOffplanGalleryImage;
 window.prevOffplanImage = prevOffplanImage;
 window.nextOffplanImage = nextOffplanImage;
 window.initOffplanGallery = initOffplanGallery;
-window.openOffplanGallery = openOffplanGallery;
+window.openLightbox = openLightbox;
+window.closeLightbox = closeLightbox;
