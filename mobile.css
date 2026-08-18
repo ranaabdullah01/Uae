@@ -618,7 +618,7 @@
     }
 
     /* ============================================================
-       MOBILE GALLERY — SHOW ONLY FIRST 4 THUMBNAILS + "+N Photos"
+       MOBILE GALLERY — SHOW ONLY 3 THUMBNAILS + "+N Photos" TILE
        ============================================================ */
     .gallery-thumbs {
         display: flex !important;
@@ -641,6 +641,10 @@
     .gallery-thumbs .thumb.active {
         border-color: var(--brass) !important;
         transform: scale(1.05) !important;
+    }
+    /* Hide the 4th thumbnail on mobile */
+    .gallery-thumbs .thumb:nth-child(4) {
+        display: none !important;
     }
     /* "+N Photos" tile - visible on mobile, styled like a thumbnail */
     .gallery-thumbs .thumb.more-photos {
