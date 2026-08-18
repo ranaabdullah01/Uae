@@ -220,9 +220,10 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: 0 16px 40px rgba(11, 59, 46, 0.35);
 }
 
+/* FIXED: Button text color changed to white (cream) for better contrast */
 .btn-gold, .btn-secondary {
     background: linear-gradient(135deg, var(--brass-light), var(--brass));
-    color: var(--emerald-deep);
+    color: var(--cream);
     box-shadow: 0 10px 28px rgba(176, 138, 62, 0.28);
 }
 .btn-gold:hover, .btn-secondary:hover {
