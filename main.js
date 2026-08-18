@@ -1,6 +1,7 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // OFF-PLAN MULTIPLE IMAGES SUPPORT (GALLERY) + LIGHTBOX
+// FIX: Lightbox shows all images, not just first 4
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -760,7 +761,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL
+// RENDER LISTING DETAIL (FIXED: lightbox uses full images array)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -779,11 +780,13 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // Gallery HTML with click handlers for lightbox
+    // Gallery HTML with click handlers for lightbox - uses JSON.stringify(images) to pass full list
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
-                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" onclick="window.openLightbox(window.galleryImages, 0)" style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
+                <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" 
+                     onclick="window.openLightbox(${JSON.stringify(images)}, 0)" 
+                     style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
                         <i class="fas fa-chevron-left"></i>
@@ -799,12 +802,12 @@ function renderListingDetail(listing) {
                     <img src="${img}" alt="${listing.title} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setGalleryImage(${index}); window.openLightbox(window.galleryImages, ${index});"
+                         onclick="window.setGalleryImage(${index}); window.openLightbox(${JSON.stringify(images)}, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(window.galleryImages, 0)">
+                    <div class="thumb more-photos" onclick="window.openLightbox(${JSON.stringify(images)}, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
@@ -1214,6 +1217,10 @@ window.viewOffplanPage = function(id, opts = {}) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+// ============================================================
+// RENDER OFFPLAN DETAIL (FIXED: lightbox uses full images array)
+// ============================================================
+
 function renderOffplanDetail(project) {
     // Get images array - handle both array and string formats
     let images = [];
@@ -1231,11 +1238,13 @@ function renderOffplanDetail(project) {
         images = ['https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan'];
     }
 
-    // Build gallery HTML with lightbox support
+    // Build gallery HTML with lightbox support - uses JSON.stringify(images) to pass full list
     const gallery = `
         <div class="listing-detail-gallery" id="offplan-gallery">
             <div class="gallery-main" id="offplan-gallery-main">
-                <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" onclick="window.openLightbox(window.offplanGalleryImages, 0)" style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
+                <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" 
+                     onclick="window.openLightbox(${JSON.stringify(images)}, 0)" 
+                     style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="offplan-gallery-prev" aria-label="Previous image">
                         <i class="fas fa-chevron-left"></i>
@@ -1251,12 +1260,12 @@ function renderOffplanDetail(project) {
                     <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(window.offplanGalleryImages, ${index});"
+                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(${JSON.stringify(images)}, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, 0)">
+                    <div class="thumb more-photos" onclick="window.openLightbox(${JSON.stringify(images)}, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
