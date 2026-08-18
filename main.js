@@ -2100,59 +2100,69 @@ function formatDate(date) {
 function navigateTo(sectionId, opts = {}) {
     const { push = true, slug = null } = opts;
 
-    // --- NEW LOGIC: if we're already on a detail view, force list view ---
-    if (sectionId === 'listings' || sectionId === 'offplan') {
+    // --- IMPROVED: if target section matches current section and we are on a detail (has slug), force list view ---
+    const currentRoute = parseCurrentRoute();
+    if ((sectionId === 'listings' || sectionId === 'offplan') && 
+        currentRoute.section === sectionId && currentRoute.slug) {
+        // Force list view
         const detailId = sectionId === 'listings' ? 'listing-detail' : 'offplan-detail';
+        const gridId = sectionId === 'listings' ? 'listings-grid' : 'offplan-grid';
+        const filterBar = document.getElementById('filter-bar');
+        
+        // Show grid, hide detail
+        const gridEl = document.getElementById(gridId);
+        if (gridEl) gridEl.style.display = 'grid';
         const detailEl = document.getElementById(detailId);
-        if (detailEl && detailEl.style.display === 'block') {
-            // Force list view
-            const gridId = sectionId === 'listings' ? 'listings-grid' : 'offplan-grid';
-            const gridEl = document.getElementById(gridId);
-            if (gridEl) gridEl.style.display = 'grid';
-            detailEl.style.display = 'none';
-            // Reset URL to section root
-            const path = buildPath(sectionId);
-            if (location.pathname !== path) {
-                history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null }, '', path);
-                updateCanonical(path);
-            }
-            // Also ensure the section is active
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) targetSection.classList.add('active');
-            // Update nav active state
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset && el.dataset.section === sectionId) {
-                    el.classList.add('active');
-                }
-            });
-            // Reset title
-            const sectionNames = {
-                home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
-                listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-                blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
-            };
-            document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
-            // If section is listings, re-filter
-            if (sectionId === 'listings') {
-                filterListings();
-                populateCommunityFilter();
-            } else if (sectionId === 'offplan') {
-                renderOffplanPage();
-            }
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            return; // exit early, we've handled it
+        if (detailEl) detailEl.style.display = 'none';
+        if (filterBar) filterBar.style.display = 'grid';
+        
+        // Update URL to section root (no slug)
+        const path = buildPath(sectionId);
+        if (location.pathname !== path) {
+            history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null }, '', path);
+            updateCanonical(path);
         }
+        
+        // Activate section
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) targetSection.classList.add('active');
+        
+        // Update nav active state
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === sectionId) {
+                el.classList.add('active');
+            }
+        });
+        
+        // Update title
+        const sectionNames = {
+            home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+            listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+            blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
+        };
+        document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
+        
+        // Re-render list content if needed
+        if (sectionId === 'listings') {
+            filterListings();
+            populateCommunityFilter();
+        } else if (sectionId === 'offplan') {
+            renderOffplanPage();
+        }
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return; // done
     }
-    // --- end new logic ---
+    // --- end of improved logic ---
 
     // ---- ORIGINAL NAVIGATE LOGIC (unchanged) ----
     document.querySelectorAll('.section').forEach(el => {
