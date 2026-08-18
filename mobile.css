@@ -617,28 +617,38 @@
         right: 20px !important;
     }
 
-    /* ========== THUMBNAILS ON MOBILE ========== */
+    /* ============================================================
+       MOBILE GALLERY — FORCE THUMBNAILS TO APPEAR
+       ============================================================ */
     .gallery-thumbs {
         display: flex !important;
-        flex-wrap: wrap;
-        gap: 6px;
-        justify-content: center;
-        padding: 10px 0;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        justify-content: center !important;
+        padding: 12px 0 !important;
+        margin-top: 8px !important;
     }
     .gallery-thumbs .thumb {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 2px solid transparent;
-        transition: border 0.2s;
+        width: 70px !important;
+        height: 70px !important;
+        object-fit: cover !important;
+        border-radius: 8px !important;
+        border: 2px solid transparent !important;
+        transition: border 0.2s, transform 0.2s !important;
+        flex-shrink: 0 !important;
+        cursor: pointer !important;
     }
     .gallery-thumbs .thumb.active {
-        border-color: var(--brass);
+        border-color: var(--brass) !important;
+        transform: scale(1.05) !important;
     }
     /* Hide the "+N Photos" tile on mobile */
     .gallery-thumbs .thumb.more-photos {
         display: none !important;
+    }
+    /* Ensure thumbs container is visible even if previously hidden */
+    .gallery-thumbs {
+        display: flex !important;
     }
 }
 
@@ -707,8 +717,8 @@
     }
 
     .gallery-thumbs .thumb {
-        width: 48px;
-        height: 48px;
+        width: 55px !important;
+        height: 55px !important;
     }
 }
 
@@ -791,8 +801,8 @@
     }
 
     .gallery-thumbs .thumb {
-        width: 72px;
-        height: 72px;
+        width: 80px !important;
+        height: 80px !important;
     }
 }
 
