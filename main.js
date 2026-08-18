@@ -1,6 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN / LISTING GALLERY: mobile dots + swipe + smooth transition + duplicate event fix
+// OFF-PLAN / LISTING GALLERY: ORIGINAL MOBILE UI + SMOOTH TRANSITIONS + SWIPE + IDEMPOTENT EVENTS
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -199,7 +199,7 @@ function showToast(message, type = 'success') {
     }, 4000);
 }
 
-// ============= LIGHTBOX GALLERY =============
+// ============= LIGHTBOX GALLERY (DESKTOP ONLY) =============
 
 let lightboxImages = [];
 let lightboxIndex = 0;
@@ -276,6 +276,8 @@ function openLightbox(images, startIndex = 0) {
         showToast('No images to display.', 'info');
         return;
     }
+    // Only open on desktop (>=768px)
+    if (window.innerWidth < 768) return;
     createLightbox();
     lightboxImages = images;
     lightboxIndex = startIndex;
@@ -305,44 +307,6 @@ function updateLightbox() {
     }
     if (counter) {
         counter.textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
-    }
-}
-
-// ============= GALLERY DOTS =============
-
-function updateDots(containerId, total, activeIndex) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    container.innerHTML = '';
-    // For many dots, limit to a reasonable number and show compact style
-    const maxDots = Math.min(total, 8);
-    for (let i = 0; i < maxDots; i++) {
-        const dot = document.createElement('span');
-        dot.className = `gallery-dot ${i === activeIndex % maxDots ? 'active' : ''}`;
-        dot.setAttribute('data-index', i);
-        dot.addEventListener('click', () => {
-            // Determine which gallery we're in based on containerId
-            if (containerId === 'gallery-dots') {
-                window.setGalleryImage(i);
-            } else if (containerId === 'offplan-gallery-dots') {
-                window.setOffplanGalleryImage(i);
-            }
-        });
-        container.appendChild(dot);
-    }
-    // If more than 8, show a + indicator
-    if (total > 8) {
-        const extra = document.createElement('span');
-        extra.className = 'gallery-dot extra';
-        extra.textContent = '+';
-        extra.style.cursor = 'default';
-        extra.style.background = 'var(--brass)';
-        extra.style.color = '#fff';
-        extra.style.width = 'auto';
-        extra.style.padding = '0 8px';
-        extra.style.fontSize = '10px';
-        extra.style.fontWeight = '600';
-        container.appendChild(extra);
     }
 }
 
@@ -824,11 +788,11 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
+    // Gallery: no onclick on main image; we'll attach a click listener in initGallery
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
                 <img src="${images[0]}" alt="${listing.title}" id="gallery-main-image" 
-                     onclick="window.openLightbox(window.galleryImages, 0)" 
                      style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="gallery-prev" aria-label="Previous image">
@@ -841,25 +805,18 @@ function renderListingDetail(listing) {
                 <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="gallery-thumbs">
-                ${images.slice(0, 4).map((img, index) => `
+                ${images.map((img, index) => `
                     <img src="${img}" alt="${listing.title} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setGalleryImage(${index}); window.openLightbox(window.galleryImages, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(window.galleryImages, 0)">
+                    <div class="thumb more-photos desktop-only" onclick="window.openLightbox(window.galleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
-            </div>
-            <!-- Mobile dots -->
-            <div class="gallery-dots" id="gallery-dots"></div>
-            <!-- View all button (mobile only) -->
-            <div class="gallery-view-all">
-                <button class="btn btn-secondary btn-sm" onclick="window.openLightbox(window.galleryImages, 0)">View all ${images.length} photos</button>
             </div>
         </div>
     `;
@@ -1058,14 +1015,13 @@ window.setGalleryImage = function(index) {
     mainImg.style.opacity = '0';
     mainImg.style.transform = 'scale(1.02)';
     currentImageIndex = index;
-    // Update counter and dots immediately
+    // Update counter immediately
     const counter = document.getElementById('gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    updateDots('gallery-dots', images.length, index);
     // Update thumbnails active class
-    document.querySelectorAll('.gallery-thumbs .thumb').forEach((thumb, i) => {
+    document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
     // Change src after fade
@@ -1091,7 +1047,7 @@ function initGallery() {
         galleryImages = window.galleryImages;
     } else {
         // Fallback: read from thumbnails
-        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb');
+        const thumbs = document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)');
         if (thumbs.length > 0) {
             galleryImages = Array.from(thumbs).map(thumb => thumb.src);
         } else {
@@ -1108,7 +1064,6 @@ function initGallery() {
     if (counter && galleryImages.length > 0) {
         counter.textContent = `1 / ${galleryImages.length}`;
     }
-    updateDots('gallery-dots', galleryImages.length, 0);
 
     // Abort previous gallery controller to remove old event listeners
     if (galleryController) {
@@ -1119,6 +1074,7 @@ function initGallery() {
     
     const prevBtn = document.getElementById('gallery-prev');
     const nextBtn = document.getElementById('gallery-next');
+    const mainImg = document.getElementById('gallery-main-image');
     
     if (prevBtn) {
         prevBtn.addEventListener('click', window.prevImage, { signal });
@@ -1127,6 +1083,25 @@ function initGallery() {
     if (nextBtn) {
         nextBtn.addEventListener('click', window.nextImage, { signal });
     }
+
+    // Click on main image: open lightbox only on desktop (>=768px)
+    if (mainImg) {
+        mainImg.addEventListener('click', function() {
+            if (window.innerWidth >= 768) {
+                window.openLightbox(galleryImages, currentImageIndex);
+            }
+        }, { signal });
+    }
+
+    // Click on thumbnails
+    document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
+        thumb.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            if (!isNaN(index)) {
+                window.setGalleryImage(index);
+            }
+        }, { signal });
+    });
     
     // Swipe support for mobile
     const mainContainer = document.querySelector('#gallery-main');
@@ -1318,7 +1293,6 @@ function renderOffplanDetail(project) {
         <div class="listing-detail-gallery" id="offplan-gallery">
             <div class="gallery-main" id="offplan-gallery-main">
                 <img src="${images[0]}" alt="${project.projectName}" id="offplan-gallery-main-image" 
-                     onclick="window.openLightbox(window.offplanGalleryImages, 0)" 
                      style="cursor:pointer;" onerror="this.src='https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image'">
                 <div class="gallery-controls">
                     <button class="prev-btn" id="offplan-gallery-prev" aria-label="Previous image">
@@ -1331,25 +1305,18 @@ function renderOffplanDetail(project) {
                 <div class="gallery-counter" id="offplan-gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="offplan-gallery-thumbs">
-                ${images.slice(0, 4).map((img, index) => `
+                ${images.map((img, index) => `
                     <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
                          class="thumb ${index === 0 ? 'active' : ''}"
                          data-index="${index}"
-                         onclick="window.setOffplanGalleryImage(${index}); window.openLightbox(window.offplanGalleryImages, ${index});"
                          style="cursor:pointer;"
                          onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
                 `).join('')}
                 ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openLightbox(window.offplanGalleryImages, 0)">
+                    <div class="thumb more-photos desktop-only" onclick="window.openLightbox(window.offplanGalleryImages, 0)">
                         <span>+${images.length - 4} Photos</span>
                     </div>
                 ` : ''}
-            </div>
-            <!-- Mobile dots -->
-            <div class="gallery-dots" id="offplan-gallery-dots"></div>
-            <!-- View all button (mobile only) -->
-            <div class="gallery-view-all">
-                <button class="btn btn-secondary btn-sm" onclick="window.openLightbox(window.offplanGalleryImages, 0)">View all ${images.length} photos</button>
             </div>
         </div>
     `;
@@ -1499,14 +1466,13 @@ window.setOffplanGalleryImage = function(index) {
     mainImg.style.opacity = '0';
     mainImg.style.transform = 'scale(1.02)';
     offplanCurrentImageIndex = index;
-    // Update counter and dots immediately
+    // Update counter immediately
     const counter = document.getElementById('offplan-gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    updateDots('offplan-gallery-dots', images.length, index);
     // Update thumbnails active class
-    document.querySelectorAll('#offplan-gallery-thumbs .thumb').forEach((thumb, i) => {
+    document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
     // Change src after fade
@@ -1532,7 +1498,7 @@ function initOffplanGallery() {
         offplanGalleryImages = window.offplanGalleryImages;
     } else {
         // Fallback: read from thumbnails
-        const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb');
+        const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)');
         if (thumbs.length > 0) {
             offplanGalleryImages = Array.from(thumbs).map(thumb => thumb.src);
         } else {
@@ -1549,7 +1515,6 @@ function initOffplanGallery() {
     if (counter && offplanGalleryImages.length > 0) {
         counter.textContent = `1 / ${offplanGalleryImages.length}`;
     }
-    updateDots('offplan-gallery-dots', offplanGalleryImages.length, 0);
 
     // Abort previous offplan gallery controller to remove old event listeners
     if (offplanGalleryController) {
@@ -1560,6 +1525,7 @@ function initOffplanGallery() {
     
     const prevBtn = document.getElementById('offplan-gallery-prev');
     const nextBtn = document.getElementById('offplan-gallery-next');
+    const mainImg = document.getElementById('offplan-gallery-main-image');
     
     if (prevBtn) {
         prevBtn.addEventListener('click', window.prevOffplanImage, { signal });
@@ -1568,6 +1534,25 @@ function initOffplanGallery() {
     if (nextBtn) {
         nextBtn.addEventListener('click', window.nextOffplanImage, { signal });
     }
+
+    // Click on main image: open lightbox only on desktop (>=768px)
+    if (mainImg) {
+        mainImg.addEventListener('click', function() {
+            if (window.innerWidth >= 768) {
+                window.openLightbox(offplanGalleryImages, offplanCurrentImageIndex);
+            }
+        }, { signal });
+    }
+
+    // Click on thumbnails
+    document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
+        thumb.addEventListener('click', function() {
+            const index = parseInt(this.dataset.index);
+            if (!isNaN(index)) {
+                window.setOffplanGalleryImage(index);
+            }
+        }, { signal });
+    });
     
     // Swipe support for mobile
     const mainContainer = document.querySelector('#offplan-gallery-main');
