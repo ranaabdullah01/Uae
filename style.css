@@ -220,7 +220,7 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: 0 16px 40px rgba(11, 59, 46, 0.35);
 }
 
-/* FIXED: Both buttons now use solid brass + white text (matching Back to Properties) */
+/* Solid brass + white text – matches "Back to Properties" style */
 .btn-gold, .btn-secondary {
     background: var(--brass);
     color: var(--white);
@@ -3872,4 +3872,175 @@ footer::before {
 #offplan-gallery-main-image {
     transition: opacity 0.4s ease, transform 0.4s ease;
     will-change: opacity, transform;
+}
+
+/* ============================================================
+   NEW GALLERY MODAL (added for "+N Photos" click)
+   ============================================================ */
+#gallery-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.50);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+#gallery-modal-overlay .gallery-modal {
+    background: var(--paper, #FBF9F4);
+    border-radius: 20px;
+    max-width: 1200px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+    overflow: hidden;
+    position: relative;
+}
+
+#gallery-modal-overlay .gallery-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    z-index: 10;
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--emerald-deep, #072720);
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 300;
+}
+#gallery-modal-overlay .gallery-close:hover {
+    transform: scale(1.2);
+}
+
+#gallery-modal-overlay .gallery-content {
+    display: flex;
+    flex-direction: row;
+    gap: 24px;
+    padding: 24px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#gallery-modal-overlay .gallery-left {
+    flex: 2;
+    position: relative;
+    background: var(--cream-warm, #EFE7D6);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    aspect-ratio: 4/3;
+}
+
+#gallery-modal-overlay .gallery-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+    background: var(--cream-warm, #EFE7D6);
+}
+
+#gallery-modal-overlay .gallery-counter {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    color: var(--cream, #F7F3EA);
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+}
+
+#gallery-modal-overlay .gallery-right {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+#gallery-modal-overlay .gallery-heading {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--emerald-deep, #072720);
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+}
+
+#gallery-modal-overlay .gallery-thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    flex: 1;
+    align-content: start;
+}
+
+#gallery-modal-overlay .gallery-thumb-grid img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 3px solid transparent;
+    cursor: pointer;
+    transition: border 0.2s, transform 0.2s;
+    background: var(--cream-warm, #EFE7D6);
+}
+
+#gallery-modal-overlay .gallery-thumb-grid img.active {
+    border-color: var(--brass, #B08A3E);
+    transform: scale(1.02);
+}
+
+/* Mobile responsive: stack vertically */
+@media (max-width: 768px) {
+    #gallery-modal-overlay .gallery-content {
+        flex-direction: column;
+        padding: 16px;
+        gap: 16px;
+    }
+    #gallery-modal-overlay .gallery-left {
+        min-height: 200px;
+    }
+    #gallery-modal-overlay .gallery-right {
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+    #gallery-modal-overlay .gallery-thumb-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+    #gallery-modal-overlay .gallery-close {
+        top: 12px;
+        right: 16px;
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    #gallery-modal-overlay .gallery-thumb-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
