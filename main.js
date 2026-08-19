@@ -1215,6 +1215,33 @@ function renderListingDetail(listing) {
 let currentImageIndex = 0;
 let galleryImages = [];
 
+function transitionMainGalleryImage(mainImg, src, alt) {
+    const requestId = String((Number(mainImg.dataset.imageRequestId) || 0) + 1);
+    mainImg.dataset.imageRequestId = requestId;
+
+    // A navigation always starts the next image at its normal zoom state.
+    mainImg.style.transition = '';
+    mainImg.style.transform = 'scale(1)';
+    mainImg.style.transformOrigin = 'center center';
+
+    // Keep the current image painted until the incoming source is ready, so the
+    // gallery never exposes its background while an image is changing.
+    const incomingImage = new Image();
+    const showIncomingImage = () => {
+        if (mainImg.dataset.imageRequestId !== requestId || !mainImg.isConnected) return;
+
+        mainImg.src = src;
+        mainImg.alt = alt;
+        mainImg.classList.remove('gallery-image-transition');
+        void mainImg.offsetWidth;
+        mainImg.classList.add('gallery-image-transition');
+        setTimeout(() => mainImg.classList.remove('gallery-image-transition'), 400);
+    };
+    incomingImage.onload = showIncomingImage;
+    incomingImage.onerror = showIncomingImage;
+    incomingImage.src = src;
+}
+
 window.setGalleryImage = function(index) {
     const images = galleryImages;
     if (!images || images.length === 0) return;
@@ -1222,9 +1249,6 @@ window.setGalleryImage = function(index) {
     if (index >= images.length) index = 0;
     const mainImg = document.getElementById('gallery-main-image');
     if (!mainImg) return;
-    // Fade out
-    mainImg.style.opacity = '0';
-    mainImg.style.transform = 'scale(1.02)';
     currentImageIndex = index;
     // Update counter immediately
     const counter = document.getElementById('gallery-counter');
@@ -1235,13 +1259,7 @@ window.setGalleryImage = function(index) {
     document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
-    // Change src after fade
-    setTimeout(() => {
-        mainImg.src = images[index];
-        mainImg.alt = `Image ${index + 1}`;
-        mainImg.style.opacity = '1';
-        mainImg.style.transform = 'scale(1)';
-    }, 200);
+    transitionMainGalleryImage(mainImg, images[index], `Image ${index + 1}`);
 };
 
 window.prevImage = function() {
@@ -1273,6 +1291,11 @@ function initHoverZoom(containerId, imageId) {
 
     let isZooming = false;
 
+    function isOverImage(e) {
+        const target = document.elementFromPoint(e.clientX, e.clientY);
+        return target === image;
+    }
+
     function updateZoom(e) {
         const rect = container.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
@@ -1285,8 +1308,8 @@ function initHoverZoom(containerId, imageId) {
     }
 
     function startZoom(e) {
-        // If mouse enters the deep gallery overlay, ignore
-        if (e.target.closest('#gallery-modal-overlay')) return;
+        // Controls sit over the image, so only start zooming over visible pixels.
+        if (e.target.closest('#gallery-modal-overlay') || !isOverImage(e)) return;
         isZooming = true;
         image.style.transition = 'transform 0.2s ease, transform-origin 0s ease';
         updateZoom(e);
@@ -1294,7 +1317,10 @@ function initHoverZoom(containerId, imageId) {
 
     function moveZoom(e) {
         if (!isZooming) return;
-        if (e.target.closest('#gallery-modal-overlay')) return;
+        if (e.target.closest('#gallery-modal-overlay') || !isOverImage(e)) {
+            endZoom();
+            return;
+        }
         updateZoom(e);
     }
 
@@ -1750,9 +1776,6 @@ window.setOffplanGalleryImage = function(index) {
     if (index >= images.length) index = 0;
     const mainImg = document.getElementById('offplan-gallery-main-image');
     if (!mainImg) return;
-    // Fade out
-    mainImg.style.opacity = '0';
-    mainImg.style.transform = 'scale(1.02)';
     offplanCurrentImageIndex = index;
     // Update counter immediately
     const counter = document.getElementById('offplan-gallery-counter');
@@ -1769,13 +1792,7 @@ window.setOffplanGalleryImage = function(index) {
             thumb.classList.remove('active');
         }
     });
-    // Change src after fade
-    setTimeout(() => {
-        mainImg.src = images[index];
-        mainImg.alt = `Image ${index + 1}`;
-        mainImg.style.opacity = '1';
-        mainImg.style.transform = 'scale(1)';
-    }, 200);
+    transitionMainGalleryImage(mainImg, images[index], `Image ${index + 1}`);
 };
 
 window.prevOffplanImage = function() {
