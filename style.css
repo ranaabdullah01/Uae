@@ -3986,3 +3986,10 @@ footer::before {
         grid-template-columns: repeat(2, 1fr);
     }
 }
+/* Desktop hover zoom: cursor change on main image container */
+@media (min-width: 1024px) {
+    #gallery-main,
+    #offplan-gallery-main {
+        cursor: zoom-in;
+    }
+}
