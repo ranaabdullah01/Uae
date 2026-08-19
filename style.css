@@ -2518,6 +2518,18 @@ nav .nav-container {
     box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
 }
 
+/* Keep the detail gallery visible on desktop, bounded by the main detail row. */
+@media (min-width: 1024px) {
+    .listing-detail-left-col {
+        align-self: stretch;
+    }
+
+    .listing-detail-gallery {
+        position: sticky;
+        top: 96px;
+    }
+}
+
 .gallery-main {
     position: relative;
     aspect-ratio: 16/9;
