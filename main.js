@@ -195,15 +195,25 @@ function showToast(message, type = 'success') {
 let galleryModalOpen = false;
 
 function openGalleryModal(images, startIndex = 0) {
-    if (!images || images.length === 0) return;
-    if (galleryModalOpen) return;
+    if (!images || images.length === 0) {
+        console.warn('openGalleryModal: no images provided');
+        return;
+    }
+    if (galleryModalOpen) {
+        console.warn('Gallery already open');
+        return;
+    }
 
-    // Normalize images array (in case it's a string with commas)
+    // Normalize images array
     let imageList = Array.isArray(images) ? images : (typeof images === 'string' ? images.split(',').map(s => s.trim()).filter(s => s) : []);
-    if (imageList.length === 0) return;
+    if (imageList.length === 0) {
+        console.warn('openGalleryModal: empty image list after normalization');
+        return;
+    }
 
     const total = imageList.length;
     const isMobile = window.innerWidth < 768;
+    console.log(`Opening gallery with ${total} images, mobile: ${isMobile}`);
 
     // Create overlay
     const overlay = document.createElement('div');
@@ -224,12 +234,12 @@ function openGalleryModal(images, startIndex = 0) {
         font-family: 'Inter', sans-serif;
     `;
 
-    // Modal container - white background
+    // Modal container – pure white
     const modal = document.createElement('div');
     modal.style.cssText = `
         background: #ffffff;
         border-radius: 20px;
-        max-width: ${isMobile ? '100%' : '1200px'};
+        max-width: 1200px;
         width: 100%;
         max-height: 90vh;
         display: flex;
@@ -239,14 +249,13 @@ function openGalleryModal(images, startIndex = 0) {
         position: relative;
         margin: 0 auto;
     `;
-    // For mobile, ensure full width with small margin
     if (isMobile) {
         modal.style.maxWidth = '100%';
         modal.style.margin = '0 10px';
         modal.style.borderRadius = '16px';
     }
 
-    // Close button (X)
+    // Close button
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '&times;';
     closeBtn.style.cssText = `
@@ -269,7 +278,7 @@ function openGalleryModal(images, startIndex = 0) {
     closeBtn.addEventListener('mouseleave', () => { closeBtn.style.transform = 'scale(1)'; });
     closeBtn.addEventListener('click', closeGalleryModal);
 
-    // Header with "All Photos (N)"
+    // Header
     const header = document.createElement('div');
     header.style.cssText = `
         padding: 20px 24px 16px 24px;
@@ -285,13 +294,7 @@ function openGalleryModal(images, startIndex = 0) {
         align-items: center;
     `;
     header.textContent = `All Photos (${total})`;
-    // Move close button into header
     header.appendChild(closeBtn);
-    // But we already appended closeBtn to modal, so remove it and re-append to header
-    modal.removeChild(closeBtn);
-    header.appendChild(closeBtn);
-
-    modal.appendChild(header);
 
     // Content area
     const content = document.createElement('div');
@@ -304,17 +307,17 @@ function openGalleryModal(images, startIndex = 0) {
 
     if (isMobile) {
         // MOBILE: vertical stacked images
-        imageList.forEach((src, idx) => {
+        imageList.forEach((src) => {
             const imgWrapper = document.createElement('div');
             imgWrapper.style.cssText = `
                 margin-bottom: 12px;
                 border-radius: 12px;
                 overflow: hidden;
-                background: #f8f6f2; /* subtle placeholder */
+                background: #f8f6f2;
             `;
             const img = document.createElement('img');
             img.src = src;
-            img.alt = `Image ${idx + 1}`;
+            img.alt = 'Property image';
             img.style.cssText = `
                 display: block;
                 width: 100%;
@@ -325,8 +328,7 @@ function openGalleryModal(images, startIndex = 0) {
             content.appendChild(imgWrapper);
         });
     } else {
-        // DESKTOP: large image + thumbnail grid (existing layout)
-        // We'll keep the same two-column layout but ensure white background
+        // DESKTOP: large image + thumbnail grid
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
             display: flex;
@@ -334,6 +336,7 @@ function openGalleryModal(images, startIndex = 0) {
             gap: 24px;
             min-height: 0;
             height: 100%;
+            align-items: stretch;
         `;
 
         // Left: large image
@@ -362,7 +365,6 @@ function openGalleryModal(images, startIndex = 0) {
         largeImg.src = imageList[0];
         largeImg.alt = 'Gallery image';
 
-        // Counter
         const counter = document.createElement('div');
         counter.style.cssText = `
             position: absolute;
@@ -383,7 +385,7 @@ function openGalleryModal(images, startIndex = 0) {
         leftCol.appendChild(largeImg);
         leftCol.appendChild(counter);
 
-        // Right: thumbnails grid
+        // Right: thumbnails
         const rightCol = document.createElement('div');
         rightCol.style.cssText = `
             flex: 1.2;
@@ -403,7 +405,6 @@ function openGalleryModal(images, startIndex = 0) {
             align-content: start;
         `;
 
-        // Create thumbnails
         const thumbnails = [];
         imageList.forEach((src, idx) => {
             const thumb = document.createElement('img');
@@ -436,19 +437,17 @@ function openGalleryModal(images, startIndex = 0) {
         desktopContent.appendChild(rightCol);
         content.appendChild(desktopContent);
 
-        // Desktop setGalleryImage function
+        // setGalleryImage function
         function setGalleryImage(index) {
             if (index < 0 || index >= total) return;
-            // Update large image with fade
+            // Fade large image
             largeImg.style.opacity = '0';
             setTimeout(() => {
                 largeImg.src = imageList[index];
                 largeImg.alt = `Image ${index + 1}`;
                 largeImg.style.opacity = '1';
             }, 150);
-            // Update counter
             counter.textContent = `${index + 1} / ${total}`;
-            // Update thumbnails
             thumbnails.forEach((thumb, i) => {
                 if (i === index) {
                     thumb.style.borderColor = 'var(--brass, #B08A3E)';
@@ -460,13 +459,15 @@ function openGalleryModal(images, startIndex = 0) {
             });
         }
 
-        // Keyboard support for desktop
+        // Keyboard navigation (desktop only)
         const keyHandlerDesktop = (e) => {
             if (e.key === 'ArrowLeft') {
-                const currentIndex = imageList.indexOf(largeImg.src);
+                const currentSrc = largeImg.src;
+                const currentIndex = imageList.indexOf(currentSrc);
                 setGalleryImage(currentIndex - 1);
             } else if (e.key === 'ArrowRight') {
-                const currentIndex = imageList.indexOf(largeImg.src);
+                const currentSrc = largeImg.src;
+                const currentIndex = imageList.indexOf(currentSrc);
                 setGalleryImage(currentIndex + 1);
             }
         };
@@ -477,11 +478,12 @@ function openGalleryModal(images, startIndex = 0) {
         };
     }
 
+    modal.appendChild(header);
     modal.appendChild(content);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Force reflow for animation
+    // Force reflow for fade-in
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
     });
@@ -494,7 +496,6 @@ function openGalleryModal(images, startIndex = 0) {
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             galleryModalOpen = false;
-            // Cleanup desktop key listeners if any
             if (window._galleryDesktopCleanup) {
                 window._galleryDesktopCleanup();
                 delete window._galleryDesktopCleanup;
@@ -504,13 +505,11 @@ function openGalleryModal(images, startIndex = 0) {
 
     // Escape key closes
     const keyHandler = (e) => {
-        if (e.key === 'Escape') {
-            closeGalleryModal();
-        }
+        if (e.key === 'Escape') closeGalleryModal();
     };
     document.addEventListener('keydown', keyHandler);
 
-    // Override close function to remove key listener
+    // Override close to remove key listener
     const originalClose = closeGalleryModal;
     closeGalleryModal = function() {
         document.removeEventListener('keydown', keyHandler);
