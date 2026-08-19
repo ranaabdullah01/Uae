@@ -2518,15 +2518,28 @@ nav .nav-container {
     box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
 }
 
-/* Keep the detail gallery visible on desktop, bounded by the main detail row. */
+/* Keep the complete desktop left column within the main detail row. */
+.detail-left-back {
+    display: none;
+}
+
 @media (min-width: 1024px) {
     .listing-detail-left-col {
-        align-self: stretch;
+        position: sticky;
+        top: 96px;
+        align-self: start;
     }
 
     .listing-detail-gallery {
-        position: sticky;
-        top: 96px;
+        position: relative;
+    }
+
+    .listing-detail-top-bar .btn-secondary {
+        display: none;
+    }
+
+    .detail-left-back {
+        display: inline-flex;
     }
 }
 
