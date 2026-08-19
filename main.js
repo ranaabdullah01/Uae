@@ -203,7 +203,7 @@ function openGalleryModal(images, startIndex = 0) {
     if (imageList.length === 0) return;
 
     const total = imageList.length;
-    const isMobile = window.innerWidth < 768;
+    let currentIndex = Math.min(Math.max(startIndex, 0), total - 1);
 
     // Create overlay
     const overlay = document.createElement('div');
@@ -224,12 +224,12 @@ function openGalleryModal(images, startIndex = 0) {
         font-family: 'Inter', sans-serif;
     `;
 
-    // Modal container - white background
+    // Modal container
     const modal = document.createElement('div');
     modal.style.cssText = `
-        background: #ffffff;
+        background: var(--paper, #FBF9F4);
         border-radius: 20px;
-        max-width: ${isMobile ? '100%' : '1200px'};
+        max-width: 1200px;
         width: 100%;
         max-height: 90vh;
         display: flex;
@@ -237,14 +237,7 @@ function openGalleryModal(images, startIndex = 0) {
         box-shadow: 0 24px 80px rgba(0,0,0,0.3);
         overflow: hidden;
         position: relative;
-        margin: 0 auto;
     `;
-    // For mobile, ensure full width with small margin
-    if (isMobile) {
-        modal.style.maxWidth = '100%';
-        modal.style.margin = '0 10px';
-        modal.style.borderRadius = '16px';
-    }
 
     // Close button (X)
     const closeBtn = document.createElement('button');
@@ -269,214 +262,130 @@ function openGalleryModal(images, startIndex = 0) {
     closeBtn.addEventListener('mouseleave', () => { closeBtn.style.transform = 'scale(1)'; });
     closeBtn.addEventListener('click', closeGalleryModal);
 
-    // Header with "All Photos (N)"
-    const header = document.createElement('div');
-    header.style.cssText = `
-        padding: 20px 24px 16px 24px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-weight: 600;
-        font-size: 18px;
-        color: var(--emerald-deep, #072720);
-        letter-spacing: -0.02em;
-        border-bottom: 1px solid var(--line, #E4DDCC);
-        flex-shrink: 0;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    `;
-    header.textContent = `All Photos (${total})`;
-    // Move close button into header
-    header.appendChild(closeBtn);
-    // But we already appended closeBtn to modal, so remove it and re-append to header
-    modal.removeChild(closeBtn);
-    header.appendChild(closeBtn);
-
-    modal.appendChild(header);
-
-    // Content area
+    // Main content area: flex row on desktop, column on mobile
     const content = document.createElement('div');
     content.style.cssText = `
+        display: flex;
+        flex-direction: row;
+        gap: 24px;
+        padding: 24px 24px 24px 24px;
         flex: 1;
-        overflow-y: auto;
-        padding: ${isMobile ? '12px 16px 20px' : '24px'};
-        background: #ffffff;
+        min-height: 0;
+        overflow: hidden;
     `;
 
-    if (isMobile) {
-        // MOBILE: vertical stacked images
-        imageList.forEach((src, idx) => {
-            const imgWrapper = document.createElement('div');
-            imgWrapper.style.cssText = `
-                margin-bottom: 12px;
-                border-radius: 12px;
-                overflow: hidden;
-                background: #f8f6f2; /* subtle placeholder */
-            `;
-            const img = document.createElement('img');
-            img.src = src;
-            img.alt = `Image ${idx + 1}`;
-            img.style.cssText = `
-                display: block;
-                width: 100%;
-                height: auto;
-                border-radius: 12px;
-            `;
-            imgWrapper.appendChild(img);
-            content.appendChild(imgWrapper);
-        });
-    } else {
-        // DESKTOP: large image + thumbnail grid (existing layout)
-        // We'll keep the same two-column layout but ensure white background
-        const desktopContent = document.createElement('div');
-        desktopContent.style.cssText = `
-            display: flex;
-            flex-direction: row;
-            gap: 24px;
-            min-height: 0;
-            height: 100%;
-        `;
+    // Left: large image
+    const leftCol = document.createElement('div');
+    leftCol.style.cssText = `
+        flex: 2;
+        position: relative;
+        background: var(--cream-warm, #EFE7D6);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+        aspect-ratio: 4/3;
+    `;
 
-        // Left: large image
-        const leftCol = document.createElement('div');
-        leftCol.style.cssText = `
-            flex: 2;
-            position: relative;
-            background: #f8f6f2;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-            aspect-ratio: 4/3;
-        `;
+    const largeImg = document.createElement('img');
+    largeImg.style.cssText = `
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: opacity 0.3s ease;
+        background: var(--cream-warm, #EFE7D6);
+    `;
+    largeImg.src = imageList[currentIndex];
+    largeImg.alt = 'Gallery image';
 
-        const largeImg = document.createElement('img');
-        largeImg.style.cssText = `
+    // Counter
+    const counter = document.createElement('div');
+    counter.style.cssText = `
+        position: absolute;
+        bottom: 16px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(4px);
+        color: var(--cream, #F7F3EA);
+        padding: 4px 14px;
+        border-radius: 100px;
+        font-size: 13px;
+        font-weight: 500;
+        letter-spacing: 0.04em;
+        pointer-events: none;
+    `;
+    counter.textContent = `${currentIndex + 1} / ${total}`;
+
+    leftCol.appendChild(largeImg);
+    leftCol.appendChild(counter);
+
+    // Right: thumbnails grid
+    const rightCol = document.createElement('div');
+    rightCol.style.cssText = `
+        flex: 1.2;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        max-height: 100%;
+        overflow-y: auto;
+    `;
+
+    const heading = document.createElement('div');
+    heading.style.cssText = `
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 600;
+        font-size: 16px;
+        color: var(--emerald-deep, #072720);
+        margin-bottom: 14px;
+        letter-spacing: -0.02em;
+    `;
+    heading.textContent = `All Photos (${total})`;
+
+    const thumbGrid = document.createElement('div');
+    thumbGrid.style.cssText = `
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        flex: 1;
+        align-content: start;
+    `;
+
+    // Create thumbnails
+    const thumbnails = [];
+    imageList.forEach((src, idx) => {
+        const thumb = document.createElement('img');
+        thumb.src = src;
+        thumb.alt = `Thumbnail ${idx + 1}`;
+        thumb.dataset.index = idx;
+        thumb.style.cssText = `
             width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: opacity 0.3s ease;
-            background: #f8f6f2;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: border 0.2s, transform 0.2s;
+            background: var(--cream-warm, #EFE7D6);
         `;
-        largeImg.src = imageList[0];
-        largeImg.alt = 'Gallery image';
-
-        // Counter
-        const counter = document.createElement('div');
-        counter.style.cssText = `
-            position: absolute;
-            bottom: 16px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(4px);
-            color: var(--cream, #F7F3EA);
-            padding: 4px 14px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            pointer-events: none;
-        `;
-        counter.textContent = `1 / ${total}`;
-
-        leftCol.appendChild(largeImg);
-        leftCol.appendChild(counter);
-
-        // Right: thumbnails grid
-        const rightCol = document.createElement('div');
-        rightCol.style.cssText = `
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            max-height: 100%;
-            overflow-y: auto;
-        `;
-
-        const thumbGrid = document.createElement('div');
-        thumbGrid.style.cssText = `
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            flex: 1;
-            align-content: start;
-        `;
-
-        // Create thumbnails
-        const thumbnails = [];
-        imageList.forEach((src, idx) => {
-            const thumb = document.createElement('img');
-            thumb.src = src;
-            thumb.alt = `Thumbnail ${idx + 1}`;
-            thumb.dataset.index = idx;
-            thumb.style.cssText = `
-                width: 100%;
-                aspect-ratio: 1/1;
-                object-fit: cover;
-                border-radius: 8px;
-                border: 3px solid transparent;
-                cursor: pointer;
-                transition: border 0.2s, transform 0.2s;
-                background: #f8f6f2;
-            `;
-            if (idx === 0) {
-                thumb.style.borderColor = 'var(--brass, #B08A3E)';
-                thumb.style.transform = 'scale(1.02)';
-            }
-            thumb.addEventListener('click', () => {
-                setGalleryImage(idx);
-            });
-            thumbGrid.appendChild(thumb);
-            thumbnails.push(thumb);
-        });
-
-        rightCol.appendChild(thumbGrid);
-        desktopContent.appendChild(leftCol);
-        desktopContent.appendChild(rightCol);
-        content.appendChild(desktopContent);
-
-        // Desktop setGalleryImage function
-        function setGalleryImage(index) {
-            if (index < 0 || index >= total) return;
-            // Update large image with fade
-            largeImg.style.opacity = '0';
-            setTimeout(() => {
-                largeImg.src = imageList[index];
-                largeImg.alt = `Image ${index + 1}`;
-                largeImg.style.opacity = '1';
-            }, 150);
-            // Update counter
-            counter.textContent = `${index + 1} / ${total}`;
-            // Update thumbnails
-            thumbnails.forEach((thumb, i) => {
-                if (i === index) {
-                    thumb.style.borderColor = 'var(--brass, #B08A3E)';
-                    thumb.style.transform = 'scale(1.02)';
-                } else {
-                    thumb.style.borderColor = 'transparent';
-                    thumb.style.transform = 'scale(1)';
-                }
-            });
+        if (idx === currentIndex) {
+            thumb.style.borderColor = 'var(--brass, #B08A3E)';
+            thumb.style.transform = 'scale(1.02)';
         }
+        thumb.addEventListener('click', () => {
+            setGalleryImage(idx);
+        });
+        thumbGrid.appendChild(thumb);
+        thumbnails.push(thumb);
+    });
 
-        // Keyboard support for desktop
-        const keyHandlerDesktop = (e) => {
-            if (e.key === 'ArrowLeft') {
-                const currentIndex = imageList.indexOf(largeImg.src);
-                setGalleryImage(currentIndex - 1);
-            } else if (e.key === 'ArrowRight') {
-                const currentIndex = imageList.indexOf(largeImg.src);
-                setGalleryImage(currentIndex + 1);
-            }
-        };
-        document.addEventListener('keydown', keyHandlerDesktop);
-        // Store cleanup
-        window._galleryDesktopCleanup = () => {
-            document.removeEventListener('keydown', keyHandlerDesktop);
-        };
-    }
+    rightCol.appendChild(heading);
+    rightCol.appendChild(thumbGrid);
 
+    content.appendChild(leftCol);
+    content.appendChild(rightCol);
+    modal.appendChild(closeBtn);
     modal.appendChild(content);
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
@@ -488,38 +397,68 @@ function openGalleryModal(images, startIndex = 0) {
 
     galleryModalOpen = true;
 
+    // Functions
+    function setGalleryImage(index) {
+        if (index < 0 || index >= total) return;
+        currentIndex = index;
+        // Update large image with fade
+        largeImg.style.opacity = '0';
+        setTimeout(() => {
+            largeImg.src = imageList[index];
+            largeImg.alt = `Image ${index + 1}`;
+            largeImg.style.opacity = '1';
+        }, 150);
+        // Update counter
+        counter.textContent = `${index + 1} / ${total}`;
+        // Update thumbnails
+        thumbnails.forEach((thumb, i) => {
+            if (i === index) {
+                thumb.style.borderColor = 'var(--brass, #B08A3E)';
+                thumb.style.transform = 'scale(1.02)';
+            } else {
+                thumb.style.borderColor = 'transparent';
+                thumb.style.transform = 'scale(1)';
+            }
+        });
+    }
+
     function closeGalleryModal() {
         if (!galleryModalOpen) return;
         overlay.style.opacity = '0';
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             galleryModalOpen = false;
-            // Cleanup desktop key listeners if any
-            if (window._galleryDesktopCleanup) {
-                window._galleryDesktopCleanup();
-                delete window._galleryDesktopCleanup;
-            }
         }, 300);
     }
 
-    // Escape key closes
+    // Expose functions to the closure
+    window._galleryModal = { setGalleryImage, closeGalleryModal };
+
+    // Keyboard events
     const keyHandler = (e) => {
         if (e.key === 'Escape') {
             closeGalleryModal();
+        } else if (e.key === 'ArrowLeft') {
+            setGalleryImage(currentIndex - 1);
+        } else if (e.key === 'ArrowRight') {
+            setGalleryImage(currentIndex + 1);
         }
     };
     document.addEventListener('keydown', keyHandler);
-
-    // Override close function to remove key listener
+    // Clean up listener on close
     const originalClose = closeGalleryModal;
     closeGalleryModal = function() {
         document.removeEventListener('keydown', keyHandler);
         originalClose();
     };
+    // Update the close button to use the new close
     closeBtn.onclick = closeGalleryModal;
+    // Also close on overlay click (but not on modal click)
     overlay.addEventListener('click', (e) => {
         if (e.target === overlay) closeGalleryModal();
     });
+
+    // Handle resize – no extra action needed, flex layout handles it.
 }
 
 // ============= LOAD DATA FROM API =============
