@@ -1654,9 +1654,6 @@ function renderOffplanDetail(project) {
             <div class="listing-detail-container">
                 <div class="listing-detail-left-col">
                     ${gallery}
-                    <button class="btn btn-secondary offplan-detail-back" onclick="window.showOffplanList()">
-                        <i class="fas fa-arrow-left"></i> BACK TO OFF-PLAN
-                    </button>
                 </div>
 
                 <div class="listing-detail-right-col">
