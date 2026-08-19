@@ -2518,6 +2518,27 @@ nav .nav-container {
     box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
 }
 
+.offplan-detail-back {
+    display: none;
+}
+
+/* Restore the desktop off-plan-only bounded gallery/back column. */
+@media (min-width: 1024px) {
+    #offplan-detail .listing-detail-left-col {
+        position: sticky;
+        top: 96px;
+        align-self: start;
+    }
+
+    #offplan-detail .listing-detail-top-bar .btn-secondary {
+        display: none;
+    }
+
+    #offplan-detail .offplan-detail-back {
+        display: inline-flex;
+    }
+}
+
 .gallery-main {
     position: relative;
     aspect-ratio: 16/9;
