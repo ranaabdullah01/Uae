@@ -1125,9 +1125,6 @@ function renderListingDetail(listing) {
                 <div class="listing-detail-left-col">
                     ${gallery}
                     <div class="desktop-specs">${propertyDetailsHtml}</div>
-                    <button class="btn btn-secondary detail-left-back" onclick="window.showListingList()">
-                        <i class="fas fa-arrow-left"></i> BACK TO PROPERTIES
-                    </button>
                 </div>
 
                 <div class="listing-detail-right-col">
@@ -1657,9 +1654,6 @@ function renderOffplanDetail(project) {
             <div class="listing-detail-container">
                 <div class="listing-detail-left-col">
                     ${gallery}
-                    <button class="btn btn-secondary detail-left-back" onclick="window.showOffplanList()">
-                        <i class="fas fa-arrow-left"></i> BACK TO OFF-PLAN
-                    </button>
                 </div>
 
                 <div class="listing-detail-right-col">
