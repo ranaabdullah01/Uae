@@ -3875,8 +3875,7 @@ footer::before {
 }
 
 /* ============================================================
-   DEEP GALLERY MODAL (triggered by "+N Photos")
-   Pure white background - no cream/beige
+   NEW GALLERY MODAL (added for "+N Photos" click)
    ============================================================ */
 #gallery-modal-overlay {
     position: fixed;
@@ -3895,7 +3894,7 @@ footer::before {
 }
 
 #gallery-modal-overlay .gallery-modal {
-    background: #ffffff;
+    background: var(--paper, #FBF9F4);
     border-radius: 20px;
     max-width: 1200px;
     width: 100%;
@@ -3935,13 +3934,12 @@ footer::before {
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    background: #ffffff;
 }
 
 #gallery-modal-overlay .gallery-left {
     flex: 2;
     position: relative;
-    background: #f8f6f2;
+    background: var(--cream-warm, #EFE7D6);
     border-radius: 12px;
     overflow: hidden;
     display: flex;
@@ -3956,7 +3954,7 @@ footer::before {
     height: 100%;
     object-fit: contain;
     transition: opacity 0.3s ease;
-    background: #f8f6f2;
+    background: var(--cream-warm, #EFE7D6);
 }
 
 #gallery-modal-overlay .gallery-counter {
@@ -3981,7 +3979,6 @@ footer::before {
     min-width: 0;
     max-height: 100%;
     overflow-y: auto;
-    background: #ffffff;
 }
 
 #gallery-modal-overlay .gallery-heading {
@@ -4009,7 +4006,7 @@ footer::before {
     border: 3px solid transparent;
     cursor: pointer;
     transition: border 0.2s, transform 0.2s;
-    background: #f8f6f2;
+    background: var(--cream-warm, #EFE7D6);
 }
 
 #gallery-modal-overlay .gallery-thumb-grid img.active {
@@ -4017,22 +4014,7 @@ footer::before {
     transform: scale(1.02);
 }
 
-/* Mobile: vertical stacked images */
-#gallery-modal-overlay .gallery-mobile-image {
-    margin-bottom: 12px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #f8f6f2;
-}
-
-#gallery-modal-overlay .gallery-mobile-image img {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 12px;
-}
-
-/* Responsive */
+/* Mobile responsive: stack vertically */
 @media (max-width: 768px) {
     #gallery-modal-overlay .gallery-content {
         flex-direction: column;
