@@ -220,7 +220,6 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: 0 16px 40px rgba(11, 59, 46, 0.35);
 }
 
-/* Solid brass + white text – matches "Back to Properties" style */
 .btn-gold, .btn-secondary {
     background: var(--brass);
     color: var(--white);
@@ -2477,12 +2476,10 @@ nav .nav-container {
     margin-bottom: 24px;
 }
 
-/* FIXED: "Back to Properties" now inherits .btn-secondary styles (solid brass + white text) */
 .listing-detail-top-bar .btn-secondary {
     margin-bottom: 0;
     padding: 10px 24px;
     font-size: 12px;
-    /* No custom background/color – inherits from global .btn-secondary */
     box-shadow: 0 4px 16px rgba(176, 138, 62, 0.25);
 }
 
@@ -3767,14 +3764,12 @@ footer::before {
 
 /* ===== MOBILE OVERRIDE (max-width: 1023px) ===== */
 @media (max-width: 1023px) {
-    /* Switch container from grid to flex column */
     .listing-detail-container {
         display: flex !important;
         flex-direction: column !important;
         gap: 28px !important;
     }
 
-    /* Left col (Gallery) goes first, Right col (all text) goes second */
     .listing-detail-left-col {
         order: 1 !important;
         width: 100% !important;
@@ -3784,94 +3779,23 @@ footer::before {
         width: 100% !important;
     }
 
-    /* Hide desktop specs (was in left col) */
     .desktop-specs {
         display: none !important;
     }
 
-    /* Show mobile specs (now in right col, after features) */
     .mobile-specs {
         display: block !important;
     }
 
-    /* Optional: remove extra top margin if the card looks off */
     .mobile-specs .listing-detail-card {
         margin-top: 0 !important;
     }
 }
 
-/* Ensure mobile specs stay hidden on desktop */
 @media (min-width: 1024px) {
     .mobile-specs {
         display: none !important;
     }
-}
-/* For gallery */
-
-/* Lightbox gallery */
-#lightbox-overlay {
-    display: none;
-}
-#lightbox-prev:hover, #lightbox-next:hover {
-    background: rgba(255,255,255,0.4);
-}
-#lightbox-close:hover {
-    transform: scale(1.2);
-    color: #fff;
-}
-#lightbox-image {
-    transition: opacity 0.3s ease;
-}
-/* For scrolling*/
-/* Off-Plan Gallery Sticky on Desktop */
-@media (min-width: 1024px) {
-    .listing-detail-left-col {
-        position: sticky;
-        top: 30px;
-        align-self: flex-start;
-        height: fit-content;
-    }
-}
-/* 18/08/2026 10:37 Update*/
-/* Gallery dots and view all button */
-.gallery-dots {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 0 6px 0;
-}
-.gallery-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--line);
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-.gallery-dot.active {
-    background: var(--brass);
-    transform: scale(1.2);
-}
-.gallery-view-all {
-    text-align: center;
-    padding: 8px 0 12px 0;
-}
-.gallery-view-all .btn {
-    font-size: 13px;
-    min-width: 120px;
-}
-/* Hide dots and view all on desktop (they are shown on mobile) */
-@media (min-width: 768px) {
-    .gallery-dots,
-    .gallery-view-all {
-        display: none !important;
-    }
-}
-/* Smooth transition for main image */
-#gallery-main-image,
-#offplan-gallery-main-image {
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    will-change: opacity, transform;
 }
 
 /* ============================================================
