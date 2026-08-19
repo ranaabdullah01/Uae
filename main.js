@@ -1252,6 +1252,72 @@ window.nextImage = function() {
     window.setGalleryImage(currentImageIndex + 1);
 };
 
+// ============= HOVER ZOOM (Desktop only) =============
+function initHoverZoom(containerId, imageId) {
+    // Only on desktop (>=1024px)
+    if (window.innerWidth < 1024) return;
+
+    const container = document.getElementById(containerId);
+    const image = document.getElementById(imageId);
+    if (!container || !image) return;
+
+    // Remove previous listeners if any (using AbortController)
+    if (container._zoomController) {
+        container._zoomController.abort();
+        delete container._zoomController;
+    }
+
+    const controller = new AbortController();
+    container._zoomController = controller;
+    const signal = controller.signal;
+
+    let isZooming = false;
+
+    function updateZoom(e) {
+        const rect = container.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        // Clamp to avoid going out of bounds
+        const clampedX = Math.min(Math.max(x, 0), 1);
+        const clampedY = Math.min(Math.max(y, 0), 1);
+        image.style.transformOrigin = `${clampedX * 100}% ${clampedY * 100}%`;
+        image.style.transform = 'scale(2.5)';
+    }
+
+    function startZoom(e) {
+        // If mouse enters the deep gallery overlay, ignore
+        if (e.target.closest('#gallery-modal-overlay')) return;
+        isZooming = true;
+        image.style.transition = 'transform 0.2s ease, transform-origin 0s ease';
+        updateZoom(e);
+    }
+
+    function moveZoom(e) {
+        if (!isZooming) return;
+        if (e.target.closest('#gallery-modal-overlay')) return;
+        updateZoom(e);
+    }
+
+    function endZoom(e) {
+        if (!isZooming) return;
+        isZooming = false;
+        image.style.transition = 'transform 0.25s ease';
+        image.style.transform = 'scale(1)';
+        // Reset transform-origin after transition
+        setTimeout(() => {
+            image.style.transformOrigin = 'center center';
+        }, 250);
+    }
+
+    container.addEventListener('mouseenter', startZoom, { signal });
+    container.addEventListener('mousemove', moveZoom, { signal });
+    container.addEventListener('mouseleave', endZoom, { signal });
+
+    // Also handle if deep gallery opens while zoom is active
+    // The deep gallery overlay will capture mouse events, but we already check .closest('#gallery-modal-overlay')
+    // so it will stop updating zoom when entering the overlay.
+}
+
 function initGallery() {
     // Use the full images array if available (set in renderListingDetail)
     if (window.galleryImages && window.galleryImages.length > 0) {
@@ -1296,7 +1362,6 @@ function initGallery() {
     }
 
     // Main image click: do nothing (removed the lightbox)
-    // We keep the mainImg but remove its click listener.
 
     // Click on thumbnails (regular thumbs, not the more-photos tile)
     document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
@@ -1332,6 +1397,9 @@ function initGallery() {
         mainContainer.addEventListener('touchstart', touchStartHandler, { signal, passive: true });
         mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
+
+    // Initialize hover zoom for the main image (desktop only)
+    initHoverZoom('gallery-main', 'gallery-main-image');
 }
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
@@ -1800,6 +1868,9 @@ function initOffplanGallery() {
         mainContainer.addEventListener('touchstart', touchStartHandler, { signal, passive: true });
         mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
+
+    // Initialize hover zoom for the offplan main image (desktop only)
+    initHoverZoom('offplan-gallery-main', 'offplan-gallery-main-image');
 }
 
 window.scheduleConsultation = function(projectName) {
@@ -2679,4 +2750,4 @@ window.setOffplanGalleryImage = setOffplanGalleryImage;
 window.prevOffplanImage = prevOffplanImage;
 window.nextOffplanImage = nextOffplanImage;
 window.initOffplanGallery = initOffplanGallery;
-window.openGalleryModal = openGalleryModal;  // expose new gallery function
+window.openGalleryModal = openGalleryModal;
