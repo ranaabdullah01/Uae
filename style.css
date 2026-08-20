@@ -4017,6 +4017,23 @@ footer::before {
 /* ============================================================
    COMMUNITY DETAIL PAGE STYLES
    ============================================================ */
+/* Community detail back button: match the existing Off-Plan detail back button. */
+.community-detail-back-button {
+    margin-bottom: 20px;
+    display: inline-flex;
+    white-space: nowrap;
+    padding: 10px 24px;
+    font-size: 12px;
+    line-height: normal;
+    min-height: 0;
+    box-shadow: 0 4px 16px rgba(176, 138, 62, 0.25);
+}
+
+.community-detail-back-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(176, 138, 62, 0.35);
+}
+
 .community-detail-page {
     max-width: 1100px;
     margin: 0 auto;
@@ -4155,6 +4172,13 @@ footer::before {
    COMMUNITY DETAIL RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
+    .community-detail-back-button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px;
+        font-size: 11px;
+    }
+
     .community-detail-hero {
         min-height: 200px;
     }
