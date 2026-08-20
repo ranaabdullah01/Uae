@@ -1,6 +1,7 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // OFF-PLAN / LISTING GALLERY: ORIGINAL MOBILE UI + SMOOTH TRANSITIONS + SWIPE + IDEMPOTENT EVENTS
+// COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -61,7 +62,8 @@ const BASE_PATH = (() => {
     return '';
 })();
 
-const KNOWN_SECTIONS = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog'];
+// ADD 'community' to known sections
+const KNOWN_SECTIONS = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog', 'community'];
 
 function buildPath(sectionId, slug) {
     const parts = [];
@@ -111,6 +113,30 @@ function handleRoute() {
         }
     }
 
+    // Handle community detail
+    if (section === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            navigateTo('community', { push: false, slug: community.slug || community.id });
+            // Show detail, hide grid
+            document.getElementById('communities-grid').style.display = 'none';
+            document.getElementById('community-detail').style.display = 'block';
+            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            return;
+        } else {
+            showNotFound('Community');
+            return;
+        }
+    } else if (section === 'community') {
+        // No slug → show grid
+        document.getElementById('communities-grid').style.display = 'grid';
+        document.getElementById('community-detail').style.display = 'none';
+        renderCommunitiesPage();
+        return;
+    }
+
+    // Existing routing for other sections
     if (section === 'blog' && slug) {
         navigateTo('blog', { push: false });
         window.viewBlogPost(slug, { push: false });
@@ -148,6 +174,13 @@ function handleRoute() {
         window.showOffplanList({ push: false });
     } else {
         navigateTo(section, { push: false });
+    }
+
+    // After loading, if on listings, apply community filter from URL
+    if (section === 'listings' || section === 'home') {
+        setTimeout(() => {
+            applyCommunityFilterFromURL();
+        }, 200);
     }
 }
 
@@ -610,6 +643,8 @@ async function loadAllData() {
     } catch (e) { console.error('Error loading blog:', e); }
 
     updateAllSections();
+    // Apply community filter from URL after data load
+    applyCommunityFilterFromURL();
 }
 
 function loadFromLocalStorage() {
@@ -681,6 +716,17 @@ function updateAllSections() {
         }
     } else if (section === 'listings') {
         if (filterBar) filterBar.style.display = 'grid';
+    }
+
+    // Handle community detail route if already loaded
+    if (section === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            document.getElementById('communities-grid').style.display = 'none';
+            document.getElementById('community-detail').style.display = 'block';
+            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+        }
     }
 
     document.querySelectorAll('input[name="agentSlug"]').forEach(inp => {
@@ -1952,14 +1998,138 @@ function renderCommunities(communitiesData, container) {
                     ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
                 </div>
                 <div class="community-actions">
-                    <a href="#listings" class="btn btn-secondary btn-sm" onclick="window.filterByCommunity('${community.name}')">View Properties</a>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=I'm%20interested%20in%20${encodeURIComponent(community.name)}" target="_blank" class="btn btn-whatsapp btn-sm">Ask About</a>
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();">Ask About</a>
                 </div>
             </div>
         `;
+        // Make the whole card clickable to view community detail, but not if clicking on buttons/links
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('button') || e.target.closest('a')) return;
+            window.viewCommunity(community.slug || community.id);
+        });
         container.appendChild(card);
     });
 }
+
+// ============= COMMUNITY DETAIL FUNCTIONS =============
+
+function renderCommunityDetail(community) {
+    const highlights = Array.isArray(community.highlights) ? community.highlights : (community.highlights ? community.highlights.split(',').map(h => h.trim()).filter(Boolean) : []);
+    const landmarks = Array.isArray(community.nearbyLandmarks) ? community.nearbyLandmarks : (community.nearbyLandmarks ? community.nearbyLandmarks.split(',').map(l => l.trim()).filter(Boolean) : []);
+
+    const imageUrl = community.image || 'https://placehold.co/1200x600/0A1628/C9A84C?text=Community';
+
+    return `
+        <div class="community-detail-page">
+            <div class="community-detail-hero" style="background-image:url('${imageUrl}');">
+                <div class="community-detail-overlay">
+                    <h1>${community.name}</h1>
+                    <div class="community-type-badge">${community.communityType || 'Community'}</div>
+                </div>
+            </div>
+
+            <div class="community-detail-body">
+                <div class="community-detail-description">
+                    ${community.description ? `<p>${community.description}</p>` : ''}
+                    ${community.lifestyle ? `<p><strong>Lifestyle:</strong> ${community.lifestyle}</p>` : ''}
+                </div>
+
+                <div class="community-detail-stats">
+                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Apartment Price</span>
+                            <span class="stat-value">${community.avgApartmentPrice}</span>
+                        </div>
+                    ` : ''}
+                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Villa Price</span>
+                            <span class="stat-value">${community.avgVillaPrice}</span>
+                        </div>
+                    ` : ''}
+                    ${community.avgRentalYield ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Rental Yield</span>
+                            <span class="stat-value">${community.avgRentalYield}</span>
+                        </div>
+                    ` : ''}
+                    ${community.avgRent1BR ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Rent 1BR</span>
+                            <span class="stat-value">${community.avgRent1BR}</span>
+                        </div>
+                    ` : ''}
+                    ${community.avgRent2BR ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Avg Rent 2BR</span>
+                            <span class="stat-value">${community.avgRent2BR}</span>
+                        </div>
+                    ` : ''}
+                    ${community.metroStation ? `
+                        <div class="stat-item">
+                            <span class="stat-label">Metro Station</span>
+                            <span class="stat-value">${community.metroStation}</span>
+                        </div>
+                    ` : ''}
+                </div>
+
+                ${highlights.length > 0 ? `
+                    <div class="community-detail-section">
+                        <h3>Highlights</h3>
+                        <div class="community-detail-tags">
+                            ${highlights.map(h => `<span class="tag">${h}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                ${landmarks.length > 0 ? `
+                    <div class="community-detail-section">
+                        <h3>Nearby Landmarks</h3>
+                        <div class="community-detail-tags">
+                            ${landmarks.map(l => `<span class="tag">${l}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div class="community-detail-actions">
+                    <button class="btn btn-primary" onclick="window.filterByCommunity('${community.name}')">
+                        View Properties
+                    </button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp">
+                        Ask About
+                    </a>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+window.viewCommunity = function(slugOrId) {
+    const community = communities.find(c => c.slug === slugOrId || String(c.id) === String(slugOrId));
+    if (!community) {
+        showToast('Community not found.', 'error');
+        return;
+    }
+    navigateTo('community', { push: true, slug: community.slug || community.id });
+};
+
+window.showCommunityList = function(opts = {}) {
+    const { push = true } = opts;
+    const grid = document.getElementById('communities-grid');
+    const detail = document.getElementById('community-detail');
+    if (grid) grid.style.display = 'grid';
+    if (detail) detail.style.display = 'none';
+    if (push) {
+        const path = buildPath('communities');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'communities', slug: null, agentSlug: currentAgentSlug || null }, '', path);
+            updateCanonical(path);
+        }
+    }
+    document.title = 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+    navigateTo('communities', { push: false });
+};
 
 // ============= ABOUT PAGE =============
 
@@ -2200,15 +2370,31 @@ function filterListings() {
 }
 
 window.filterByCommunity = function(communityName) {
-    navigateTo('listings');
-    setTimeout(() => {
+    // Set the dropdown
+    const communitySelect = document.getElementById('filter-community-listings');
+    if (communitySelect) {
+        communitySelect.value = communityName;
+        // Navigate to listings with query param
+        navigateTo('listings', { push: true, query: { community: communityName } });
+        // Apply filter immediately
+        filterListings();
+    } else {
+        // Fallback: navigate and rely on route handler
+        navigateTo('listings', { push: true, query: { community: communityName } });
+    }
+};
+
+function applyCommunityFilterFromURL() {
+    const queryParams = new URLSearchParams(location.search);
+    const communityParam = queryParams.get('community');
+    if (communityParam) {
         const communitySelect = document.getElementById('filter-community-listings');
-        if (communitySelect) {
-            communitySelect.value = communityName;
+        if (communitySelect && communities.some(c => c.name === communityParam)) {
+            communitySelect.value = communityParam;
             filterListings();
         }
-    }, 100);
-};
+    }
+}
 
 function populateCommunityFilter() {
     const filterSelect = document.getElementById('filter-community-listings');
@@ -2384,7 +2570,7 @@ function formatDate(date) {
 // ============= SPA NAVIGATION =============
 
 function navigateTo(sectionId, opts = {}) {
-    const { push = true, slug = null } = opts;
+    const { push = true, slug = null, query = null } = opts;
 
     // --- IMPROVED: if target section matches current section and we are on a detail (has slug), force list view ---
     const currentRoute = parseCurrentRoute();
@@ -2404,9 +2590,19 @@ function navigateTo(sectionId, opts = {}) {
         
         // Update URL to section root (no slug)
         const path = buildPath(sectionId);
-        if (location.pathname !== path) {
-            history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null }, '', path);
-            updateCanonical(path);
+        if (query) {
+            const qs = new URLSearchParams(query).toString();
+            // append query to path
+            const newPath = path + (qs ? '?' + qs : '');
+            if (location.pathname + location.search !== newPath) {
+                history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null, query: query }, '', newPath);
+                updateCanonical(newPath);
+            }
+        } else {
+            if (location.pathname !== path) {
+                history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null }, '', path);
+                updateCanonical(path);
+            }
         }
         
         // Activate section
@@ -2440,6 +2636,14 @@ function navigateTo(sectionId, opts = {}) {
         if (sectionId === 'listings') {
             filterListings();
             populateCommunityFilter();
+            // Apply community filter from query if present
+            if (query && query.community) {
+                const communitySelect = document.getElementById('filter-community-listings');
+                if (communitySelect && communities.some(c => c.name === query.community)) {
+                    communitySelect.value = query.community;
+                    filterListings();
+                }
+            }
         } else if (sectionId === 'offplan') {
             renderOffplanPage();
         }
@@ -2537,6 +2741,37 @@ function navigateTo(sectionId, opts = {}) {
         renderOffplanPage();
     }
 
+    // Handle community section navigation
+    if (sectionId === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            const grid = document.getElementById('communities-grid');
+            const detail = document.getElementById('community-detail');
+            if (grid) grid.style.display = 'none';
+            if (detail) {
+                detail.style.display = 'block';
+                document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            }
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            // Push state
+            if (push) {
+                const path = buildPath('community', community.slug || community.id);
+                if (location.pathname !== path) {
+                    history.pushState({ section: 'community', slug: community.slug || community.id, agentSlug: currentAgentSlug || null }, '', path);
+                    updateCanonical(path);
+                }
+            }
+            return;
+        }
+    } else if (sectionId === 'community') {
+        // Show grid
+        const grid = document.getElementById('communities-grid');
+        const detail = document.getElementById('community-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderCommunitiesPage();
+    }
+
     const sectionNames = {
         home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
         listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
@@ -2553,6 +2788,14 @@ function navigateTo(sectionId, opts = {}) {
     if (sectionId === 'listings') {
         populateCommunityFilter();
         filterListings();
+        // Apply community filter from query if present
+        if (query && query.community) {
+            const communitySelect = document.getElementById('filter-community-listings');
+            if (communitySelect && communities.some(c => c.name === query.community)) {
+                communitySelect.value = query.community;
+                filterListings();
+            }
+        }
     } else if (sectionId === 'valuation') {
         populateCommunityFilter();
     } else if (sectionId === 'home') {
@@ -2576,8 +2819,13 @@ function navigateTo(sectionId, opts = {}) {
         } else {
             path = buildPath(sectionId, slug);
         }
+        // Append query string if provided
+        if (query && Object.keys(query).length > 0) {
+            const qs = new URLSearchParams(query).toString();
+            path += '?' + qs;
+        }
         if (location.pathname + location.search !== path) {
-            history.pushState({ section: sectionId, slug: slug || null, agentSlug: currentAgentSlug || null }, '', path);
+            history.pushState({ section: sectionId, slug: slug || null, agentSlug: currentAgentSlug || null, query: query || null }, '', path);
         }
         updateCanonical(path);
     }
@@ -2768,3 +3016,6 @@ window.prevOffplanImage = prevOffplanImage;
 window.nextOffplanImage = nextOffplanImage;
 window.initOffplanGallery = initOffplanGallery;
 window.openGalleryModal = openGalleryModal;
+window.viewCommunity = viewCommunity;
+window.showCommunityList = showCommunityList;
+window.applyCommunityFilterFromURL = applyCommunityFilterFromURL;
