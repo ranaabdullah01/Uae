@@ -1949,19 +1949,76 @@ function renderCommunities(communitiesData, container) {
 
 // ============= COMMUNITY DETAIL FUNCTIONS =============
 
+/**
+ * Renders the community detail page with a consistent top bar (back button + breadcrumb)
+ * and a “Properties in [Community]” section with preview cards and a “VIEW ALL PROPERTIES” button.
+ */
 function renderCommunityDetail(community) {
     const highlights = Array.isArray(community.highlights) ? community.highlights : (community.highlights ? community.highlights.split(',').map(h => h.trim()).filter(Boolean) : []);
     const landmarks = Array.isArray(community.nearbyLandmarks) ? community.nearbyLandmarks : (community.nearbyLandmarks ? community.nearbyLandmarks.split(',').map(l => l.trim()).filter(Boolean) : []);
-
     const imageUrl = community.image || 'https://placehold.co/1200x600/0A1628/C9A84C?text=Community';
+
+    // Filter listings that belong to this community
+    const communityListings = listings.filter(l => l.community === community.name);
+    const previewListings = communityListings.slice(0, 4);
+
+    // Build the properties grid HTML
+    let propertiesHtml = '';
+    if (previewListings.length === 0) {
+        propertiesHtml = `<p class="no-results" style="text-align:center;padding:20px;">No properties currently listed in this community.</p>`;
+    } else {
+        propertiesHtml = `<div class="community-properties-grid">`;
+        previewListings.forEach(listing => {
+            const images = listing.images && typeof listing.images === 'string' 
+                ? listing.images.split(',') 
+                : (Array.isArray(listing.images) ? listing.images : []);
+            const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/600x400/0A1628/C9A84C?text=Property';
+            propertiesHtml += `
+                <div class="listing-card community-property-card">
+                    <div class="listing-card-image">
+                        <img src="${firstImage}" alt="${listing.title}" loading="lazy">
+                        <div class="listing-card-badges">
+                            ${listing.featured ? '<span class="badge badge-featured"><i class="fas fa-star"></i> FEATURED</span>' : ''}
+                            <span class="badge badge-status">${listing.status.replace('-', ' ')}</span>
+                            <span class="badge badge-type">${listing.type}</span>
+                        </div>
+                    </div>
+                    <div class="listing-card-body">
+                        <h3>${listing.title}</h3>
+                        <div class="listing-card-price">AED ${formatPrice(listing.price)}</div>
+                        <div class="listing-card-details">
+                            <span><i class="fas fa-bed"></i> ${listing.bedrooms} bed</span>
+                            <span><i class="fas fa-bath"></i> ${listing.bathrooms} bath</span>
+                            <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
+                        </div>
+                        <div class="listing-card-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
+                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        propertiesHtml += `</div>`;
+    }
 
     return `
         <div class="community-detail-page">
-            <!-- Back button with explicit sizing to match Off-Plan -->
-            <button type="button" class="btn btn-secondary community-detail-back-button" aria-label="Back to Communities">
-                <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
-            </button>
+            <!-- Top Bar: Back button + Breadcrumb -->
+            <div class="community-detail-top-bar">
+                <button type="button" class="btn btn-secondary community-detail-back-button" onclick="window.showCommunityList({ push: true })">
+                    <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
+                </button>
+                <div class="breadcrumb-nav">
+                    <a href="#" onclick="window.navigateTo('home'); return false;">Home</a>
+                    <span class="separator">/</span>
+                    <a href="#" onclick="window.showCommunityList({ push: true }); return false;">Communities</a>
+                    <span class="separator">/</span>
+                    <span class="current">${community.name}</span>
+                </div>
+            </div>
 
+            <!-- Hero -->
             <div class="community-detail-hero" style="background-image:url('${imageUrl}');">
                 <div class="community-detail-overlay">
                     <h1>${community.name}</h1>
@@ -1969,11 +2026,10 @@ function renderCommunityDetail(community) {
                 </div>
             </div>
 
+            <!-- Information Body -->
             <div class="community-detail-body">
-                <div class="community-detail-description">
-                    ${community.description ? `<p>${community.description}</p>` : ''}
-                    ${community.lifestyle ? `<p><strong>Lifestyle:</strong> ${community.lifestyle}</p>` : ''}
-                </div>
+                ${community.description ? `<div class="community-detail-description"><p>${community.description}</p></div>` : ''}
+                ${community.lifestyle ? `<div class="community-detail-description"><p><strong>Lifestyle:</strong> ${community.lifestyle}</p></div>` : ''}
 
                 <div class="community-detail-stats">
                     ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `
@@ -2032,10 +2088,18 @@ function renderCommunityDetail(community) {
                     </div>
                 ` : ''}
 
+                <!-- Properties in this community -->
+                <div class="community-properties-section">
+                    <h2>Properties in ${community.name}</h2>
+                    ${propertiesHtml}
+                    <div style="text-align:center; margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="window.filterByCommunity('${community.name}')">
+                            VIEW ALL PROPERTIES
+                        </button>
+                    </div>
+                </div>
+
                 <div class="community-detail-actions">
-                    <button class="btn btn-primary" onclick="window.filterByCommunity('${community.name}')">
-                        View Properties
-                    </button>
                     <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp">
                         Ask About
                     </a>
