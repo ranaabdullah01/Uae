@@ -4,6 +4,7 @@
 // COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
+// ICONS ADDED: HOME ICON ON PROPERTIES BUTTONS, WHATSAPP ICON ON ALL WHATSAPP LINKS
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -872,7 +873,7 @@ function createListingCard(listing) {
             </div>
             <div class="listing-card-actions">
                 <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> WhatsApp</a>
             </div>
         </div>
     `;
@@ -1492,7 +1493,7 @@ function createOffplanCard(project) {
             </div>
             <div class="offplan-card-actions">
                 <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Request Brochure</a>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Request Brochure</a>
             </div>
         </div>
     `;
@@ -1969,8 +1970,8 @@ function renderCommunities(communitiesData, container) {
                     ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
                 </div>
                 <div class="community-actions">
-                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();">Ask About</a>
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')"><i class="fas fa-home"></i> View Properties</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
                 </div>
             </div>
         `;
@@ -2029,7 +2030,7 @@ function renderCommunityDetail(community) {
                         </div>
                         <div class="listing-card-actions">
                             <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
-                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
+                            <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> WhatsApp</a>
                         </div>
                     </div>
                 </div>
@@ -2130,14 +2131,14 @@ function renderCommunityDetail(community) {
                     ${propertiesHtml}
                     <div style="text-align:center; margin-top: 20px;">
                         <button class="btn btn-primary" onclick="window.filterByCommunity('${community.name}')">
-                            VIEW ALL PROPERTIES
+                            <i class="fas fa-home"></i> VIEW ALL PROPERTIES
                         </button>
                     </div>
                 </div>
 
                 <div class="community-detail-actions">
                     <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp">
-                        Ask About
+                        <i class="fab fa-whatsapp"></i> Ask About
                     </a>
                 </div>
             </div>
