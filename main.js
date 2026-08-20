@@ -1952,9 +1952,9 @@ function renderCommunityDetail(community) {
 
     return `
         <div class="community-detail-page">
-            <!-- Back button now inside the same container -->
+            <!-- Back button now uses the same icon as Off‑Plan -->
             <button class="btn btn-secondary" onclick="window.showCommunityList()" style="margin-bottom:20px;">
-                ← BACK TO COMMUNITIES
+                <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
             </button>
 
             <div class="community-detail-hero" style="background-image:url('${imageUrl}');">
