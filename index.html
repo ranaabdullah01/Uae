@@ -67,67 +67,29 @@
                 display: none !important;
             }
 
-            .floating-nav {
-                position: absolute;
-                top: 24px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 1000;
-                display: flex;
-                align-items: center;
-                gap: 6px;
-                padding: 6px 12px;
-                border-radius: 999px;
-                background: rgba(255, 255, 255, 0.10);
-                backdrop-filter: blur(18px);
-                -webkit-backdrop-filter: blur(18px);
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-                transition: all 0.3s ease;
-                pointer-events: auto;
-                margin-left: 60px;
-            }
-
-            .floating-nav a {
-                font-family: 'Inter', -apple-system, sans-serif;
-                font-weight: 500;
-                font-size: 13px;
-                letter-spacing: 0.04em;
-                padding: 8px 16px;
-                border-radius: 999px;
-                color: rgba(255, 255, 255, 0.85);
-                transition: all 0.2s ease;
-                text-decoration: none;
-                white-space: nowrap;
-                text-transform: uppercase;
-            }
-
-            .floating-nav a:hover {
-                background: rgba(255, 255, 255, 0.18);
-                color: #fff;
-            }
-
-            .floating-nav a.active {
-                background: #ffffff;
-                color: #111111;
-                font-weight: 600;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            }
-
-            .floating-nav a.active:hover {
-                background: #ffffff;
-                color: #111111;
-            }
-
-            .floating-logo {
+            /* Desktop header container - flex layout */
+            .desktop-header {
                 position: absolute;
                 top: 20px;
                 left: 32px;
-                z-index: 1001;
+                right: 32px;
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                pointer-events: none;
+            }
+
+            .desktop-header > * {
+                pointer-events: auto;
+            }
+
+            .floating-logo {
+                position: static;
                 display: flex;
                 align-items: center;
                 gap: 10px;
-                pointer-events: auto;
+                flex-shrink: 0;
             }
 
             .floating-logo a {
@@ -169,6 +131,57 @@
                 color: rgba(255, 255, 255, 0.7);
                 margin-top: 1px;
                 text-shadow: 0 1px 4px rgba(0,0,0,0.15);
+            }
+
+            .floating-nav {
+                position: static;
+                transform: none;
+                left: auto;
+                margin-left: 0;
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                padding: 6px 12px;
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.10);
+                backdrop-filter: blur(18px);
+                -webkit-backdrop-filter: blur(18px);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                pointer-events: auto;
+                flex-shrink: 0;
+            }
+
+            .floating-nav a {
+                font-family: 'Inter', -apple-system, sans-serif;
+                font-weight: 500;
+                font-size: 13px;
+                letter-spacing: 0.04em;
+                padding: 6px 12px;
+                border-radius: 999px;
+                color: rgba(255, 255, 255, 0.85);
+                transition: all 0.2s ease;
+                text-decoration: none;
+                white-space: nowrap;
+                text-transform: uppercase;
+            }
+
+            .floating-nav a:hover {
+                background: rgba(255, 255, 255, 0.18);
+                color: #fff;
+            }
+
+            .floating-nav a.active {
+                background: #ffffff;
+                color: #111111;
+                font-weight: 600;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .floating-nav a.active:hover {
+                background: #ffffff;
+                color: #111111;
             }
 
             .hamburger {
@@ -450,7 +463,8 @@
 
         @media (max-width: 900px) {
             .floating-nav,
-            .floating-logo {
+            .floating-logo,
+            .desktop-header {
                 display: none !important;
             }
             #main-header {
@@ -528,28 +542,30 @@
         <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/Background%20Icon.png" alt="Agent Web Studio" id="preloader-image">
     </div>
 
-    <!-- =============== NEW DESKTOP FLOATING NAVIGATION =============== -->
-    <div class="floating-logo" id="floating-logo">
-        <a href="#home" data-section="home">
-            <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
-            <div class="floating-logo-text">
-                <span class="floating-logo-main">Agent Web Studio</span>
-                <span class="floating-logo-sub">Websites That Sell Homes</span>
-            </div>
-        </a>
-    </div>
+    <!-- =============== NEW DESKTOP FLOATING HEADER =============== -->
+    <div class="desktop-header">
+        <div class="floating-logo" id="floating-logo">
+            <a href="#home" data-section="home">
+                <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
+                <div class="floating-logo-text">
+                    <span class="floating-logo-main">Agent Web Studio</span>
+                    <span class="floating-logo-sub">Websites That Sell Homes</span>
+                </div>
+            </a>
+        </div>
 
-    <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
-        <a href="#home" data-section="home" class="active"><i class="fas fa-house" style="margin-right:6px;"></i>HOME</a>
-        <a href="#listings" data-section="listings"><i class="fas fa-building" style="margin-right:6px;"></i>PROPERTIES</a>
-        <a href="#offplan" data-section="offplan"><i class="fas fa-city" style="margin-right:6px;"></i>OFF-PLAN</a>
-        <a href="#valuation" data-section="valuation"><i class="fas fa-chart-line" style="margin-right:6px;"></i>VALUATION</a>
-        <a href="#communities" data-section="communities"><i class="fas fa-map-location-dot" style="margin-right:6px;"></i>COMMUNITIES</a>
-        <a href="#about" data-section="about"><i class="fas fa-circle-info" style="margin-right:6px;"></i>ABOUT</a>
-        <a href="#blog" data-section="blog"><i class="fas fa-newspaper" style="margin-right:6px;"></i>BLOG</a>
-        <a href="#contact" data-section="contact"><i class="fas fa-phone" style="margin-right:6px;"></i>CONTACT</a>
-        <a href="#goldenvisa" data-section="goldenvisa"><i class="fas fa-shield-halved" style="margin-right:6px;"></i>GOLDEN VISA</a>
-    </nav>
+        <nav class="floating-nav" id="floating-nav" role="navigation" aria-label="Main navigation">
+            <a href="#home" data-section="home" class="active"><i class="fas fa-house" style="margin-right:6px;"></i>HOME</a>
+            <a href="#listings" data-section="listings"><i class="fas fa-building" style="margin-right:6px;"></i>PROPERTIES</a>
+            <a href="#offplan" data-section="offplan"><i class="fas fa-city" style="margin-right:6px;"></i>OFF-PLAN</a>
+            <a href="#valuation" data-section="valuation"><i class="fas fa-chart-line" style="margin-right:6px;"></i>VALUATION</a>
+            <a href="#communities" data-section="communities"><i class="fas fa-map-location-dot" style="margin-right:6px;"></i>COMMUNITIES</a>
+            <a href="#about" data-section="about"><i class="fas fa-circle-info" style="margin-right:6px;"></i>ABOUT</a>
+            <a href="#blog" data-section="blog"><i class="fas fa-newspaper" style="margin-right:6px;"></i>BLOG</a>
+            <a href="#contact" data-section="contact"><i class="fas fa-phone" style="margin-right:6px;"></i>CONTACT</a>
+            <a href="#goldenvisa" data-section="goldenvisa"><i class="fas fa-shield-halved" style="margin-right:6px;"></i>GOLDEN VISA</a>
+        </nav>
+    </div>
 
     <!-- OLD HEADER (hidden on desktop, kept for mobile) -->
     <header id="main-header">
