@@ -2584,24 +2584,74 @@ function navigateTo(sectionId, opts = {}) {
     }
     // --- end of improved logic ---
 
-    // ---- ORIGINAL NAVIGATE LOGIC (unchanged) ----
+    // ---- ORIGINAL NAVIGATE LOGIC (with community fix) ----
     document.querySelectorAll('.section').forEach(el => {
         el.classList.remove('active');
     });
+    
+    // Handle community detail separately because there's no #community section
+    if (sectionId === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            // Show the communities section
+            const communitiesSection = document.getElementById('communities');
+            if (communitiesSection) communitiesSection.classList.add('active');
+            
+            // Update nav active class to 'communities'
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'communities') {
+                    el.classList.add('active');
+                }
+            });
+            
+            // Show detail, hide grid
+            const grid = document.getElementById('communities-grid');
+            const detail = document.getElementById('community-detail');
+            if (grid) grid.style.display = 'none';
+            if (detail) {
+                detail.style.display = 'block';
+                document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            }
+            
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            
+            // Push state
+            if (push) {
+                const path = buildPath('community', community.slug || community.id);
+                if (location.pathname !== path) {
+                    history.pushState({ section: 'community', slug: community.slug || community.id, agentSlug: currentAgentSlug || null }, '', path);
+                    updateCanonical(path);
+                }
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+    }
+    
+    // For other sections, find and activate the section
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
         targetSection.classList.add('active');
+    } else if (sectionId === 'home') {
+        // home has id "home" – activate it
+        const homeSection = document.getElementById('home');
+        if (homeSection) homeSection.classList.add('active');
     }
 
-    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-        el.classList.remove('active');
-        if (el.dataset && el.dataset.section === sectionId) {
-            el.classList.add('active');
-        }
-        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
-            el.classList.add('active');
-        }
-    });
+    // Update nav active state (but skip community because already handled)
+    if (sectionId !== 'community') {
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === sectionId) {
+                el.classList.add('active');
+            }
+            if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+                el.classList.add('active');
+            }
+        });
+    }
 
     document.querySelectorAll('.floating-nav a').forEach(el => {
         el.classList.remove('active');
@@ -2671,30 +2721,8 @@ function navigateTo(sectionId, opts = {}) {
         renderOffplanPage();
     }
 
-    // Handle community section navigation
-    if (sectionId === 'community' && slug) {
-        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
-        if (community) {
-            const grid = document.getElementById('communities-grid');
-            const detail = document.getElementById('community-detail');
-            if (grid) grid.style.display = 'none';
-            if (detail) {
-                detail.style.display = 'block';
-                document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
-            }
-            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            // Push state
-            if (push) {
-                const path = buildPath('community', community.slug || community.id);
-                if (location.pathname !== path) {
-                    history.pushState({ section: 'community', slug: community.slug || community.id, agentSlug: currentAgentSlug || null }, '', path);
-                    updateCanonical(path);
-                }
-            }
-            return;
-        }
-    } else if (sectionId === 'community') {
-        // Show grid
+    // For communities page (list) – ensure grid is visible and detail hidden
+    if (sectionId === 'communities') {
         const grid = document.getElementById('communities-grid');
         const detail = document.getElementById('community-detail');
         if (grid) grid.style.display = 'grid';
@@ -2890,6 +2918,10 @@ function showSection(section, slug) {
     if (section === 'community' && slug) {
         const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
         if (community) {
+            // Activate communities section
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('communities')?.classList.add('active');
+            
             document.getElementById('communities-grid').style.display = 'none';
             document.getElementById('community-detail').style.display = 'block';
             document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
