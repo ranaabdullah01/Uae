@@ -1952,6 +1952,11 @@ function renderCommunityDetail(community) {
 
     return `
         <div class="community-detail-page">
+            <!-- Back button now inside the same container -->
+            <button class="btn btn-secondary" onclick="window.showCommunityList()" style="margin-bottom:20px;">
+                ← BACK TO COMMUNITIES
+            </button>
+
             <div class="community-detail-hero" style="background-image:url('${imageUrl}');">
                 <div class="community-detail-overlay">
                     <h1>${community.name}</h1>
