@@ -1952,8 +1952,8 @@ function renderCommunityDetail(community) {
 
     return `
         <div class="community-detail-page">
-            <!-- Back button now matches Off-Plan exactly: same icon, same class, with no-wrap to keep height identical -->
-            <button class="btn btn-secondary" onclick="window.showCommunityList()" style="margin-bottom:20px; display:inline-block; white-space:nowrap;">
+            <!-- Back button with explicit sizing to match Off-Plan -->
+            <button class="btn btn-secondary" onclick="window.showCommunityList()" style="margin-bottom:20px; display:inline-block; white-space:nowrap; font-size:14px; padding:15px 34px; line-height:1; height:auto; min-height:0; align-self:flex-start;">
                 <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
             </button>
 
