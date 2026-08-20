@@ -1497,7 +1497,7 @@ nav .nav-container {
     border: 1px solid var(--line);
     border-radius: var(--radius);
     padding: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;  /* reduced from 40px to match off-plan spacing */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 14px;
