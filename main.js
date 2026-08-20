@@ -2,6 +2,8 @@
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
 // OFF-PLAN / LISTING GALLERY: ORIGINAL MOBILE UI + SMOOTH TRANSITIONS + SWIPE + IDEMPOTENT EVENTS
 // COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
+// CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
+// SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -843,6 +845,7 @@ function renderListings(listingsData, container) {
 function createListingCard(listing) {
     const card = document.createElement('div');
     card.className = 'listing-card';
+    card.setAttribute('data-listing-id', listing.id);
     
     const images = listing.images && typeof listing.images === 'string' 
         ? listing.images.split(',') 
@@ -868,11 +871,27 @@ function createListingCard(listing) {
                 <span><i class="fas fa-ruler-combined"></i> ${listing.sqft} sqft</span>
             </div>
             <div class="listing-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewListingPage('${listing.id}')">View Details</button>
+                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
                 <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(listing.whatsappText || 'I\'m interested in this property')}" target="_blank" class="btn btn-whatsapp btn-sm">WhatsApp</a>
             </div>
         </div>
     `;
+
+    // Click on card opens detail (unless clicking on a button or link)
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        window.viewListingPage(listing.id);
+    });
+
+    // The "View Details" button triggers the same action (no double trigger)
+    const detailBtn = card.querySelector('.view-detail-btn');
+    if (detailBtn) {
+        detailBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.viewListingPage(listing.id);
+        });
+    }
+
     return card;
 }
 
@@ -1445,6 +1464,7 @@ function renderOffplanPage() {
 function createOffplanCard(project) {
     const card = document.createElement('div');
     card.className = 'offplan-card';
+    card.setAttribute('data-offplan-id', project.id);
     
     // Get first image from images array, fallback to image property
     let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
@@ -1471,11 +1491,27 @@ function createOffplanCard(project) {
                 ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
             </div>
             <div class="offplan-card-actions">
-                <button class="btn btn-secondary btn-sm" onclick="window.viewOffplanPage('${project.id}')">View Details</button>
+                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
                 <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm">Request Brochure</a>
             </div>
         </div>
     `;
+
+    // Click on card opens detail (unless clicking on a button or link)
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        window.viewOffplanPage(project.id);
+    });
+
+    // The "View Details" button triggers the same action
+    const detailBtn = card.querySelector('.view-detail-btn');
+    if (detailBtn) {
+        detailBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.viewOffplanPage(project.id);
+        });
+    }
+
     return card;
 }
 
