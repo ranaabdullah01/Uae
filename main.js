@@ -651,7 +651,12 @@ function updateAllSections() {
         if (community) {
             document.getElementById('communities-grid').style.display = 'none';
             document.getElementById('community-detail').style.display = 'block';
-            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            const detailContent = document.getElementById('community-detail-content');
+            detailContent.innerHTML = renderCommunityDetail(community);
+            const backButton = detailContent.querySelector('.community-detail-back-button');
+            if (backButton) {
+                backButton.addEventListener('click', () => window.showCommunityList({ push: true }));
+            }
             document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
         }
     }
@@ -1953,7 +1958,7 @@ function renderCommunityDetail(community) {
     return `
         <div class="community-detail-page">
             <!-- Back button with explicit sizing to match Off-Plan -->
-            <button class="btn btn-secondary" onclick="window.showCommunityList()" style="margin-bottom:20px; display:inline-block; white-space:nowrap; font-size:14px; padding:15px 34px; line-height:1; height:auto; min-height:0; align-self:flex-start;">
+            <button type="button" class="btn btn-secondary community-detail-back-button" aria-label="Back to Communities">
                 <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
             </button>
 
@@ -2616,7 +2621,12 @@ function navigateTo(sectionId, opts = {}) {
             if (grid) grid.style.display = 'none';
             if (detail) {
                 detail.style.display = 'block';
-                document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+                const detailContent = document.getElementById('community-detail-content');
+                detailContent.innerHTML = renderCommunityDetail(community);
+                const backButton = detailContent.querySelector('.community-detail-back-button');
+                if (backButton) {
+                    backButton.addEventListener('click', () => window.showCommunityList({ push: true }));
+                }
             }
             
             document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
