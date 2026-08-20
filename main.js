@@ -68,6 +68,10 @@ const KNOWN_SECTIONS = ['listings', 'offplan', 'communities', 'about', 'contact'
 function buildPath(sectionId, slug) {
     const parts = [];
     if (BASE_PATH) parts.push(BASE_PATH.replace(/^\//, ''));
+    // Always include agent slug for all pages except home
+    if (currentAgentSlug && sectionId !== 'home') {
+        parts.push(currentAgentSlug);
+    }
     if (sectionId && sectionId !== 'home') parts.push(sectionId);
     if (slug) parts.push(String(slug));
     const path = '/' + parts.join('/');
@@ -82,106 +86,25 @@ function parseCurrentRoute() {
     const segments = path.split('/').filter(Boolean);
     if (segments.length === 0) return { section: 'home', slug: null, agentSlug: null };
 
-    const first = segments[0];
-    if (KNOWN_SECTIONS.includes(first)) {
-        return { section: first, slug: segments[1] || null, agentSlug: null };
-    } else {
-        return { section: 'home', slug: null, agentSlug: first };
-    }
-}
+    let agentSlug = null;
+    let section = 'home';
+    let slug = null;
 
-function handleRoute() {
-    const { section, slug, agentSlug } = parseCurrentRoute();
-    if (agentSlug) {
-        currentAgentSlug = agentSlug;
-        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
-        navigateTo('home', { push: false });
-        loadAllData();
-        return;
-    }
-    if (!currentAgentSlug) {
-        const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
-        if (stored) {
-            currentAgentSlug = stored;
-            loadAllData();
-            if (section === 'home') {
-                const newPath = '/' + currentAgentSlug;
-                if (location.pathname !== newPath) {
-                    history.replaceState({ section: 'home', slug: null, agentSlug: currentAgentSlug }, '', newPath);
-                }
+    // First segment: either agent slug or known section
+    if (KNOWN_SECTIONS.includes(segments[0])) {
+        section = segments[0];
+        slug = segments[1] || null;
+    } else {
+        agentSlug = segments[0];
+        if (segments.length > 1) {
+            const next = segments[1];
+            if (KNOWN_SECTIONS.includes(next)) {
+                section = next;
+                slug = segments[2] || null;
             }
         }
     }
-
-    // Handle community detail
-    if (section === 'community' && slug) {
-        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
-        if (community) {
-            navigateTo('community', { push: false, slug: community.slug || community.id });
-            // Show detail, hide grid
-            document.getElementById('communities-grid').style.display = 'none';
-            document.getElementById('community-detail').style.display = 'block';
-            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
-            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            return;
-        } else {
-            showNotFound('Community');
-            return;
-        }
-    } else if (section === 'community') {
-        // No slug → show grid
-        document.getElementById('communities-grid').style.display = 'grid';
-        document.getElementById('community-detail').style.display = 'none';
-        renderCommunitiesPage();
-        return;
-    }
-
-    // Existing routing for other sections
-    if (section === 'blog' && slug) {
-        navigateTo('blog', { push: false });
-        window.viewBlogPost(slug, { push: false });
-    } else if (section === 'listings' && slug) {
-        navigateTo('listings', { push: false });
-        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-        const filterBar = document.getElementById('filter-bar');
-        if (listing) {
-            document.getElementById('listings-grid').style.display = 'none';
-            document.getElementById('listing-detail').style.display = 'block';
-            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            if (filterBar) filterBar.style.display = 'none';
-            setTimeout(initGallery, 100);
-        } else {
-            showNotFound('Listing');
-            return;
-        }
-    } else if (section === 'listings') {
-        window.showListingList({ push: false });
-    } else if (section === 'offplan' && slug) {
-        navigateTo('offplan', { push: false });
-        const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
-        if (project) {
-            document.getElementById('offplan-grid').style.display = 'none';
-            document.getElementById('offplan-detail').style.display = 'block';
-            document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-            document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            setTimeout(initOffplanGallery, 100);
-        } else {
-            showNotFound('Off-Plan Project');
-            return;
-        }
-    } else if (section === 'offplan') {
-        window.showOffplanList({ push: false });
-    } else {
-        navigateTo(section, { push: false });
-    }
-
-    // After loading, if on listings, apply community filter from URL
-    if (section === 'listings' || section === 'home') {
-        setTimeout(() => {
-            applyCommunityFilterFromURL();
-        }, 200);
-    }
+    return { section, slug, agentSlug };
 }
 
 function updateCanonical(path) {
@@ -631,8 +554,12 @@ async function loadAllData() {
         const communitiesData = await communitiesResponse.json();
         if (communitiesData.success) {
             communities = communitiesData.communities;
+        } else {
+            console.error('Communities API error:', communitiesData.message);
         }
-    } catch (e) { console.error('Error loading communities:', e); }
+    } catch (e) {
+        console.error('Error loading communities:', e);
+    }
 
     try {
         const blogResponse = await fetch(`${API_BASE}/api/blog?t=${Date.now()}`);
@@ -1966,7 +1893,10 @@ function renderCommunities(communitiesData, container) {
     container.innerHTML = '';
     
     if (communitiesData.length === 0) {
-        container.innerHTML = '<p class="no-results">No communities found.</p>';
+        container.innerHTML = `
+            <p class="no-results" style="grid-column:1/-1;text-align:center;padding:40px;">
+                No communities found. Please check your API endpoint or add communities.
+            </p>`;
         return;
     }
     
@@ -2892,12 +2822,219 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
+// ============= ROUTING HANDLER =============
+
+function handleRoute() {
+    const { section, slug, agentSlug } = parseCurrentRoute();
+
+    // If agentSlug is present, set it
+    if (agentSlug) {
+        currentAgentSlug = agentSlug;
+        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
+    } else {
+        // Try to get from localStorage
+        const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
+        if (stored) {
+            currentAgentSlug = stored;
+            // Redirect to the correct URL with agent slug
+            const targetPath = buildPath(section, slug);
+            if (location.pathname !== targetPath) {
+                history.replaceState({ section, slug, agentSlug: stored }, '', targetPath);
+                handleRoute(); // re-run after redirect
+                return;
+            }
+        } else {
+            // No agent slug – fetch first agent and redirect
+            fetch(`${API_BASE}/api/agents`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.agents.length > 0) {
+                        const defaultSlug = data.agents[0].slug;
+                        currentAgentSlug = defaultSlug;
+                        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, defaultSlug);
+                        const targetPath = buildPath(section, slug);
+                        history.replaceState({ section, slug, agentSlug: defaultSlug }, '', targetPath);
+                        handleRoute();
+                    } else {
+                        // fallback
+                        currentAgentSlug = 'ahmed-khan';
+                        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
+                        const targetPath = buildPath(section, slug);
+                        history.replaceState({ section, slug, agentSlug: currentAgentSlug }, '', targetPath);
+                        handleRoute();
+                    }
+                })
+                .catch(() => {
+                    currentAgentSlug = 'ahmed-khan';
+                    localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
+                    const targetPath = buildPath(section, slug);
+                    history.replaceState({ section, slug, agentSlug: currentAgentSlug }, '', targetPath);
+                    handleRoute();
+                });
+            return;
+        }
+    }
+
+    // Now normal routing – ensure data is loaded
+    if (listings.length === 0 || communities.length === 0) {
+        loadAllData().then(() => {
+            showSection(section, slug);
+        });
+        return;
+    }
+    showSection(section, slug);
+}
+
+function showSection(section, slug) {
+    // Community detail
+    if (section === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            document.getElementById('communities-grid').style.display = 'none';
+            document.getElementById('community-detail').style.display = 'block';
+            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            // Update nav active
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'communities') {
+                    el.classList.add('active');
+                }
+            });
+            return;
+        } else {
+            showNotFound('Community');
+            return;
+        }
+    } else if (section === 'community') {
+        document.getElementById('communities-grid').style.display = 'grid';
+        document.getElementById('community-detail').style.display = 'none';
+        renderCommunitiesPage();
+        // Activate communities section
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById('communities')?.classList.add('active');
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === 'communities') {
+                el.classList.add('active');
+            }
+        });
+        return;
+    }
+
+    // Listing detail
+    if (section === 'listings' && slug) {
+        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+        if (listing) {
+            document.getElementById('listings-grid').style.display = 'none';
+            document.getElementById('listing-detail').style.display = 'block';
+            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            document.getElementById('filter-bar').style.display = 'none';
+            setTimeout(initGallery, 100);
+            // Activate section
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('listings')?.classList.add('active');
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'listings') {
+                    el.classList.add('active');
+                }
+            });
+            return;
+        } else {
+            showNotFound('Listing');
+            return;
+        }
+    } else if (section === 'listings') {
+        document.getElementById('listings-grid').style.display = 'grid';
+        document.getElementById('listing-detail').style.display = 'none';
+        document.getElementById('filter-bar').style.display = 'grid';
+        filterListings();
+        // Activate section
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById('listings')?.classList.add('active');
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === 'listings') {
+                el.classList.add('active');
+            }
+        });
+        // Apply community filter from URL
+        applyCommunityFilterFromURL();
+        return;
+    }
+
+    // Offplan detail
+    if (section === 'offplan' && slug) {
+        const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
+        if (project) {
+            document.getElementById('offplan-grid').style.display = 'none';
+            document.getElementById('offplan-detail').style.display = 'block';
+            document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+            document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            setTimeout(initOffplanGallery, 100);
+            // Activate section
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById('offplan')?.classList.add('active');
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'offplan') {
+                    el.classList.add('active');
+                }
+            });
+            return;
+        } else {
+            showNotFound('Off-Plan Project');
+            return;
+        }
+    } else if (section === 'offplan') {
+        document.getElementById('offplan-grid').style.display = 'grid';
+        document.getElementById('offplan-detail').style.display = 'none';
+        renderOffplanPage();
+        // Activate section
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById('offplan')?.classList.add('active');
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === 'offplan') {
+                el.classList.add('active');
+            }
+        });
+        return;
+    }
+
+    // Blog detail
+    if (section === 'blog' && slug) {
+        window.viewBlogPost(slug, { push: false });
+        return;
+    } else if (section === 'blog') {
+        document.getElementById('blog-grid').style.display = 'grid';
+        document.getElementById('blog-detail').style.display = 'none';
+        loadBlog();
+        // Activate section
+        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+        document.getElementById('blog')?.classList.add('active');
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === 'blog') {
+                el.classList.add('active');
+            }
+        });
+        return;
+    }
+
+    // Default: navigate to the section (home, about, contact, etc.)
+    navigateTo(section, { push: false, slug });
+}
+
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
-    await loadAllData();  // Ensure data is loaded before routing
-    handleRoute();        // Now show the correct section
-    hidePreloader();      // Hide preloader AFTER everything is ready
+    // Load data first, then handle route
+    await loadAllData();
+    handleRoute();
+    hidePreloader();
 
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
