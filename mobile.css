@@ -406,15 +406,14 @@
         gap: 16px !important;
     }
 
-    .property-card img,
-    .listing-card img,
-    .offplan-card img,
-    .community-card img,
-    .sale-card img,
-    .blog-card img {
-        height: 200px !important;
-        object-fit: cover !important;
-    }
+    /* REMOVED: fixed height on images was causing empty cream space on mobile */
+    /* The following rule has been deleted to fix the empty cream space:
+       .property-card img, .listing-card img, .offplan-card img,
+       .community-card img, .sale-card img, .blog-card img {
+           height: 200px !important;
+           object-fit: cover !important;
+       }
+       Images now fill their natural aspect-ratio container. */
 
     form input,
     form select,
