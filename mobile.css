@@ -415,6 +415,44 @@
        }
        Images now fill their natural aspect-ratio container. */
 
+    /* ---- COMPACT MOBILE CARDS ---- */
+    .listing-card-body,
+    .offplan-card-body,
+    .community-card-body {
+        padding: 16px 16px 18px !important;
+    }
+    .listing-card-body h3,
+    .offplan-card-body h3,
+    .community-card-body h3 {
+        font-size: 1rem !important;
+        margin-bottom: 4px !important;
+    }
+    .listing-card-price,
+    .offplan-card-price {
+        font-size: 1.2rem !important;
+        margin: 4px 0 !important;
+    }
+    .listing-card-details,
+    .offplan-card-details {
+        gap: 8px !important;
+        font-size: 12px !important;
+        padding-top: 10px !important;
+        margin-top: 4px !important;
+    }
+    .listing-card-actions,
+    .offplan-card-actions,
+    .community-actions {
+        gap: 6px !important;
+        padding-top: 4px !important;
+    }
+    .listing-card-actions .btn,
+    .offplan-card-actions .btn,
+    .community-actions .btn {
+        padding: 8px 12px !important;
+        font-size: 11px !important;
+        min-width: 0 !important;
+    }
+
     form input,
     form select,
     form textarea {
