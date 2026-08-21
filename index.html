@@ -536,76 +536,29 @@
         }
 
         /* ============================================================
-           CONTACT PAGE SPECIFIC STYLES
+           GOLDEN VISA PAGE SPECIFIC STYLES
            ============================================================ */
-        .contact-page-wrapper {
+        .gv-page-wrapper {
             padding: 40px 0 60px;
             background: var(--paper);
         }
 
-        .contact-page-container {
+        .gv-container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Tabs */
-        .contact-tabs {
-            display: flex;
-            gap: 8px;
-            justify-content: center;
-            margin-bottom: 48px;
-            flex-wrap: wrap;
-        }
-        .contact-tabs .tab-btn {
-            padding: 12px 32px;
-            border-radius: 100px;
-            background: transparent;
-            border: 1.5px solid var(--line);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            letter-spacing: 0.04em;
-            text-transform: uppercase;
-            color: var(--ink-soft);
-            cursor: pointer;
-            transition: all 0.3s var(--ease);
-        }
-        .contact-tabs .tab-btn:hover {
-            background: rgba(11, 59, 46, 0.06);
-            border-color: var(--emerald);
-            color: var(--emerald);
-        }
-        .contact-tabs .tab-btn.active {
-            background: var(--emerald);
-            color: var(--cream);
-            border-color: var(--emerald);
-            box-shadow: 0 4px 16px rgba(11, 59, 46, 0.25);
-        }
-
-        /* Tab content */
-        .tab-content {
-            display: none;
-            animation: fadeIn .4s var(--ease);
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        /* WhatsApp section - 2 column */
-        .contact-whatsapp-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 48px;
-            align-items: center;
+        /* Intro card */
+        .gv-intro-card {
             background: var(--white);
             border-radius: var(--radius-lg);
-            padding: 48px 52px;
+            padding: 40px 44px;
             border: 1px solid var(--line);
             box-shadow: var(--shadow-sm);
             margin-bottom: 48px;
         }
-        .contact-whatsapp-left h2 {
+        .gv-intro-card h2 {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 700;
             font-size: 1.6rem;
@@ -613,48 +566,62 @@
             margin: 0 0 12px 0;
             letter-spacing: -0.02em;
         }
-        .contact-whatsapp-left p {
+        .gv-intro-card p {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 400;
             font-size: 1rem;
             line-height: 1.7;
             color: var(--ink-soft);
+            margin: 0 0 24px 0;
+        }
+        .gv-intro-card .gv-requirements {
+            background: var(--cream-warm);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            border-left: 4px solid var(--brass);
+        }
+        .gv-intro-card .gv-requirements h3 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--emerald-deep);
+            margin: 0 0 12px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-intro-card .gv-requirements ul {
+            list-style: none;
+            padding: 0;
             margin: 0;
         }
-        .contact-whatsapp-right {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
+        .gv-intro-card .gv-requirements ul li {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            color: var(--ink);
+            padding: 6px 0;
+            padding-left: 28px;
+            position: relative;
+            line-height: 1.5;
         }
-        .contact-whatsapp-right .btn-whatsapp {
-            padding: 12px 16px;
-            font-size: 12px;
-            min-width: 0;
-            justify-content: center;
-            border-radius: 10px;
-            background: #25D366;
-            color: #fff;
-            border: none;
-            text-align: center;
-        }
-        .contact-whatsapp-right .btn-whatsapp:hover {
-            background: #1DA851;
-            transform: translateY(-2px);
-        }
-        .contact-whatsapp-right .btn-whatsapp i {
-            font-size: 16px;
-            margin-right: 6px;
+        .gv-intro-card .gv-requirements ul li::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            color: var(--brass);
+            font-size: 14px;
         }
 
-        /* Form sections */
-        .form-section {
+        /* Benefits */
+        .gv-benefits-section {
             margin-bottom: 48px;
         }
-        .form-section-header {
+        .gv-benefits-section .section-title {
             text-align: center;
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
-        .form-section-header h2 {
+        .gv-benefits-section .section-title h2 {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 700;
             font-size: 1.8rem;
@@ -662,38 +629,241 @@
             margin: 0 0 8px 0;
             letter-spacing: -0.02em;
         }
-        .form-section-header p {
+        .gv-benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        .gv-benefit-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 20px 24px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            text-align: center;
+            transition: all 0.3s var(--ease);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .gv-benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: rgba(176, 138, 62, 0.3);
+        }
+        .gv-benefit-card .icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--cream-warm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--brass);
+            margin-bottom: 16px;
+        }
+        .gv-benefit-card h3 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--emerald-deep);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-benefit-card p {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 400;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--ink-soft);
+            line-height: 1.5;
             margin: 0;
         }
 
-        .contact-form-card {
+        /* How to apply */
+        .gv-process-section {
+            margin-bottom: 48px;
+        }
+        .gv-process-section .section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .gv-process-section .section-title h2 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-process-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+        .gv-process-step {
+            flex: 1;
+            text-align: center;
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 16px 24px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+        .gv-process-step .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--brass);
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        .gv-process-step h3 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--emerald-deep);
+            margin: 0 0 6px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-process-step p {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 0.9rem;
+            color: var(--ink-soft);
+            margin: 0;
+            line-height: 1.5;
+        }
+        .gv-process-connector {
+            flex: 0 0 24px;
+            height: 2px;
+            background: var(--brass);
+            opacity: 0.3;
+        }
+
+        /* FAQ */
+        .gv-faq-section {
+            margin-bottom: 48px;
+        }
+        .gv-faq-section .section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .gv-faq-section .section-title h2 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-faq-list {
+            max-width: 820px;
+            margin: 0 auto;
+        }
+        .gv-faq-item {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: border-color 0.3s var(--ease);
+        }
+        .gv-faq-item:hover {
+            border-color: var(--brass);
+        }
+        .gv-faq-item.open {
+            border-color: var(--brass);
+        }
+        .gv-faq-question {
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
+            color: var(--emerald-deep);
+            font-size: 1rem;
+            background: var(--white);
+            transition: background 0.2s var(--ease);
+            gap: 16px;
+        }
+        .gv-faq-question:hover {
+            background: var(--cream);
+        }
+        .gv-faq-question .faq-toggle {
+            color: var(--brass);
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: transform 0.3s var(--ease);
+        }
+        .gv-faq-item.open .gv-faq-question .faq-toggle {
+            transform: rotate(45deg);
+        }
+        .gv-faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 24px;
+            transition: max-height 0.4s var(--ease), padding 0.4s var(--ease);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            color: var(--ink-soft);
+            line-height: 1.7;
+            background: var(--cream);
+        }
+        .gv-faq-item.open .gv-faq-answer {
+            max-height: 400px;
+            padding: 18px 24px 24px;
+        }
+
+        /* CTA section */
+        .gv-cta-section {
+            margin-top: 16px;
+        }
+        .gv-cta-section .cta-card {
             background: var(--white);
             border-radius: var(--radius-lg);
-            padding: 40px 44px;
+            padding: 44px 48px;
             border: 1px solid var(--line);
             box-shadow: var(--shadow-sm);
             max-width: 820px;
             margin: 0 auto;
         }
-
-        /* Form grid */
-        .form-grid-2 {
+        .gv-cta-section .cta-card h2 {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            text-align: center;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .gv-cta-section .cta-card p {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: var(--ink-soft);
+            text-align: center;
+            margin: 0 0 28px 0;
+        }
+        .gv-cta-section .cta-form {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 18px 24px;
         }
-        .form-grid-full {
-            grid-column: 1 / -1;
-        }
-
-        .contact-form-card .form-group {
+        .gv-cta-section .cta-form .form-group {
             margin-bottom: 0;
         }
-        .contact-form-card .form-group label {
+        .gv-cta-section .cta-form .form-group label {
             display: block;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 600;
@@ -703,9 +873,8 @@
             color: var(--emerald);
             margin-bottom: 6px;
         }
-        .contact-form-card .form-group input,
-        .contact-form-card .form-group select,
-        .contact-form-card .form-group textarea {
+        .gv-cta-section .cta-form .form-group input,
+        .gv-cta-section .cta-form .form-group select {
             width: 100%;
             padding: 12px 16px;
             border: 1px solid var(--line);
@@ -717,206 +886,160 @@
             color: var(--ink);
             transition: all 0.3s var(--ease);
         }
-        .contact-form-card .form-group input:focus,
-        .contact-form-card .form-group select:focus,
-        .contact-form-card .form-group textarea:focus {
+        .gv-cta-section .cta-form .form-group input:focus,
+        .gv-cta-section .cta-form .form-group select:focus {
             outline: none;
             border-color: var(--brass);
             box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.12);
             background: var(--white);
         }
-        .contact-form-card .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .contact-form-card .btn {
-            margin-top: 8px;
+        .gv-cta-section .cta-form .form-group .btn {
             width: 100%;
             justify-content: center;
             padding: 14px;
             font-size: 14px;
         }
-
-        /* Office info */
-        .office-info-section {
-            margin-top: 16px;
+        .gv-cta-section .cta-form .form-group .btn-gold {
+            background: var(--brass);
+            color: var(--white);
+            border: none;
         }
-        .office-info-section .office-info-header {
-            text-align: center;
-            margin-bottom: 28px;
+        .gv-cta-section .cta-form .form-group .btn-gold:hover {
+            background: var(--brass-dark);
         }
-        .office-info-section .office-info-header h2 {
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 700;
-            font-size: 1.8rem;
-            color: var(--emerald-deep);
-            margin: 0 0 8px 0;
-            letter-spacing: -0.02em;
-        }
-        .office-info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 32px 40px;
-            border: 1px solid var(--line);
-            box-shadow: var(--shadow-sm);
-            max-width: 820px;
-            margin: 0 auto;
-        }
-        .office-info-item {
+        .gv-cta-section .cta-whatsapp {
+            margin-top: 20px;
             text-align: center;
         }
-        .office-info-item .label {
-            display: block;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 600;
-            font-size: 10px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--brass);
-            margin-bottom: 4px;
+        .gv-cta-section .cta-whatsapp .btn-whatsapp {
+            padding: 12px 28px;
+            font-size: 13px;
+            border-radius: 100px;
+            background: #25D366;
+            color: #fff;
+            border: none;
+            min-width: 200px;
+            justify-content: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
-        .office-info-item .value {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            color: var(--ink);
-        }
-        .office-info-item .value a {
-            color: var(--ink);
-            transition: color 0.3s var(--ease);
-        }
-        .office-info-item .value a:hover {
-            color: var(--brass);
-        }
-
-        /* Map */
-        .contact-map-wrapper {
-            max-width: 820px;
-            margin: 32px auto 0;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            border: 1px solid var(--line);
-            box-shadow: var(--shadow-sm);
-        }
-        .contact-map-wrapper iframe {
-            width: 100%;
-            height: 360px;
-            border: 0;
-            display: block;
+        .gv-cta-section .cta-whatsapp .btn-whatsapp:hover {
+            background: #1DA851;
+            transform: translateY(-2px);
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .contact-whatsapp-grid {
-                grid-template-columns: 1fr;
-                gap: 32px;
-                padding: 36px 32px;
+            .gv-benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
-            .contact-whatsapp-left {
-                text-align: center;
+            .gv-process-steps {
+                flex-wrap: wrap;
+                justify-content: center;
             }
-            .contact-whatsapp-right {
-                grid-template-columns: 1fr 1fr;
+            .gv-process-step {
+                flex: 0 0 calc(50% - 12px);
             }
-            .contact-form-card {
+            .gv-process-connector {
+                display: none;
+            }
+            .gv-cta-section .cta-card {
                 padding: 32px 28px;
             }
-            .office-info-grid {
-                grid-template-columns: repeat(2, 1fr);
-                padding: 28px 24px;
-            }
-            .contact-map-wrapper iframe {
-                height: 300px;
+            .gv-cta-section .cta-form {
+                grid-template-columns: 1fr 1fr;
             }
         }
 
         @media (max-width: 768px) {
-            .contact-page-wrapper {
+            .gv-page-wrapper {
                 padding: 24px 0 40px;
             }
-            .contact-page-container {
+            .gv-container {
                 padding: 0 16px;
             }
-            .contact-tabs {
-                gap: 6px;
-                margin-bottom: 32px;
-            }
-            .contact-tabs .tab-btn {
-                padding: 10px 18px;
-                font-size: 11px;
-            }
-            .contact-whatsapp-grid {
+            .gv-intro-card {
                 padding: 28px 20px;
-                gap: 24px;
                 margin-bottom: 32px;
             }
-            .contact-whatsapp-left h2 {
+            .gv-intro-card h2 {
                 font-size: 1.3rem;
             }
-            .contact-whatsapp-right {
+            .gv-intro-card .gv-requirements {
+                padding: 18px 16px;
+            }
+            .gv-intro-card .gv-requirements ul li {
+                font-size: 0.9rem;
+                padding-left: 24px;
+            }
+            .gv-benefits-grid {
                 grid-template-columns: 1fr 1fr;
-                gap: 10px;
+                gap: 16px;
             }
-            .contact-whatsapp-right .btn-whatsapp {
-                padding: 10px 12px;
-                font-size: 11px;
+            .gv-benefit-card {
+                padding: 20px 16px;
             }
-            .form-section {
-                margin-bottom: 32px;
+            .gv-benefit-card .icon {
+                width: 48px;
+                height: 48px;
+                font-size: 20px;
             }
-            .form-section-header h2 {
+            .gv-benefit-card h3 {
+                font-size: 1rem;
+            }
+            .gv-process-step {
+                flex: 0 0 100%;
+                padding: 20px 16px;
+            }
+            .gv-process-step .step-number {
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            .gv-faq-question {
+                padding: 14px 18px;
+                font-size: 0.95rem;
+            }
+            .gv-faq-answer {
+                font-size: 0.9rem;
+            }
+            .gv-cta-section .cta-card {
+                padding: 24px 16px;
+            }
+            .gv-cta-section .cta-card h2 {
                 font-size: 1.4rem;
             }
-            .form-grid-2 {
+            .gv-cta-section .cta-form {
                 grid-template-columns: 1fr;
                 gap: 14px;
             }
-            .contact-form-card {
-                padding: 24px 16px;
-            }
-            .office-info-grid {
-                grid-template-columns: 1fr 1fr;
-                padding: 20px 16px;
-                gap: 16px;
-            }
-            .office-info-item .value {
-                font-size: 13px;
-            }
-            .contact-map-wrapper {
-                margin-top: 24px;
-            }
-            .contact-map-wrapper iframe {
-                height: 220px;
+            .gv-cta-section .cta-whatsapp .btn-whatsapp {
+                width: 100%;
+                min-width: 0;
             }
         }
 
         @media (max-width: 480px) {
-            .contact-tabs .tab-btn {
-                width: 100%;
-                text-align: center;
-                padding: 12px;
-                font-size: 12px;
-            }
-            .contact-whatsapp-right {
+            .gv-benefits-grid {
                 grid-template-columns: 1fr;
             }
-            .contact-whatsapp-right .btn-whatsapp {
-                padding: 12px 16px;
-                font-size: 12px;
+            .gv-process-step {
+                flex: 0 0 100%;
             }
-            .office-info-grid {
-                grid-template-columns: 1fr;
-                gap: 14px;
+            .gv-intro-card {
+                padding: 20px 16px;
             }
-            .contact-form-card {
+            .gv-faq-question {
+                font-size: 0.9rem;
+                padding: 12px 14px;
+            }
+            .gv-faq-answer {
+                font-size: 0.85rem;
+                padding: 0 14px;
+            }
+            .gv-cta-section .cta-card {
                 padding: 20px 14px;
-            }
-            .contact-map-wrapper iframe {
-                height: 180px;
             }
         }
     </style>
@@ -1406,9 +1529,7 @@
             </div>
         </section>
 
-        <!-- ============================================================
-             CONTACT SECTION — REDESIGNED PREMIUM LAYOUT
-             ============================================================ -->
+        <!-- ========== CONTACT SECTION ========== -->
         <section id="contact" class="section">
             <div class="contact-hero">
                 <div class="container">
@@ -1657,139 +1778,179 @@
             </div>
         </section>
 
-        <!-- ========== GOLDEN VISA SECTION ========== -->
+        <!-- ============================================================
+             GOLDEN VISA SECTION — REDESIGNED PREMIUM LAYOUT
+             ============================================================ -->
         <section id="goldenvisa" class="section">
             <div class="goldenvisa-hero">
                 <div class="container">
                     <h1><i class="fas fa-shield-halved" style="margin-right:14px;"></i>UAE GOLDEN VISA</h1>
-                    <p>Your pathway to 10-year renewable residency in the UAE</p>
+                    <p>Your pathway to 10‑year renewable residency in the UAE</p>
                 </div>
             </div>
-            <div class="container">
-                <section class="gv-intro">
-                    <h2>WHAT IS THE GOLDEN VISA?</h2>
-                    <p>The UAE Golden Visa is a long-term residence visa valid for 10 years, renewable, and without the need for a sponsor. It offers investors, entrepreneurs, and talented individuals the opportunity to live, work, and study in the UAE.</p>
-                    <div class="gv-requirements">
-                        <h3>PROPERTY INVESTMENT REQUIREMENTS</h3>
-                        <ul>
-                            <li>Minimum investment of AED 2,000,000 in property</li>
-                            <li>Property can be off-plan or ready</li>
-                            <li>Property must be owned outright (not mortgaged)</li>
-                            <li>Valid for the investor, spouse, and children</li>
-                        </ul>
-                    </div>
-                </section>
-                <section class="gv-benefits">
-                    <h2>GOLDEN VISA BENEFITS</h2>
-                    <div class="benefits-grid">
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-passport"></i></div>
-                            <h3>10-YEAR RESIDENCY</h3>
-                            <p>Renewable visa for 10 years without a sponsor</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-users"></i></div>
-                            <h3>FAMILY INCLUSION</h3>
-                            <p>Includes spouse, children, and parents</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-briefcase"></i></div>
-                            <h3>BUSINESS OPPORTUNITIES</h3>
-                            <p>Easier to start and manage businesses in UAE</p>
-                        </div>
-                        <div class="benefit-card">
-                            <div class="benefit-icon"><i class="fas fa-plane-departure"></i></div>
-                            <h3>TRAVEL FLEXIBILITY</h3>
-                            <p>Unrestricted travel in and out of UAE</p>
+
+            <div class="gv-page-wrapper">
+                <div class="gv-container">
+                    <!-- Introduction -->
+                    <div class="gv-intro-card">
+                        <h2>What is the Golden Visa?</h2>
+                        <p>The UAE Golden Visa is a long-term residence visa valid for 10 years, renewable, and without the need for a sponsor. It offers investors, entrepreneurs, and talented individuals the opportunity to live, work, and study in the UAE.</p>
+                        <div class="gv-requirements">
+                            <h3>Property Investment Requirements</h3>
+                            <ul>
+                                <li>Minimum investment of AED 2,000,000 in property</li>
+                                <li>Property can be off-plan or ready</li>
+                                <li>Property must be owned outright (not mortgaged)</li>
+                                <li>Valid for the investor, spouse, and children</li>
+                            </ul>
                         </div>
                     </div>
-                </section>
-                <section class="gv-process">
-                    <h2>HOW TO APPLY</h2>
-                    <div class="process-steps">
-                        <div class="step">
-                            <span class="step-number">1</span>
-                            <h3>PROPERTY INVESTMENT</h3>
-                            <p>Invest AED 2M+ in Dubai property</p>
+
+                    <!-- Benefits -->
+                    <div class="gv-benefits-section">
+                        <div class="section-title">
+                            <h2>Golden Visa Benefits</h2>
                         </div>
-                        <div class="step">
-                            <span class="step-number">2</span>
-                            <h3>PROPERTY VERIFICATION</h3>
-                            <p>Get property valuation and legal documentation</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">3</span>
-                            <h3>VISA APPLICATION</h3>
-                            <p>Submit application through Dubai Land Department</p>
-                        </div>
-                        <div class="step">
-                            <span class="step-number">4</span>
-                            <h3>VISA ISSUANCE</h3>
-                            <p>Receive your 10-year Golden Visa</p>
+                        <div class="gv-benefits-grid">
+                            <div class="gv-benefit-card">
+                                <div class="icon"><i class="fas fa-passport"></i></div>
+                                <h3>10‑Year Residency</h3>
+                                <p>Renewable visa for 10 years without a sponsor</p>
+                            </div>
+                            <div class="gv-benefit-card">
+                                <div class="icon"><i class="fas fa-users"></i></div>
+                                <h3>Family Inclusion</h3>
+                                <p>Includes spouse, children, and parents</p>
+                            </div>
+                            <div class="gv-benefit-card">
+                                <div class="icon"><i class="fas fa-briefcase"></i></div>
+                                <h3>Business Opportunities</h3>
+                                <p>Easier to start and manage businesses in UAE</p>
+                            </div>
+                            <div class="gv-benefit-card">
+                                <div class="icon"><i class="fas fa-plane-departure"></i></div>
+                                <h3>Travel Flexibility</h3>
+                                <p>Unrestricted travel in and out of UAE</p>
+                            </div>
                         </div>
                     </div>
-                </section>
-                <section class="gv-faq">
-                    <h2>FREQUENTLY ASKED QUESTIONS</h2>
-                    <div class="faq-container">
-                        <div class="faq-item">
-                            <button class="faq-question">What is the minimum investment for Golden Visa?</button>
-                            <div class="faq-answer">The minimum investment is AED 2,000,000 in property. This can be a single property or multiple properties totaling AED 2M+.</div>
+
+                    <!-- How to Apply -->
+                    <div class="gv-process-section">
+                        <div class="section-title">
+                            <h2>How to Apply</h2>
                         </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I apply with an off-plan property?</button>
-                            <div class="faq-answer">Yes, off-plan properties are eligible if they are registered with the Dubai Land Department and meet the minimum value requirement.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">How long does the Golden Visa last?</button>
-                            <div class="faq-answer">The Golden Visa is valid for 10 years and is renewable.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">Can I include my family?</button>
-                            <div class="faq-answer">Yes, you can include your spouse, children, and even parents under your Golden Visa.</div>
-                        </div>
-                        <div class="faq-item">
-                            <button class="faq-question">What if I sell the property?</button>
-                            <div class="faq-answer">You must maintain the AED 2M+ investment. Selling the property may affect your visa status.</div>
+                        <div class="gv-process-steps">
+                            <div class="gv-process-step">
+                                <div class="step-number">01</div>
+                                <h3>Property Investment</h3>
+                                <p>Invest AED 2M+ in Dubai property</p>
+                            </div>
+                            <div class="gv-process-connector"></div>
+                            <div class="gv-process-step">
+                                <div class="step-number">02</div>
+                                <h3>Property Verification</h3>
+                                <p>Get property valuation and legal documentation</p>
+                            </div>
+                            <div class="gv-process-connector"></div>
+                            <div class="gv-process-step">
+                                <div class="step-number">03</div>
+                                <h3>Visa Application</h3>
+                                <p>Submit application through Dubai Land Department</p>
+                            </div>
+                            <div class="gv-process-connector"></div>
+                            <div class="gv-process-step">
+                                <div class="step-number">04</div>
+                                <h3>Visa Issuance</h3>
+                                <p>Receive your 10‑year Golden Visa</p>
+                            </div>
                         </div>
                     </div>
-                </section>
-                <section class="gv-lead">
-                    <h2>INTERESTED IN GOLDEN VISA?</h2>
-                    <p>Contact us for a free consultation on Golden Visa eligibility</p>
-                    <form id="goldenvisa-form" class="gv-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <input type="hidden" name="agentSlug" id="agent-slug-input-goldenvisa" value="">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-name">FULL NAME *</label>
-                                <input type="text" id="gv-name" name="name" required>
+
+                    <!-- FAQ -->
+                    <div class="gv-faq-section">
+                        <div class="section-title">
+                            <h2>Frequently Asked Questions</h2>
+                        </div>
+                        <div class="gv-faq-list">
+                            <div class="gv-faq-item">
+                                <div class="gv-faq-question">
+                                    <span>What is the minimum investment for Golden Visa?</span>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="gv-faq-answer">The minimum investment is AED 2,000,000 in property. This can be a single property or multiple properties totaling AED 2M+.</div>
                             </div>
-                            <div class="form-group">
-                                <label for="gv-phone">PHONE NUMBER *</label>
-                                <input type="tel" id="gv-phone" name="phone" required>
+                            <div class="gv-faq-item">
+                                <div class="gv-faq-question">
+                                    <span>Can I apply with an off-plan property?</span>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="gv-faq-answer">Yes, off-plan properties are eligible if they are registered with the Dubai Land Department and meet the minimum value requirement.</div>
+                            </div>
+                            <div class="gv-faq-item">
+                                <div class="gv-faq-question">
+                                    <span>How long does the Golden Visa last?</span>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="gv-faq-answer">The Golden Visa is valid for 10 years and is renewable.</div>
+                            </div>
+                            <div class="gv-faq-item">
+                                <div class="gv-faq-question">
+                                    <span>Can I include my family?</span>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="gv-faq-answer">Yes, you can include your spouse, children, and even parents under your Golden Visa.</div>
+                            </div>
+                            <div class="gv-faq-item">
+                                <div class="gv-faq-question">
+                                    <span>What if I sell the property?</span>
+                                    <span class="faq-toggle">+</span>
+                                </div>
+                                <div class="gv-faq-answer">You must maintain the AED 2M+ investment. Selling the property may affect your visa status.</div>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="gv-email">EMAIL ADDRESS</label>
-                                <input type="email" id="gv-email" name="email">
-                            </div>
-                            <div class="form-group">
-                                <label for="gv-budget">PROPERTY BUDGET (AED)</label>
-                                <select id="gv-budget" name="budget">
-                                    <option value="">SELECT</option>
-                                    <option value="2m-3m">AED 2M - 3M</option>
-                                    <option value="3m-5m">AED 3M - 5M</option>
-                                    <option value="5m-10m">AED 5M - 10M</option>
-                                    <option value="10m+">AED 10M+</option>
-                                </select>
+                    </div>
+
+                    <!-- CTA -->
+                    <div class="gv-cta-section">
+                        <div class="cta-card">
+                            <h2>Interested in Golden Visa?</h2>
+                            <p>Contact us for a free consultation on Golden Visa eligibility</p>
+                            <form id="goldenvisa-form" class="cta-form">
+                                <input type="hidden" name="site_id" value="agentwebstudio">
+                                <input type="hidden" name="agentSlug" id="agent-slug-input-goldenvisa" value="">
+                                <div class="form-group">
+                                    <label for="gv-name">FULL NAME *</label>
+                                    <input type="text" id="gv-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gv-phone">PHONE NUMBER *</label>
+                                    <input type="tel" id="gv-phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gv-email">EMAIL ADDRESS</label>
+                                    <input type="email" id="gv-email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="gv-budget">PROPERTY BUDGET (AED)</label>
+                                    <select id="gv-budget" name="budget">
+                                        <option value="">SELECT</option>
+                                        <option value="2m-3m">AED 2M - 3M</option>
+                                        <option value="3m-5m">AED 3M - 5M</option>
+                                        <option value="5m-10m">AED 5M - 10M</option>
+                                        <option value="10m+">AED 10M+</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <button type="submit" class="btn btn-gold">GET FREE CONSULTATION</button>
+                                </div>
+                            </form>
+                            <div class="cta-whatsapp">
+                                <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20Golden%20Visa" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> ASK ON WHATSAPP</a>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-gold">GET FREE CONSULTATION</button>
-                    </form>
-                    <a href="https://wa.me/971501234567?text=I%27m%20interested%20in%20Golden%20Visa" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> ASK ON WHATSAPP</a>
-                </section>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -1896,6 +2057,36 @@
                 });
             });
         })();
+    </script>
+
+    <!-- FAQ accordion script for Golden Visa page -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqItems = document.querySelectorAll('.gv-faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.gv-faq-question');
+                const answer = item.querySelector('.gv-faq-answer');
+                const toggle = question.querySelector('.faq-toggle');
+                question.addEventListener('click', function() {
+                    const isOpen = item.classList.contains('open');
+                    // Close all others
+                    faqItems.forEach(other => {
+                        if (other !== item && other.classList.contains('open')) {
+                            other.classList.remove('open');
+                            const otherToggle = other.querySelector('.faq-toggle');
+                            if (otherToggle) otherToggle.textContent = '+';
+                        }
+                    });
+                    if (!isOpen) {
+                        item.classList.add('open');
+                        toggle.textContent = '−';
+                    } else {
+                        item.classList.remove('open');
+                        toggle.textContent = '+';
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
