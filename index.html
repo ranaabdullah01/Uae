@@ -1394,6 +1394,353 @@
                 padding: 20px 14px;
             }
         }
+
+        /* ============================================================
+           VALUATION PAGE SPECIFIC STYLES
+           ============================================================ */
+        .valuation-page-wrapper {
+            padding: 40px 0 60px;
+            background: var(--paper);
+        }
+        .valuation-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Trust Strip */
+        .valuation-trust-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 24px 32px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 40px;
+        }
+        .valuation-trust-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            text-align: center;
+        }
+        .valuation-trust-item .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--cream-warm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--brass);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .valuation-trust-item .text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .valuation-trust-item .text .label {
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--emerald-deep);
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .valuation-trust-item .text .sub {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 12px;
+            color: var(--ink-soft);
+        }
+
+        /* Form Card */
+        .valuation-form-card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 44px 48px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 48px;
+        }
+        .valuation-form-card .form-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .valuation-form-card .form-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .valuation-form-card .form-header p {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+
+        .valuation-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 24px;
+        }
+        .valuation-form-grid .form-group {
+            margin-bottom: 0;
+        }
+        .valuation-form-grid .form-group label {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--emerald);
+            margin-bottom: 6px;
+        }
+        .valuation-form-grid .form-group label .required {
+            color: var(--danger, #C6392C);
+            margin-left: 2px;
+        }
+        .valuation-form-grid .form-group input,
+        .valuation-form-grid .form-group select,
+        .valuation-form-grid .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            background: var(--paper);
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            color: var(--ink);
+            transition: all 0.3s var(--ease);
+        }
+        .valuation-form-grid .form-group input:focus,
+        .valuation-form-grid .form-group select:focus,
+        .valuation-form-grid .form-group textarea:focus {
+            outline: none;
+            border-color: var(--brass);
+            box-shadow: 0 0 0 4px rgba(176, 138, 62, 0.12);
+            background: var(--white);
+        }
+        .valuation-form-grid .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .valuation-form-grid .form-group .form-grid-full {
+            grid-column: 1 / -1;
+        }
+
+        .valuation-form-card .btn {
+            margin-top: 12px;
+            width: 100%;
+            justify-content: center;
+            padding: 16px;
+            font-size: 15px;
+            letter-spacing: 0.06em;
+        }
+        .valuation-form-card .btn-primary {
+            background: var(--emerald);
+            color: var(--cream);
+            border: none;
+            border-radius: 100px;
+            font-weight: 600;
+            transition: all 0.3s var(--ease);
+        }
+        .valuation-form-card .btn-primary:hover {
+            background: var(--emerald-deep);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(11, 59, 46, 0.3);
+        }
+
+        /* DLD Rental Index */
+        .valuation-index-section {
+            margin-top: 8px;
+        }
+        .valuation-index-section .index-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .valuation-index-section .index-header h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .valuation-index-section .index-header p {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+        .valuation-index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .valuation-index-item {
+            background: var(--white);
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s var(--ease);
+        }
+        .valuation-index-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+            border-color: rgba(176, 138, 62, 0.3);
+        }
+        .valuation-index-item .community {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: var(--emerald-deep);
+            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+        }
+        .valuation-index-item .rent {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: var(--ink-soft);
+            padding: 2px 0;
+        }
+        .valuation-index-item .rent .label {
+            font-weight: 400;
+        }
+        .valuation-index-item .rent .value {
+            font-weight: 600;
+            color: var(--emerald);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .valuation-form-card {
+                padding: 32px 28px;
+            }
+            .valuation-trust-strip {
+                padding: 20px 20px;
+                gap: 12px;
+            }
+            .valuation-trust-item {
+                gap: 10px;
+            }
+            .valuation-trust-item .text .label {
+                font-size: 12px;
+            }
+            .valuation-trust-item .text .sub {
+                font-size: 11px;
+            }
+            .valuation-index-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .valuation-page-wrapper {
+                padding: 24px 0 40px;
+            }
+            .valuation-container {
+                padding: 0 16px;
+            }
+            .valuation-trust-strip {
+                grid-template-columns: 1fr 1fr 1fr;
+                padding: 16px 14px;
+                gap: 8px;
+                margin-bottom: 28px;
+            }
+            .valuation-trust-item {
+                flex-direction: column;
+                gap: 4px;
+            }
+            .valuation-trust-item .icon {
+                width: 32px;
+                height: 32px;
+                font-size: 14px;
+            }
+            .valuation-trust-item .text .label {
+                font-size: 10px;
+            }
+            .valuation-trust-item .text .sub {
+                font-size: 9px;
+            }
+            .valuation-form-card {
+                padding: 24px 16px;
+                margin-bottom: 32px;
+            }
+            .valuation-form-card .form-header h2 {
+                font-size: 1.4rem;
+            }
+            .valuation-form-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .valuation-form-card .btn {
+                padding: 14px;
+                font-size: 14px;
+            }
+            .valuation-index-section .index-header h2 {
+                font-size: 1.4rem;
+            }
+            .valuation-index-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .valuation-index-item {
+                padding: 16px 18px;
+            }
+            .valuation-index-item .community {
+                font-size: 0.95rem;
+            }
+            .valuation-index-item .rent {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .valuation-trust-strip {
+                grid-template-columns: 1fr;
+                gap: 10px;
+                padding: 16px;
+            }
+            .valuation-trust-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 12px;
+            }
+            .valuation-trust-item .text .label {
+                font-size: 12px;
+            }
+            .valuation-trust-item .text .sub {
+                font-size: 11px;
+            }
+            .valuation-form-card {
+                padding: 20px 14px;
+            }
+            .valuation-form-card .form-header h2 {
+                font-size: 1.2rem;
+            }
+            .valuation-form-card .form-header p {
+                font-size: 0.9rem;
+            }
+            .valuation-index-item .rent {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2002,7 +2349,9 @@
             </div>
         </section>
 
-        <!-- ========== VALUATION SECTION ========== -->
+        <!-- ============================================================
+             VALUATION SECTION — REDESIGNED PREMIUM
+             ============================================================ -->
         <section id="valuation" class="section">
             <div class="valuation-hero">
                 <div class="container">
@@ -2010,87 +2359,116 @@
                     <p>Get a free property valuation from our experts</p>
                 </div>
             </div>
-            <div class="container">
-                <div class="valuation-form-container">
-                    <div class="valuation-trust">
-                        <div class="trust-badge"><i class="fas fa-check-circle"></i> FREE SERVICE</div>
-                        <div class="trust-badge"><i class="fas fa-shield-alt"></i> RERA LICENSED</div>
-                        <div class="trust-badge"><i class="fas fa-clock"></i> 24HR RESPONSE</div>
+
+            <div class="valuation-page-wrapper">
+                <div class="valuation-container">
+                    <!-- Trust Strip -->
+                    <div class="valuation-trust-strip">
+                        <div class="valuation-trust-item">
+                            <div class="icon"><i class="fas fa-check-circle"></i></div>
+                            <div class="text">
+                                <span class="label">FREE SERVICE</span>
+                                <span class="sub">No hidden charges</span>
+                            </div>
+                        </div>
+                        <div class="valuation-trust-item">
+                            <div class="icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="text">
+                                <span class="label">RERA LICENSED</span>
+                                <span class="sub">Certified professionals</span>
+                            </div>
+                        </div>
+                        <div class="valuation-trust-item">
+                            <div class="icon"><i class="fas fa-clock"></i></div>
+                            <div class="text">
+                                <span class="label">24HR RESPONSE</span>
+                                <span class="sub">Quick & reliable</span>
+                            </div>
+                        </div>
                     </div>
-                    <form id="valuation-form" class="valuation-form">
-                        <input type="hidden" name="site_id" value="agentwebstudio">
-                        <input type="hidden" name="agentSlug" id="agent-slug-input-valuation" value="">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-name">FULL NAME *</label>
-                                <input type="text" id="val-name" name="name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="val-phone">PHONE NUMBER *</label>
-                                <input type="tel" id="val-phone" name="phone" required>
-                            </div>
+
+                    <!-- Valuation Form -->
+                    <div class="valuation-form-card">
+                        <div class="form-header">
+                            <h2>Request Your Valuation</h2>
+                            <p>Tell us about your property and our experts will help assess its value.</p>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-email">EMAIL ADDRESS</label>
-                                <input type="email" id="val-email" name="email">
+
+                        <form id="valuation-form" class="valuation-form">
+                            <input type="hidden" name="site_id" value="agentwebstudio">
+                            <input type="hidden" name="agentSlug" id="agent-slug-input-valuation" value="">
+
+                            <div class="valuation-form-grid">
+                                <div class="form-group">
+                                    <label for="val-name">FULL NAME <span class="required">*</span></label>
+                                    <input type="text" id="val-name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-phone">PHONE NUMBER <span class="required">*</span></label>
+                                    <input type="tel" id="val-phone" name="phone" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-email">EMAIL ADDRESS</label>
+                                    <input type="email" id="val-email" name="email">
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-property-type">PROPERTY TYPE <span class="required">*</span></label>
+                                    <select id="val-property-type" name="propertyType" required>
+                                        <option value="">SELECT TYPE</option>
+                                        <option value="Apartment">APARTMENT</option>
+                                        <option value="Villa">VILLA</option>
+                                        <option value="Penthouse">PENTHOUSE</option>
+                                        <option value="Studio">STUDIO</option>
+                                        <option value="Townhouse">TOWNHOUSE</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-community">COMMUNITY <span class="required">*</span></label>
+                                    <select id="val-community" name="community" required>
+                                        <option value="">SELECT COMMUNITY</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-bedrooms">BEDROOMS <span class="required">*</span></label>
+                                    <select id="val-bedrooms" name="bedrooms" required>
+                                        <option value="">SELECT</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="5+">5+</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-size">PROPERTY SIZE (SQFT)</label>
+                                    <input type="number" id="val-size" name="size" placeholder="e.g. 1200">
+                                </div>
+                                <div class="form-group">
+                                    <label for="val-year">YEAR BUILT</label>
+                                    <input type="number" id="val-year" name="yearBuilt" placeholder="e.g. 2020">
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label for="val-address">PROPERTY ADDRESS</label>
+                                    <input type="text" id="val-address" name="address" placeholder="Building name, street, community">
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;">
+                                    <label for="val-features">PROPERTY FEATURES</label>
+                                    <textarea id="val-features" name="features" rows="3" placeholder="List key features..."></textarea>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="val-property-type">PROPERTY TYPE *</label>
-                                <select id="val-property-type" name="propertyType" required>
-                                    <option value="">SELECT TYPE</option>
-                                    <option value="Apartment">APARTMENT</option>
-                                    <option value="Villa">VILLA</option>
-                                    <option value="Penthouse">PENTHOUSE</option>
-                                    <option value="Studio">STUDIO</option>
-                                    <option value="Townhouse">TOWNHOUSE</option>
-                                </select>
-                            </div>
+
+                            <button type="submit" class="btn btn-primary">GET FREE VALUATION</button>
+                        </form>
+                    </div>
+
+                    <!-- DLD Rental Index -->
+                    <div class="valuation-index-section">
+                        <div class="index-header">
+                            <h2>Dubai DLD Rental Index</h2>
+                            <p>Average rental rates by community based on official DLD data.</p>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-community">COMMUNITY *</label>
-                                <select id="val-community" name="community" required>
-                                    <option value="">SELECT COMMUNITY</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="val-bedrooms">BEDROOMS *</label>
-                                <select id="val-bedrooms" name="bedrooms" required>
-                                    <option value="">SELECT</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="5+">5+</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="val-size">PROPERTY SIZE (SQFT)</label>
-                                <input type="number" id="val-size" name="size" placeholder="e.g. 1200">
-                            </div>
-                            <div class="form-group">
-                                <label for="val-year">YEAR BUILT</label>
-                                <input type="number" id="val-year" name="yearBuilt" placeholder="e.g. 2020">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="val-address">PROPERTY ADDRESS</label>
-                            <input type="text" id="val-address" name="address" placeholder="Building name, street, community">
-                        </div>
-                        <div class="form-group">
-                            <label for="val-features">PROPERTY FEATURES</label>
-                            <textarea id="val-features" name="features" rows="3" placeholder="List key features..."></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">GET FREE VALUATION</button>
-                    </form>
-                    <div class="valuation-index">
-                        <h3>DUBAI DLD RENTAL INDEX</h3>
-                        <p>Average rental rates by community based on official DLD data.</p>
-                        <div id="rental-index" class="rental-index-grid"></div>
+                        <div class="valuation-index-grid" id="rental-index"></div>
                     </div>
                 </div>
             </div>
