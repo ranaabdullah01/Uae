@@ -825,11 +825,11 @@ nav .nav-container {
 .blog-hero,
 .valuation-hero {
     background: linear-gradient(135deg, var(--emerald-deep) 0%, var(--emerald) 100%) !important;
-    min-height: auto;           /* reduced from 35vh to avoid excess space */
+    min-height: auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 100px 0 40px;      /* reduced from 120px 0 60px */
+    padding: 100px 0 40px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -1432,7 +1432,7 @@ nav .nav-container {
 /* Desktop: force consistent title height for alignment */
 @media (min-width: 901px) {
     .listing-card-body h3 {
-        min-height: 3rem; /* two lines at 1.25rem/1.2 line-height */
+        min-height: 3rem;
     }
 }
 .property-location, .property-community, .offplan-card-developer {
@@ -2456,10 +2456,6 @@ nav .nav-container {
 
 /* ============================================================
    LISTING DETAIL PAGE - REFINED 2-COLUMN LAYOUT
-   Gallery: 16:9 with 4 thumbs + "more" card
-   Price + status inline, quick stats card, improved symmetry
-   TOP BAR: Back button + Breadcrumb aligned on same baseline
-   TRUST BADGES: full-width card with centered icons & text
    ============================================================ */
 
 #listing-detail {
@@ -2472,12 +2468,10 @@ nav .nav-container {
     padding: 0 32px;
 }
 
-/* ---- Hide old back button (now inside top bar) ---- */
 #listing-detail > .btn-secondary {
     display: none !important;
 }
 
-/* ---- Top Bar: Back button + Breadcrumb ---- */
 .listing-detail-top-bar {
     display: flex;
     align-items: center;
@@ -2505,7 +2499,6 @@ nav .nav-container {
     justify-content: flex-end;
 }
 
-/* ---- Two-column grid ---- */
 .listing-detail-container {
     display: grid;
     grid-template-columns: 56% 44%;
@@ -2513,14 +2506,12 @@ nav .nav-container {
     align-items: start;
 }
 
-/* ---- Left Column ---- */
 .listing-detail-left-col {
     display: flex;
     flex-direction: column;
     gap: 28px;
 }
 
-/* ---- Gallery (16:9) ---- */
 .listing-detail-gallery {
     position: relative;
     border-radius: 20px;
@@ -2529,7 +2520,6 @@ nav .nav-container {
     box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
 }
 
-/* Original off-plan gallery scroll behavior, scoped away from properties. */
 @media (min-width: 1024px) {
     #offplan-detail .listing-detail-left-col {
         position: sticky;
@@ -2554,7 +2544,6 @@ nav .nav-container {
     transition: transform 0.6s var(--ease);
 }
 
-/* The next image is preloaded in JS; reveal it in place without blanking the gallery. */
 .gallery-main img.gallery-image-transition {
     animation: gallery-image-reveal 0.4s var(--ease);
 }
@@ -2626,7 +2615,6 @@ nav .nav-container {
     letter-spacing: 0.04em;
 }
 
-/* ---- Thumbnails (4 thumbs + "more" card) ---- */
 .gallery-thumbs {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2682,20 +2670,17 @@ nav .nav-container {
     line-height: 1.2;
 }
 
-/* ---- Property Details Card (left column) ---- */
 .property-details-card .listing-detail-details-grid {
     grid-template-columns: 1fr 1fr;
     gap: 6px 24px;
 }
 
-/* ---- Right Column ---- */
 .listing-detail-right-col {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-/* ---- Price + Status inline ---- */
 .price-status-row {
     display: flex;
     align-items: center;
@@ -2721,7 +2706,6 @@ nav .nav-container {
 .status-pill.for-rent { background: #1A5A7A; color: var(--cream); }
 .status-pill.sold { background: #6B7280; color: var(--cream); }
 
-/* ---- Quick Stats Card (horizontal blocks) ---- */
 .quick-stats-card {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -2770,7 +2754,6 @@ nav .nav-container {
     letter-spacing: 0.04em;
 }
 
-/* ---- Breadcrumb ---- */
 .breadcrumb-nav {
     display: flex;
     align-items: center;
@@ -2801,7 +2784,6 @@ nav .nav-container {
     font-weight: 500;
 }
 
-/* ---- Title ---- */
 .listing-detail-title {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
@@ -2812,7 +2794,6 @@ nav .nav-container {
     line-height: 1.1;
 }
 
-/* ---- Price ---- */
 .listing-detail-price {
     font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 700;
@@ -2821,7 +2802,6 @@ nav .nav-container {
     letter-spacing: -0.02em;
 }
 
-/* ---- Location ---- */
 .listing-detail-location {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
@@ -2838,7 +2818,6 @@ nav .nav-container {
     font-size: 14px;
 }
 
-/* ---- Cards ---- */
 .listing-detail-card {
     background: var(--white);
     border-radius: 16px;
@@ -2883,7 +2862,6 @@ nav .nav-container {
     margin: 0;
 }
 
-/* ---- Features Grid ---- */
 .listing-detail-features-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2907,7 +2885,6 @@ nav .nav-container {
     flex-shrink: 0;
 }
 
-/* ---- Property Details Grid (used in left column) ---- */
 .listing-detail-details-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -2942,7 +2919,6 @@ nav .nav-container {
     color: var(--emerald-deep);
 }
 
-/* ---- CTA Buttons ---- */
 .listing-detail-actions-card {
     background: var(--white);
     border-radius: 16px;
@@ -3009,7 +2985,6 @@ nav .nav-container {
     box-shadow: 0 8px 24px rgba(11, 59, 46, 0.35);
 }
 
-/* ---- FULL-WIDTH TRUST BADGES ---- */
 .trust-badges-full {
     margin-top: 32px;
     padding-top: 16px;
@@ -3073,7 +3048,6 @@ nav .nav-container {
    FIX: Increase spacing between hero and content sections
    ============================================================ */
 
-/* Target containers that follow heroes on content pages */
 .offplan-hero + .container,
 .communities-hero + .container,
 .blog-hero + .container,
@@ -3082,10 +3056,9 @@ nav .nav-container {
 .contact-hero + .container,
 .goldenvisa-hero + .container,
 .valuation-hero + .container {
-    padding-top: 30px;  /* reduced from 50px for balanced spacing */
+    padding-top: 30px;
 }
 
-/* Tablet */
 @media (max-width: 768px) {
     .offplan-hero + .container,
     .communities-hero + .container,
@@ -3099,7 +3072,6 @@ nav .nav-container {
     }
 }
 
-/* Mobile */
 @media (max-width: 480px) {
     .offplan-hero + .container,
     .communities-hero + .container,
@@ -3114,12 +3086,9 @@ nav .nav-container {
 }
 
 /* ============================================================
-   COMMUNITY DETAIL PAGE STYLES (NEW)
-   Includes top bar with back button & breadcrumb,
-   properties grid, and balanced spacing.
+   COMMUNITY DETAIL PAGE STYLES
    ============================================================ */
 
-/* Community detail top bar */
 .community-detail-top-bar {
     display: flex;
     align-items: center;
@@ -3140,7 +3109,6 @@ nav .nav-container {
     box-shadow: 0 8px 28px rgba(176, 138, 62, 0.35);
 }
 
-/* Community properties section */
 .community-properties-section {
     background: var(--white);
     padding: 28px 24px;
@@ -3240,7 +3208,6 @@ nav .nav-container {
     font-size: 11px;
 }
 
-/* Community detail hero (existing) */
 .community-detail-hero {
     position: relative;
     background-size: cover;
@@ -3819,7 +3786,6 @@ footer::before {
     color: var(--brass-dark);
 }
 
-/* ================ SOCIAL ICONS - FIXED SPACING ================ */
 .social-links {
     display: flex;
     gap: 16px;
@@ -3848,7 +3814,6 @@ footer::before {
     font-size: 18px;
 }
 
-/* Legacy social-icons (kept for compatibility) */
 .social-icons { 
     display: flex; 
     gap: 16px; 
@@ -4034,19 +3999,12 @@ footer::before {
 }
 
 /* ============================================================
-   PAGE HEROES - CLEAN SOLID BACKGROUNDS (already updated above)
-   ============================================================ */
-/* Note: hero styles updated earlier in the file */
-
-/* ============================================================
    MOBILE FIX: Move Property Details below Features on Mobile
    ============================================================ */
 
-/* Hide/show spec blocks */
 .desktop-specs { display: block; }
 .mobile-specs { display: none; }
 
-/* ===== MOBILE OVERRIDE (max-width: 1023px) ===== */
 @media (max-width: 1023px) {
     .listing-detail-container {
         display: flex !important;
@@ -4083,8 +4041,7 @@ footer::before {
 }
 
 /* ============================================================
-   DEEP GALLERY MODAL (triggered by "+N Photos")
-   Pure white background - no cream/beige
+   DEEP GALLERY MODAL
    ============================================================ */
 #gallery-modal-overlay {
     position: fixed;
@@ -4225,7 +4182,6 @@ footer::before {
     transform: scale(1.02);
 }
 
-/* Mobile: vertical stacked images */
 #gallery-modal-overlay .gallery-mobile-image {
     margin-bottom: 12px;
     border-radius: 12px;
@@ -4240,7 +4196,6 @@ footer::before {
     border-radius: 12px;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
     #gallery-modal-overlay .gallery-content {
         flex-direction: column;
@@ -4270,7 +4225,7 @@ footer::before {
         grid-template-columns: repeat(2, 1fr);
     }
 }
-/* Desktop hover zoom: cursor change on main image container */
+
 @media (min-width: 1024px) {
     #gallery-main,
     #offplan-gallery-main {
