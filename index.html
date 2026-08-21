@@ -67,7 +67,6 @@
                 display: none !important;
             }
 
-            /* Desktop header container - flex layout with small gap */
             .desktop-header {
                 position: absolute;
                 top: 20px;
@@ -76,7 +75,7 @@
                 z-index: 1000;
                 display: flex;
                 align-items: center;
-                gap: 24px; /* small fixed gap between logo and nav */
+                gap: 24px;
                 pointer-events: none;
             }
 
@@ -90,6 +89,7 @@
                 align-items: center;
                 gap: 10px;
                 flex-shrink: 0;
+                margin: 0;
             }
 
             .floating-logo a {
@@ -137,7 +137,7 @@
                 position: static;
                 transform: none;
                 left: auto;
-                margin-left: 0;
+                margin-left: 0 !important;
                 display: flex;
                 align-items: center;
                 gap: 4px;
@@ -462,9 +462,9 @@
         }
 
         @media (max-width: 900px) {
+            .desktop-header,
             .floating-nav,
-            .floating-logo,
-            .desktop-header {
+            .floating-logo {
                 display: none !important;
             }
             #main-header {
@@ -868,7 +868,6 @@
 
                 <!-- Listing Detail View -->
                 <div id="listing-detail" style="display:none;">
-                    <!-- The back button is now rendered inside the content via renderListingDetail() -->
                     <div id="listing-detail-content"></div>
                 </div>
 
@@ -951,7 +950,7 @@
             <div class="container">
                 <div class="communities-grid" id="communities-grid"></div>
 
-                <!-- Community Detail View (button now rendered via JS) -->
+                <!-- Community Detail View -->
                 <div id="community-detail" style="display:none;">
                     <div id="community-detail-content"></div>
                 </div>
@@ -962,7 +961,7 @@
         <section id="blog" class="section">
             <div class="blog-hero">
                 <div class="container">
-                    <h1>BLOG</h1>
+                    <h1><i class="fas fa-newspaper" style="margin-right:14px;"></i>BLOG</h1>
                     <p>Insights, tips, and news about Dubai real estate</p>
                 </div>
             </div>
@@ -979,7 +978,7 @@
         <section id="about" class="section">
             <div class="about-hero">
                 <div class="container">
-                    <h1>ABOUT ME</h1>
+                    <h1><i class="fas fa-circle-info" style="margin-right:14px;"></i>ABOUT ME</h1>
                     <p>Your trusted partner in Dubai real estate</p>
                 </div>
             </div>
@@ -1026,7 +1025,7 @@
         <section id="contact" class="section">
             <div class="contact-hero">
                 <div class="container">
-                    <h1>CONTACT US</h1>
+                    <h1><i class="fas fa-phone" style="margin-right:14px;"></i>CONTACT US</h1>
                     <p>Get in touch with our team</p>
                 </div>
             </div>
@@ -1129,7 +1128,7 @@
         <section id="valuation" class="section">
             <div class="valuation-hero">
                 <div class="container">
-                    <h1>PROPERTY VALUATION</h1>
+                    <h1><i class="fas fa-chart-line" style="margin-right:14px;"></i>PROPERTY VALUATION</h1>
                     <p>Get a free property valuation from our experts</p>
                 </div>
             </div>
@@ -1223,7 +1222,7 @@
         <section id="goldenvisa" class="section">
             <div class="goldenvisa-hero">
                 <div class="container">
-                    <h1>UAE GOLDEN VISA</h1>
+                    <h1><i class="fas fa-shield-halved" style="margin-right:14px;"></i>UAE GOLDEN VISA</h1>
                     <p>Your pathway to 10-year renewable residency in the UAE</p>
                 </div>
             </div>
