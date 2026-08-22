@@ -1740,13 +1740,24 @@
             padding: 0 24px;
         }
 
+        /* --- Hero: stronger heading --- */
+        .about-hero h1 {
+            font-size: clamp(3rem, 5.5vw, 4.2rem) !important;
+            letter-spacing: -0.02em;
+        }
+        .about-hero p {
+            font-size: 1.15rem !important;
+            margin-top: 16px !important;
+            color: rgba(247, 243, 234, 0.8) !important;
+        }
+
         /* Profile Section */
         .about-profile {
             display: grid;
             grid-template-columns: 340px 1fr;
             gap: 48px;
             align-items: start;
-            margin-bottom: 48px;
+            margin-bottom: 56px !important;
         }
         .about-profile-image {
             position: relative;
@@ -1757,7 +1768,7 @@
             object-fit: cover;
             border-radius: var(--radius-lg);
             border: 4px solid var(--brass);
-            box-shadow: 0 20px 50px rgba(11, 59, 46, 0.12);
+            box-shadow: 0 24px 60px rgba(11, 59, 46, 0.15);
         }
         .about-profile-image::after {
             content: '';
@@ -1773,14 +1784,14 @@
         .about-profile-text {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 20px !important;
         }
         .about-profile-text .agent-name {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 800;
             font-size: 2.4rem;
             color: var(--emerald-deep);
-            margin: 0;
+            margin: 0 0 4px;
             letter-spacing: -0.02em;
             line-height: 1.1;
         }
@@ -1796,6 +1807,7 @@
             text-transform: uppercase;
             font-size: 12px;
             width: fit-content;
+            margin-bottom: 4px;
         }
         .about-profile-text .bio {
             font-family: 'Inter', sans-serif;
@@ -1809,7 +1821,7 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 16px;
-            margin: 4px 0;
+            margin: 8px 0 4px !important;
         }
         .about-stats .stat-item {
             background: var(--white);
@@ -1847,7 +1859,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            margin: 2px 0;
+            margin-top: 6px !important;
         }
         .about-tags-section .tag-group-title {
             font-family: 'Inter', sans-serif;
@@ -1856,7 +1868,7 @@
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--ink-soft);
-            margin: 0;
+            margin: 0 0 6px !important;
         }
         .about-tags {
             display: flex;
@@ -1894,7 +1906,7 @@
             display: flex;
             gap: 14px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 8px !important;
         }
         .about-ctas .btn {
             min-width: 140px;
@@ -1924,7 +1936,7 @@
 
         /* Testimonials */
         .about-testimonials {
-            margin-bottom: 48px;
+            margin-bottom: 56px !important;
         }
         .about-testimonials .section-title {
             text-align: center;
@@ -1992,7 +2004,7 @@
 
         /* Recent Sales */
         .about-sales {
-            margin-top: 8px;
+            margin-top: 12px !important;
         }
         .about-sales .section-title {
             text-align: center;
@@ -2028,21 +2040,22 @@
         .sale-card .sale-price {
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 700;
-            font-size: 1.3rem;
-            color: var(--brass-dark);
+            font-size: 1.5rem !important;
+            color: var(--brass-dark) !important;
             letter-spacing: -0.02em;
+            margin-bottom: 6px;
         }
         .sale-card .sale-title {
             font-family: 'Inter', sans-serif;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 1.05rem !important;
             color: var(--emerald-deep);
-            margin: 6px 0 2px;
+            margin: 4px 0 2px;
         }
         .sale-card .sale-detail {
             font-family: 'Inter', sans-serif;
             font-weight: 400;
-            font-size: 13px;
+            font-size: 13px !important;
             color: var(--ink-soft);
         }
 
@@ -2134,9 +2147,6 @@
                 grid-template-columns: 1fr 1fr;
                 gap: 14px;
             }
-            .sale-card .sale-price {
-                font-size: 1.1rem;
-            }
         }
 
         @media (max-width: 480px) {
@@ -2191,7 +2201,7 @@
                 padding: 18px 16px;
             }
             .sale-card .sale-price {
-                font-size: 1rem;
+                font-size: 1.2rem !important;
             }
         }
     </style>
