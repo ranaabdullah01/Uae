@@ -1,6 +1,7 @@
 // ================================================
 // ADMIN.JS - FULL DATABASE INTEGRATION + SIDEBAR UI + BLOG WITH QUILL + MULTI-AGENT
 // OFF-PLAN MULTIPLE IMAGES SUPPORT + IMAGE DELETION + DRAG-AND-DROP REORDERING (FIXED)
+// RECENT SALES MANAGEMENT ADDED
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -16,6 +17,7 @@ let offplanData = [];
 let communitiesData = [];
 let blogData = [];
 let agentsData = [];
+let salesData = [];
 let sidebarCollapsed = false;
 
 // ============= QUILL EDITOR REFERENCE =============
@@ -237,7 +239,6 @@ function handleDragStart(e) {
     draggedItem = this;
     this.style.opacity = '0.4';
     e.dataTransfer.effectAllowed = 'move';
-    // Store the wrapper's dataset.url or HTML to identify it on drop
     e.dataTransfer.setData('text/plain', this.dataset.url);
     e.dataTransfer.setData('text/html', this.outerHTML);
 }
@@ -265,7 +266,7 @@ function handleDragLeave(e) {
 
 function handleDrop(e) {
     e.preventDefault();
-    const targetWrapper = e.currentTarget; // always the wrapper
+    const targetWrapper = e.currentTarget;
     targetWrapper.classList.remove('drag-over');
     if (draggedItem && draggedItem !== targetWrapper) {
         const parent = targetWrapper.parentNode;
@@ -277,7 +278,6 @@ function handleDrop(e) {
         } else {
             parent.insertBefore(draggedItem, targetWrapper);
         }
-        // Update hidden input after reorder
         updateHiddenOrder(parent);
     }
 }
@@ -435,7 +435,8 @@ function navigateTab(tab) {
         communities: 'Communities',
         blog: 'Blog',
         leads: 'Leads',
-        agents: 'Agents'
+        agents: 'Agents',
+        sales: 'Recent Sales'
     };
     document.getElementById('page-title').textContent = titles[tab] || 'Dashboard';
     
@@ -447,6 +448,7 @@ function navigateTab(tab) {
     if (tab === 'communities') loadCommunities();
     if (tab === 'blog') loadBlog();
     if (tab === 'agents') loadAgents();
+    if (tab === 'sales') loadSales();
     if (tab === 'dashboard') updateStats();
     
     closeSidebar();
@@ -463,7 +465,8 @@ async function loadAllData() {
         loadCommunities(),
         loadLeads(),
         loadBlog(),
-        loadAgents()
+        loadAgents(),
+        loadSales()
     ]);
     updateStats();
     updateSidebarBadges();
@@ -507,7 +510,6 @@ async function loadCommunities() {
         const data = await response.json();
         if (data.success) {
             communitiesData = data.communities;
-            console.log('Loaded communities:', communitiesData);
             renderCommunitiesTable();
             updateSidebarBadges();
             updateStats();
@@ -575,6 +577,141 @@ async function loadAgents() {
     }
 }
 
+// ============= RECENT SALES CRUD =============
+
+async function loadSales() {
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        if (!token) return;
+        const response = await fetch(`${API_BASE}/admin/sales`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            salesData = data.sales || [];
+            renderSalesTable();
+            updateSidebarBadges();
+            updateStats();
+        }
+    } catch (error) {
+        console.error('Error loading sales:', error);
+        showError('sales-table-body', 'Failed to load recent sales');
+    }
+}
+
+function renderSalesTable() {
+    const tbody = document.getElementById('sales-table-body');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    
+    if (!salesData || salesData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:20px;font-family:Inter, sans-serif;">No recent sales found. Click "Add Recent Sale" to create one.</td></tr>';
+        return;
+    }
+    
+    salesData.forEach(sale => {
+        const tr = document.createElement('tr');
+        const imageUrl = sale.image || 'https://placehold.co/60x60/0A1628/C9A84C?text=No+Image';
+        
+        tr.innerHTML = `
+            <td><img src="${imageUrl}" alt="${sale.propertyName}" style="width:56px;height:56px;object-fit:cover;border-radius:8px;border:1px solid var(--line);" onerror="this.onerror=null;this.src='https://placehold.co/60x60/0A1628/C9A84C?text=No+Image'"></td>
+            <td><strong style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;">${sale.propertyName}</strong></td>
+            <td style="font-family:Plus Jakarta Sans, sans-serif;font-weight:600;letter-spacing:-0.02em;color:var(--brass-dark);">${sale.price}</td>
+            <td>${sale.location}</td>
+            <td class="actions">
+                <button class="btn btn-primary btn-sm" onclick="window.editSale('${sale.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="window.deleteSale('${sale.id}')">Delete</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.editSale = function(id) {
+    const sale = salesData.find(s => s.id == id);
+    if (!sale) return;
+    editingId = id;
+    editingType = 'sale';
+    openModal('Edit Recent Sale', buildSaleForm(sale));
+};
+
+window.deleteSale = async function(id) {
+    if (!confirm('Are you sure you want to delete this recent sale?')) return;
+    try {
+        const token = localStorage.getItem('ak_admin_token');
+        const response = await fetch(`${API_BASE}/admin/sales/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await response.json();
+        if (data.success) {
+            await loadSales();
+            updateStats();
+            updateSidebarBadges();
+            showToast('Recent sale deleted successfully!', 'success');
+        } else {
+            showToast('Failed to delete: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Delete error:', error);
+        showToast('Error deleting recent sale.', 'error');
+    }
+};
+
+async function saveSale(formData) {
+    const sale = {
+        id: editingId || null,
+        image: formData.get('image_hidden') || '',
+        price: formData.get('price') || '',
+        propertyName: formData.get('propertyName') || '',
+        location: formData.get('location') || ''
+    };
+    
+    if (!sale.propertyName) { showToast('Property name is required.', 'error'); return; }
+    if (!sale.price) { showToast('Price is required.', 'error'); return; }
+    if (!sale.location) { showToast('Location is required.', 'error'); return; }
+
+    const token = localStorage.getItem('ak_admin_token');
+    const url = editingId ? `${API_BASE}/admin/sales/${editingId}` : `${API_BASE}/admin/sales`;
+    const method = editingId ? 'PUT' : 'POST';
+
+    try {
+        const response = await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify(sale)
+        });
+        const data = await response.json();
+        if (data.success) {
+            closeModal();
+            await loadSales();
+            updateStats();
+            updateSidebarBadges();
+            showToast(editingId ? 'Recent sale updated successfully!' : 'Recent sale created successfully!', 'success');
+            editingId = null;
+            editingType = null;
+        } else {
+            showToast('Failed to save: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Save sale error:', error);
+        showToast('Error saving recent sale.', 'error');
+    }
+}
+
+function buildSaleForm(sale = null) {
+    const fields = [
+        { type: 'file', name: 'image', label: 'Property Image', value: sale?.image || '', multiple: false },
+        { type: 'text', name: 'propertyName', label: 'Property Type / Name', value: sale?.propertyName || '', required: true },
+        { type: 'text', name: 'price', label: 'Sale Price (e.g. AED 12,500,000)', value: sale?.price || '', required: true },
+        { type: 'text', name: 'location', label: 'Community / Location', value: sale?.location || '', required: true }
+    ];
+    return buildFormHTML('sale-form', fields);
+}
+
 // ============= UPDATE SIDEBAR BADGES =============
 
 function updateSidebarBadges() {
@@ -586,6 +723,8 @@ function updateSidebarBadges() {
     if (blogBadge) blogBadge.textContent = blogData.length || 0;
     const agentsBadge = document.getElementById('sidebar-agents-count');
     if (agentsBadge) agentsBadge.textContent = agentsData.length || 0;
+    const salesBadge = document.getElementById('sidebar-sales-count');
+    if (salesBadge) salesBadge.textContent = salesData.length || 0;
 }
 
 // ============= RENDER TABLES =============
@@ -621,7 +760,6 @@ function renderListingsTable() {
     });
 }
 
-// ============= RENDER OFFPLAN TABLE WITH IMAGE =============
 function renderOffplanTable() {
     const tbody = document.getElementById('offplan-table-body');
     if (!tbody) return;
@@ -634,7 +772,6 @@ function renderOffplanTable() {
     
     offplanData.forEach(project => {
         const tr = document.createElement('tr');
-        // Use first image from images array if available, else fallback to image column
         let imageUrl = 'https://placehold.co/60x60/0A1628/C9A84C?text=No+Image';
         if (project.images && Array.isArray(project.images) && project.images.length > 0) {
             imageUrl = project.images[0];
@@ -915,7 +1052,6 @@ window.deleteOffplan = async function(id) {
 };
 
 async function saveOffplan(formData) {
-    // Get images from hidden input (comma-separated)
     const imagesStr = formData.get('images_hidden') || '';
     let imagesArray = imagesStr.split(',').map(s => s.trim()).filter(s => s);
     
@@ -936,9 +1072,7 @@ async function saveOffplan(formData) {
         description: formData.get('description') || '',
         highlights: (formData.get('highlights') || '').split(',').map(h => h.trim()).filter(h => h),
         goldenVisaEligible: formData.get('goldenVisaEligible') === 'true',
-        // For backward compatibility: keep 'image' as first image
         image: imagesArray.length > 0 ? imagesArray[0] : '',
-        // New 'images' array for multiple images
         images: imagesArray,
         brochureWhatsApp: formData.get('brochureWhatsApp') || "I'm interested in this off-plan project",
         featured: formData.get('featured') === 'true'
@@ -958,7 +1092,6 @@ async function saveOffplan(formData) {
 
 function buildOffplanForm(project = null) {
     const safeJoin = (val) => Array.isArray(val) ? val.join(', ') : (typeof val === 'string' ? val : '');
-    // For images: get the existing images array or fallback to single image
     let existingImages = '';
     if (project) {
         if (project.images && Array.isArray(project.images) && project.images.length > 0) {
@@ -980,7 +1113,6 @@ function buildOffplanForm(project = null) {
         { type: 'textarea', name: 'description', label: 'Description', value: project?.description || '' },
         { type: 'text', name: 'highlights', label: 'Highlights (comma separated)', value: safeJoin(project?.highlights) },
         { type: 'checkbox', name: 'goldenVisaEligible', label: 'Golden Visa Eligible', value: project?.goldenVisaEligible || false },
-        // Multiple images upload with preview and deletion
         { type: 'file', name: 'images', label: 'Upload Images (You can select multiple)', value: existingImages, multiple: true },
         { type: 'text', name: 'brochureWhatsApp', label: 'Brochure WhatsApp Text', value: project?.brochureWhatsApp || '' },
         { type: 'checkbox', name: 'featured', label: 'Featured', value: project?.featured || false }
@@ -1437,7 +1569,6 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
             html += `<input type="hidden" id="${hiddenId}" name="${fieldName}_hidden" value="${hiddenValue}">`;
 
-            // Preview existing images with remove buttons and drag-to-reorder
             if (images.length > 0) {
                 html += `<div class="existing-images-preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;">`;
                 images.forEach(img => {
@@ -1827,14 +1958,12 @@ function openModal(title, bodyHTML) {
         }, 100);
     }
     
-    // Set up image uploads and removal after the modal is rendered
     setTimeout(() => {
         setupImageInput('edit-images', true);
         setupImageInput('edit-image', false);
         setupImageInput('edit-featured_image', false);
-        setupImageInput('edit-images', true); // For offplan multiple images
+        setupImageInput('edit-images', true);
         setupImageInput('edit-photo', false);
-        // Enable removal and reordering
         setupImageRemoval();
         setupImageReordering();
     }, 100);
@@ -1859,6 +1988,7 @@ function openModal(title, bodyHTML) {
         else if (editingType === 'community') saveCommunity(formData);
         else if (editingType === 'blog') saveBlog(formData);
         else if (editingType === 'agent') saveAgent(formData);
+        else if (editingType === 'sale') saveSale(formData);
     };
 }
 
@@ -1930,6 +2060,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('add-community-btn')?.addEventListener('click', () => { editingId = null; editingType = 'community'; openModal('Add New Community', buildCommunityForm()); });
     document.getElementById('add-blog-btn')?.addEventListener('click', () => { editingId = null; editingType = 'blog'; openModal('Add New Blog Post', buildBlogForm()); });
     document.getElementById('add-agent-btn')?.addEventListener('click', () => { editingId = null; editingType = 'agent'; openModal('Add New Agent', buildAgentForm()); });
+    document.getElementById('add-sale-btn')?.addEventListener('click', () => { editingId = null; editingType = 'sale'; openModal('Add Recent Sale', buildSaleForm()); });
     
     document.getElementById('filter-leads-btn')?.addEventListener('click', filterLeads);
     document.getElementById('export-leads-btn')?.addEventListener('click', exportCSV);
@@ -1940,6 +2071,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     setInterval(() => { if (currentUser && currentTab === 'leads') { loadLeads(); } }, 30000);
     setInterval(() => { if (currentUser && currentTab === 'dashboard') { updateStats(); } }, 30000);
+    setInterval(() => { if (currentUser && currentTab === 'sales') { loadSales(); } }, 30000);
     
     navigateTab('dashboard');
 });
