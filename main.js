@@ -4,6 +4,7 @@
 // COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
+// DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -48,6 +49,10 @@ let currentAgentSlug = null;
 let currentAgentData = null;
 const DEFAULT_AGENT_SLUG_KEY = 'ak_current_agent_slug';
 
+// Recent Sales state (NEW)
+let recentSales = [];
+let agentsData = [];
+
 // Gallery controllers for AbortController (to prevent duplicate events)
 let galleryController = null;
 let offplanGalleryController = null;
@@ -64,13 +69,11 @@ const BASE_PATH = (() => {
     return '';
 })();
 
-// ADD 'community' to known sections
 const KNOWN_SECTIONS = ['listings', 'offplan', 'communities', 'about', 'contact', 'valuation', 'goldenvisa', 'blog', 'community'];
 
 function buildPath(sectionId, slug) {
     const parts = [];
     if (BASE_PATH) parts.push(BASE_PATH.replace(/^\//, ''));
-    // Always include agent slug for all pages except home
     if (currentAgentSlug && sectionId !== 'home') {
         parts.push(currentAgentSlug);
     }
@@ -92,7 +95,6 @@ function parseCurrentRoute() {
     let section = 'home';
     let slug = null;
 
-    // First segment: either agent slug or known section
     if (KNOWN_SECTIONS.includes(segments[0])) {
         section = segments[0];
         slug = segments[1] || null;
@@ -162,7 +164,6 @@ function openGalleryModal(images, startIndex = 0) {
         return;
     }
 
-    // Normalize images array
     let imageList = Array.isArray(images) ? images : (typeof images === 'string' ? images.split(',').map(s => s.trim()).filter(s => s) : []);
     if (imageList.length === 0) {
         console.warn('openGalleryModal: empty image list after normalization');
@@ -171,9 +172,7 @@ function openGalleryModal(images, startIndex = 0) {
 
     const total = imageList.length;
     const isMobile = window.innerWidth < 768;
-    console.log(`Opening gallery with ${total} images, mobile: ${isMobile}`);
 
-    // Create overlay
     const overlay = document.createElement('div');
     overlay.id = 'gallery-modal-overlay';
     overlay.style.cssText = `
@@ -192,7 +191,6 @@ function openGalleryModal(images, startIndex = 0) {
         font-family: 'Inter', sans-serif;
     `;
 
-    // Modal container – pure white
     const modal = document.createElement('div');
     modal.style.cssText = `
         background: #ffffff;
@@ -213,7 +211,6 @@ function openGalleryModal(images, startIndex = 0) {
         modal.style.borderRadius = '16px';
     }
 
-    // Close button
     const closeBtn = document.createElement('button');
     closeBtn.innerHTML = '&times;';
     closeBtn.style.cssText = `
@@ -236,7 +233,6 @@ function openGalleryModal(images, startIndex = 0) {
     closeBtn.addEventListener('mouseleave', () => { closeBtn.style.transform = 'scale(1)'; });
     closeBtn.addEventListener('click', closeGalleryModal);
 
-    // Header
     const header = document.createElement('div');
     header.style.cssText = `
         padding: 20px 24px 16px 24px;
@@ -254,7 +250,6 @@ function openGalleryModal(images, startIndex = 0) {
     header.textContent = `All Photos (${total})`;
     header.appendChild(closeBtn);
 
-    // Content area
     const content = document.createElement('div');
     content.style.cssText = `
         flex: 1;
@@ -264,7 +259,6 @@ function openGalleryModal(images, startIndex = 0) {
     `;
 
     if (isMobile) {
-        // MOBILE: vertical stacked images
         imageList.forEach((src) => {
             const imgWrapper = document.createElement('div');
             imgWrapper.style.cssText = `
@@ -286,7 +280,6 @@ function openGalleryModal(images, startIndex = 0) {
             content.appendChild(imgWrapper);
         });
     } else {
-        // DESKTOP: large image + thumbnail grid
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
             display: flex;
@@ -297,7 +290,6 @@ function openGalleryModal(images, startIndex = 0) {
             align-items: stretch;
         `;
 
-        // Left: large image
         const leftCol = document.createElement('div');
         leftCol.style.cssText = `
             flex: 2;
@@ -343,7 +335,6 @@ function openGalleryModal(images, startIndex = 0) {
         leftCol.appendChild(largeImg);
         leftCol.appendChild(counter);
 
-        // Right: thumbnails
         const rightCol = document.createElement('div');
         rightCol.style.cssText = `
             flex: 1.2;
@@ -395,10 +386,8 @@ function openGalleryModal(images, startIndex = 0) {
         desktopContent.appendChild(rightCol);
         content.appendChild(desktopContent);
 
-        // setGalleryImage function
         function setGalleryImage(index) {
             if (index < 0 || index >= total) return;
-            // Fade large image
             largeImg.style.opacity = '0';
             setTimeout(() => {
                 largeImg.src = imageList[index];
@@ -417,7 +406,6 @@ function openGalleryModal(images, startIndex = 0) {
             });
         }
 
-        // Keyboard navigation (desktop only)
         const keyHandlerDesktop = (e) => {
             if (e.key === 'ArrowLeft') {
                 const currentSrc = largeImg.src;
@@ -430,7 +418,6 @@ function openGalleryModal(images, startIndex = 0) {
             }
         };
         document.addEventListener('keydown', keyHandlerDesktop);
-        // Store cleanup
         window._galleryDesktopCleanup = () => {
             document.removeEventListener('keydown', keyHandlerDesktop);
         };
@@ -441,7 +428,6 @@ function openGalleryModal(images, startIndex = 0) {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Force reflow for fade-in
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
     });
@@ -461,13 +447,11 @@ function openGalleryModal(images, startIndex = 0) {
         }, 300);
     }
 
-    // Escape key closes
     const keyHandler = (e) => {
         if (e.key === 'Escape') closeGalleryModal();
     };
     document.addEventListener('keydown', keyHandler);
 
-    // Override close to remove key listener
     const originalClose = closeGalleryModal;
     closeGalleryModal = function() {
         document.removeEventListener('keydown', keyHandler);
@@ -487,7 +471,6 @@ async function loadAllData() {
     if (listingsContainer) listingsContainer.innerHTML = createSkeletons(3);
     if (featuredContainer) featuredContainer.innerHTML = createSkeletons(3);
 
-    // 1. Resolve agent slug from URL or localStorage or default
     const route = parseCurrentRoute();
     let slug = route.agentSlug;
     if (!slug) {
@@ -508,7 +491,6 @@ async function loadAllData() {
     currentAgentSlug = slug;
     localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, slug);
 
-    // 2. Load agent profile
     try {
         const agentResp = await fetch(`${API_BASE}/api/agents/${slug}`);
         const agentData = await agentResp.json();
@@ -525,7 +507,29 @@ async function loadAllData() {
         return;
     }
 
-    // 3. Load other data
+    // Load agents list for About page
+    try {
+        const agentsResp = await fetch(`${API_BASE}/api/agents`);
+        const agentsDataJson = await agentsResp.json();
+        if (agentsDataJson.success) {
+            agentsData = agentsDataJson.agents || [];
+        }
+    } catch (e) {
+        console.error('Failed to load agents list:', e);
+    }
+
+    // Load recent sales
+    try {
+        const salesResp = await fetch(`${API_BASE}/api/recent-sales?t=${Date.now()}`);
+        const salesDataJson = await salesResp.json();
+        if (salesDataJson.success) {
+            recentSales = salesDataJson.sales || [];
+        }
+    } catch (e) {
+        console.error('Failed to load recent sales:', e);
+        recentSales = [];
+    }
+
     try {
         const profileResponse = await fetch(`${API_BASE}/api/agent-profile?t=${Date.now()}`);
         const profileData = await profileResponse.json();
@@ -572,7 +576,6 @@ async function loadAllData() {
     } catch (e) { console.error('Error loading blog:', e); }
 
     updateAllSections();
-    // Apply community filter from URL after data load
     applyCommunityFilterFromURL();
 }
 
@@ -647,7 +650,6 @@ function updateAllSections() {
         if (filterBar) filterBar.style.display = 'grid';
     }
 
-    // Handle community detail route if already loaded
     if (section === 'community' && slug) {
         const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
         if (community) {
@@ -877,13 +879,11 @@ function createListingCard(listing) {
         </div>
     `;
 
-    // Click on card opens detail (unless clicking on a button or link)
     card.addEventListener('click', function(e) {
         if (e.target.closest('button') || e.target.closest('a')) return;
         window.viewListingPage(listing.id);
     });
 
-    // The "View Details" button triggers the same action (no double trigger)
     const detailBtn = card.querySelector('.view-detail-btn');
     if (detailBtn) {
         detailBtn.addEventListener('click', function(e) {
@@ -986,7 +986,6 @@ function renderListingDetail(listing) {
         images.push('https://placehold.co/1200x675/0A1628/C9A84C?text=No+Image');
     }
 
-    // Store full images array globally for the gallery functions
     window.galleryImages = images;
 
     const features = listing.features && typeof listing.features === 'string'
@@ -996,7 +995,6 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // Gallery: no onclick on main image; we'll attach a click listener in initGallery
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -1216,13 +1214,10 @@ function transitionMainGalleryImage(mainImg, src, alt) {
     const requestId = String((Number(mainImg.dataset.imageRequestId) || 0) + 1);
     mainImg.dataset.imageRequestId = requestId;
 
-    // A navigation always starts the next image at its normal zoom state.
     mainImg.style.transition = '';
     mainImg.style.transform = 'scale(1)';
     mainImg.style.transformOrigin = 'center center';
 
-    // Keep the current image painted until the incoming source is ready, so the
-    // gallery never exposes its background while an image is changing.
     const incomingImage = new Image();
     const showIncomingImage = () => {
         if (mainImg.dataset.imageRequestId !== requestId || !mainImg.isConnected) return;
@@ -1247,12 +1242,10 @@ window.setGalleryImage = function(index) {
     const mainImg = document.getElementById('gallery-main-image');
     if (!mainImg) return;
     currentImageIndex = index;
-    // Update counter immediately
     const counter = document.getElementById('gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    // Update thumbnails active class
     document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb, i) => {
         thumb.classList.toggle('active', i === index);
     });
@@ -1269,14 +1262,12 @@ window.nextImage = function() {
 
 // ============= HOVER ZOOM (Desktop only) =============
 function initHoverZoom(containerId, imageId) {
-    // Only on desktop (>=1024px)
     if (window.innerWidth < 1024) return;
 
     const container = document.getElementById(containerId);
     const image = document.getElementById(imageId);
     if (!container || !image) return;
 
-    // Remove previous listeners if any (using AbortController)
     if (container._zoomController) {
         container._zoomController.abort();
         delete container._zoomController;
@@ -1297,7 +1288,6 @@ function initHoverZoom(containerId, imageId) {
         const rect = container.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
         const y = (e.clientY - rect.top) / rect.height;
-        // Clamp to avoid going out of bounds
         const clampedX = Math.min(Math.max(x, 0), 1);
         const clampedY = Math.min(Math.max(y, 0), 1);
         image.style.transformOrigin = `${clampedX * 100}% ${clampedY * 100}%`;
@@ -1305,7 +1295,6 @@ function initHoverZoom(containerId, imageId) {
     }
 
     function startZoom(e) {
-        // Controls sit over the image, so only start zooming over visible pixels.
         if (e.target.closest('#gallery-modal-overlay') || !isOverImage(e)) return;
         isZooming = true;
         image.style.transition = 'transform 0.2s ease, transform-origin 0s ease';
@@ -1326,7 +1315,6 @@ function initHoverZoom(containerId, imageId) {
         isZooming = false;
         image.style.transition = 'transform 0.25s ease';
         image.style.transform = 'scale(1)';
-        // Reset transform-origin after transition
         setTimeout(() => {
             image.style.transformOrigin = 'center center';
         }, 250);
@@ -1335,18 +1323,12 @@ function initHoverZoom(containerId, imageId) {
     container.addEventListener('mouseenter', startZoom, { signal });
     container.addEventListener('mousemove', moveZoom, { signal });
     container.addEventListener('mouseleave', endZoom, { signal });
-
-    // Also handle if deep gallery opens while zoom is active
-    // The deep gallery overlay will capture mouse events, but we already check .closest('#gallery-modal-overlay')
-    // so it will stop updating zoom when entering the overlay.
 }
 
 function initGallery() {
-    // Use the full images array if available (set in renderListingDetail)
     if (window.galleryImages && window.galleryImages.length > 0) {
         galleryImages = window.galleryImages;
     } else {
-        // Fallback: read from thumbnails
         const thumbs = document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)');
         if (thumbs.length > 0) {
             galleryImages = Array.from(thumbs).map(thumb => thumb.src);
@@ -1365,7 +1347,6 @@ function initGallery() {
         counter.textContent = `1 / ${galleryImages.length}`;
     }
 
-    // Abort previous gallery controller to remove old event listeners
     if (galleryController) {
         galleryController.abort();
     }
@@ -1384,9 +1365,6 @@ function initGallery() {
         nextBtn.addEventListener('click', window.nextImage, { signal });
     }
 
-    // Main image click: do nothing (removed the lightbox)
-
-    // Click on thumbnails (regular thumbs, not the more-photos tile)
     document.querySelectorAll('.gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
         thumb.addEventListener('click', function() {
             const index = parseInt(this.dataset.index);
@@ -1396,7 +1374,6 @@ function initGallery() {
         }, { signal });
     });
     
-    // Swipe support for mobile
     const mainContainer = document.querySelector('#gallery-main');
     if (mainContainer) {
         let startX = 0, startY = 0;
@@ -1421,7 +1398,6 @@ function initGallery() {
         mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
 
-    // Initialize hover zoom for the main image (desktop only)
     initHoverZoom('gallery-main', 'gallery-main-image');
 }
 
@@ -1466,7 +1442,6 @@ function createOffplanCard(project) {
     card.className = 'offplan-card';
     card.setAttribute('data-offplan-id', project.id);
     
-    // Get first image from images array, fallback to image property
     let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
     if (project.images && Array.isArray(project.images) && project.images.length > 0) {
         imageUrl = project.images[0];
@@ -1497,13 +1472,11 @@ function createOffplanCard(project) {
         </div>
     `;
 
-    // Click on card opens detail (unless clicking on a button or link)
     card.addEventListener('click', function(e) {
         if (e.target.closest('button') || e.target.closest('a')) return;
         window.viewOffplanPage(project.id);
     });
 
-    // The "View Details" button triggers the same action
     const detailBtn = card.querySelector('.view-detail-btn');
     if (detailBtn) {
         detailBtn.addEventListener('click', function(e) {
@@ -1578,11 +1551,10 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL — WITH DESKTOP 4 / MOBILE 3 THUMBNAILS
+// RENDER OFFPLAN DETAIL
 // ============================================================
 
 function renderOffplanDetail(project) {
-    // Get images array - handle both array and string formats
     let images = [];
     if (project.images) {
         if (Array.isArray(project.images)) {
@@ -1598,10 +1570,8 @@ function renderOffplanDetail(project) {
         images = ['https://placehold.co/1200x675/0A1628/C9A84C?text=Off-Plan'];
     }
 
-    // Store full images array globally for the gallery functions
     window.offplanGalleryImages = images;
 
-    // --- THUMBNAIL GENERATION (desktop 4, mobile 3) ---
     const isDesktop = window.innerWidth >= 768;
     const visibleCount = isDesktop ? 4 : 3;
     const visibleThumbs = images.slice(0, visibleCount);
@@ -1622,9 +1592,7 @@ function renderOffplanDetail(project) {
             </div>
         `;
     }
-    // --- end thumbnail generation ---
 
-    // Build gallery HTML using the generated thumbnails
     const gallery = `
         <div class="listing-detail-gallery" id="offplan-gallery">
             <div class="gallery-main" id="offplan-gallery-main">
@@ -1779,9 +1747,7 @@ function renderOffplanDetail(project) {
 
 let offplanGalleryImages = [];
 let offplanCurrentImageIndex = 0;
-
-// Store the visible count for active highlighting
-let offplanVisibleCount = 3; // default, updated in init
+let offplanVisibleCount = 3;
 
 window.setOffplanGalleryImage = function(index) {
     const images = offplanGalleryImages;
@@ -1791,15 +1757,12 @@ window.setOffplanGalleryImage = function(index) {
     const mainImg = document.getElementById('offplan-gallery-main-image');
     if (!mainImg) return;
     offplanCurrentImageIndex = index;
-    // Update counter immediately
     const counter = document.getElementById('offplan-gallery-counter');
     if (counter) {
         counter.textContent = `${index + 1} / ${images.length}`;
     }
-    // Update thumbnails active class
     const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)');
     thumbs.forEach((thumb, i) => {
-        // Only activate if the thumb index is less than visibleCount and matches current index
         if (i < offplanVisibleCount && i === index) {
             thumb.classList.add('active');
         } else {
@@ -1818,11 +1781,9 @@ window.nextOffplanImage = function() {
 };
 
 function initOffplanGallery() {
-    // Use the full images array if available (set in renderOffplanDetail)
     if (window.offplanGalleryImages && window.offplanGalleryImages.length > 0) {
         offplanGalleryImages = window.offplanGalleryImages;
     } else {
-        // Fallback: read from thumbnails
         const thumbs = document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)');
         if (thumbs.length > 0) {
             offplanGalleryImages = Array.from(thumbs).map(thumb => thumb.src);
@@ -1835,8 +1796,6 @@ function initOffplanGallery() {
     }
     
     offplanCurrentImageIndex = 0;
-    
-    // Determine visible count based on current window width
     offplanVisibleCount = window.innerWidth >= 768 ? 4 : 3;
     
     const counter = document.getElementById('offplan-gallery-counter');
@@ -1844,7 +1803,6 @@ function initOffplanGallery() {
         counter.textContent = `1 / ${offplanGalleryImages.length}`;
     }
 
-    // Abort previous offplan gallery controller to remove old event listeners
     if (offplanGalleryController) {
         offplanGalleryController.abort();
     }
@@ -1863,9 +1821,6 @@ function initOffplanGallery() {
         nextBtn.addEventListener('click', window.nextOffplanImage, { signal });
     }
 
-    // Main image click: do nothing (removed the lightbox)
-
-    // Click on thumbnails (only the real thumbnails, not the more-photos tile)
     document.querySelectorAll('#offplan-gallery-thumbs .thumb:not(.more-photos)').forEach((thumb) => {
         thumb.addEventListener('click', function() {
             const index = parseInt(this.dataset.index);
@@ -1875,7 +1830,6 @@ function initOffplanGallery() {
         }, { signal });
     });
     
-    // Swipe support for mobile
     const mainContainer = document.querySelector('#offplan-gallery-main');
     if (mainContainer) {
         let startX = 0, startY = 0;
@@ -1900,7 +1854,6 @@ function initOffplanGallery() {
         mainContainer.addEventListener('touchend', touchEndHandler, { signal, passive: true });
     }
 
-    // Initialize hover zoom for the offplan main image (desktop only)
     initHoverZoom('offplan-gallery-main', 'offplan-gallery-main-image');
 }
 
@@ -1974,7 +1927,6 @@ function renderCommunities(communitiesData, container) {
                 </div>
             </div>
         `;
-        // Make the whole card clickable to view community detail, but not if clicking on buttons/links
         card.addEventListener('click', function(e) {
             if (e.target.closest('button') || e.target.closest('a')) return;
             window.viewCommunity(community.slug || community.id);
@@ -1985,20 +1937,14 @@ function renderCommunities(communitiesData, container) {
 
 // ============= COMMUNITY DETAIL FUNCTIONS =============
 
-/**
- * Renders the community detail page with a consistent top bar (back button + breadcrumb)
- * and a “Properties in [Community]” section with preview cards and a “VIEW ALL PROPERTIES” button.
- */
 function renderCommunityDetail(community) {
     const highlights = Array.isArray(community.highlights) ? community.highlights : (community.highlights ? community.highlights.split(',').map(h => h.trim()).filter(Boolean) : []);
     const landmarks = Array.isArray(community.nearbyLandmarks) ? community.nearbyLandmarks : (community.nearbyLandmarks ? community.nearbyLandmarks.split(',').map(l => l.trim()).filter(Boolean) : []);
     const imageUrl = community.image || 'https://placehold.co/1200x600/0A1628/C9A84C?text=Community';
 
-    // Filter listings that belong to this community
     const communityListings = listings.filter(l => l.community === community.name);
     const previewListings = communityListings.slice(0, 4);
 
-    // Build the properties grid HTML
     let propertiesHtml = '';
     if (previewListings.length === 0) {
         propertiesHtml = `<p class="no-results" style="text-align:center;padding:20px;">No properties currently listed in this community.</p>`;
@@ -2040,7 +1986,6 @@ function renderCommunityDetail(community) {
 
     return `
         <div class="community-detail-page">
-            <!-- Top Bar: Back button + Breadcrumb -->
             <div class="community-detail-top-bar">
                 <button type="button" class="btn btn-secondary community-detail-back-button" onclick="window.showCommunityList({ push: true })">
                     <i class="fas fa-arrow-left"></i> BACK TO COMMUNITIES
@@ -2054,7 +1999,6 @@ function renderCommunityDetail(community) {
                 </div>
             </div>
 
-            <!-- Hero -->
             <div class="community-detail-hero" style="background-image:url('${imageUrl}');">
                 <div class="community-detail-overlay">
                     <h1>${community.name}</h1>
@@ -2062,7 +2006,6 @@ function renderCommunityDetail(community) {
                 </div>
             </div>
 
-            <!-- Information Body -->
             <div class="community-detail-body">
                 ${community.description ? `<div class="community-detail-description"><p>${community.description}</p></div>` : ''}
                 ${community.lifestyle ? `<div class="community-detail-description"><p><strong>Lifestyle:</strong> ${community.lifestyle}</p></div>` : ''}
@@ -2124,7 +2067,6 @@ function renderCommunityDetail(community) {
                     </div>
                 ` : ''}
 
-                <!-- Properties in this community -->
                 <div class="community-properties-section">
                     <h2><i class="fas fa-building" style="margin-right:10px;color:var(--brass);"></i>Properties in ${community.name}</h2>
                     ${propertiesHtml}
@@ -2171,12 +2113,13 @@ window.showCommunityList = function(opts = {}) {
     navigateTo('communities', { push: false });
 };
 
-// ============= ABOUT PAGE =============
+// ============= ABOUT PAGE (DYNAMIC WITH AGENT + SALES) =============
 
 function renderAboutPage() {
+    // Testimonials
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
-        const testimonials = [
+        const testimonials = CONFIG.testimonials || [
             { name: 'Sarah Johnson', detail: 'Property Investor, UK', quote: 'Ahmed helped me find the perfect investment property in Dubai. His knowledge of off-plan projects and market trends is exceptional.' },
             { name: 'Michael Chen', detail: 'Business Owner, Singapore', quote: 'Professional, responsive, and truly understands luxury real estate. Made our property purchase seamless.' },
             { name: 'Emma Williams', detail: 'Expat, Australia', quote: 'From our first meeting to property handover, Ahmed provided outstanding service. Highly recommend for anyone buying in Dubai.' }
@@ -2187,33 +2130,102 @@ function renderAboutPage() {
             const card = document.createElement('div');
             card.className = 'testimonial-card';
             card.innerHTML = `
-                <div class="quote">"${t.quote}"</div>
+                <div class="quote-mark">"</div>
+                <div class="quote">${t.quote}</div>
                 <div class="client">${t.name}</div>
                 <div class="client-detail">${t.detail}</div>
             `;
             testimonialsContainer.appendChild(card);
         });
     }
-    
+
+    // Recent Sales - dynamic from API
     const salesContainer = document.getElementById('sales-grid');
     if (salesContainer) {
-        const sales = [
-            { title: 'Luxury Penthouse', community: 'Downtown Dubai', price: 'AED 12,500,000' },
-            { title: 'Beachfront Villa', community: 'Palm Jumeirah', price: 'AED 25,000,000' },
-            { title: 'Sky View Apartment', community: 'Dubai Marina', price: 'AED 3,800,000' }
-        ];
-        
         salesContainer.innerHTML = '';
-        sales.forEach(sale => {
+        
+        if (!recentSales || recentSales.length === 0) {
+            salesContainer.innerHTML = '<p style="grid-column:1/-1;text-align:center;padding:20px;color:var(--ink-soft);font-family:Inter, sans-serif;">No recent sales to display.</p>';
+            return;
+        }
+        
+        recentSales.forEach(sale => {
             const card = document.createElement('div');
             card.className = 'sale-card';
+            const imageUrl = sale.image || 'https://placehold.co/600x400/0A1628/C9A84C?text=Sale';
+            
             card.innerHTML = `
+                <div class="sale-image-wrapper">
+                    <img src="${imageUrl}" alt="${sale.propertyName}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/0A1628/C9A84C?text=Sale'">
+                </div>
                 <div class="sale-price">${sale.price}</div>
-                <div class="sale-title">${sale.title}</div>
-                <div class="sale-detail">${sale.community}</div>
+                <div class="sale-title">${sale.propertyName}</div>
+                <div class="sale-detail">${sale.location}</div>
             `;
             salesContainer.appendChild(card);
         });
+    }
+
+    // Agent profile is already handled by updateConfigInDOM()
+    // but we also update it from the agentsData if available
+    if (agentsData && agentsData.length > 0) {
+        const agent = agentsData[0];
+        // Update name
+        const nameEl = document.getElementById('agent-name-about');
+        if (nameEl) nameEl.textContent = agent.agentName || 'Ahmed Khan';
+        
+        // Update photo
+        const photoEl = document.getElementById('agent-photo-about');
+        if (photoEl) photoEl.src = agent.photo || 'https://placehold.co/600x600/0A1628/C9A84C?text=Agent';
+        
+        // Update RERA
+        const rernaEl = document.getElementById('rerna-number-about');
+        if (rernaEl) rernaEl.textContent = agent.reraBRN || '123456';
+        
+        // Update bio
+        const bioEl = document.getElementById('agent-full-bio');
+        if (bioEl) bioEl.textContent = agent.bio || '';
+        
+        // Update stats
+        const yearsEl = document.getElementById('years-exp-about');
+        if (yearsEl) yearsEl.textContent = agent.yearsExperience || agent.experience || '12';
+        const soldEl = document.getElementById('properties-sold-about');
+        if (soldEl) soldEl.textContent = agent.propertiesSold || '850';
+        // Happy clients - not in agent table, keep as is or use config
+        const happyEl = document.getElementById('happy-clients-about');
+        if (happyEl) happyEl.textContent = '1200';
+        
+        // Specialties
+        const specialtiesContainer = document.getElementById('specialties-list');
+        if (specialtiesContainer) {
+            specialtiesContainer.innerHTML = '';
+            if (agent.specialties) {
+                agent.specialties.split(',').forEach(s => {
+                    if (s.trim()) {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag';
+                        tag.textContent = s.trim();
+                        specialtiesContainer.appendChild(tag);
+                    }
+                });
+            }
+        }
+        
+        // Languages
+        const languagesContainer = document.getElementById('languages-list');
+        if (languagesContainer) {
+            languagesContainer.innerHTML = '';
+            if (agent.languages) {
+                agent.languages.split(',').forEach(l => {
+                    if (l.trim()) {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag language';
+                        tag.textContent = l.trim();
+                        languagesContainer.appendChild(tag);
+                    }
+                });
+            }
+        }
     }
 }
 
@@ -2410,16 +2422,12 @@ function filterListings() {
 }
 
 window.filterByCommunity = function(communityName) {
-    // Set the dropdown
     const communitySelect = document.getElementById('filter-community-listings');
     if (communitySelect) {
         communitySelect.value = communityName;
-        // Navigate to listings with query param
         navigateTo('listings', { push: true, query: { community: communityName } });
-        // Apply filter immediately
         filterListings();
     } else {
-        // Fallback: navigate and rely on route handler
         navigateTo('listings', { push: true, query: { community: communityName } });
     }
 };
@@ -2612,27 +2620,22 @@ function formatDate(date) {
 function navigateTo(sectionId, opts = {}) {
     const { push = true, slug = null, query = null } = opts;
 
-    // --- IMPROVED: if target section matches current section and we are on a detail (has slug), force list view ---
     const currentRoute = parseCurrentRoute();
     if ((sectionId === 'listings' || sectionId === 'offplan') && 
         currentRoute.section === sectionId && currentRoute.slug) {
-        // Force list view
         const detailId = sectionId === 'listings' ? 'listing-detail' : 'offplan-detail';
         const gridId = sectionId === 'listings' ? 'listings-grid' : 'offplan-grid';
         const filterBar = document.getElementById('filter-bar');
         
-        // Show grid, hide detail
         const gridEl = document.getElementById(gridId);
         if (gridEl) gridEl.style.display = 'grid';
         const detailEl = document.getElementById(detailId);
         if (detailEl) detailEl.style.display = 'none';
         if (filterBar) filterBar.style.display = 'grid';
         
-        // Update URL to section root (no slug)
         const path = buildPath(sectionId);
         if (query) {
             const qs = new URLSearchParams(query).toString();
-            // append query to path
             const newPath = path + (qs ? '?' + qs : '');
             if (location.pathname + location.search !== newPath) {
                 history.pushState({ section: sectionId, slug: null, agentSlug: currentAgentSlug || null, query: query }, '', newPath);
@@ -2645,12 +2648,10 @@ function navigateTo(sectionId, opts = {}) {
             }
         }
         
-        // Activate section
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         const targetSection = document.getElementById(sectionId);
         if (targetSection) targetSection.classList.add('active');
         
-        // Update nav active state
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
             el.classList.remove('active');
             if (el.dataset && el.dataset.section === sectionId) {
@@ -2658,7 +2659,6 @@ function navigateTo(sectionId, opts = {}) {
             }
         });
         
-        // Update title
         const sectionNames = {
             home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
             listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
@@ -2672,11 +2672,9 @@ function navigateTo(sectionId, opts = {}) {
         };
         document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
         
-        // Re-render list content if needed
         if (sectionId === 'listings') {
             filterListings();
             populateCommunityFilter();
-            // Apply community filter from query if present
             if (query && query.community) {
                 const communitySelect = document.getElementById('filter-community-listings');
                 if (communitySelect && communities.some(c => c.name === query.community)) {
@@ -2688,26 +2686,20 @@ function navigateTo(sectionId, opts = {}) {
             renderOffplanPage();
         }
         
-        // Scroll to top
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        return; // done
+        return;
     }
-    // --- end of improved logic ---
 
-    // ---- ORIGINAL NAVIGATE LOGIC (with community fix) ----
     document.querySelectorAll('.section').forEach(el => {
         el.classList.remove('active');
     });
     
-    // Handle community detail separately because there's no #community section
     if (sectionId === 'community' && slug) {
         const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
         if (community) {
-            // Show the communities section
             const communitiesSection = document.getElementById('communities');
             if (communitiesSection) communitiesSection.classList.add('active');
             
-            // Update nav active class to 'communities'
             document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
                 el.classList.remove('active');
                 if (el.dataset && el.dataset.section === 'communities') {
@@ -2715,7 +2707,6 @@ function navigateTo(sectionId, opts = {}) {
                 }
             });
             
-            // Show detail, hide grid
             const grid = document.getElementById('communities-grid');
             const detail = document.getElementById('community-detail');
             if (grid) grid.style.display = 'none';
@@ -2731,7 +2722,6 @@ function navigateTo(sectionId, opts = {}) {
             
             document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
             
-            // Push state
             if (push) {
                 const path = buildPath('community', community.slug || community.id);
                 if (location.pathname !== path) {
@@ -2745,17 +2735,14 @@ function navigateTo(sectionId, opts = {}) {
         }
     }
     
-    // For other sections, find and activate the section
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
         targetSection.classList.add('active');
     } else if (sectionId === 'home') {
-        // home has id "home" – activate it
         const homeSection = document.getElementById('home');
         if (homeSection) homeSection.classList.add('active');
     }
 
-    // Update nav active state (but skip community because already handled)
     if (sectionId !== 'community') {
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
             el.classList.remove('active');
@@ -2836,7 +2823,6 @@ function navigateTo(sectionId, opts = {}) {
         renderOffplanPage();
     }
 
-    // For communities page (list) – ensure grid is visible and detail hidden
     if (sectionId === 'communities') {
         const grid = document.getElementById('communities-grid');
         const detail = document.getElementById('community-detail');
@@ -2861,7 +2847,6 @@ function navigateTo(sectionId, opts = {}) {
     if (sectionId === 'listings') {
         populateCommunityFilter();
         filterListings();
-        // Apply community filter from query if present
         if (query && query.community) {
             const communitySelect = document.getElementById('filter-community-listings');
             if (communitySelect && communities.some(c => c.name === query.community)) {
@@ -2892,7 +2877,6 @@ function navigateTo(sectionId, opts = {}) {
         } else {
             path = buildPath(sectionId, slug);
         }
-        // Append query string if provided
         if (query && Object.keys(query).length > 0) {
             const qs = new URLSearchParams(query).toString();
             path += '?' + qs;
@@ -2943,7 +2927,6 @@ function initFAQ() {
 // ============= KEYBOARD NAVIGATION =============
 
 document.addEventListener('keydown', function(e) {
-    // Only if a detail view is visible
     const listingDetail = document.getElementById('listing-detail');
     const offplanDetail = document.getElementById('offplan-detail');
     if (listingDetail && listingDetail.style.display === 'block') {
@@ -2970,24 +2953,20 @@ document.addEventListener('keydown', function(e) {
 function handleRoute() {
     const { section, slug, agentSlug } = parseCurrentRoute();
 
-    // If agentSlug is present, set it
     if (agentSlug) {
         currentAgentSlug = agentSlug;
         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
     } else {
-        // Try to get from localStorage
         const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
         if (stored) {
             currentAgentSlug = stored;
-            // Redirect to the correct URL with agent slug
             const targetPath = buildPath(section, slug);
             if (location.pathname !== targetPath) {
                 history.replaceState({ section, slug, agentSlug: stored }, '', targetPath);
-                handleRoute(); // re-run after redirect
+                handleRoute();
                 return;
             }
         } else {
-            // No agent slug – fetch first agent and redirect
             fetch(`${API_BASE}/api/agents`)
                 .then(res => res.json())
                 .then(data => {
@@ -2999,7 +2978,6 @@ function handleRoute() {
                         history.replaceState({ section, slug, agentSlug: defaultSlug }, '', targetPath);
                         handleRoute();
                     } else {
-                        // fallback
                         currentAgentSlug = 'ahmed-khan';
                         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
                         const targetPath = buildPath(section, slug);
@@ -3018,7 +2996,6 @@ function handleRoute() {
         }
     }
 
-    // Now normal routing – ensure data is loaded
     if (listings.length === 0 || communities.length === 0) {
         loadAllData().then(() => {
             showSection(section, slug);
@@ -3029,11 +3006,9 @@ function handleRoute() {
 }
 
 function showSection(section, slug) {
-    // Community detail
     if (section === 'community' && slug) {
         const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
         if (community) {
-            // Activate communities section
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.getElementById('communities')?.classList.add('active');
             
@@ -3041,7 +3016,6 @@ function showSection(section, slug) {
             document.getElementById('community-detail').style.display = 'block';
             document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
             document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            // Update nav active
             document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
                 el.classList.remove('active');
                 if (el.dataset && el.dataset.section === 'communities') {
@@ -3057,7 +3031,6 @@ function showSection(section, slug) {
         document.getElementById('communities-grid').style.display = 'grid';
         document.getElementById('community-detail').style.display = 'none';
         renderCommunitiesPage();
-        // Activate communities section
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.getElementById('communities')?.classList.add('active');
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3069,7 +3042,6 @@ function showSection(section, slug) {
         return;
     }
 
-    // Listing detail
     if (section === 'listings' && slug) {
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
         if (listing) {
@@ -3079,7 +3051,6 @@ function showSection(section, slug) {
             document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
             document.getElementById('filter-bar').style.display = 'none';
             setTimeout(initGallery, 100);
-            // Activate section
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.getElementById('listings')?.classList.add('active');
             document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3098,7 +3069,6 @@ function showSection(section, slug) {
         document.getElementById('listing-detail').style.display = 'none';
         document.getElementById('filter-bar').style.display = 'grid';
         filterListings();
-        // Activate section
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.getElementById('listings')?.classList.add('active');
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3107,12 +3077,10 @@ function showSection(section, slug) {
                 el.classList.add('active');
             }
         });
-        // Apply community filter from URL
         applyCommunityFilterFromURL();
         return;
     }
 
-    // Offplan detail
     if (section === 'offplan' && slug) {
         const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
         if (project) {
@@ -3121,7 +3089,6 @@ function showSection(section, slug) {
             document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
             document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
             setTimeout(initOffplanGallery, 100);
-            // Activate section
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             document.getElementById('offplan')?.classList.add('active');
             document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3139,7 +3106,6 @@ function showSection(section, slug) {
         document.getElementById('offplan-grid').style.display = 'grid';
         document.getElementById('offplan-detail').style.display = 'none';
         renderOffplanPage();
-        // Activate section
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.getElementById('offplan')?.classList.add('active');
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3151,7 +3117,6 @@ function showSection(section, slug) {
         return;
     }
 
-    // Blog detail
     if (section === 'blog' && slug) {
         window.viewBlogPost(slug, { push: false });
         return;
@@ -3159,7 +3124,6 @@ function showSection(section, slug) {
         document.getElementById('blog-grid').style.display = 'grid';
         document.getElementById('blog-detail').style.display = 'none';
         loadBlog();
-        // Activate section
         document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
         document.getElementById('blog')?.classList.add('active');
         document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
@@ -3171,14 +3135,12 @@ function showSection(section, slug) {
         return;
     }
 
-    // Default: navigate to the section (home, about, contact, etc.)
     navigateTo(section, { push: false, slug });
 }
 
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Load data first, then handle route
     await loadAllData();
     handleRoute();
     hidePreloader();
@@ -3242,7 +3204,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         handleRoute();
     });
 
-    // handleRoute is already called above, but we also need to set initial state for the filter bar, etc.
     const filterBar = document.getElementById('filter-bar');
     const listingDetail = document.getElementById('listing-detail');
     if (listingDetail && listingDetail.style.display === 'block') {
@@ -3303,3 +3264,5 @@ window.openGalleryModal = openGalleryModal;
 window.viewCommunity = viewCommunity;
 window.showCommunityList = showCommunityList;
 window.applyCommunityFilterFromURL = applyCommunityFilterFromURL;
+window.recentSales = recentSales;
+window.agentsData = agentsData;
