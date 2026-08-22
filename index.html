@@ -1407,8 +1407,6 @@
             margin: 0 auto;
             padding: 0 24px;
         }
-
-        /* Trust Strip */
         .valuation-trust-strip {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -1458,8 +1456,6 @@
             font-size: 12px;
             color: var(--ink-soft);
         }
-
-        /* Form Card */
         .valuation-form-card {
             background: var(--white);
             border-radius: var(--radius-lg);
@@ -1487,7 +1483,6 @@
             color: var(--ink-soft);
             margin: 0;
         }
-
         .valuation-form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -1536,10 +1531,6 @@
             resize: vertical;
             min-height: 80px;
         }
-        .valuation-form-grid .form-group .form-grid-full {
-            grid-column: 1 / -1;
-        }
-
         .valuation-form-card .btn {
             margin-top: 12px;
             width: 100%;
@@ -1561,8 +1552,6 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(11, 59, 46, 0.3);
         }
-
-        /* DLD Rental Index */
         .valuation-index-section {
             margin-top: 8px;
         }
@@ -1626,8 +1615,6 @@
             font-weight: 600;
             color: var(--emerald);
         }
-
-        /* Responsive */
         @media (max-width: 1024px) {
             .valuation-form-card {
                 padding: 32px 28px;
@@ -1649,7 +1636,6 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
-
         @media (max-width: 768px) {
             .valuation-page-wrapper {
                 padding: 24px 0 40px;
@@ -1710,7 +1696,6 @@
                 font-size: 13px;
             }
         }
-
         @media (max-width: 480px) {
             .valuation-trust-strip {
                 grid-template-columns: 1fr;
@@ -1739,6 +1724,474 @@
             }
             .valuation-index-item .rent {
                 font-size: 12px;
+            }
+        }
+
+        /* ============================================================
+           ABOUT PAGE SPECIFIC STYLES
+           ============================================================ */
+        .about-page-wrapper {
+            padding: 40px 0 60px;
+            background: var(--paper);
+        }
+        .about-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Profile Section */
+        .about-profile {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 48px;
+            align-items: start;
+            margin-bottom: 48px;
+        }
+        .about-profile-image {
+            position: relative;
+        }
+        .about-profile-image img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            border-radius: var(--radius-lg);
+            border: 4px solid var(--brass);
+            box-shadow: 0 20px 50px rgba(11, 59, 46, 0.12);
+        }
+        .about-profile-image::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            right: -12px;
+            width: 50px;
+            height: 50px;
+            background: var(--brass);
+            border-radius: var(--radius-sm);
+            z-index: -1;
+        }
+        .about-profile-text {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .about-profile-text .agent-name {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 2.4rem;
+            color: var(--emerald-deep);
+            margin: 0;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .about-profile-text .rerna-badge-large {
+            display: inline-block;
+            padding: 6px 18px;
+            background: var(--cream-warm);
+            color: var(--emerald);
+            border-radius: 100px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 12px;
+            width: fit-content;
+        }
+        .about-profile-text .bio {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin: 4px 0;
+        }
+        .about-stats .stat-item {
+            background: var(--white);
+            padding: 16px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--line);
+            text-align: center;
+            transition: all 0.3s var(--ease);
+        }
+        .about-stats .stat-item:hover {
+            border-color: var(--brass);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+        .about-stats .stat-item .number {
+            display: block;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: var(--emerald-deep);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+        .about-stats .stat-item .label {
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--ink-soft);
+            margin-top: 2px;
+        }
+        .about-tags-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 2px 0;
+        }
+        .about-tags-section .tag-group-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--ink-soft);
+            margin: 0;
+        }
+        .about-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .about-tags .tag {
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--cream-warm);
+            border-radius: 100px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--emerald);
+            border: 1px solid rgba(176, 138, 62, 0.15);
+            transition: all 0.3s var(--ease);
+        }
+        .about-tags .tag:hover {
+            background: var(--brass);
+            color: var(--cream);
+            border-color: var(--brass);
+        }
+        .about-tags .tag.language {
+            background: var(--paper);
+            color: var(--ink-soft);
+            border-color: var(--line);
+        }
+        .about-tags .tag.language:hover {
+            background: var(--emerald);
+            color: var(--cream);
+            border-color: var(--emerald);
+        }
+        .about-ctas {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+        .about-ctas .btn {
+            min-width: 140px;
+            padding: 12px 28px;
+            font-size: 13px;
+        }
+        .about-ctas .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+            border: none;
+        }
+        .about-ctas .btn-whatsapp:hover {
+            background: #1DA851;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(37, 211, 102, 0.3);
+        }
+        .about-ctas .btn-primary {
+            background: var(--emerald);
+            color: var(--cream);
+            border: none;
+        }
+        .about-ctas .btn-primary:hover {
+            background: var(--emerald-deep);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(11, 59, 46, 0.3);
+        }
+
+        /* Testimonials */
+        .about-testimonials {
+            margin-bottom: 48px;
+        }
+        .about-testimonials .section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .about-testimonials .section-title h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .testimonial-card {
+            background: var(--white);
+            padding: 32px 28px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s var(--ease);
+            display: flex;
+            flex-direction: column;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: rgba(176, 138, 62, 0.3);
+        }
+        .testimonial-card .quote-mark {
+            color: var(--brass);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 2.4rem;
+            line-height: 0.8;
+            margin-bottom: 12px;
+        }
+        .testimonial-card .quote {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: var(--ink);
+            font-style: italic;
+            flex: 1;
+            margin: 0 0 16px 0;
+        }
+        .testimonial-card .client {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--emerald-deep);
+            letter-spacing: -0.02em;
+        }
+        .testimonial-card .client-detail {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        /* Recent Sales */
+        .about-sales {
+            margin-top: 8px;
+        }
+        .about-sales .section-title {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .about-sales .section-title h2 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--emerald-deep);
+            margin: 0 0 8px 0;
+            letter-spacing: -0.02em;
+        }
+        .sales-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .sale-card {
+            background: var(--white);
+            padding: 24px 20px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            text-align: center;
+            transition: all 0.3s var(--ease);
+            box-shadow: var(--shadow-sm);
+        }
+        .sale-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow);
+            border-color: var(--brass);
+        }
+        .sale-card .sale-price {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--brass-dark);
+            letter-spacing: -0.02em;
+        }
+        .sale-card .sale-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--emerald-deep);
+            margin: 6px 0 2px;
+        }
+        .sale-card .sale-detail {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: 13px;
+            color: var(--ink-soft);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .about-profile {
+                grid-template-columns: 1fr;
+                gap: 32px;
+                max-width: 600px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .about-profile-image {
+                max-width: 320px;
+                margin: 0 auto;
+            }
+            .about-profile-image::after {
+                display: none;
+            }
+            .about-profile-text {
+                text-align: center;
+            }
+            .about-profile-text .rerna-badge-large {
+                margin: 0 auto;
+            }
+            .about-stats {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .about-tags-section .tag-group-title {
+                text-align: center;
+            }
+            .about-tags {
+                justify-content: center;
+            }
+            .about-ctas {
+                justify-content: center;
+            }
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .sales-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-page-wrapper {
+                padding: 24px 0 40px;
+            }
+            .about-container {
+                padding: 0 16px;
+            }
+            .about-profile {
+                gap: 24px;
+                max-width: 100%;
+            }
+            .about-profile-image {
+                max-width: 240px;
+            }
+            .about-profile-text .agent-name {
+                font-size: 1.8rem;
+            }
+            .about-stats {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            .about-stats .stat-item .number {
+                font-size: 1.5rem;
+            }
+            .about-stats .stat-item .label {
+                font-size: 10px;
+            }
+            .about-ctas .btn {
+                min-width: 120px;
+                padding: 10px 20px;
+                font-size: 12px;
+            }
+            .testimonials-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            .testimonial-card {
+                padding: 24px 20px;
+            }
+            .testimonial-card .quote {
+                font-size: 0.9rem;
+            }
+            .sales-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 14px;
+            }
+            .sale-card .sale-price {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .about-profile {
+                gap: 20px;
+            }
+            .about-profile-image {
+                max-width: 200px;
+            }
+            .about-profile-text .agent-name {
+                font-size: 1.5rem;
+            }
+            .about-stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .about-stats .stat-item:last-child {
+                grid-column: span 2;
+            }
+            .about-stats .stat-item .number {
+                font-size: 1.3rem;
+            }
+            .about-ctas {
+                flex-direction: column;
+                align-items: center;
+            }
+            .about-ctas .btn {
+                width: 100%;
+                max-width: 240px;
+            }
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .testimonial-card {
+                padding: 20px 16px;
+            }
+            .testimonial-card .quote {
+                font-size: 0.85rem;
+            }
+            .testimonial-card .client {
+                font-size: 0.9rem;
+            }
+            .testimonial-card .client-detail {
+                font-size: 12px;
+            }
+            .sales-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .sale-card {
+                padding: 18px 16px;
+            }
+            .sale-card .sale-price {
+                font-size: 1rem;
             }
         }
     </style>
@@ -2153,7 +2606,9 @@
             </div>
         </section>
 
-        <!-- ========== ABOUT SECTION ========== -->
+        <!-- ============================================================
+             ABOUT SECTION — REDESIGNED PREMIUM
+             ============================================================ -->
         <section id="about" class="section">
             <div class="about-hero">
                 <div class="container">
@@ -2161,42 +2616,67 @@
                     <p>Your trusted partner in Dubai real estate</p>
                 </div>
             </div>
-            <div class="container">
-                <div class="about-full">
-                    <div class="about-full-image">
-                        <img src="https://placehold.co/600x600/0A1628/C9A84C?text=Agent" alt="Agent" id="agent-photo-about">
+
+            <div class="about-page-wrapper">
+                <div class="about-container">
+                    <!-- Profile -->
+                    <div class="about-profile">
+                        <div class="about-profile-image">
+                            <img src="https://placehold.co/600x600/0A1628/C9A84C?text=Agent" alt="Agent" id="agent-photo-about">
+                        </div>
+                        <div class="about-profile-text">
+                            <h1 class="agent-name" id="agent-name-about">Ahmed Khan</h1>
+                            <div class="rerna-badge-large">RERA BRN: <strong id="rerna-number-about">123456</strong></div>
+                            <p class="bio" id="agent-full-bio">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.</p>
+
+                            <div class="about-stats">
+                                <div class="stat-item">
+                                    <span class="number" id="years-exp-about">12</span>
+                                    <span class="label">Years Experience</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="number" id="properties-sold-about">850</span>
+                                    <span class="label">Properties Sold</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="number" id="happy-clients-about">1200</span>
+                                    <span class="label">Happy Clients</span>
+                                </div>
+                            </div>
+
+                            <div class="about-tags-section">
+                                <p class="tag-group-title">Specialties</p>
+                                <div class="about-tags" id="specialties-list"></div>
+                            </div>
+
+                            <div class="about-tags-section">
+                                <p class="tag-group-title">Languages</p>
+                                <div class="about-tags" id="languages-list"></div>
+                            </div>
+
+                            <div class="about-ctas">
+                                <a href="#contact" class="btn btn-primary" data-section="contact">CONTACT ME</a>
+                                <a href="https://wa.me/971501234567" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
+                            </div>
+                        </div>
                     </div>
-                    <div class="about-full-text">
-                        <h2 id="agent-name-about">Ahmed Khan</h2>
-                        <div class="rerna-badge-large">RERA BRN: <strong id="rerna-number-about">123456</strong></div>
-                        <p id="agent-full-bio">With over 12 years of experience in Dubai's luxury real estate market, I help clients find their dream homes and make smart investments. Specializing in off-plan projects and Golden Visa properties. My commitment to excellence and deep market knowledge has helped hundreds of clients achieve their property goals.</p>
-                        <div class="stats-full">
-                            <div><span id="years-exp-about">12</span> YEARS EXPERIENCE</div>
-                            <div><span id="properties-sold-about">850</span> PROPERTIES SOLD</div>
-                            <div><span id="happy-clients-about">1200</span> HAPPY CLIENTS</div>
+
+                    <!-- Testimonials -->
+                    <div class="about-testimonials">
+                        <div class="section-title">
+                            <h2>Client Testimonials</h2>
                         </div>
-                        <div class="specialties">
-                            <h3>SPECIALTIES</h3>
-                            <div id="specialties-list"></div>
+                        <div class="testimonials-grid" id="testimonials-grid"></div>
+                    </div>
+
+                    <!-- Recent Sales -->
+                    <div class="about-sales">
+                        <div class="section-title">
+                            <h2>Recent Sales</h2>
                         </div>
-                        <div class="languages">
-                            <h3>LANGUAGES</h3>
-                            <div id="languages-list"></div>
-                        </div>
-                        <div class="about-ctas">
-                            <a href="#contact" class="btn btn-primary" data-section="contact">CONTACT ME</a>
-                            <a href="https://wa.me/971501234567" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
-                        </div>
+                        <div class="sales-grid" id="sales-grid"></div>
                     </div>
                 </div>
-                <section class="testimonials">
-                    <h2>CLIENT TESTIMONIALS</h2>
-                    <div class="testimonials-grid" id="testimonials-grid"></div>
-                </section>
-                <section class="recent-sales">
-                    <h2>RECENT SALES</h2>
-                    <div class="sales-grid" id="sales-grid"></div>
-                </section>
             </div>
         </section>
 
@@ -2349,9 +2829,7 @@
             </div>
         </section>
 
-        <!-- ============================================================
-             VALUATION SECTION — REDESIGNED PREMIUM
-             ============================================================ -->
+        <!-- ========== VALUATION SECTION ========== -->
         <section id="valuation" class="section">
             <div class="valuation-hero">
                 <div class="container">
@@ -2362,7 +2840,6 @@
 
             <div class="valuation-page-wrapper">
                 <div class="valuation-container">
-                    <!-- Trust Strip -->
                     <div class="valuation-trust-strip">
                         <div class="valuation-trust-item">
                             <div class="icon"><i class="fas fa-check-circle"></i></div>
@@ -2387,7 +2864,6 @@
                         </div>
                     </div>
 
-                    <!-- Valuation Form -->
                     <div class="valuation-form-card">
                         <div class="form-header">
                             <h2>Request Your Valuation</h2>
@@ -2462,7 +2938,6 @@
                         </form>
                     </div>
 
-                    <!-- DLD Rental Index -->
                     <div class="valuation-index-section">
                         <div class="index-header">
                             <h2>Dubai DLD Rental Index</h2>
