@@ -6,6 +6,7 @@
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // CAROUSEL FOR HOMEPAGE FEATURED SECTIONS
+// PRELOADER FIX: always hide preloader even if data loading fails
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -3267,7 +3268,13 @@ function showSection(section, slug) {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
-    await loadAllData();
+    // Wrap data loading in try/catch to ensure preloader always hides
+    try {
+        await loadAllData();
+    } catch (err) {
+        console.error('Error loading data:', err);
+        showToast('Failed to load some content. Please refresh.', 'error');
+    }
     handleRoute();
     hidePreloader();
 
