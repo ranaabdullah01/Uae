@@ -5,8 +5,6 @@
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
-// CAROUSEL FOR HOMEPAGE FEATURED SECTIONS
-// PRELOADER FIX: always hide preloader even if data loading fails
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -808,162 +806,23 @@ function updateConfigInDOM() {
     }
 }
 
-// ============= CAROUSEL HELPER =============
-function createCarousel(containerId, items, renderCardFn, visibleCount = 3) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    // Clear container
-    container.innerHTML = '';
-
-    if (!items || items.length === 0) {
-        container.innerHTML = `<p class="no-results" style="text-align:center;padding:20px;">No items to display.</p>`;
-        return;
-    }
-
-    // Wrap everything in a carousel wrapper
-    const wrapper = document.createElement('div');
-    wrapper.className = 'carousel-wrapper';
-
-    const track = document.createElement('div');
-    track.className = 'carousel-track';
-
-    // Append each card
-    items.forEach(item => {
-        const card = renderCardFn(item);
-        track.appendChild(card);
-    });
-
-    wrapper.appendChild(track);
-
-    // Arrows (only if more than visibleCount)
-    if (items.length > visibleCount) {
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'carousel-btn prev';
-        prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        prevBtn.setAttribute('aria-label', 'Previous');
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'carousel-btn next';
-        nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        nextBtn.setAttribute('aria-label', 'Next');
-
-        wrapper.appendChild(prevBtn);
-        wrapper.appendChild(nextBtn);
-
-        // Carousel state
-        let currentIndex = 0;
-        let cardWidth = 0;
-        let gap = 0;
-
-        function updateDimensions() {
-            const firstCard = track.querySelector('.listing-card, .offplan-card, .community-card');
-            if (!firstCard) return;
-            const style = window.getComputedStyle(track);
-            gap = parseFloat(style.gap) || 24;
-            cardWidth = firstCard.offsetWidth + gap;
-        }
-
-        function updateArrows() {
-            const totalItems = items.length;
-            const maxIndex = Math.max(0, totalItems - visibleCount);
-            prevBtn.disabled = currentIndex === 0;
-            nextBtn.disabled = currentIndex >= maxIndex;
-            // Show arrows when there is more than visibleCount
-            prevBtn.classList.toggle('visible', totalItems > visibleCount);
-            nextBtn.classList.toggle('visible', totalItems > visibleCount);
-        }
-
-        function slideTo(index) {
-            const totalItems = items.length;
-            const maxIndex = Math.max(0, totalItems - visibleCount);
-            currentIndex = Math.max(0, Math.min(index, maxIndex));
-            const offset = currentIndex * (cardWidth);
-            track.style.transform = `translateX(-${offset}px)`;
-            updateArrows();
-        }
-
-        function nextSlide() {
-            slideTo(currentIndex + 1);
-        }
-
-        function prevSlide() {
-            slideTo(currentIndex - 1);
-        }
-
-        // Event listeners
-        nextBtn.addEventListener('click', nextSlide);
-        prevBtn.addEventListener('click', prevSlide);
-
-        // Recalculate on resize
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                updateDimensions();
-                slideTo(currentIndex);
-            }, 150);
-        });
-
-        // Initialise
-        requestAnimationFrame(() => {
-            updateDimensions();
-            // Ensure card width is calculated before first slide
-            setTimeout(() => {
-                updateDimensions();
-                slideTo(0);
-            }, 50);
-        });
-
-        // Also recalc after images load
-        const images = track.querySelectorAll('img');
-        let loaded = 0;
-        const onLoad = () => {
-            loaded++;
-            if (loaded === images.length) {
-                updateDimensions();
-                slideTo(currentIndex);
-            }
-        };
-        images.forEach(img => {
-            if (img.complete) onLoad();
-            else img.addEventListener('load', onLoad);
-        });
-    } else {
-        // If less than or equal to visibleCount, just show all without arrows
-        // but keep track as flex so they appear inline
-        // We'll make them stretch to fill
-        track.style.justifyContent = 'center';
-        // No arrows
-    }
-
-    container.appendChild(wrapper);
-}
-
 // ============= RENDER FUNCTIONS =============
 
 function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
-    const featured = listings.filter(l => l.featured);
-    createCarousel('featured-listings', featured, (listing) => createListingCard(listing), 3);
-}
-
-function renderFeaturedOffplan() {
-    const container = document.getElementById('featured-offplan');
-    if (!container) return;
-    const featured = offplan.filter(p => p.featured);
-    createCarousel('featured-offplan', featured, (project) => createOffplanCard(project), 3);
-}
-
-function renderHomeCommunities() {
-    const container = document.getElementById('home-communities');
-    if (!container) return;
-    // Show popular communities, or if none, show first 4
-    let popular = communities.filter(c => c.popular === true);
-    if (popular.length === 0) {
-        popular = communities.slice(0, 4);
+    
+    const featured = listings.filter(l => l.featured).slice(0, 3);
+    container.innerHTML = '';
+    
+    if (featured.length === 0) {
+        container.innerHTML = '<p class="no-results">No featured properties found.</p>';
+        return;
     }
-    createCarousel('home-communities', popular, (community) => createCommunityCard(community), 3);
+    
+    featured.forEach(listing => {
+        container.appendChild(createListingCard(listing));
+    });
 }
 
 function renderListingsPage() {
@@ -1545,7 +1404,20 @@ function initGallery() {
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
 function renderFeaturedOffplan() {
-    // Now handled by carousel above
+    const container = document.getElementById('featured-offplan');
+    if (!container) return;
+    
+    const featured = offplan.filter(p => p.featured).slice(0, 2);
+    container.innerHTML = '';
+    
+    if (featured.length === 0) {
+        container.innerHTML = '<p class="no-results">No featured off-plan projects found.</p>';
+        return;
+    }
+    
+    featured.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
 }
 
 function renderOffplanPage() {
@@ -1997,47 +1869,12 @@ window.scheduleConsultation = function(projectName) {
     }, 100);
 };
 
-// ============= COMMUNITY CARD CREATION =============
-
-function createCommunityCard(community) {
-    const card = document.createElement('div');
-    card.className = 'community-card';
-    const highlights = Array.isArray(community.highlights) ? community.highlights : (community.highlights ? community.highlights.split(',').map(h => h.trim()).filter(Boolean) : []);
-    const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
-    card.innerHTML = `
-        <div class="community-card-image">
-            <img src="${imageUrl}" alt="${community.name}" loading="lazy">
-            ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
-        </div>
-        <div class="community-card-body">
-            <h3>${community.name}</h3>
-            <div class="community-type">${community.communityType || ''}</div>
-            <div class="community-prices">
-                ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
-                ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
-                <span>Yield: <strong>${community.avgRentalYield || 'N/A'}</strong></span>
-            </div>
-            ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
-            <div class="community-highlights">
-                ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
-            </div>
-            <div class="community-actions">
-                <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
-            </div>
-        </div>
-    `;
-    card.addEventListener('click', function(e) {
-        if (e.target.closest('button') || e.target.closest('a')) return;
-        window.viewCommunity(community.slug || community.id);
-    });
-    return card;
-}
-
 // ============= RENDER COMMUNITIES =============
 
 function renderHomeCommunities() {
-    // Now handled by carousel above
+    const container = document.getElementById('home-communities');
+    if (!container) return;
+    renderCommunities(communities.slice(0, 4), container);
 }
 
 function renderCommunitiesPage() {
@@ -2058,7 +1895,43 @@ function renderCommunities(communitiesData, container) {
     }
     
     communitiesData.forEach(community => {
-        container.appendChild(createCommunityCard(community));
+        const card = document.createElement('div');
+        card.className = 'community-card';
+        
+        const highlights = community.highlights && typeof community.highlights === 'string'
+            ? community.highlights.split(',')
+            : (Array.isArray(community.highlights) ? community.highlights : []);
+        
+        const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
+        
+        card.innerHTML = `
+            <div class="community-card-image">
+                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
+                ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
+            </div>
+            <div class="community-card-body">
+                <h3>${community.name}</h3>
+                <div class="community-type">${community.communityType}</div>
+                <div class="community-prices">
+                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
+                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
+                    <span>Yield: <strong>${community.avgRentalYield}</strong></span>
+                </div>
+                ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
+                <div class="community-highlights">
+                    ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
+                </div>
+                <div class="community-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('button') || e.target.closest('a')) return;
+            window.viewCommunity(community.slug || community.id);
+        });
+        container.appendChild(card);
     });
 }
 
@@ -3268,13 +3141,7 @@ function showSection(section, slug) {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
-    // Wrap data loading in try/catch to ensure preloader always hides
-    try {
-        await loadAllData();
-    } catch (err) {
-        console.error('Error loading data:', err);
-        showToast('Failed to load some content. Please refresh.', 'error');
-    }
+    await loadAllData();
     handleRoute();
     hidePreloader();
 
