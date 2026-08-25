@@ -1544,10 +1544,6 @@ function initGallery() {
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
-function renderFeaturedOffplan() {
-    // Now handled by carousel above
-}
-
 function renderOffplanPage() {
     const container = document.getElementById('offplan-grid');
     if (!container) return;
@@ -2035,10 +2031,6 @@ function createCommunityCard(community) {
 }
 
 // ============= RENDER COMMUNITIES =============
-
-function renderHomeCommunities() {
-    // Now handled by carousel above
-}
 
 function renderCommunitiesPage() {
     const container = document.getElementById('communities-grid');
