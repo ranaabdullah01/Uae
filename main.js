@@ -5,6 +5,7 @@
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
+// CAROUSEL: 3-ITEM CAROUSEL FOR FEATURED LISTINGS, OFF-PLAN, AND COMMUNITIES
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -56,6 +57,9 @@ let agentsData = [];
 // Gallery controllers for AbortController (to prevent duplicate events)
 let galleryController = null;
 let offplanGalleryController = null;
+
+// ============= CAROUSEL STATE =============
+let carousels = {};
 
 // ============= API BASE URL =============
 const API_BASE = CONFIG.workerURL || 'https://ranabullah01.ranabullah01.workers.dev';
@@ -463,6 +467,282 @@ function openGalleryModal(images, startIndex = 0) {
     });
 }
 
+// ============= CAROUSEL ENGINE =============
+
+function initCarousel(containerId, itemsPerView = 3) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Check if carousel already initialized
+    if (container.dataset.carouselInitialized === 'true') {
+        return;
+    }
+    
+    // Find the parent section with the carousel structure
+    const carouselContainer = container.closest('.carousel-container');
+    if (!carouselContainer) {
+        // If no carousel wrapper exists, wrap it
+        const parent = container.parentNode;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'carousel-container';
+        
+        // Create track wrapper
+        const trackWrapper = document.createElement('div');
+        trackWrapper.className = 'carousel-track-wrapper';
+        
+        // Create track
+        const track = document.createElement('div');
+        track.className = 'carousel-track';
+        
+        // Move children from container to track
+        while (container.firstChild) {
+            const child = container.firstChild;
+            const item = document.createElement('div');
+            item.className = 'carousel-item';
+            item.appendChild(child);
+            track.appendChild(item);
+        }
+        
+        trackWrapper.appendChild(track);
+        wrapper.appendChild(trackWrapper);
+        
+        // Add navigation arrows and dots container
+        const navContainer = document.createElement('div');
+        navContainer.className = 'carousel-nav-dots';
+        navContainer.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:16px;margin-top:16px;';
+        
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'carousel-prev';
+        prevBtn.innerHTML = '‹';
+        prevBtn.setAttribute('aria-label', 'Previous');
+        
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'carousel-next';
+        nextBtn.innerHTML = '›';
+        nextBtn.setAttribute('aria-label', 'Next');
+        
+        const dotsContainer = document.createElement('div');
+        dotsContainer.className = 'carousel-dots';
+        
+        navContainer.appendChild(prevBtn);
+        navContainer.appendChild(dotsContainer);
+        navContainer.appendChild(nextBtn);
+        wrapper.appendChild(navContainer);
+        
+        // Replace container with wrapper
+        parent.replaceChild(wrapper, container);
+        // Store reference to the actual grid container
+        const grid = track;
+        grid.id = containerId;
+        container.id = containerId + '-old';
+        
+        // Setup carousel state
+        const items = grid.querySelectorAll('.carousel-item');
+        const totalItems = items.length;
+        const visibleItems = Math.min(itemsPerView, totalItems);
+        const itemsPerViewActual = Math.min(itemsPerView, 3); // Max 3
+        
+        if (totalItems <= itemsPerViewActual) {
+            // No navigation needed
+            prevBtn.style.display = 'none';
+            nextBtn.style.display = 'none';
+            dotsContainer.style.display = 'none';
+            container.dataset.carouselInitialized = 'true';
+            return;
+        }
+        
+        let currentIndex = 0;
+        const maxIndex = Math.ceil(totalItems / itemsPerViewActual) - 1;
+        
+        // Create dots
+        const numDots = Math.ceil(totalItems / itemsPerViewActual);
+        for (let i = 0; i < numDots; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('data-index', i);
+            dot.addEventListener('click', () => goTo(i));
+            dotsContainer.appendChild(dot);
+        }
+        
+        function updateCarousel() {
+            const offset = -currentIndex * (100 / itemsPerViewActual);
+            grid.style.transform = `translateX(${offset}%)`;
+            
+            // Update dots
+            const dots = dotsContainer.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentIndex);
+            });
+            
+            // Update buttons
+            prevBtn.disabled = currentIndex === 0;
+            nextBtn.disabled = currentIndex >= maxIndex;
+        }
+        
+        function goTo(index) {
+            if (index < 0) index = 0;
+            if (index > maxIndex) index = maxIndex;
+            currentIndex = index;
+            updateCarousel();
+        }
+        
+        function next() {
+            if (currentIndex < maxIndex) {
+                goTo(currentIndex + 1);
+            }
+        }
+        
+        function prev() {
+            if (currentIndex > 0) {
+                goTo(currentIndex - 1);
+            }
+        }
+        
+        prevBtn.addEventListener('click', prev);
+        nextBtn.addEventListener('click', next);
+        
+        // Keyboard navigation
+        const keyHandler = (e) => {
+            if (e.key === 'ArrowLeft') prev();
+            else if (e.key === 'ArrowRight') next();
+        };
+        wrapper.addEventListener('keydown', keyHandler);
+        
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+        wrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        wrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) next();
+                else prev();
+            }
+        }, { passive: true });
+        
+        // Responsive: update items per view on resize
+        let resizeTimeout;
+        const handleResize = () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const width = window.innerWidth;
+                let newItemsPerView = itemsPerViewActual;
+                if (width < 480) newItemsPerView = 1;
+                else if (width < 768) newItemsPerView = 2;
+                else newItemsPerView = itemsPerViewActual;
+                
+                // Recalculate maxIndex based on new items per view
+                const newMaxIndex = Math.ceil(totalItems / newItemsPerView) - 1;
+                if (currentIndex > newMaxIndex) {
+                    currentIndex = newMaxIndex;
+                }
+                updateCarousel();
+            }, 200);
+        };
+        window.addEventListener('resize', handleResize);
+        
+        // Store cleanup
+        wrapper._carouselCleanup = () => {
+            window.removeEventListener('resize', handleResize);
+            wrapper.removeEventListener('keydown', keyHandler);
+        };
+        
+        // Initial update
+        updateCarousel();
+        container.dataset.carouselInitialized = 'true';
+        
+        // Store carousel reference
+        carousels[containerId] = { wrapper, grid, currentIndex, maxIndex, goTo, next, prev, itemsPerView: itemsPerViewActual };
+        
+        // Store cleanup on container
+        container._carouselCleanup = wrapper._carouselCleanup;
+        
+    } else {
+        // Carousel already exists, just update items
+        const track = carouselContainer.querySelector('.carousel-track');
+        const grid = track || container;
+        const items = grid.querySelectorAll('.carousel-item');
+        const totalItems = items.length;
+        const itemsPerViewActual = Math.min(itemsPerView, 3);
+        
+        if (totalItems <= itemsPerViewActual) {
+            const prevBtn = carouselContainer.querySelector('.carousel-prev');
+            const nextBtn = carouselContainer.querySelector('.carousel-next');
+            const dotsContainer = carouselContainer.querySelector('.carousel-dots');
+            if (prevBtn) prevBtn.style.display = 'none';
+            if (nextBtn) nextBtn.style.display = 'none';
+            if (dotsContainer) dotsContainer.style.display = 'none';
+            container.dataset.carouselInitialized = 'true';
+            return;
+        }
+        
+        // Update dots
+        const dotsContainer = carouselContainer.querySelector('.carousel-dots');
+        if (dotsContainer) {
+            const numDots = Math.ceil(totalItems / itemsPerViewActual);
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < numDots; i++) {
+                const dot = document.createElement('button');
+                dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                dot.setAttribute('data-index', i);
+                dot.addEventListener('click', () => {
+                    const currentIndex = parseInt(dot.dataset.index) || 0;
+                    const offset = -currentIndex * (100 / itemsPerViewActual);
+                    grid.style.transform = `translateX(${offset}%)`;
+                    dotsContainer.querySelectorAll('.carousel-dot').forEach((d, idx) => {
+                        d.classList.toggle('active', idx === currentIndex);
+                    });
+                    const prevBtn = carouselContainer.querySelector('.carousel-prev');
+                    const nextBtn = carouselContainer.querySelector('.carousel-next');
+                    const maxIndex = Math.ceil(totalItems / itemsPerViewActual) - 1;
+                    if (prevBtn) prevBtn.disabled = currentIndex === 0;
+                    if (nextBtn) nextBtn.disabled = currentIndex >= maxIndex;
+                });
+                dotsContainer.appendChild(dot);
+            }
+        }
+        
+        container.dataset.carouselInitialized = 'true';
+    }
+}
+
+function reinitCarousel(containerId, itemsPerView = 3) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    // Clean up old carousel
+    if (container._carouselCleanup) {
+        container._carouselCleanup();
+        delete container._carouselCleanup;
+    }
+    container.dataset.carouselInitialized = 'false';
+    
+    // Find parent carousel container
+    const carouselContainer = container.closest('.carousel-container');
+    if (carouselContainer) {
+        // Reset track position
+        const track = carouselContainer.querySelector('.carousel-track');
+        if (track) {
+            track.style.transform = 'translateX(0)';
+        }
+        // Reset dots
+        const dots = carouselContainer.querySelectorAll('.carousel-dot');
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === 0);
+        });
+        // Reset buttons
+        const prevBtn = carouselContainer.querySelector('.carousel-prev');
+        const nextBtn = carouselContainer.querySelector('.carousel-next');
+        if (prevBtn) prevBtn.disabled = true;
+        if (nextBtn) nextBtn.disabled = false;
+    }
+    
+    initCarousel(containerId, itemsPerView);
+}
+
 // ============= LOAD DATA FROM API =============
 
 async function loadAllData() {
@@ -668,6 +948,13 @@ function updateAllSections() {
     document.querySelectorAll('input[name="agentSlug"]').forEach(inp => {
         inp.value = currentAgentSlug || '';
     });
+    
+    // Initialize carousels after rendering
+    setTimeout(() => {
+        initCarousel('featured-listings', 3);
+        initCarousel('featured-offplan', 3);
+        initCarousel('home-communities', 3);
+    }, 300);
 }
 
 // ============= CONFIG FUNCTIONS =============
@@ -812,7 +1099,7 @@ function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
     
-    const featured = listings.filter(l => l.featured).slice(0, 3);
+    const featured = listings.filter(l => l.featured).slice(0, 10);
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1407,7 +1694,7 @@ function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
     
-    const featured = offplan.filter(p => p.featured).slice(0, 2);
+    const featured = offplan.filter(p => p.featured).slice(0, 10);
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1874,7 +2161,7 @@ window.scheduleConsultation = function(projectName) {
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
     if (!container) return;
-    renderCommunities(communities.slice(0, 4), container);
+    renderCommunities(communities.slice(0, 10), container);
 }
 
 function renderCommunitiesPage() {
@@ -2860,6 +3147,12 @@ function navigateTo(sectionId, opts = {}) {
         renderFeaturedListings();
         renderFeaturedOffplan();
         renderHomeCommunities();
+        // Reinitialize carousels after home render
+        setTimeout(() => {
+            initCarousel('featured-listings', 3);
+            initCarousel('featured-offplan', 3);
+            initCarousel('home-communities', 3);
+        }, 100);
     } else if (sectionId === 'offplan') {
         renderOffplanPage();
     } else if (sectionId === 'communities') {
@@ -3220,6 +3513,17 @@ document.addEventListener('DOMContentLoaded', async function() {
             header.classList.remove('scrolled');
         }
     });
+    
+    // Re-initialize carousels on resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            reinitCarousel('featured-listings', 3);
+            reinitCarousel('featured-offplan', 3);
+            reinitCarousel('home-communities', 3);
+        }, 300);
+    });
 });
 
 // ============= EXPOSE FOR GLOBAL USE =============
@@ -3266,3 +3570,5 @@ window.showCommunityList = showCommunityList;
 window.applyCommunityFilterFromURL = applyCommunityFilterFromURL;
 window.recentSales = recentSales;
 window.agentsData = agentsData;
+window.initCarousel = initCarousel;
+window.reinitCarousel = reinitCarousel;
