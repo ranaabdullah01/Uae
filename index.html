@@ -17,44 +17,44 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agent Web Studio | Websites That Sell Homes</title>
-
+    
     <!-- SEO Meta Tags -->
     <meta name="description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio. RERA licensed agents.">
     <meta name="keywords" content="Dubai real estate, luxury properties, buy property Dubai, rent Dubai, off-plan Dubai, Golden Visa">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://agentwebstudio.com/">
-
+    
     <!-- Open Graph Tags -->
     <meta property="og:title" content="Agent Web Studio | Luxury Real Estate Websites">
     <meta property="og:description" content="Premium Dubai real estate services. Buy, rent, and invest in luxury properties with Agent Web Studio.">
     <meta property="og:url" content="https://agentwebstudio.com/">
     <meta property="og:type" content="website">
-
+    
     <!-- Premium Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
+    
     <!-- FIXED: Use absolute paths -->
     <link rel="stylesheet" href="/style.css">
     <link rel="stylesheet" href="/mobile.css">
 
     <!-- Schema.org RealEstateAgent Markup -->
     <script type="application/ld+json">
-        {
-            "@context": "https://schema.org",
-            "@type": "RealEstateAgent",
-            "name": "Agent Web Studio",
-            "description": "Premium Dubai real estate agency specializing in luxury properties, off-plan investments, and Golden Visa services.",
-            "url": "https://agentwebstudio.com/",
-            "telephone": "+971501234567",
-            "email": "info@agentwebstudio.com",
-            "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
-            "priceRange": "AED 500,000 - AED 50,000,000",
-            "openingHours": "Mo-Su 09:00-21:00",
-            "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
-        }
+    {
+        "@context": "https://schema.org",
+        "@type": "RealEstateAgent",
+        "name": "Agent Web Studio",
+        "description": "Premium Dubai real estate agency specializing in luxury properties, off-plan investments, and Golden Visa services.",
+        "url": "https://agentwebstudio.com/",
+        "telephone": "+971501234567",
+        "email": "info@agentwebstudio.com",
+        "address": { "@type": "PostalAddress", "addressLocality": "Dubai", "addressCountry": "AE" },
+        "priceRange": "AED 500,000 - AED 50,000,000",
+        "openingHours": "Mo-Su 09:00-21:00",
+        "sameAs": ["https://instagram.com/agentwebstudio", "https://facebook.com/agentwebstudio", "https://linkedin.com/company/agentwebstudio"]
+    }
     </script>
     <style>
         /* ============================================================
@@ -79,7 +79,7 @@
                 pointer-events: none;
             }
 
-            .desktop-header>* {
+            .desktop-header > * {
                 pointer-events: auto;
             }
 
@@ -119,7 +119,7 @@
                 font-size: 18px;
                 color: #ffffff;
                 letter-spacing: -0.02em;
-                text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+                text-shadow: 0 2px 8px rgba(0,0,0,0.2);
             }
 
             .floating-logo-sub {
@@ -130,7 +130,7 @@
                 text-transform: uppercase;
                 color: rgba(255, 255, 255, 0.7);
                 margin-top: 1px;
-                text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+                text-shadow: 0 1px 4px rgba(0,0,0,0.15);
             }
 
             .floating-nav {
@@ -220,41 +220,18 @@
             will-change: opacity, transform;
         }
 
-        #home .hero-slide:nth-child(1) {
-            animation-delay: 0s;
-        }
-        #home .hero-slide:nth-child(2) {
-            animation-delay: 2s;
-        }
-        #home .hero-slide:nth-child(3) {
-            animation-delay: 4s;
-        }
-        #home .hero-slide:nth-child(4) {
-            animation-delay: 6s;
-        }
-        #home .hero-slide:nth-child(5) {
-            animation-delay: 8s;
-        }
+        #home .hero-slide:nth-child(1) { animation-delay: 0s; }
+        #home .hero-slide:nth-child(2) { animation-delay: 2s; }
+        #home .hero-slide:nth-child(3) { animation-delay: 4s; }
+        #home .hero-slide:nth-child(4) { animation-delay: 6s; }
+        #home .hero-slide:nth-child(5) { animation-delay: 8s; }
 
         @keyframes heroFade {
-            0% {
-                opacity: 0;
-                transform: scale(1.05);
-            }
-            6% {
-                opacity: 1;
-            }
-            22% {
-                opacity: 1;
-                transform: scale(1.10);
-            }
-            30% {
-                opacity: 0;
-            }
-            100% {
-                opacity: 0;
-                transform: scale(1.05);
-            }
+            0%   { opacity: 0; transform: scale(1.05); }
+            6%   { opacity: 1; }
+            22%  { opacity: 1; transform: scale(1.10); }
+            30%  { opacity: 0; }
+            100% { opacity: 0; transform: scale(1.05); }
         }
 
         #home .hero::after {
@@ -262,7 +239,7 @@
             position: absolute;
             inset: 0;
             z-index: 2;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.35) 100%);
+            background: linear-gradient(135deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 100%);
             pointer-events: none;
         }
 
@@ -333,7 +310,7 @@
             border: 1px solid rgba(255, 255, 255, 0.25);
             background: rgba(255, 255, 255, 0.12);
             color: #ffffff;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-flex;
@@ -350,7 +327,7 @@
         .hero-buttons .btn-primary:hover {
             background: rgba(255, 255, 255, 0.9);
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.18);
         }
 
         .hero-buttons .btn-whatsapp {
@@ -379,7 +356,7 @@
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid rgba(255, 255, 255, 0.20);
             border-radius: 999px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255,255,255,0.12);
             padding: 6px 8px 6px 20px;
             display: flex;
             align-items: center;
@@ -406,7 +383,7 @@
             font-size: 9px;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255,255,255,0.6);
             margin-left: 2px;
             opacity: 0.8;
         }
@@ -423,7 +400,7 @@
             color: #ffffff;
             outline: none;
             appearance: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
             transition: border 0.2s ease;
             cursor: pointer;
         }
@@ -442,7 +419,7 @@
             border-bottom-color: #B88A3B;
         }
         .glass-search-bar .search-field input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255,255,255,0.4);
             font-weight: 300;
             font-size: 12px;
         }
@@ -471,184 +448,6 @@
         }
         .glass-search-btn i {
             margin-right: 6px;
-        }
-
-        /* ============================================================
-           CAROUSEL STYLES
-           ============================================================ */
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            padding: 0 0 48px 0;
-        }
-
-        .carousel-track-wrapper {
-            overflow: hidden;
-            width: 100%;
-            border-radius: var(--radius);
-        }
-
-        .carousel-track {
-            display: flex;
-            gap: 28px;
-            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform;
-        }
-
-        .carousel-track .carousel-item {
-            flex: 0 0 calc((100% - 56px) / 3);
-            min-width: 0;
-        }
-
-        /* Carousel navigation arrows */
-        .carousel-prev,
-        .carousel-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--white);
-            border: 1px solid var(--line);
-            box-shadow: 0 4px 16px rgba(11, 59, 46, 0.12);
-            color: var(--emerald-deep);
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s var(--ease);
-            opacity: 0.9;
-            font-family: 'Inter', sans-serif;
-            font-weight: 400;
-            line-height: 1;
-            padding: 0;
-        }
-
-        .carousel-prev:hover,
-        .carousel-next:hover {
-            background: var(--emerald-deep);
-            color: var(--cream);
-            border-color: var(--emerald-deep);
-            box-shadow: 0 8px 24px rgba(11, 59, 46, 0.2);
-            transform: translateY(-50%) scale(1.05);
-            opacity: 1;
-        }
-
-        .carousel-prev:disabled,
-        .carousel-next:disabled {
-            opacity: 0.3;
-            cursor: default;
-            pointer-events: none;
-        }
-
-        .carousel-prev {
-            left: -22px;
-        }
-        .carousel-next {
-            right: -22px;
-        }
-
-        /* Carousel dots */
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 20px;
-            padding: 0;
-        }
-
-        .carousel-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--line);
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s var(--ease);
-            padding: 0;
-        }
-
-        .carousel-dot.active {
-            background: var(--brass);
-            transform: scale(1.2);
-            box-shadow: 0 0 0 3px rgba(176, 138, 62, 0.2);
-        }
-
-        .carousel-dot:hover {
-            background: var(--brass-light);
-        }
-
-        /* Responsive carousel */
-        @media (max-width: 1024px) {
-            .carousel-track .carousel-item {
-                flex: 0 0 calc((100% - 28px) / 2);
-            }
-            .carousel-prev {
-                left: -16px;
-                width: 38px;
-                height: 38px;
-                font-size: 16px;
-            }
-            .carousel-next {
-                right: -16px;
-                width: 38px;
-                height: 38px;
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .carousel-track {
-                gap: 16px;
-            }
-            .carousel-track .carousel-item {
-                flex: 0 0 calc((100% - 16px) / 2);
-            }
-            .carousel-prev {
-                left: -12px;
-                width: 34px;
-                height: 34px;
-                font-size: 14px;
-            }
-            .carousel-next {
-                right: -12px;
-                width: 34px;
-                height: 34px;
-                font-size: 14px;
-            }
-            .carousel-container {
-                padding: 0 0 40px 0;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .carousel-track .carousel-item {
-                flex: 0 0 100%;
-            }
-            .carousel-prev {
-                left: -8px;
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
-            .carousel-next {
-                right: -8px;
-                width: 30px;
-                height: 30px;
-                font-size: 12px;
-            }
-            .carousel-dots {
-                gap: 6px;
-                margin-top: 14px;
-            }
-            .carousel-dot {
-                width: 8px;
-                height: 8px;
-            }
         }
 
         /* ============================================================
@@ -685,7 +484,7 @@
                 flex-direction: column;
                 align-items: stretch;
                 gap: 12px;
-                background: rgba(255, 255, 255, 0.10);
+                background: rgba(255,255,255,0.10);
                 backdrop-filter: blur(18px);
                 margin-top: 16px;
             }
@@ -2467,7 +2266,7 @@
                         <li><a href="#offplan" data-section="offplan"><i class="fas fa-city" style="margin-right:6px;"></i>OFF-PLAN</a></li>
                         <li><a href="#valuation" data-section="valuation"><i class="fas fa-chart-line" style="margin-right:6px;"></i>VALUATION</a></li>
                     </ul>
-
+                    
                     <div class="logo">
                         <a href="#home" data-section="home">
                             <img src="https://pub-c00e374a716c45d1a147adbb02bbd1be.r2.dev/ChatGPT%20Image%20Jul%2021%2C%202026%2C%2006_49_47%20PM.png" alt="Agent Web Studio">
@@ -2477,7 +2276,7 @@
                             </div>
                         </a>
                     </div>
-
+                    
                     <ul class="nav-menu nav-right">
                         <li><a href="#communities" data-section="communities"><i class="fas fa-map-location-dot" style="margin-right:6px;"></i>COMMUNITIES</a></li>
                         <li><a href="#about" data-section="about"><i class="fas fa-circle-info" style="margin-right:6px;"></i>ABOUT</a></li>
@@ -2512,7 +2311,7 @@
                     <div class="hero-text-wrap">
                         <h1 class="hero-title">Your Trusted <span class="gold-text">Dubai</span> Real Estate Partner</h1>
                         <p class="hero-subtitle" id="agent-tagline" data-custom="true">LUXURY REAL ESTATE | OFF-PLAN INVESTMENTS | GOLDEN VISA EXPERTS</p>
-
+                        
                         <div class="hero-buttons">
                             <a href="#listings" class="btn btn-primary" data-section="listings"><i class="fas fa-building" style="margin-right:8px;"></i>VIEW PROPERTIES</a>
                             <a href="https://wa.me/971501234567?text=Hello%20I%27m%20interested%20in%20properties" target="_blank" class="btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WHATSAPP</a>
