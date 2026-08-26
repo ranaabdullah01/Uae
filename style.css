@@ -4232,3 +4232,107 @@ footer::before {
         cursor: zoom-in;
     }
 }
+/* ============================================================
+   CAROUSEL FOR FEATURED SECTIONS
+   ============================================================ */
+
+.carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    padding: 0 10px;   /* give space for arrows on smaller screens */
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
+
+.carousel-page {
+    flex: 0 0 100%;
+    display: grid;
+    gap: 28px;
+    padding: 4px 0;
+}
+
+/* Desktop: 3 columns */
+@media (min-width: 1024px) {
+    .carousel-page {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .carousel-page {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+}
+
+/* Mobile: 1 column */
+@media (max-width: 767px) {
+    .carousel-page {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
+/* Navigation buttons */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--line);
+    box-shadow: 0 4px 14px rgba(11, 59, 46, 0.10);
+    color: var(--emerald-deep);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s var(--ease);
+    z-index: 5;
+    padding: 0;
+}
+
+.carousel-btn:hover {
+    background: var(--brass);
+    color: var(--cream);
+    border-color: var(--brass);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 8px 24px rgba(176, 138, 62, 0.30);
+}
+
+.carousel-btn.prev {
+    left: -6px;
+}
+
+.carousel-btn.next {
+    right: -6px;
+}
+
+.carousel-btn.hidden {
+    display: none;
+}
+
+/* Mobile arrow sizing */
+@media (max-width: 767px) {
+    .carousel-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+    .carousel-btn.prev {
+        left: 2px;
+    }
+    .carousel-btn.next {
+        right: 2px;
+    }
+}
