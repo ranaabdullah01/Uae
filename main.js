@@ -808,21 +808,120 @@ function updateConfigInDOM() {
 
 // ============= RENDER FUNCTIONS =============
 
+// ============= CAROUSEL HELPERS =============
+
+function getItemsPerPage() {
+    const w = window.innerWidth;
+    if (w >= 1024) return 3;
+    if (w >= 768) return 2;
+    return 1;
+}
+
+function renderCarousel(container, items, renderItemFn, options = {}) {
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!items || items.length === 0) {
+        container.innerHTML = '<p class="no-results">No items found.</p>';
+        return;
+    }
+
+    const itemsPerPage = options.itemsPerPage || getItemsPerPage();
+    const gap = options.gap || 28;
+    const totalPages = Math.ceil(items.length / itemsPerPage);
+
+    // If only one page, render a simple grid (no arrows)
+    if (totalPages <= 1) {
+        const grid = document.createElement('div');
+        grid.className = container.className; // inherit grid class for styling
+        grid.style.display = 'grid';
+        grid.style.gridTemplateColumns = `repeat(${itemsPerPage}, 1fr)`;
+        grid.style.gap = gap + 'px';
+        items.forEach(item => {
+            grid.appendChild(renderItemFn(item));
+        });
+        container.appendChild(grid);
+        return;
+    }
+
+    // Build carousel
+    const wrapper = document.createElement('div');
+    wrapper.className = 'carousel-wrapper';
+
+    const track = document.createElement('div');
+    track.className = 'carousel-track';
+
+    for (let i = 0; i < totalPages; i++) {
+        const pageItems = items.slice(i * itemsPerPage, (i + 1) * itemsPerPage);
+        const page = document.createElement('div');
+        page.className = 'carousel-page';
+        pageItems.forEach(item => {
+            page.appendChild(renderItemFn(item));
+        });
+        track.appendChild(page);
+    }
+
+    wrapper.appendChild(track);
+
+    // Navigation buttons
+    const prevBtn = document.createElement('button');
+    prevBtn.className = 'carousel-btn prev';
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    const nextBtn = document.createElement('button');
+    nextBtn.className = 'carousel-btn next';
+    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+
+    wrapper.appendChild(prevBtn);
+    wrapper.appendChild(nextBtn);
+    container.appendChild(wrapper);
+
+    let currentPage = 0;
+
+    function updateCarousel() {
+        const offset = -currentPage * 100;
+        track.style.transform = `translateX(${offset}%)`;
+        prevBtn.classList.toggle('hidden', currentPage === 0);
+        nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
+    }
+
+    prevBtn.addEventListener('click', () => {
+        if (currentPage > 0) {
+            currentPage--;
+            updateCarousel();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages - 1) {
+            currentPage++;
+            updateCarousel();
+        }
+    });
+
+    updateCarousel();
+
+    // Store carousel state on the wrapper for potential future updates
+    wrapper._carousel = { currentPage, totalPages, track, prevBtn, nextBtn, updateCarousel };
+}
+
 function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
-    
-    const featured = listings.filter(l => l.featured).slice(0, 3);
-    container.innerHTML = '';
-    
-    if (featured.length === 0) {
-        container.innerHTML = '<p class="no-results">No featured properties found.</p>';
-        return;
-    }
-    
-    featured.forEach(listing => {
-        container.appendChild(createListingCard(listing));
-    });
+    const featured = listings.filter(l => l.featured);
+    renderCarousel(container, featured, createListingCard, { gap: 28 });
+}
+
+function renderFeaturedOffplan() {
+    const container = document.getElementById('featured-offplan');
+    if (!container) return;
+    const featured = offplan.filter(p => p.featured);
+    renderCarousel(container, featured, createOffplanCard, { gap: 28 });
+}
+
+function renderHomeCommunities() {
+    const container = document.getElementById('home-communities');
+    if (!container) return;
+    renderCarousel(container, communities, createCommunityCard, { gap: 28 });
 }
 
 function renderListingsPage() {
@@ -1403,23 +1502,6 @@ function initGallery() {
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
-function renderFeaturedOffplan() {
-    const container = document.getElementById('featured-offplan');
-    if (!container) return;
-    
-    const featured = offplan.filter(p => p.featured).slice(0, 2);
-    container.innerHTML = '';
-    
-    if (featured.length === 0) {
-        container.innerHTML = '<p class="no-results">No featured off-plan projects found.</p>';
-        return;
-    }
-    
-    featured.forEach(project => {
-        container.appendChild(createOffplanCard(project));
-    });
-}
-
 function renderOffplanPage() {
     const container = document.getElementById('offplan-grid');
     if (!container) return;
@@ -1870,12 +1952,6 @@ window.scheduleConsultation = function(projectName) {
 };
 
 // ============= RENDER COMMUNITIES =============
-
-function renderHomeCommunities() {
-    const container = document.getElementById('home-communities');
-    if (!container) return;
-    renderCommunities(communities.slice(0, 4), container);
-}
 
 function renderCommunitiesPage() {
     const container = document.getElementById('communities-grid');
@@ -3144,6 +3220,22 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadAllData();
     handleRoute();
     hidePreloader();
+
+    // Debounced resize to re-render carousels when itemsPerPage changes
+    let resizeTimeout;
+    let lastItemsPerPage = getItemsPerPage();
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const newItemsPerPage = getItemsPerPage();
+            if (newItemsPerPage !== lastItemsPerPage) {
+                lastItemsPerPage = newItemsPerPage;
+                renderFeaturedListings();
+                renderFeaturedOffplan();
+                renderHomeCommunities();
+            }
+        }, 300);
+    });
 
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
