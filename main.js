@@ -904,6 +904,54 @@ function renderCarousel(container, items, renderItemFn, options = {}) {
     wrapper._carousel = { currentPage, totalPages, track, prevBtn, nextBtn, updateCarousel };
 }
 
+// -----------------------------------------------------------------
+// CARD CREATORS
+// -----------------------------------------------------------------
+
+function createCommunityCard(community) {
+    const card = document.createElement('div');
+    card.className = 'community-card';
+    
+    const highlights = community.highlights && typeof community.highlights === 'string'
+        ? community.highlights.split(',')
+        : (Array.isArray(community.highlights) ? community.highlights : []);
+    
+    const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
+    
+    card.innerHTML = `
+        <div class="community-card-image">
+            <img src="${imageUrl}" alt="${community.name}" loading="lazy">
+            ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
+        </div>
+        <div class="community-card-body">
+            <h3>${community.name}</h3>
+            <div class="community-type">${community.communityType}</div>
+            <div class="community-prices">
+                ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
+                ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
+                <span>Yield: <strong>${community.avgRentalYield}</strong></span>
+            </div>
+            ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
+            <div class="community-highlights">
+                ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
+            </div>
+            <div class="community-actions">
+                <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
+            </div>
+        </div>
+    `;
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        window.viewCommunity(community.slug || community.id);
+    });
+    return card;
+}
+
+// -----------------------------------------------------------------
+// RENDER FUNCTIONS FOR HOMEPAGE FEATURED SECTIONS (with carousel)
+// -----------------------------------------------------------------
+
 function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
@@ -923,6 +971,10 @@ function renderHomeCommunities() {
     if (!container) return;
     renderCarousel(container, communities, createCommunityCard, { gap: 28 });
 }
+
+// -----------------------------------------------------------------
+// FULL PAGE RENDERING (without carousel)
+// -----------------------------------------------------------------
 
 function renderListingsPage() {
     const container = document.getElementById('listings-grid');
@@ -997,6 +1049,99 @@ function createListingCard(listing) {
 function getWhatsAppNumber() {
     const number = currentAgentData?.whatsapp || config.whatsapp || '+971501234567';
     return number.replace(/[^0-9]/g, '');
+}
+
+function renderOffplanPage() {
+    const container = document.getElementById('offplan-grid');
+    if (!container) return;
+    
+    document.getElementById('offplan-detail').style.display = 'none';
+    container.style.display = 'grid';
+    
+    container.innerHTML = '';
+    if (offplan.length === 0) {
+        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
+        return;
+    }
+    offplan.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
+}
+
+function createOffplanCard(project) {
+    const card = document.createElement('div');
+    card.className = 'offplan-card';
+    card.setAttribute('data-offplan-id', project.id);
+    
+    let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
+    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+        imageUrl = project.images[0];
+    } else if (project.image) {
+        imageUrl = project.image;
+    }
+    
+    const types = project.types && typeof project.types === 'string' 
+        ? project.types.split(',') 
+        : (Array.isArray(project.types) ? project.types : []);
+    
+    card.innerHTML = `
+        <div class="offplan-card-image">
+            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
+        </div>
+        <div class="offplan-card-body">
+            <h3>${project.projectName}</h3>
+            <div class="offplan-card-developer">${project.developer}</div>
+            <div class="offplan-card-price">From AED ${formatPrice(project.startingPrice)}</div>
+            <div class="offplan-card-details">
+                ${project.community} | ${project.handoverDate} | ${types.join(', ')}
+                ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
+            </div>
+            <div class="offplan-card-actions">
+                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Request Brochure</a>
+            </div>
+        </div>
+    `;
+
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        window.viewOffplanPage(project.id);
+    });
+
+    const detailBtn = card.querySelector('.view-detail-btn');
+    if (detailBtn) {
+        detailBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.viewOffplanPage(project.id);
+        });
+    }
+
+    return card;
+}
+
+function renderCommunitiesPage() {
+    const container = document.getElementById('communities-grid');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (communities.length === 0) {
+        container.innerHTML = `
+            <p class="no-results" style="grid-column:1/-1;text-align:center;padding:40px;">
+                No communities found. Please check your API endpoint or add communities.
+            </p>`;
+        return;
+    }
+    
+    // Use a grid (not carousel) for the full communities page
+    const grid = document.createElement('div');
+    grid.className = 'communities-grid'; // reuse existing grid class for styling
+    grid.style.display = 'grid';
+    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
+    grid.style.gap = '28px';
+    communities.forEach(community => {
+        grid.appendChild(createCommunityCard(community));
+    });
+    container.appendChild(grid);
 }
 
 // ============= VIEW LISTING DETAIL =============
@@ -1502,74 +1647,6 @@ function initGallery() {
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
-function renderOffplanPage() {
-    const container = document.getElementById('offplan-grid');
-    if (!container) return;
-    
-    document.getElementById('offplan-detail').style.display = 'none';
-    container.style.display = 'grid';
-    
-    container.innerHTML = '';
-    if (offplan.length === 0) {
-        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
-        return;
-    }
-    offplan.forEach(project => {
-        container.appendChild(createOffplanCard(project));
-    });
-}
-
-function createOffplanCard(project) {
-    const card = document.createElement('div');
-    card.className = 'offplan-card';
-    card.setAttribute('data-offplan-id', project.id);
-    
-    let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
-    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
-        imageUrl = project.images[0];
-    } else if (project.image) {
-        imageUrl = project.image;
-    }
-    
-    const types = project.types && typeof project.types === 'string' 
-        ? project.types.split(',') 
-        : (Array.isArray(project.types) ? project.types : []);
-    
-    card.innerHTML = `
-        <div class="offplan-card-image">
-            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
-        </div>
-        <div class="offplan-card-body">
-            <h3>${project.projectName}</h3>
-            <div class="offplan-card-developer">${project.developer}</div>
-            <div class="offplan-card-price">From AED ${formatPrice(project.startingPrice)}</div>
-            <div class="offplan-card-details">
-                ${project.community} | ${project.handoverDate} | ${types.join(', ')}
-                ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
-            </div>
-            <div class="offplan-card-actions">
-                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Request Brochure</a>
-            </div>
-        </div>
-    `;
-
-    card.addEventListener('click', function(e) {
-        if (e.target.closest('button') || e.target.closest('a')) return;
-        window.viewOffplanPage(project.id);
-    });
-
-    const detailBtn = card.querySelector('.view-detail-btn');
-    if (detailBtn) {
-        detailBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.viewOffplanPage(project.id);
-        });
-    }
-
-    return card;
-}
-
 window.showOffplanList = function(opts = {}) {
     const { push = true } = opts;
     const grid = document.getElementById('offplan-grid');
@@ -1953,62 +2030,9 @@ window.scheduleConsultation = function(projectName) {
 
 // ============= RENDER COMMUNITIES =============
 
-function renderCommunitiesPage() {
-    const container = document.getElementById('communities-grid');
-    if (!container) return;
-    renderCommunities(communities, container);
-}
-
 function renderCommunities(communitiesData, container) {
-    container.innerHTML = '';
-    
-    if (communitiesData.length === 0) {
-        container.innerHTML = `
-            <p class="no-results" style="grid-column:1/-1;text-align:center;padding:40px;">
-                No communities found. Please check your API endpoint or add communities.
-            </p>`;
-        return;
-    }
-    
-    communitiesData.forEach(community => {
-        const card = document.createElement('div');
-        card.className = 'community-card';
-        
-        const highlights = community.highlights && typeof community.highlights === 'string'
-            ? community.highlights.split(',')
-            : (Array.isArray(community.highlights) ? community.highlights : []);
-        
-        const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
-        
-        card.innerHTML = `
-            <div class="community-card-image">
-                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
-                ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
-            </div>
-            <div class="community-card-body">
-                <h3>${community.name}</h3>
-                <div class="community-type">${community.communityType}</div>
-                <div class="community-prices">
-                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
-                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
-                    <span>Yield: <strong>${community.avgRentalYield}</strong></span>
-                </div>
-                ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
-                <div class="community-highlights">
-                    ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
-                </div>
-                <div class="community-actions">
-                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
-                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
-                </div>
-            </div>
-        `;
-        card.addEventListener('click', function(e) {
-            if (e.target.closest('button') || e.target.closest('a')) return;
-            window.viewCommunity(community.slug || community.id);
-        });
-        container.appendChild(card);
-    });
+    // This function is no longer used directly – we use renderCommunitiesPage instead.
+    // Kept for reference.
 }
 
 // ============= COMMUNITY DETAIL FUNCTIONS =============
