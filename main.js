@@ -7,6 +7,11 @@
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // ================================================
 
+// ================================================
+// UPDATED: Home page counts all set to 3
+// Featured Properties: 3, Featured Off-Plan: 3, Communities: 3
+// ================================================
+
 import { CONFIG } from './config.js';
 
 // ============= PRELOADER =============
@@ -812,7 +817,7 @@ function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
     
-    const featured = listings.filter(l => l.featured).slice(0, 3);
+    const featured = listings.filter(l => l.featured).slice(0, 3); // stays 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1407,7 +1412,7 @@ function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
     
-    const featured = offplan.filter(p => p.featured).slice(0, 2);
+    const featured = offplan.filter(p => p.featured).slice(0, 3); // <-- CHANGED: was 2, now 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1874,7 +1879,7 @@ window.scheduleConsultation = function(projectName) {
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
     if (!container) return;
-    renderCommunities(communities.slice(0, 4), container);
+    renderCommunities(communities.slice(0, 3), container); // <-- CHANGED: was 4, now 3
 }
 
 function renderCommunitiesPage() {
