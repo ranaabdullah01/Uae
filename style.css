@@ -4232,58 +4232,67 @@ footer::before {
         cursor: zoom-in;
     }
 }
+
 /* ============================================================
-   CAROUSEL FOR FEATURED SECTIONS
+   CAROUSEL – viewport + track (preserves card styles)
    ============================================================ */
 
 .carousel-wrapper {
     position: relative;
+    width: 100%;
+}
+
+.carousel-viewport {
     overflow: hidden;
     width: 100%;
-    padding: 0 10px;   /* give space for arrows on smaller screens */
 }
 
 .carousel-track {
     display: flex;
+    gap: 28px;
     transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
 }
 
-.carousel-page {
-    flex: 0 0 100%;
-    display: grid;
-    gap: 28px;
-    padding: 4px 0;
+.carousel-item {
+    flex: 0 0 calc((100% - 2 * 28px) / 3);
+    max-width: calc((100% - 2 * 28px) / 3);
+    display: flex;
 }
 
-/* Desktop: 3 columns */
-@media (min-width: 1024px) {
-    .carousel-page {
-        grid-template-columns: repeat(3, 1fr);
+.carousel-item > * {
+    width: 100%;
+    flex: 1;
+}
+
+/* Tablet: 2 cards */
+@media (max-width: 1023px) and (min-width: 768px) {
+    .carousel-item {
+        flex: 0 0 calc((100% - 28px) / 2);
+        max-width: calc((100% - 28px) / 2);
     }
-}
-
-/* Tablet: 2 columns */
-@media (min-width: 768px) and (max-width: 1023px) {
-    .carousel-page {
-        grid-template-columns: repeat(2, 1fr);
+    .carousel-track {
         gap: 20px;
     }
 }
 
-/* Mobile: 1 column */
+/* Mobile: 1 card */
 @media (max-width: 767px) {
-    .carousel-page {
-        grid-template-columns: 1fr;
+    .carousel-item {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+    .carousel-track {
         gap: 16px;
     }
 }
 
-/* Navigation buttons */
+/* Arrows – consistent with luxury design */
 .carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 10;
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -4297,9 +4306,7 @@ footer::before {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.3s var(--ease);
-    z-index: 5;
-    padding: 0;
+    transition: all 0.3s ease;
 }
 
 .carousel-btn:hover {
@@ -4322,7 +4329,6 @@ footer::before {
     display: none;
 }
 
-/* Mobile arrow sizing */
 @media (max-width: 767px) {
     .carousel-btn {
         width: 36px;
