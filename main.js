@@ -5,6 +5,7 @@
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
+// CORRECTED CAROUSEL: viewport + track, preserves card widths
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -827,16 +828,14 @@ function renderCarousel(container, items, renderItemFn, options = {}) {
     }
 
     const itemsPerPage = options.itemsPerPage || getItemsPerPage();
-    const gap = options.gap || 28;
     const totalPages = Math.ceil(items.length / itemsPerPage);
 
-    // If only one page, render a simple grid (no arrows)
+    // If only one page, render as a simple grid (uses existing grid styles)
     if (totalPages <= 1) {
         const grid = document.createElement('div');
-        grid.className = container.className; // inherit grid class for styling
-        grid.style.display = 'grid';
-        grid.style.gridTemplateColumns = `repeat(${itemsPerPage}, 1fr)`;
-        grid.style.gap = gap + 'px';
+        // Use the same class as the container so existing CSS applies
+        grid.className = container.className; // e.g., 'listings-grid', 'offplan-grid', etc.
+        // The existing CSS will handle grid-template-columns via auto-fill/minmax
         items.forEach(item => {
             grid.appendChild(renderItemFn(item));
         });
@@ -844,26 +843,28 @@ function renderCarousel(container, items, renderItemFn, options = {}) {
         return;
     }
 
-    // Build carousel
+    // Build carousel wrapper
     const wrapper = document.createElement('div');
     wrapper.className = 'carousel-wrapper';
+
+    const viewport = document.createElement('div');
+    viewport.className = 'carousel-viewport';
 
     const track = document.createElement('div');
     track.className = 'carousel-track';
 
-    for (let i = 0; i < totalPages; i++) {
-        const pageItems = items.slice(i * itemsPerPage, (i + 1) * itemsPerPage);
-        const page = document.createElement('div');
-        page.className = 'carousel-page';
-        pageItems.forEach(item => {
-            page.appendChild(renderItemFn(item));
-        });
-        track.appendChild(page);
-    }
+    // Add items wrapped in .carousel-item
+    items.forEach(item => {
+        const itemWrapper = document.createElement('div');
+        itemWrapper.className = 'carousel-item';
+        itemWrapper.appendChild(renderItemFn(item)); // existing card stays intact
+        track.appendChild(itemWrapper);
+    });
 
-    wrapper.appendChild(track);
+    viewport.appendChild(track);
+    wrapper.appendChild(viewport);
 
-    // Navigation buttons
+    // Navigation arrows
     const prevBtn = document.createElement('button');
     prevBtn.className = 'carousel-btn prev';
     prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
@@ -878,11 +879,15 @@ function renderCarousel(container, items, renderItemFn, options = {}) {
     let currentPage = 0;
 
     function updateCarousel() {
-        const offset = -currentPage * 100;
-        track.style.transform = `translateX(${offset}%)`;
+        const viewportWidth = viewport.offsetWidth;
+        const offset = -currentPage * viewportWidth;
+        track.style.transform = `translateX(${offset}px)`;
         prevBtn.classList.toggle('hidden', currentPage === 0);
         nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
     }
+
+    // Wait for layout to compute widths
+    requestAnimationFrame(updateCarousel);
 
     prevBtn.addEventListener('click', () => {
         if (currentPage > 0) {
@@ -898,10 +903,8 @@ function renderCarousel(container, items, renderItemFn, options = {}) {
         }
     });
 
-    updateCarousel();
-
-    // Store carousel state on the wrapper for potential future updates
-    wrapper._carousel = { currentPage, totalPages, track, prevBtn, nextBtn, updateCarousel };
+    // Re‑update on window resize (debounced already in main init)
+    // The existing resize listener re‑renders the whole carousel, so we rely on that.
 }
 
 // -----------------------------------------------------------------
