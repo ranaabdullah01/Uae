@@ -5,7 +5,6 @@
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
-// CORRECTED CAROUSEL: viewport + track, preserves card widths
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -809,175 +808,22 @@ function updateConfigInDOM() {
 
 // ============= RENDER FUNCTIONS =============
 
-// ============= CAROUSEL HELPERS =============
-
-function getItemsPerPage() {
-    const w = window.innerWidth;
-    if (w >= 1024) return 3;
-    if (w >= 768) return 2;
-    return 1;
-}
-
-function renderCarousel(container, items, renderItemFn, options = {}) {
-    if (!container) return;
-    container.innerHTML = '';
-
-    if (!items || items.length === 0) {
-        container.innerHTML = '<p class="no-results">No items found.</p>';
-        return;
-    }
-
-    const itemsPerPage = options.itemsPerPage || getItemsPerPage();
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-
-    // If only one page, render as a simple grid (uses existing grid styles)
-    if (totalPages <= 1) {
-        const grid = document.createElement('div');
-        // Use the same class as the container so existing CSS applies
-        grid.className = container.className; // e.g., 'listings-grid', 'offplan-grid', etc.
-        // The existing CSS will handle grid-template-columns via auto-fill/minmax
-        items.forEach(item => {
-            grid.appendChild(renderItemFn(item));
-        });
-        container.appendChild(grid);
-        return;
-    }
-
-    // Build carousel wrapper
-    const wrapper = document.createElement('div');
-    wrapper.className = 'carousel-wrapper';
-
-    const viewport = document.createElement('div');
-    viewport.className = 'carousel-viewport';
-
-    const track = document.createElement('div');
-    track.className = 'carousel-track';
-
-    // Add items wrapped in .carousel-item
-    items.forEach(item => {
-        const itemWrapper = document.createElement('div');
-        itemWrapper.className = 'carousel-item';
-        itemWrapper.appendChild(renderItemFn(item)); // existing card stays intact
-        track.appendChild(itemWrapper);
-    });
-
-    viewport.appendChild(track);
-    wrapper.appendChild(viewport);
-
-    // Navigation arrows
-    const prevBtn = document.createElement('button');
-    prevBtn.className = 'carousel-btn prev';
-    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-    const nextBtn = document.createElement('button');
-    nextBtn.className = 'carousel-btn next';
-    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-
-    wrapper.appendChild(prevBtn);
-    wrapper.appendChild(nextBtn);
-    container.appendChild(wrapper);
-
-    let currentPage = 0;
-
-    function updateCarousel() {
-        const viewportWidth = viewport.offsetWidth;
-        const offset = -currentPage * viewportWidth;
-        track.style.transform = `translateX(${offset}px)`;
-        prevBtn.classList.toggle('hidden', currentPage === 0);
-        nextBtn.classList.toggle('hidden', currentPage === totalPages - 1);
-    }
-
-    // Wait for layout to compute widths
-    requestAnimationFrame(updateCarousel);
-
-    prevBtn.addEventListener('click', () => {
-        if (currentPage > 0) {
-            currentPage--;
-            updateCarousel();
-        }
-    });
-
-    nextBtn.addEventListener('click', () => {
-        if (currentPage < totalPages - 1) {
-            currentPage++;
-            updateCarousel();
-        }
-    });
-
-    // Re‑update on window resize (debounced already in main init)
-    // The existing resize listener re‑renders the whole carousel, so we rely on that.
-}
-
-// -----------------------------------------------------------------
-// CARD CREATORS
-// -----------------------------------------------------------------
-
-function createCommunityCard(community) {
-    const card = document.createElement('div');
-    card.className = 'community-card';
-    
-    const highlights = community.highlights && typeof community.highlights === 'string'
-        ? community.highlights.split(',')
-        : (Array.isArray(community.highlights) ? community.highlights : []);
-    
-    const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
-    
-    card.innerHTML = `
-        <div class="community-card-image">
-            <img src="${imageUrl}" alt="${community.name}" loading="lazy">
-            ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
-        </div>
-        <div class="community-card-body">
-            <h3>${community.name}</h3>
-            <div class="community-type">${community.communityType}</div>
-            <div class="community-prices">
-                ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
-                ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
-                <span>Yield: <strong>${community.avgRentalYield}</strong></span>
-            </div>
-            ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
-            <div class="community-highlights">
-                ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
-            </div>
-            <div class="community-actions">
-                <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
-            </div>
-        </div>
-    `;
-    card.addEventListener('click', function(e) {
-        if (e.target.closest('button') || e.target.closest('a')) return;
-        window.viewCommunity(community.slug || community.id);
-    });
-    return card;
-}
-
-// -----------------------------------------------------------------
-// RENDER FUNCTIONS FOR HOMEPAGE FEATURED SECTIONS (with carousel)
-// -----------------------------------------------------------------
-
 function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
-    const featured = listings.filter(l => l.featured);
-    renderCarousel(container, featured, createListingCard, { gap: 28 });
+    
+    const featured = listings.filter(l => l.featured).slice(0, 3);
+    container.innerHTML = '';
+    
+    if (featured.length === 0) {
+        container.innerHTML = '<p class="no-results">No featured properties found.</p>';
+        return;
+    }
+    
+    featured.forEach(listing => {
+        container.appendChild(createListingCard(listing));
+    });
 }
-
-function renderFeaturedOffplan() {
-    const container = document.getElementById('featured-offplan');
-    if (!container) return;
-    const featured = offplan.filter(p => p.featured);
-    renderCarousel(container, featured, createOffplanCard, { gap: 28 });
-}
-
-function renderHomeCommunities() {
-    const container = document.getElementById('home-communities');
-    if (!container) return;
-    renderCarousel(container, communities, createCommunityCard, { gap: 28 });
-}
-
-// -----------------------------------------------------------------
-// FULL PAGE RENDERING (without carousel)
-// -----------------------------------------------------------------
 
 function renderListingsPage() {
     const container = document.getElementById('listings-grid');
@@ -1052,99 +898,6 @@ function createListingCard(listing) {
 function getWhatsAppNumber() {
     const number = currentAgentData?.whatsapp || config.whatsapp || '+971501234567';
     return number.replace(/[^0-9]/g, '');
-}
-
-function renderOffplanPage() {
-    const container = document.getElementById('offplan-grid');
-    if (!container) return;
-    
-    document.getElementById('offplan-detail').style.display = 'none';
-    container.style.display = 'grid';
-    
-    container.innerHTML = '';
-    if (offplan.length === 0) {
-        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
-        return;
-    }
-    offplan.forEach(project => {
-        container.appendChild(createOffplanCard(project));
-    });
-}
-
-function createOffplanCard(project) {
-    const card = document.createElement('div');
-    card.className = 'offplan-card';
-    card.setAttribute('data-offplan-id', project.id);
-    
-    let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
-    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
-        imageUrl = project.images[0];
-    } else if (project.image) {
-        imageUrl = project.image;
-    }
-    
-    const types = project.types && typeof project.types === 'string' 
-        ? project.types.split(',') 
-        : (Array.isArray(project.types) ? project.types : []);
-    
-    card.innerHTML = `
-        <div class="offplan-card-image">
-            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
-        </div>
-        <div class="offplan-card-body">
-            <h3>${project.projectName}</h3>
-            <div class="offplan-card-developer">${project.developer}</div>
-            <div class="offplan-card-price">From AED ${formatPrice(project.startingPrice)}</div>
-            <div class="offplan-card-details">
-                ${project.community} | ${project.handoverDate} | ${types.join(', ')}
-                ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
-            </div>
-            <div class="offplan-card-actions">
-                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
-                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Request Brochure</a>
-            </div>
-        </div>
-    `;
-
-    card.addEventListener('click', function(e) {
-        if (e.target.closest('button') || e.target.closest('a')) return;
-        window.viewOffplanPage(project.id);
-    });
-
-    const detailBtn = card.querySelector('.view-detail-btn');
-    if (detailBtn) {
-        detailBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            window.viewOffplanPage(project.id);
-        });
-    }
-
-    return card;
-}
-
-function renderCommunitiesPage() {
-    const container = document.getElementById('communities-grid');
-    if (!container) return;
-    container.innerHTML = '';
-    
-    if (communities.length === 0) {
-        container.innerHTML = `
-            <p class="no-results" style="grid-column:1/-1;text-align:center;padding:40px;">
-                No communities found. Please check your API endpoint or add communities.
-            </p>`;
-        return;
-    }
-    
-    // Use a grid (not carousel) for the full communities page
-    const grid = document.createElement('div');
-    grid.className = 'communities-grid'; // reuse existing grid class for styling
-    grid.style.display = 'grid';
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(320px, 1fr))';
-    grid.style.gap = '28px';
-    communities.forEach(community => {
-        grid.appendChild(createCommunityCard(community));
-    });
-    container.appendChild(grid);
 }
 
 // ============= VIEW LISTING DETAIL =============
@@ -1650,6 +1403,91 @@ function initGallery() {
 
 // ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
+function renderFeaturedOffplan() {
+    const container = document.getElementById('featured-offplan');
+    if (!container) return;
+    
+    const featured = offplan.filter(p => p.featured).slice(0, 2);
+    container.innerHTML = '';
+    
+    if (featured.length === 0) {
+        container.innerHTML = '<p class="no-results">No featured off-plan projects found.</p>';
+        return;
+    }
+    
+    featured.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
+}
+
+function renderOffplanPage() {
+    const container = document.getElementById('offplan-grid');
+    if (!container) return;
+    
+    document.getElementById('offplan-detail').style.display = 'none';
+    container.style.display = 'grid';
+    
+    container.innerHTML = '';
+    if (offplan.length === 0) {
+        container.innerHTML = '<p class="no-results">No off-plan projects found.</p>';
+        return;
+    }
+    offplan.forEach(project => {
+        container.appendChild(createOffplanCard(project));
+    });
+}
+
+function createOffplanCard(project) {
+    const card = document.createElement('div');
+    card.className = 'offplan-card';
+    card.setAttribute('data-offplan-id', project.id);
+    
+    let imageUrl = 'https://placehold.co/800x600/0A1628/C9A84C?text=Off-Plan';
+    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+        imageUrl = project.images[0];
+    } else if (project.image) {
+        imageUrl = project.image;
+    }
+    
+    const types = project.types && typeof project.types === 'string' 
+        ? project.types.split(',') 
+        : (Array.isArray(project.types) ? project.types : []);
+    
+    card.innerHTML = `
+        <div class="offplan-card-image">
+            <img src="${imageUrl}" alt="${project.projectName}" loading="lazy">
+        </div>
+        <div class="offplan-card-body">
+            <h3>${project.projectName}</h3>
+            <div class="offplan-card-developer">${project.developer}</div>
+            <div class="offplan-card-price">From AED ${formatPrice(project.startingPrice)}</div>
+            <div class="offplan-card-details">
+                ${project.community} | ${project.handoverDate} | ${types.join(', ')}
+                ${project.goldenVisaEligible ? ' | 🏆 Golden Visa' : ''}
+            </div>
+            <div class="offplan-card-actions">
+                <button class="btn btn-secondary btn-sm view-detail-btn">View Details</button>
+                <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(project.brochureWhatsApp || 'I\'m interested in this off-plan project')}" target="_blank" class="btn btn-whatsapp btn-sm"><i class="fab fa-whatsapp"></i> Request Brochure</a>
+            </div>
+        </div>
+    `;
+
+    card.addEventListener('click', function(e) {
+        if (e.target.closest('button') || e.target.closest('a')) return;
+        window.viewOffplanPage(project.id);
+    });
+
+    const detailBtn = card.querySelector('.view-detail-btn');
+    if (detailBtn) {
+        detailBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            window.viewOffplanPage(project.id);
+        });
+    }
+
+    return card;
+}
+
 window.showOffplanList = function(opts = {}) {
     const { push = true } = opts;
     const grid = document.getElementById('offplan-grid');
@@ -2033,9 +1871,68 @@ window.scheduleConsultation = function(projectName) {
 
 // ============= RENDER COMMUNITIES =============
 
+function renderHomeCommunities() {
+    const container = document.getElementById('home-communities');
+    if (!container) return;
+    renderCommunities(communities.slice(0, 4), container);
+}
+
+function renderCommunitiesPage() {
+    const container = document.getElementById('communities-grid');
+    if (!container) return;
+    renderCommunities(communities, container);
+}
+
 function renderCommunities(communitiesData, container) {
-    // This function is no longer used directly – we use renderCommunitiesPage instead.
-    // Kept for reference.
+    container.innerHTML = '';
+    
+    if (communitiesData.length === 0) {
+        container.innerHTML = `
+            <p class="no-results" style="grid-column:1/-1;text-align:center;padding:40px;">
+                No communities found. Please check your API endpoint or add communities.
+            </p>`;
+        return;
+    }
+    
+    communitiesData.forEach(community => {
+        const card = document.createElement('div');
+        card.className = 'community-card';
+        
+        const highlights = community.highlights && typeof community.highlights === 'string'
+            ? community.highlights.split(',')
+            : (Array.isArray(community.highlights) ? community.highlights : []);
+        
+        const imageUrl = community.image || 'https://placehold.co/800x600/0A1628/C9A84C?text=Community';
+        
+        card.innerHTML = `
+            <div class="community-card-image">
+                <img src="${imageUrl}" alt="${community.name}" loading="lazy">
+                ${community.popular ? '<span class="community-badge popular">⭐ Popular</span>' : ''}
+            </div>
+            <div class="community-card-body">
+                <h3>${community.name}</h3>
+                <div class="community-type">${community.communityType}</div>
+                <div class="community-prices">
+                    ${community.avgApartmentPrice && community.avgApartmentPrice !== 'N/A' ? `<span>Apartments: <strong>${community.avgApartmentPrice}</strong></span>` : ''}
+                    ${community.avgVillaPrice && community.avgVillaPrice !== 'N/A' ? `<span>Villas: <strong>${community.avgVillaPrice}</strong></span>` : ''}
+                    <span>Yield: <strong>${community.avgRentalYield}</strong></span>
+                </div>
+                ${community.lifestyle ? `<p class="community-lifestyle">${community.lifestyle}</p>` : ''}
+                <div class="community-highlights">
+                    ${highlights.slice(0, 3).map(h => `<span class="highlight-tag">${h.trim()}</span>`).join('')}
+                </div>
+                <div class="community-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); window.filterByCommunity('${community.name}')">View Properties</button>
+                    <a href="https://wa.me/${getWhatsAppNumber()}?text=${encodeURIComponent(`Hi, I'm interested in properties in ${community.name}. I'd like to know more about the available options.`)}" target="_blank" class="btn btn-whatsapp btn-sm" onclick="event.stopPropagation();"><i class="fab fa-whatsapp"></i> Ask About</a>
+                </div>
+            </div>
+        `;
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('button') || e.target.closest('a')) return;
+            window.viewCommunity(community.slug || community.id);
+        });
+        container.appendChild(card);
+    });
 }
 
 // ============= COMMUNITY DETAIL FUNCTIONS =============
@@ -3247,22 +3144,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadAllData();
     handleRoute();
     hidePreloader();
-
-    // Debounced resize to re-render carousels when itemsPerPage changes
-    let resizeTimeout;
-    let lastItemsPerPage = getItemsPerPage();
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            const newItemsPerPage = getItemsPerPage();
-            if (newItemsPerPage !== lastItemsPerPage) {
-                lastItemsPerPage = newItemsPerPage;
-                renderFeaturedListings();
-                renderFeaturedOffplan();
-                renderHomeCommunities();
-            }
-        }, 300);
-    });
 
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
