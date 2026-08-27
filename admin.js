@@ -951,7 +951,10 @@ function updateStats() {
 
 window.editListing = function(id) {
     const listing = listingsData.find(l => l.id == id);
-    if (!listing) return;
+    if (!listing) {
+        showToast('Listing not found. Please refresh.', 'error');
+        return;
+    }
     editingId = id;
     editingType = 'listing';
     openModal('Edit Listing', buildListingForm(listing));
@@ -1563,7 +1566,9 @@ function buildFormHTML(formId, fields, isBlogForm = false) {
         } else if (f.type === 'file') {
             const fieldName = f.name;
             const hiddenId = `hidden-${fieldName}`;
-            const hiddenValue = f.value || '';
+            // FIX: Ensure hiddenValue is always a string
+            let hiddenValue = f.value || '';
+            if (Array.isArray(hiddenValue)) hiddenValue = hiddenValue.join(',');
             const images = hiddenValue.split(',').filter(img => img.trim());
 
             html += `<input type="file" id="edit-${fieldName}" name="${fieldName}" accept="image/*" ${f.multiple ? 'multiple' : ''} style="font-family:Inter, sans-serif;">`;
