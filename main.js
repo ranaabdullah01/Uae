@@ -1,6 +1,6 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN / LISTING GALLERY: HORIZONTAL SCROLL + +X PHOTOS TILE
+// OFF-PLAN / LISTING GALLERY: GRID + +X PHOTOS (ORIGINAL OFF-PLAN BEHAVIOR)
 // COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
@@ -974,7 +974,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL - UPDATED GALLERY
+// RENDER LISTING DETAIL - UPDATED (USING ORIGINAL OFF-PLAN GALLERY LOGIC)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -995,46 +995,27 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // Build thumbnail row with scroll + +X Photos tile
-    const buildThumbs = (imagesArray) => {
-        const total = imagesArray.length;
-        let html = '';
-        if (total <= 4) {
-            // Show all thumbnails
-            imagesArray.forEach((img, index) => {
-                html += `<img src="${img}" alt="${listing.title} - Image ${index + 1}"
-                            class="thumb ${index === 0 ? 'active' : ''}"
-                            data-index="${index}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-        } else {
-            // First 4 thumbnails
-            const firstFour = imagesArray.slice(0, 4);
-            const rest = imagesArray.slice(4);
-            firstFour.forEach((img, index) => {
-                html += `<img src="${img}" alt="${listing.title} - Image ${index + 1}"
-                            class="thumb ${index === 0 ? 'active' : ''}"
-                            data-index="${index}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-            // +X Photos tile
-            html += `<div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, 0)">
-                        <span>+${rest.length} Photos</span>
-                    </div>`;
-            // Remaining thumbnails
-            rest.forEach((img, index) => {
-                const globalIndex = index + 4;
-                html += `<img src="${img}" alt="${listing.title} - Image ${globalIndex + 1}"
-                            class="thumb"
-                            data-index="${globalIndex}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-        }
-        return html;
-    };
+    // ---- Gallery thumbnail generation (exactly like original Off-Plan) ----
+    const isDesktop = window.innerWidth >= 768;
+    const visibleCount = isDesktop ? 4 : 3;
+    const visibleThumbs = images.slice(0, visibleCount);
+    const remainingCount = Math.max(0, images.length - visibleCount);
+
+    let thumbsHtml = visibleThumbs.map((img, index) => `
+        <img src="${img}" alt="${listing.title} - Image ${index + 1}"
+             class="thumb ${index === 0 ? 'active' : ''}"
+             data-index="${index}"
+             style="cursor:pointer;"
+             onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+    `).join('');
+
+    if (remainingCount > 0) {
+        thumbsHtml += `
+            <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, ${visibleCount})">
+                <span>+${remainingCount} Photos</span>
+            </div>
+        `;
+    }
 
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
@@ -1052,11 +1033,12 @@ function renderListingDetail(listing) {
                 <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="gallery-thumbs">
-                ${buildThumbs(images)}
+                ${thumbsHtml}
             </div>
         </div>
     `;
 
+    // ---- The rest (property details, quick stats, description, CTA) remains unchanged ----
     const details = [
         { label: 'Property Type', value: listing.type || 'N/A' },
         { label: 'Status', value: statusLabel },
@@ -1581,7 +1563,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL - SAME GALLERY BEHAVIOR AS LISTINGS
+// RENDER OFFPLAN DETAIL - ORIGINAL (UNCHANGED)
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1602,42 +1584,27 @@ function renderOffplanDetail(project) {
 
     window.offplanGalleryImages = images;
 
-    // Build thumbnail row with scroll + +X Photos tile (same as listings)
-    const buildThumbs = (imagesArray) => {
-        const total = imagesArray.length;
-        let html = '';
-        if (total <= 4) {
-            imagesArray.forEach((img, index) => {
-                html += `<img src="${img}" alt="${project.projectName} - Image ${index + 1}"
-                            class="thumb ${index === 0 ? 'active' : ''}"
-                            data-index="${index}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-        } else {
-            const firstFour = imagesArray.slice(0, 4);
-            const rest = imagesArray.slice(4);
-            firstFour.forEach((img, index) => {
-                html += `<img src="${img}" alt="${project.projectName} - Image ${index + 1}"
-                            class="thumb ${index === 0 ? 'active' : ''}"
-                            data-index="${index}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-            html += `<div class="thumb more-photos" onclick="window.openGalleryModal(window.offplanGalleryImages, 0)">
-                        <span>+${rest.length} Photos</span>
-                    </div>`;
-            rest.forEach((img, index) => {
-                const globalIndex = index + 4;
-                html += `<img src="${img}" alt="${project.projectName} - Image ${globalIndex + 1}"
-                            class="thumb"
-                            data-index="${globalIndex}"
-                            style="cursor:pointer;"
-                            onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">`;
-            });
-        }
-        return html;
-    };
+    // ---- Original gallery generation (grid + +X Photos) ----
+    const isDesktop = window.innerWidth >= 768;
+    const visibleCount = isDesktop ? 4 : 3;
+    const visibleThumbs = images.slice(0, visibleCount);
+    const remainingCount = Math.max(0, images.length - visibleCount);
+
+    let thumbsHtml = visibleThumbs.map((img, index) => `
+        <img src="${img}" alt="${project.projectName} - Image ${index + 1}"
+             class="thumb ${index === 0 ? 'active' : ''}"
+             data-index="${index}"
+             style="cursor:pointer;"
+             onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+    `).join('');
+
+    if (remainingCount > 0) {
+        thumbsHtml += `
+            <div class="thumb more-photos" onclick="window.openGalleryModal(window.offplanGalleryImages, ${visibleCount})">
+                <span>+${remainingCount} Photos</span>
+            </div>
+        `;
+    }
 
     const gallery = `
         <div class="listing-detail-gallery" id="offplan-gallery">
@@ -1655,7 +1622,7 @@ function renderOffplanDetail(project) {
                 <div class="gallery-counter" id="offplan-gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="offplan-gallery-thumbs">
-                ${buildThumbs(images)}
+                ${thumbsHtml}
             </div>
         </div>
     `;
