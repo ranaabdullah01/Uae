@@ -995,9 +995,7 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // ============================================================
-    // <-- CHANGED: gallery thumbnails with scroll + +X Photos tile
-    // ============================================================
+    // Build thumbnail row with scroll + +X Photos tile
     const buildThumbs = (imagesArray) => {
         const total = imagesArray.length;
         let html = '';
@@ -1583,7 +1581,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL - UPDATED GALLERY
+// RENDER OFFPLAN DETAIL - SAME GALLERY BEHAVIOR AS LISTINGS
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1604,9 +1602,7 @@ function renderOffplanDetail(project) {
 
     window.offplanGalleryImages = images;
 
-    // ============================================================
-    // <-- CHANGED: gallery thumbnails with scroll + +X Photos tile
-    // ============================================================
+    // Build thumbnail row with scroll + +X Photos tile (same as listings)
     const buildThumbs = (imagesArray) => {
         const total = imagesArray.length;
         let html = '';
