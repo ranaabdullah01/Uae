@@ -24,6 +24,7 @@
     --whatsapp:       #25D366;
     --whatsapp-dark:  #1DA851;
 
+    /* Aliases kept for backwards compat with JS/inline styles */
     --navy: var(--emerald);
     --navy-light: var(--emerald-soft);
     --gold: var(--brass);
@@ -229,6 +230,9 @@ img { max-width: 100%; height: auto; display: block; }
     box-shadow: 0 16px 40px rgba(176, 138, 62, 0.4);
 }
 
+/* ============================================================
+   WHATSAPP BUTTON — Solid WhatsApp green, no extra design
+   ============================================================ */
 .btn-whatsapp {
     background: #25D366;
     color: #fff;
@@ -4226,116 +4230,5 @@ footer::before {
     #gallery-main,
     #offplan-gallery-main {
         cursor: zoom-in;
-    }
-}
-
-/* ============================================================
-   CAROUSEL – viewport + track (preserves card styles)
-   ============================================================ */
-
-.carousel-wrapper {
-    position: relative;
-    width: 100%;
-}
-
-.carousel-viewport {
-    overflow: hidden;
-    width: 100%;
-}
-
-.carousel-track {
-    display: flex;
-    gap: 28px;
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    will-change: transform;
-}
-
-.carousel-item {
-    flex: 0 0 calc((100% - 2 * 28px) / 3) !important;
-    max-width: calc((100% - 2 * 28px) / 3) !important;
-    display: flex !important;
-    box-sizing: border-box !important;
-}
-
-.carousel-item > * {
-    width: 100% !important;
-    flex: 1 !important;
-}
-
-/* Tablet: 2 cards */
-@media (max-width: 1023px) and (min-width: 768px) {
-    .carousel-item {
-        flex: 0 0 calc((100% - 28px) / 2) !important;
-        max-width: calc((100% - 28px) / 2) !important;
-    }
-    .carousel-track {
-        gap: 20px !important;
-    }
-}
-
-/* Mobile: 1 card */
-@media (max-width: 767px) {
-    .carousel-item {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-    .carousel-track {
-        gap: 16px !important;
-    }
-}
-
-/* Arrows – consistent with luxury design */
-.carousel-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 10;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border: 1px solid var(--line);
-    box-shadow: 0 4px 14px rgba(11, 59, 46, 0.10);
-    color: var(--emerald-deep);
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.carousel-btn:hover {
-    background: var(--brass);
-    color: var(--cream);
-    border-color: var(--brass);
-    transform: translateY(-50%) scale(1.05);
-    box-shadow: 0 8px 24px rgba(176, 138, 62, 0.30);
-}
-
-.carousel-btn.prev {
-    left: -6px;
-}
-
-.carousel-btn.next {
-    right: -6px;
-}
-
-.carousel-btn.hidden {
-    display: none;
-}
-
-@media (max-width: 767px) {
-    .carousel-btn {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-    }
-    .carousel-btn.prev {
-        left: 2px;
-    }
-    .carousel-btn.next {
-        right: 2px;
     }
 }
