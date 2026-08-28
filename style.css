@@ -4232,3 +4232,14 @@ footer::before {
         cursor: zoom-in;
     }
 }
+
+/* ============================================================
+   OVERRIDE: Reduce gap on LISTING DETAIL page only
+   ============================================================ */
+#listings.section.active .listings-hero {
+    padding-bottom: 20px; /* change this to your desired value */
+}
+
+#listings.section.active .listings-hero + .container {
+    padding-top: 10px; /* change this to your desired value */
+}
