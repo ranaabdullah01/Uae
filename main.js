@@ -817,7 +817,7 @@ function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
     
-    const featured = listings.filter(l => l.featured).slice(0, 3);
+    const featured = listings.filter(l => l.featured).slice(0, 3); // stays 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -954,7 +954,6 @@ window.viewListingPage = function(id, opts = {}) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
-// ============= FIXED: showListingList uses replaceState =============
 window.showListingList = function(opts = {}) {
     const { push = true } = opts;
     const grid = document.getElementById('listings-grid');
@@ -967,19 +966,20 @@ window.showListingList = function(opts = {}) {
     if (detail) detail.style.display = 'none';
     if (content) content.innerHTML = '';
     
-    // Use replaceState to avoid adding extra history entries (fixes back button)
-    const path = buildPath('listings');
-    if (location.pathname !== path) {
-        history.replaceState({ section: 'listings', slug: null }, '', path);
+    if (push) {
+        const path = buildPath('listings');
+        if (location.pathname !== path) {
+            history.pushState({ section: 'listings', slug: null }, '', path);
+        }
         updateCanonical(path);
     }
-    
     document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+    
     navigateTo('listings', { push: false });
 };
 
 // ============================================================
-// RENDER LISTING DETAIL (gallery matches off-plan)
+// RENDER LISTING DETAIL  (UPDATED GALLERY – MATCHES OFF-PLAN)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -993,6 +993,7 @@ function renderListingDetail(listing) {
 
     window.galleryImages = images;
 
+    // --- NEW: limited thumbnails + "+N Photos" tile, same as off-plan ---
     const isDesktop = window.innerWidth >= 768;
     const visibleCount = isDesktop ? 4 : 3;
     const visibleThumbs = images.slice(0, visibleCount);
@@ -1013,6 +1014,7 @@ function renderListingDetail(listing) {
             </div>
         `;
     }
+    // --- end of new gallery thumb generation ---
 
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
@@ -1416,13 +1418,13 @@ function initGallery() {
     initHoverZoom('gallery-main', 'gallery-main-image');
 }
 
-// ============= OFF-PLAN FUNCTIONS =============
+// ============= OFF-PLAN FUNCTIONS (with multiple images) =============
 
 function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
     
-    const featured = offplan.filter(p => p.featured).slice(0, 3);
+    const featured = offplan.filter(p => p.featured).slice(0, 3); // <-- CHANGED: was 2, now 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1889,7 +1891,7 @@ window.scheduleConsultation = function(projectName) {
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
     if (!container) return;
-    renderCommunities(communities.slice(0, 3), container);
+    renderCommunities(communities.slice(0, 3), container); // <-- CHANGED: was 4, now 3
 }
 
 function renderCommunitiesPage() {
@@ -3214,19 +3216,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
-    // ============= SIMPLIFIED popstate listener =============
-    window.addEventListener('popstate', function(e) {
+    window.addEventListener('popstate', function() {
         document.getElementById('modal').style.display = 'none';
-        const route = parseCurrentRoute();
-        const { section, slug } = route;
-
-        if (section === 'listings' && !slug) {
-            // Use the existing function that resets the grid
-            window.showListingList({ push: false });
-            return;
-        }
-
-        // For other sections, use the normal handler
         handleRoute();
     });
 
