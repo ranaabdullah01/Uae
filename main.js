@@ -817,7 +817,7 @@ function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
     
-    const featured = listings.filter(l => l.featured).slice(0, 3); // stays 3
+    const featured = listings.filter(l => l.featured).slice(0, 3);
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -954,6 +954,7 @@ window.viewListingPage = function(id, opts = {}) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
+// ============= FIXED: showListingList uses replaceState =============
 window.showListingList = function(opts = {}) {
     const { push = true } = opts;
     const grid = document.getElementById('listings-grid');
@@ -966,20 +967,19 @@ window.showListingList = function(opts = {}) {
     if (detail) detail.style.display = 'none';
     if (content) content.innerHTML = '';
     
-    if (push) {
-        const path = buildPath('listings');
-        if (location.pathname !== path) {
-            history.pushState({ section: 'listings', slug: null }, '', path);
-        }
+    // Use replaceState to avoid adding extra history entries (fixes back button)
+    const path = buildPath('listings');
+    if (location.pathname !== path) {
+        history.replaceState({ section: 'listings', slug: null }, '', path);
         updateCanonical(path);
     }
-    document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     
+    document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
     navigateTo('listings', { push: false });
 };
 
 // ============================================================
-// RENDER LISTING DETAIL  (UPDATED GALLERY – MATCHES OFF-PLAN)
+// RENDER LISTING DETAIL (gallery matches off-plan)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -993,7 +993,6 @@ function renderListingDetail(listing) {
 
     window.galleryImages = images;
 
-    // --- NEW: limited thumbnails + "+N Photos" tile, same as off-plan ---
     const isDesktop = window.innerWidth >= 768;
     const visibleCount = isDesktop ? 4 : 3;
     const visibleThumbs = images.slice(0, visibleCount);
@@ -1014,7 +1013,6 @@ function renderListingDetail(listing) {
             </div>
         `;
     }
-    // --- end of new gallery thumb generation ---
 
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
@@ -1418,13 +1416,13 @@ function initGallery() {
     initHoverZoom('gallery-main', 'gallery-main-image');
 }
 
-// ============= OFF-PLAN FUNCTIONS (with multiple images) =============
+// ============= OFF-PLAN FUNCTIONS =============
 
 function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
     
-    const featured = offplan.filter(p => p.featured).slice(0, 3); // <-- CHANGED: was 2, now 3
+    const featured = offplan.filter(p => p.featured).slice(0, 3);
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1891,7 +1889,7 @@ window.scheduleConsultation = function(projectName) {
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
     if (!container) return;
-    renderCommunities(communities.slice(0, 3), container); // <-- CHANGED: was 4, now 3
+    renderCommunities(communities.slice(0, 3), container);
 }
 
 function renderCommunitiesPage() {
@@ -3216,32 +3214,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
-    window.addEventListener('popstate', function() {
+    // ============= FIXED: popstate listener =============
+    window.addEventListener('popstate', function(e) {
         document.getElementById('modal').style.display = 'none';
-        // Force re-evaluate route and reset listing detail if needed
+        
         const route = parseCurrentRoute();
+        
+        // If we're on the listings section with no slug, show the grid
         if (route.section === 'listings' && !route.slug) {
-            // Force grid display and hide detail
             const grid = document.getElementById('listings-grid');
             const detail = document.getElementById('listing-detail');
             const filterBar = document.getElementById('filter-bar');
+            
             if (grid) grid.style.display = 'grid';
             if (detail) detail.style.display = 'none';
             if (filterBar) filterBar.style.display = 'grid';
-            // Re-apply filters to refresh listings
+            
             filterListings();
-            // Update active section class and nav
+            
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
             const listingsSection = document.getElementById('listings');
             if (listingsSection) listingsSection.classList.add('active');
+            
             document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
                 el.classList.remove('active');
                 if (el.dataset && el.dataset.section === 'listings') {
                     el.classList.add('active');
                 }
             });
+            
             document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
         } else {
+            // For other sections, use the normal route handler
             handleRoute();
         }
     });
