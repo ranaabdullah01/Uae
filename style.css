@@ -2616,29 +2616,24 @@ nav .nav-container {
 }
 
 /* ============================================================
-   UPDATED GALLERY THUMBNAILS - HORIZONTAL SCROLLABLE ROW
+   GALLERY THUMBNAILS - GRID LAYOUT (ORIGINAL OFF-PLAN BEHAVIOR)
    ============================================================ */
 .gallery-thumbs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 10px;
     padding: 16px 20px 20px;
     background: var(--white);
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    flex-wrap: nowrap;
 }
 
 .gallery-thumbs .thumb {
-    flex: 0 0 auto;
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    aspect-ratio: 1/1;
     object-fit: cover;
     border-radius: 10px;
     cursor: pointer;
     border: 3px solid transparent;
     transition: var(--transition);
-    scroll-snap-align: start;
 }
 
 .gallery-thumbs .thumb:hover {
@@ -2652,10 +2647,6 @@ nav .nav-container {
 }
 
 .gallery-thumbs .thumb.more-photos {
-    flex: 0 0 auto;
-    width: 80px;
-    height: 80px;
-    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2669,36 +2660,31 @@ nav .nav-container {
     cursor: pointer;
 }
 
-/* Responsive thumbnails */
+/* Responsive thumbnails - fewer columns on smaller screens */
 @media (max-width: 768px) {
-    .gallery-thumbs .thumb,
-    .gallery-thumbs .thumb.more-photos {
-        width: 60px;
-        height: 60px;
-        font-size: 11px;
-    }
     .gallery-thumbs {
+        grid-template-columns: repeat(4, 1fr);
         gap: 8px;
         padding: 12px 16px 16px;
+    }
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 12px;
     }
 }
 
 @media (max-width: 480px) {
-    .gallery-thumbs .thumb,
-    .gallery-thumbs .thumb.more-photos {
-        width: 50px;
-        height: 50px;
-        font-size: 10px;
-        border-radius: 8px;
-    }
     .gallery-thumbs {
+        grid-template-columns: repeat(3, 1fr);
         gap: 6px;
         padding: 10px 12px 14px;
+    }
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 11px;
     }
 }
 
 /* ============================================================
-   END UPDATED GALLERY THUMBNAILS
+   END GALLERY THUMBNAILS
    ============================================================ */
 
 .property-details-card .listing-detail-details-grid {
@@ -3457,12 +3443,6 @@ nav .nav-container {
         padding: 12px 16px 16px;
     }
 
-    .gallery-thumbs .thumb,
-    .gallery-thumbs .thumb.more-photos {
-        width: 70px;
-        height: 70px;
-    }
-
     .trust-badges-inner {
         grid-template-columns: repeat(3, 1fr);
         gap: 16px 24px;
@@ -3546,15 +3526,6 @@ nav .nav-container {
     .gallery-thumbs {
         gap: 6px;
         padding: 10px 12px 14px;
-    }
-
-    .gallery-thumbs .thumb,
-    .gallery-thumbs .thumb.more-photos {
-        width: 60px;
-        height: 60px;
-        border-radius: 8px;
-        border-width: 2px;
-        font-size: 11px;
     }
 
     .listing-detail-title {
@@ -3694,13 +3665,6 @@ nav .nav-container {
     .gallery-thumbs {
         gap: 4px;
         padding: 8px 10px 12px;
-    }
-
-    .gallery-thumbs .thumb,
-    .gallery-thumbs .thumb.more-photos {
-        width: 50px;
-        height: 50px;
-        font-size: 10px;
     }
 
     .listing-detail-title {
