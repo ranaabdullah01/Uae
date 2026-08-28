@@ -3983,11 +3983,6 @@ footer::before {
     100% { opacity: 0; transform: scale(1.05); }
 }
 
-#home .hero-content {
-    position: relative !important;
-    z-index: 3 !important;
-    width: 100% !important;
-}
 #home .hero-title,
 #home .hero-subtitle { color: var(--cream) !important; }
 #home .hero-title .gold-text { color: var(--brass-light) !important; }
@@ -4234,12 +4229,8 @@ footer::before {
 }
 
 /* ============================================================
-   OVERRIDE: Reduce gap on LISTING DETAIL page only
+   FIX: Match Property Detail spacing to Off‑Plan Detail
    ============================================================ */
-#listings.section.active .listings-hero {
-    padding-bottom: 20px; /* change this to your desired value */
-}
-
-#listings.section.active .listings-hero + .container {
-    padding-top: 10px; /* change this to your desired value */
+#listing-detail {
+    padding-top: 0 !important;
 }
