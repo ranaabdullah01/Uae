@@ -2981,8 +2981,6 @@ function handleRoute() {
         if (stored) {
             currentAgentSlug = stored;
         } else {
-            // Fetch default agent asynchronously (handled in loadAllData)
-            // For now, set a temporary default
             currentAgentSlug = 'ahmed-khan';
             localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
         }
@@ -2998,138 +2996,33 @@ function handleRoute() {
     showSection(section, slug);
 }
 
-// ============= SHOW SECTION =============
+// ============= SHOW SECTION (simplified) =============
 
 function showSection(section, slug) {
+    // Handle 404 for community or specific resources if needed
     if (section === 'community' && slug) {
         const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
-        if (community) {
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById('communities')?.classList.add('active');
-            
-            document.getElementById('communities-grid').style.display = 'none';
-            document.getElementById('community-detail').style.display = 'block';
-            document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
-            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset && el.dataset.section === 'communities') {
-                    el.classList.add('active');
-                }
-            });
-            return;
-        } else {
+        if (!community) {
             showNotFound('Community');
             return;
         }
-    } else if (section === 'community') {
-        document.getElementById('communities-grid').style.display = 'grid';
-        document.getElementById('community-detail').style.display = 'none';
-        renderCommunitiesPage();
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById('communities')?.classList.add('active');
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === 'communities') {
-                el.classList.add('active');
-            }
-        });
-        return;
     }
-
     if (section === 'listings' && slug) {
         const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-        if (listing) {
-            document.getElementById('listings-grid').style.display = 'none';
-            document.getElementById('listing-detail').style.display = 'block';
-            document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            document.getElementById('filter-bar').style.display = 'none';
-            setTimeout(initGallery, 100);
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById('listings')?.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset && el.dataset.section === 'listings') {
-                    el.classList.add('active');
-                }
-            });
-            return;
-        } else {
+        if (!listing) {
             showNotFound('Listing');
             return;
         }
-    } else if (section === 'listings') {
-        document.getElementById('listings-grid').style.display = 'grid';
-        document.getElementById('listing-detail').style.display = 'none';
-        document.getElementById('filter-bar').style.display = 'grid';
-        filterListings();
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById('listings')?.classList.add('active');
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === 'listings') {
-                el.classList.add('active');
-            }
-        });
-        applyCommunityFilterFromURL();
-        return;
     }
-
     if (section === 'offplan' && slug) {
         const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
-        if (project) {
-            document.getElementById('offplan-grid').style.display = 'none';
-            document.getElementById('offplan-detail').style.display = 'block';
-            document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-            document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            setTimeout(initOffplanGallery, 100);
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById('offplan')?.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset && el.dataset.section === 'offplan') {
-                    el.classList.add('active');
-                }
-            });
-            return;
-        } else {
+        if (!project) {
             showNotFound('Off-Plan Project');
             return;
         }
-    } else if (section === 'offplan') {
-        document.getElementById('offplan-grid').style.display = 'grid';
-        document.getElementById('offplan-detail').style.display = 'none';
-        renderOffplanPage();
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById('offplan')?.classList.add('active');
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === 'offplan') {
-                el.classList.add('active');
-            }
-        });
-        return;
     }
 
-    if (section === 'blog' && slug) {
-        window.viewBlogPost(slug, { push: false });
-        return;
-    } else if (section === 'blog') {
-        document.getElementById('blog-grid').style.display = 'grid';
-        document.getElementById('blog-detail').style.display = 'none';
-        loadBlog();
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.getElementById('blog')?.classList.add('active');
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === 'blog') {
-                el.classList.add('active');
-            }
-        });
-        return;
-    }
-
+    // Delegate all rendering to navigateTo with push: false
     navigateTo(section, { push: false, slug });
 }
 
