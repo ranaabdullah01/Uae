@@ -2458,14 +2458,15 @@ nav .nav-container {
    LISTING DETAIL PAGE - REFINED 2-COLUMN LAYOUT
    ============================================================ */
 
+/* Both detail containers now have NO top padding, 
+   so the distance from hero to button is 70px (hero 40px + container 30px) */
 #listing-detail {
-    padding: 20px 0 40px;
+    padding: 0 0 40px;
     background: var(--paper);
 }
 
-/* ===== FIX: Off-Plan detail now matches Listing detail padding ===== */
 #offplan-detail {
-    padding: 20px 0 40px;
+    padding: 0 0 40px;
     background: var(--paper);
 }
 
@@ -3462,7 +3463,7 @@ nav .nav-container {
 
 @media (max-width: 767px) {
     #listing-detail {
-        padding: 16px 0 30px;
+        padding: 0 0 30px;
     }
     #listing-detail .container {
         padding: 0 16px;
