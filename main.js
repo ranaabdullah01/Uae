@@ -979,7 +979,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL  (UPDATED GALLERY – MATCHES OFF-PLAN)
+// RENDER LISTING DETAIL
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -992,29 +992,6 @@ function renderListingDetail(listing) {
     }
 
     window.galleryImages = images;
-
-    // --- NEW: limited thumbnails + "+N Photos" tile, same as off-plan ---
-    const isDesktop = window.innerWidth >= 768;
-    const visibleCount = isDesktop ? 4 : 3;
-    const visibleThumbs = images.slice(0, visibleCount);
-    const remainingCount = Math.max(0, images.length - visibleCount);
-
-    let thumbsHtml = visibleThumbs.map((img, index) => `
-        <img src="${img}" alt="${listing.title} - Image ${index + 1}"
-             class="thumb ${index === 0 ? 'active' : ''}"
-             data-index="${index}"
-             style="cursor:pointer;"
-             onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
-    `).join('');
-
-    if (remainingCount > 0) {
-        thumbsHtml += `
-            <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, ${visibleCount})">
-                <span>+${remainingCount} Photos</span>
-            </div>
-        `;
-    }
-    // --- end of new gallery thumb generation ---
 
     const features = listing.features && typeof listing.features === 'string'
         ? listing.features.split(',').map(f => f.trim()).filter(f => f)
@@ -1039,7 +1016,18 @@ function renderListingDetail(listing) {
                 <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="gallery-thumbs">
-                ${thumbsHtml}
+                ${images.map((img, index) => `
+                    <img src="${img}" alt="${listing.title} - Image ${index + 1}"
+                         class="thumb ${index === 0 ? 'active' : ''}"
+                         data-index="${index}"
+                         style="cursor:pointer;"
+                         onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+                `).join('')}
+                ${images.length > 4 ? `
+                    <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, 0)">
+                        <span>+${images.length - 4} Photos</span>
+                    </div>
+                ` : ''}
             </div>
         </div>
     `;
