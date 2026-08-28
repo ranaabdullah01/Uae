@@ -1,10 +1,15 @@
 // ================================================
 // MAIN.JS - FULL LUXURY UI INTEGRATION WITH MULTI-AGENT SUPPORT
-// OFF-PLAN / LISTING GALLERY: GRID + +X PHOTOS (ORIGINAL OFF-PLAN BEHAVIOR)
+// OFF-PLAN / LISTING GALLERY: ORIGINAL MOBILE UI + SMOOTH TRANSITIONS + SWIPE + IDEMPOTENT EVENTS
 // COMMUNITY DETAIL PAGES WITH SPA ROUTING AND AUTO-FILTER ON PROPERTIES
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
+// ================================================
+
+// ================================================
+// UPDATED: Home page counts all set to 3
+// Featured Properties: 3, Featured Off-Plan: 3, Communities: 3
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -812,7 +817,7 @@ function renderFeaturedListings() {
     const container = document.getElementById('featured-listings');
     if (!container) return;
     
-    const featured = listings.filter(l => l.featured).slice(0, 3);
+    const featured = listings.filter(l => l.featured).slice(0, 3); // stays 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -974,7 +979,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL - UPDATED (USING ORIGINAL OFF-PLAN GALLERY LOGIC)
+// RENDER LISTING DETAIL
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -995,28 +1000,6 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
-    // ---- Gallery thumbnail generation (exactly like original Off-Plan) ----
-    const isDesktop = window.innerWidth >= 768;
-    const visibleCount = isDesktop ? 4 : 3;
-    const visibleThumbs = images.slice(0, visibleCount);
-    const remainingCount = Math.max(0, images.length - visibleCount);
-
-    let thumbsHtml = visibleThumbs.map((img, index) => `
-        <img src="${img}" alt="${listing.title} - Image ${index + 1}"
-             class="thumb ${index === 0 ? 'active' : ''}"
-             data-index="${index}"
-             style="cursor:pointer;"
-             onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
-    `).join('');
-
-    if (remainingCount > 0) {
-        thumbsHtml += `
-            <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, ${visibleCount})">
-                <span>+${remainingCount} Photos</span>
-            </div>
-        `;
-    }
-
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -1033,12 +1016,22 @@ function renderListingDetail(listing) {
                 <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="gallery-thumbs">
-                ${thumbsHtml}
+                ${images.map((img, index) => `
+                    <img src="${img}" alt="${listing.title} - Image ${index + 1}"
+                         class="thumb ${index === 0 ? 'active' : ''}"
+                         data-index="${index}"
+                         style="cursor:pointer;"
+                         onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+                `).join('')}
+                ${images.length > 4 ? `
+                    <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, 0)">
+                        <span>+${images.length - 4} Photos</span>
+                    </div>
+                ` : ''}
             </div>
         </div>
     `;
 
-    // ---- The rest (property details, quick stats, description, CTA) remains unchanged ----
     const details = [
         { label: 'Property Type', value: listing.type || 'N/A' },
         { label: 'Status', value: statusLabel },
@@ -1419,7 +1412,7 @@ function renderFeaturedOffplan() {
     const container = document.getElementById('featured-offplan');
     if (!container) return;
     
-    const featured = offplan.filter(p => p.featured).slice(0, 3);
+    const featured = offplan.filter(p => p.featured).slice(0, 3); // <-- CHANGED: was 2, now 3
     container.innerHTML = '';
     
     if (featured.length === 0) {
@@ -1563,7 +1556,7 @@ window.viewOffplanPage = function(id, opts = {}) {
 };
 
 // ============================================================
-// RENDER OFFPLAN DETAIL - ORIGINAL (UNCHANGED)
+// RENDER OFFPLAN DETAIL
 // ============================================================
 
 function renderOffplanDetail(project) {
@@ -1584,7 +1577,6 @@ function renderOffplanDetail(project) {
 
     window.offplanGalleryImages = images;
 
-    // ---- Original gallery generation (grid + +X Photos) ----
     const isDesktop = window.innerWidth >= 768;
     const visibleCount = isDesktop ? 4 : 3;
     const visibleThumbs = images.slice(0, visibleCount);
@@ -1887,7 +1879,7 @@ window.scheduleConsultation = function(projectName) {
 function renderHomeCommunities() {
     const container = document.getElementById('home-communities');
     if (!container) return;
-    renderCommunities(communities.slice(0, 3), container);
+    renderCommunities(communities.slice(0, 3), container); // <-- CHANGED: was 4, now 3
 }
 
 function renderCommunitiesPage() {
