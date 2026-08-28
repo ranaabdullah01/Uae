@@ -2965,11 +2965,14 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// ============= ROUTING HANDLER =============
+// ============================================================
+// HANDLE ROUTE — fixed browser back button issue
+// ============================================================
 
 function handleRoute() {
     const { section, slug, agentSlug } = parseCurrentRoute();
 
+    // Set agent slug from route or localStorage, but do NOT replace the URL
     if (agentSlug) {
         currentAgentSlug = agentSlug;
         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
@@ -2977,42 +2980,15 @@ function handleRoute() {
         const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
         if (stored) {
             currentAgentSlug = stored;
-            const targetPath = buildPath(section, slug);
-            if (location.pathname !== targetPath) {
-                history.replaceState({ section, slug, agentSlug: stored }, '', targetPath);
-                handleRoute();
-                return;
-            }
         } else {
-            fetch(`${API_BASE}/api/agents`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success && data.agents.length > 0) {
-                        const defaultSlug = data.agents[0].slug;
-                        currentAgentSlug = defaultSlug;
-                        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, defaultSlug);
-                        const targetPath = buildPath(section, slug);
-                        history.replaceState({ section, slug, agentSlug: defaultSlug }, '', targetPath);
-                        handleRoute();
-                    } else {
-                        currentAgentSlug = 'ahmed-khan';
-                        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
-                        const targetPath = buildPath(section, slug);
-                        history.replaceState({ section, slug, agentSlug: currentAgentSlug }, '', targetPath);
-                        handleRoute();
-                    }
-                })
-                .catch(() => {
-                    currentAgentSlug = 'ahmed-khan';
-                    localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
-                    const targetPath = buildPath(section, slug);
-                    history.replaceState({ section, slug, agentSlug: currentAgentSlug }, '', targetPath);
-                    handleRoute();
-                });
-            return;
+            // Fetch default agent asynchronously (handled in loadAllData)
+            // For now, set a temporary default
+            currentAgentSlug = 'ahmed-khan';
+            localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, currentAgentSlug);
         }
     }
 
+    // Ensure data is loaded before showing the section
     if (listings.length === 0 || communities.length === 0) {
         loadAllData().then(() => {
             showSection(section, slug);
@@ -3021,6 +2997,8 @@ function handleRoute() {
     }
     showSection(section, slug);
 }
+
+// ============= SHOW SECTION =============
 
 function showSection(section, slug) {
     if (section === 'community' && slug) {
