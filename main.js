@@ -3214,154 +3214,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.getElementById('modal-cancel')?.addEventListener('click', () => window.closeModal());
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
-    // ============= FIXED: robust popstate listener =============
+    // ============= SIMPLIFIED popstate listener =============
     window.addEventListener('popstate', function(e) {
         document.getElementById('modal').style.display = 'none';
-        
         const route = parseCurrentRoute();
         const { section, slug } = route;
-        
-        // Reset all sections
-        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-            el.classList.remove('active');
-        });
-        
-        // Show the target section
-        if (section === 'home') {
-            const homeSection = document.getElementById('home');
-            if (homeSection) homeSection.classList.add('active');
-            document.title = currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai';
-            renderFeaturedListings();
-            renderFeaturedOffplan();
-            renderHomeCommunities();
-        } 
-        else if (section === 'listings') {
-            const filterBar = document.getElementById('filter-bar');
-            const grid = document.getElementById('listings-grid');
-            const detail = document.getElementById('listing-detail');
-            
-            if (slug) {
-                const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-                if (listing) {
-                    if (grid) grid.style.display = 'none';
-                    if (filterBar) filterBar.style.display = 'none';
-                    if (detail) {
-                        detail.style.display = 'block';
-                        document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                        setTimeout(initGallery, 100);
-                    }
-                    document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                } else {
-                    if (grid) grid.style.display = 'grid';
-                    if (filterBar) filterBar.style.display = 'grid';
-                    if (detail) detail.style.display = 'none';
-                    filterListings();
-                    document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                }
-            } else {
-                if (grid) grid.style.display = 'grid';
-                if (filterBar) filterBar.style.display = 'grid';
-                if (detail) detail.style.display = 'none';
-                filterListings();
-                document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            }
-            
-            const listingsSection = document.getElementById('listings');
-            if (listingsSection) listingsSection.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                if (el.dataset && el.dataset.section === 'listings') el.classList.add('active');
-            });
+
+        if (section === 'listings' && !slug) {
+            // Use the existing function that resets the grid
+            window.showListingList({ push: false });
+            return;
         }
-        else if (section === 'offplan') {
-            const grid = document.getElementById('offplan-grid');
-            const detail = document.getElementById('offplan-detail');
-            if (slug) {
-                const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
-                if (project) {
-                    if (grid) grid.style.display = 'none';
-                    if (detail) {
-                        detail.style.display = 'block';
-                        document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-                        setTimeout(initOffplanGallery, 100);
-                    }
-                    document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                } else {
-                    if (grid) grid.style.display = 'grid';
-                    if (detail) detail.style.display = 'none';
-                    renderOffplanPage();
-                    document.title = 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                }
-            } else {
-                if (grid) grid.style.display = 'grid';
-                if (detail) detail.style.display = 'none';
-                renderOffplanPage();
-                document.title = 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            }
-            const offplanSection = document.getElementById('offplan');
-            if (offplanSection) offplanSection.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                if (el.dataset && el.dataset.section === 'offplan') el.classList.add('active');
-            });
-        }
-        else if (section === 'communities' || section === 'community') {
-            const grid = document.getElementById('communities-grid');
-            const detail = document.getElementById('community-detail');
-            if (slug) {
-                const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
-                if (community) {
-                    if (grid) grid.style.display = 'none';
-                    if (detail) {
-                        detail.style.display = 'block';
-                        document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
-                        const backButton = document.querySelector('.community-detail-back-button');
-                        if (backButton) {
-                            backButton.addEventListener('click', () => window.showCommunityList({ push: true }));
-                        }
-                    }
-                    document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                } else {
-                    if (grid) grid.style.display = 'grid';
-                    if (detail) detail.style.display = 'none';
-                    renderCommunitiesPage();
-                    document.title = 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-                }
-            } else {
-                if (grid) grid.style.display = 'grid';
-                if (detail) detail.style.display = 'none';
-                renderCommunitiesPage();
-                document.title = 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            }
-            const communitiesSection = document.getElementById('communities');
-            if (communitiesSection) communitiesSection.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                if (el.dataset && el.dataset.section === 'communities') el.classList.add('active');
-            });
-        }
-        else if (section === 'blog') {
-            if (slug) {
-                window.viewBlogPost(slug, { push: false });
-            } else {
-                document.getElementById('blog-grid').style.display = 'grid';
-                document.getElementById('blog-detail').style.display = 'none';
-                loadBlog();
-                document.title = 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-            }
-            const blogSection = document.getElementById('blog');
-            if (blogSection) blogSection.classList.add('active');
-            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
-                if (el.dataset && el.dataset.section === 'blog') el.classList.add('active');
-            });
-        }
-        else {
-            // For other sections (about, contact, valuation, goldenvisa)
-            navigateTo(section, { push: false, slug });
-        }
-        
-        // Update canonical and scroll to top
-        const path = location.pathname + location.search;
-        updateCanonical(path);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // For other sections, use the normal handler
+        handleRoute();
     });
 
     const filterBar = document.getElementById('filter-bar');
