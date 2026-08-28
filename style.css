@@ -2463,6 +2463,12 @@ nav .nav-container {
     background: var(--paper);
 }
 
+/* ===== FIX: Off-Plan detail now matches Listing detail padding ===== */
+#offplan-detail {
+    padding: 20px 0 40px;
+    background: var(--paper);
+}
+
 #listing-detail .container {
     max-width: 1360px;
     padding: 0 32px;
