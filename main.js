@@ -3218,7 +3218,32 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     window.addEventListener('popstate', function() {
         document.getElementById('modal').style.display = 'none';
-        handleRoute();
+        // Force re-evaluate route and reset listing detail if needed
+        const route = parseCurrentRoute();
+        if (route.section === 'listings' && !route.slug) {
+            // Force grid display and hide detail
+            const grid = document.getElementById('listings-grid');
+            const detail = document.getElementById('listing-detail');
+            const filterBar = document.getElementById('filter-bar');
+            if (grid) grid.style.display = 'grid';
+            if (detail) detail.style.display = 'none';
+            if (filterBar) filterBar.style.display = 'grid';
+            // Re-apply filters to refresh listings
+            filterListings();
+            // Update active section class and nav
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            const listingsSection = document.getElementById('listings');
+            if (listingsSection) listingsSection.classList.add('active');
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'listings') {
+                    el.classList.add('active');
+                }
+            });
+            document.title = 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+        } else {
+            handleRoute();
+        }
     });
 
     const filterBar = document.getElementById('filter-bar');
