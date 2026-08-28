@@ -2637,10 +2637,6 @@ function formatDate(date) {
 function navigateTo(sectionId, opts = {}) {
     const { push = true, slug = null, query = null } = opts;
 
-    // This function is used for user‑initiated navigation (clicks).
-    // It updates the URL and the UI. For back/forward, we use showSection directly.
-    // We'll keep it as is but we'll ensure it doesn't cause double rendering.
-
     const currentRoute = parseCurrentRoute();
     if ((sectionId === 'listings' || sectionId === 'offplan') && 
         currentRoute.section === sectionId && currentRoute.slug) {
@@ -2711,10 +2707,185 @@ function navigateTo(sectionId, opts = {}) {
         return;
     }
 
-    // For all other navigation, we rely on the render function.
-    // We'll call showSection to do the actual rendering, but we also push state if needed.
-    // However, we want to avoid double rendering. So we'll just call showSection with push false.
-    // But if push is true, we update the URL first, then call showSection.
+    document.querySelectorAll('.section').forEach(el => {
+        el.classList.remove('active');
+    });
+    
+    if (sectionId === 'community' && slug) {
+        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+        if (community) {
+            const communitiesSection = document.getElementById('communities');
+            if (communitiesSection) communitiesSection.classList.add('active');
+            
+            document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+                el.classList.remove('active');
+                if (el.dataset && el.dataset.section === 'communities') {
+                    el.classList.add('active');
+                }
+            });
+            
+            const grid = document.getElementById('communities-grid');
+            const detail = document.getElementById('community-detail');
+            if (grid) grid.style.display = 'none';
+            if (detail) {
+                detail.style.display = 'block';
+                const detailContent = document.getElementById('community-detail-content');
+                detailContent.innerHTML = renderCommunityDetail(community);
+                const backButton = detailContent.querySelector('.community-detail-back-button');
+                if (backButton) {
+                    backButton.addEventListener('click', () => window.showCommunityList({ push: true }));
+                }
+            }
+            
+            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+            
+            if (push) {
+                const path = buildPath('community', community.slug || community.id);
+                if (location.pathname !== path) {
+                    history.pushState({ section: 'community', slug: community.slug || community.id, agentSlug: currentAgentSlug || null }, '', path);
+                    updateCanonical(path);
+                }
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+    }
+    
+    const targetSection = document.getElementById(sectionId);
+    if (targetSection) {
+        targetSection.classList.add('active');
+    } else if (sectionId === 'home') {
+        const homeSection = document.getElementById('home');
+        if (homeSection) homeSection.classList.add('active');
+    }
+
+    if (sectionId !== 'community') {
+        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+            el.classList.remove('active');
+            if (el.dataset && el.dataset.section === sectionId) {
+                el.classList.add('active');
+            }
+            if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+                el.classList.add('active');
+            }
+        });
+    }
+
+    document.querySelectorAll('.floating-nav a').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+    });
+
+    currentSection = sectionId;
+
+    if (sectionId === 'blog') {
+        const grid = document.getElementById('blog-grid');
+        const detail = document.getElementById('blog-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        currentBlogPost = null;
+    }
+
+    if (sectionId === 'listings') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        const filterBar = document.getElementById('filter-bar');
+        
+        if (routeSlug && section === 'listings') {
+            const listing = listings.find(l => l.id == routeSlug || String(l.id) === String(routeSlug));
+            if (listing) {
+                const grid = document.getElementById('listings-grid');
+                const detail = document.getElementById('listing-detail');
+                if (grid) grid.style.display = 'none';
+                if (filterBar) filterBar.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
+                    setTimeout(initGallery, 100);
+                }
+                document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        const grid = document.getElementById('listings-grid');
+        const detail = document.getElementById('listing-detail');
+        if (grid) grid.style.display = 'grid';
+        if (filterBar) filterBar.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+    }
+
+    if (sectionId === 'offplan') {
+        const { section, slug: routeSlug } = parseCurrentRoute();
+        if (routeSlug && section === 'offplan') {
+            const project = offplan.find(p => p.id == routeSlug || String(p.id) === String(routeSlug));
+            if (project) {
+                const grid = document.getElementById('offplan-grid');
+                const detail = document.getElementById('offplan-detail');
+                if (grid) grid.style.display = 'none';
+                if (detail) {
+                    detail.style.display = 'block';
+                    document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
+                    setTimeout(initOffplanGallery, 100);
+                }
+                document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
+                return;
+            }
+        }
+        const grid = document.getElementById('offplan-grid');
+        const detail = document.getElementById('offplan-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderOffplanPage();
+    }
+
+    if (sectionId === 'communities') {
+        const grid = document.getElementById('communities-grid');
+        const detail = document.getElementById('community-detail');
+        if (grid) grid.style.display = 'grid';
+        if (detail) detail.style.display = 'none';
+        renderCommunitiesPage();
+    }
+
+    const sectionNames = {
+        home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+        listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
+    };
+    document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
+
+    if (sectionId === 'listings') {
+        populateCommunityFilter();
+        filterListings();
+        if (query && query.community) {
+            const communitySelect = document.getElementById('filter-community-listings');
+            if (communitySelect && communities.some(c => c.name === query.community)) {
+                communitySelect.value = query.community;
+                filterListings();
+            }
+        }
+    } else if (sectionId === 'valuation') {
+        populateCommunityFilter();
+    } else if (sectionId === 'home') {
+        renderFeaturedListings();
+        renderFeaturedOffplan();
+        renderHomeCommunities();
+    } else if (sectionId === 'offplan') {
+        renderOffplanPage();
+    } else if (sectionId === 'communities') {
+        renderCommunitiesPage();
+    } else if (sectionId === 'about') {
+        renderAboutPage();
+    } else if (sectionId === 'blog') {
+        loadBlog();
+    }
 
     if (push) {
         let path;
@@ -2729,12 +2900,16 @@ function navigateTo(sectionId, opts = {}) {
         }
         if (location.pathname + location.search !== path) {
             history.pushState({ section: sectionId, slug: slug || null, agentSlug: currentAgentSlug || null, query: query || null }, '', path);
-            updateCanonical(path);
         }
+        updateCanonical(path);
     }
 
-    // Now call showSection to update the UI
-    showSection(sectionId, slug);
+    const navMenu = document.getElementById('nav-menu');
+    const hamburger = document.getElementById('hamburger');
+    if (navMenu) navMenu.classList.remove('active');
+    if (hamburger) hamburger.classList.remove('active');
+    
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ============= MOBILE MENU =============
@@ -2791,13 +2966,25 @@ document.addEventListener('keydown', function(e) {
 });
 
 // ============================================================
-// HANDLE ROUTE — for popstate events
+// HANDLE ROUTE — forceful, dedicated re-render on back/forward
 // ============================================================
+//
+// IMPORTANT: popstate-driven navigation must NOT be routed through
+// navigateTo()'s top "fast path" branch (used for click-driven same-section
+// transitions). That branch keys off whatever slug happens to currently be
+// in location.pathname, which after a popstate event is ALREADY the new
+// (destination) URL — so it was incorrectly matching "arriving at a detail
+// URL" and forcing the list/grid view instead of the detail view. Instead,
+// we parse the URL ourselves and dispatch straight to the dedicated,
+// forceful render functions (viewListingPage, renderListingDetail, etc.),
+// each called with { push: false } so we never touch history ourselves.
 
 function handleRoute() {
     const { section, slug, agentSlug } = parseCurrentRoute();
 
-    // Set agent slug from route or localStorage, but do NOT replace the URL
+    // Set agent slug from the URL or localStorage, but NEVER force it back
+    // into the URL via history.replaceState — that would corrupt the
+    // history stack that back/forward relies on.
     if (agentSlug) {
         currentAgentSlug = agentSlug;
         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
@@ -2811,219 +2998,91 @@ function handleRoute() {
         }
     }
 
-    // Ensure data is loaded before showing the section
-    if (listings.length === 0 || communities.length === 0) {
-        loadAllData().then(() => {
-            showSection(section, slug);
-        });
+    // Ensure core data is loaded before rendering the section.
+    const needsCoreData = listings.length === 0 || communities.length === 0 || offplan.length === 0;
+    // Blog posts are loaded lazily (only when the blog section is first
+    // visited), so if we're routing straight to a blog URL on a hard
+    // load/refresh, make sure blogPosts is populated too.
+    const needsBlogData = section === 'blog' && blogPosts.length === 0;
+
+    if (needsCoreData || needsBlogData) {
+        const dataPromise = needsCoreData ? loadAllData() : Promise.resolve();
+        dataPromise
+            .then(() => (needsBlogData ? loadBlog() : Promise.resolve()))
+            .then(() => showSection(section, slug));
         return;
     }
     showSection(section, slug);
 }
 
-// ============= SHOW SECTION — main rendering function =============
+// ============= SHOW SECTION (forceful dispatch, no diffing) =============
 
 function showSection(section, slug) {
-    // Hide all sections
-    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    const modal = document.getElementById('modal');
+    if (modal) modal.style.display = 'none';
 
-    // Reset detail containers
-    const listingGrid = document.getElementById('listings-grid');
-    const listingDetail = document.getElementById('listing-detail');
-    const offplanGrid = document.getElementById('offplan-grid');
-    const offplanDetail = document.getElementById('offplan-detail');
-    const communitiesGrid = document.getElementById('communities-grid');
-    const communityDetail = document.getElementById('community-detail');
-    const blogGrid = document.getElementById('blog-grid');
-    const blogDetail = document.getElementById('blog-detail');
-    const filterBar = document.getElementById('filter-bar');
-
-    // Default: hide all detail containers, show grids
-    if (listingGrid) listingGrid.style.display = 'grid';
-    if (listingDetail) listingDetail.style.display = 'none';
-    if (offplanGrid) offplanGrid.style.display = 'grid';
-    if (offplanDetail) offplanDetail.style.display = 'none';
-    if (communitiesGrid) communitiesGrid.style.display = 'grid';
-    if (communityDetail) communityDetail.style.display = 'none';
-    if (blogGrid) blogGrid.style.display = 'grid';
-    if (blogDetail) blogDetail.style.display = 'none';
-    if (filterBar) filterBar.style.display = 'grid';
-
-    // Handle special cases (details)
-    if (section === 'listings' && slug) {
-        const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
-        if (listing) {
-            if (listingGrid) listingGrid.style.display = 'none';
-            if (filterBar) filterBar.style.display = 'none';
-            if (listingDetail) {
-                listingDetail.style.display = 'block';
-                document.getElementById('listing-detail-content').innerHTML = renderListingDetail(listing);
-                setTimeout(initGallery, 100);
-            }
-            document.title = listing.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-        } else {
-            showNotFound('Listing');
-            return;
-        }
-    } else if (section === 'offplan' && slug) {
-        const project = offplan.find(p => p.id == slug || String(p.id) === String(slug));
-        if (project) {
-            if (offplanGrid) offplanGrid.style.display = 'none';
-            if (offplanDetail) {
-                offplanDetail.style.display = 'block';
-                document.getElementById('offplan-detail-content').innerHTML = renderOffplanDetail(project);
-                setTimeout(initOffplanGallery, 100);
-            }
-            document.title = project.projectName + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-        } else {
-            showNotFound('Off-Plan Project');
-            return;
-        }
-    } else if (section === 'community' && slug) {
-        const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
-        if (community) {
-            if (communitiesGrid) communitiesGrid.style.display = 'none';
-            if (communityDetail) {
-                communityDetail.style.display = 'block';
-                document.getElementById('community-detail-content').innerHTML = renderCommunityDetail(community);
-                // Reattach back button listener
-                const backBtn = document.querySelector('#community-detail-content .community-detail-back-button');
-                if (backBtn) {
-                    backBtn.addEventListener('click', () => window.showCommunityList({ push: true }));
+    switch (section) {
+        case 'listings': {
+            if (slug) {
+                const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+                if (!listing) {
+                    showNotFound('Listing');
+                    return;
                 }
+                window.viewListingPage(listing.id, { push: false });
+            } else {
+                window.showListingList({ push: false });
             }
-            document.title = community.name + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-        } else {
-            showNotFound('Community');
             return;
         }
-    } else if (section === 'blog' && slug) {
-        const post = blogPosts.find(p => p.id == slug || p.slug === slug);
-        if (post) {
-            if (blogGrid) blogGrid.style.display = 'none';
-            if (blogDetail) {
-                blogDetail.style.display = 'block';
-                const content = document.getElementById('blog-detail-content');
-                const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
-                content.innerHTML = `
-                    <div class="blog-detail">
-                        ${post.featured_image ? `<div class="blog-detail-image"><img src="${post.featured_image}" alt="${post.title}"></div>` : ''}
-                        <div class="blog-detail-header">
-                            <div class="blog-detail-meta">
-                                <span class="blog-category">${post.category || 'Uncategorized'}</span>
-                                <span class="blog-date">${formatDate(post.published_at || post.created_at)}</span>
-                                <span class="blog-author">By ${post.author || 'Admin'}</span>
-                                <span class="blog-views">👁️ ${post.views || 0} views</span>
-                            </div>
-                            <h1 class="blog-detail-title">${post.title}</h1>
-                            ${post.excerpt ? `<p class="blog-detail-excerpt">${post.excerpt}</p>` : ''}
-                        </div>
-                        <div class="blog-detail-body">
-                            ${post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}
-                        </div>
-                        ${tags.length > 0 ? `
-                            <div class="blog-detail-tags">
-                                <h4>Tags</h4>
-                                <div class="blog-tags">
-                                    ${tags.map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
-                        <div class="blog-detail-share">
-                            <h4>Share this post</h4>
-                            <div class="share-buttons">
-                                <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(post.title)}&url=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn twitter"><i class="fab fa-twitter"></i></a>
-                                <a href="https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}" target="_blank" class="share-btn facebook"><i class="fab fa-facebook-f"></i></a>
-                                <a href="https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(post.title)}" target="_blank" class="share-btn linkedin"><i class="fab fa-linkedin-in"></i></a>
-                                <a href="https://wa.me/?text=${encodeURIComponent(post.title + ' ' + window.location.href)}" target="_blank" class="share-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
-            document.title = post.title + ' | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio');
-        } else {
-            showNotFound('Blog Post');
-            return;
-        }
-    } else {
-        // Regular section (home, about, contact, etc.)
-        const targetSection = document.getElementById(section);
-        if (targetSection) {
-            targetSection.classList.add('active');
-        } else if (section === 'home') {
-            document.getElementById('home')?.classList.add('active');
-        }
-
-        // Set page title
-        const sectionNames = {
-            home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
-            listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
-            blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
-        };
-        document.title = sectionNames[section] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
-
-        // Show filter bar only for listings
-        if (section === 'listings') {
-            if (filterBar) filterBar.style.display = 'grid';
-            filterListings();
-            populateCommunityFilter();
-            // Apply any query param filters
-            const queryParams = new URLSearchParams(location.search);
-            const communityParam = queryParams.get('community');
-            if (communityParam) {
-                const communitySelect = document.getElementById('filter-community-listings');
-                if (communitySelect && communities.some(c => c.name === communityParam)) {
-                    communitySelect.value = communityParam;
-                    filterListings();
+        case 'offplan': {
+            if (slug) {
+                const project = offplan.find(p => p.id == slug || String(p.id) === String(slug) || p.slug === slug);
+                if (!project) {
+                    showNotFound('Off-Plan Project');
+                    return;
                 }
+                window.viewOffplanPage(project.id, { push: false });
+            } else {
+                window.showOffplanList({ push: false });
             }
-        } else if (section === 'offplan') {
-            renderOffplanPage();
-        } else if (section === 'communities') {
-            renderCommunitiesPage();
-        } else if (section === 'blog') {
-            loadBlog();
-        } else if (section === 'home') {
-            renderFeaturedListings();
-            renderFeaturedOffplan();
-            renderHomeCommunities();
-        } else if (section === 'about') {
-            renderAboutPage();
-        } else if (section === 'valuation') {
-            populateCommunityFilter();
+            return;
+        }
+        case 'community': {
+            if (slug) {
+                const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+                if (!community) {
+                    showNotFound('Community');
+                    return;
+                }
+                navigateTo('community', { push: false, slug: community.slug || community.id });
+            } else {
+                window.showCommunityList({ push: false });
+            }
+            return;
+        }
+        case 'communities': {
+            window.showCommunityList({ push: false });
+            return;
+        }
+        case 'blog': {
+            if (slug) {
+                const post = blogPosts.find(p => p.id == slug || String(p.id) === String(slug) || p.slug === slug);
+                if (!post) {
+                    showNotFound('Blog Post');
+                    return;
+                }
+                window.viewBlogPost(slug, { push: false });
+            } else {
+                window.showBlogList({ push: false });
+            }
+            return;
+        }
+        default: {
+            // home, about, contact, valuation, goldenvisa, etc.
+            navigateTo(section, { push: false, slug: slug || null });
         }
     }
-
-    // Update active nav links (excluding community detail which is a sub-view)
-    if (section !== 'community') {
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === section) {
-                el.classList.add('active');
-            }
-        });
-    } else {
-        // For community detail, highlight the communities nav link
-        document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
-            el.classList.remove('active');
-            if (el.dataset && el.dataset.section === 'communities') {
-                el.classList.add('active');
-            }
-        });
-    }
-
-    // Update page title if not already set
-    // (already set above for details)
-
-    // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ============= INIT =============
@@ -3088,7 +3147,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     window.addEventListener('click', function(e) { if (e.target === document.getElementById('modal')) window.closeModal(); });
 
     window.addEventListener('popstate', function() {
-        document.getElementById('modal').style.display = 'none';
+        const modal = document.getElementById('modal');
+        if (modal) modal.style.display = 'none';
         handleRoute();
     });
 
