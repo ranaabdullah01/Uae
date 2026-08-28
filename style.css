@@ -2615,9 +2615,6 @@ nav .nav-container {
     letter-spacing: 0.04em;
 }
 
-/* ============================================================
-   GALLERY THUMBNAILS - GRID LAYOUT (ORIGINAL OFF-PLAN BEHAVIOR)
-   ============================================================ */
 .gallery-thumbs {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2627,13 +2624,15 @@ nav .nav-container {
 }
 
 .gallery-thumbs .thumb {
-    width: 100%;
     aspect-ratio: 1/1;
     object-fit: cover;
     border-radius: 10px;
     cursor: pointer;
     border: 3px solid transparent;
     transition: var(--transition);
+    width: 100%;
+    height: auto;
+    display: block;
 }
 
 .gallery-thumbs .thumb:hover {
@@ -2647,45 +2646,29 @@ nav .nav-container {
 }
 
 .gallery-thumbs .thumb.more-photos {
+    background: var(--emerald-deep);
+    color: var(--cream);
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--emerald-deep);
-    color: var(--cream);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
-    border: 2px solid var(--line);
+    border: none;
+    transition: background 0.3s var(--ease);
     cursor: pointer;
 }
 
-/* Responsive thumbnails - fewer columns on smaller screens */
-@media (max-width: 768px) {
-    .gallery-thumbs {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 8px;
-        padding: 12px 16px 16px;
-    }
-    .gallery-thumbs .thumb.more-photos {
-        font-size: 12px;
-    }
+.gallery-thumbs .thumb.more-photos:hover {
+    background: var(--brass);
+    color: var(--emerald-deep);
 }
 
-@media (max-width: 480px) {
-    .gallery-thumbs {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-        padding: 10px 12px 14px;
-    }
-    .gallery-thumbs .thumb.more-photos {
-        font-size: 11px;
-    }
+.gallery-thumbs .thumb.more-photos span {
+    display: block;
+    line-height: 1.2;
 }
-
-/* ============================================================
-   END GALLERY THUMBNAILS
-   ============================================================ */
 
 .property-details-card .listing-detail-details-grid {
     grid-template-columns: 1fr 1fr;
@@ -3439,6 +3422,7 @@ nav .nav-container {
     }
 
     .gallery-thumbs {
+        grid-template-columns: repeat(5, 1fr);
         gap: 8px;
         padding: 12px 16px 16px;
     }
@@ -3524,8 +3508,18 @@ nav .nav-container {
     }
 
     .gallery-thumbs {
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
         padding: 10px 12px 14px;
+    }
+
+    .gallery-thumbs .thumb {
+        border-radius: 8px;
+        border-width: 2px;
+    }
+
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 12px;
     }
 
     .listing-detail-title {
@@ -3663,8 +3657,13 @@ nav .nav-container {
     }
 
     .gallery-thumbs {
+        grid-template-columns: repeat(5, 1fr);
         gap: 4px;
         padding: 8px 10px 12px;
+    }
+
+    .gallery-thumbs .thumb.more-photos {
+        font-size: 10px;
     }
 
     .listing-detail-title {
