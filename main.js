@@ -979,7 +979,7 @@ window.showListingList = function(opts = {}) {
 };
 
 // ============================================================
-// RENDER LISTING DETAIL
+// RENDER LISTING DETAIL  (MODIFIED THUMBNAIL LOGIC)
 // ============================================================
 
 function renderListingDetail(listing) {
@@ -1000,6 +1000,29 @@ function renderListingDetail(listing) {
     const statusClass = listing.status || 'for-sale';
     const statusLabel = listing.status ? listing.status.replace('-', ' ').toUpperCase() : 'FOR SALE';
 
+    // --- THUMBNAIL LOGIC: same as offplan ---
+    const isMobile = window.innerWidth < 768;
+    const visibleCount = isMobile ? 3 : 4;
+    const visibleThumbs = images.slice(0, visibleCount);
+    const remainingCount = Math.max(0, images.length - visibleCount);
+
+    let thumbsHtml = visibleThumbs.map((img, index) => `
+        <img src="${img}" alt="${listing.title} - Image ${index + 1}"
+             class="thumb ${index === 0 ? 'active' : ''}"
+             data-index="${index}"
+             style="cursor:pointer;"
+             onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
+    `).join('');
+
+    if (remainingCount > 0) {
+        thumbsHtml += `
+            <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, ${visibleCount})">
+                <span>+${remainingCount} Photos</span>
+            </div>
+        `;
+    }
+    // --- END THUMBNAIL LOGIC ---
+
     const gallery = `
         <div class="listing-detail-gallery" id="listing-gallery">
             <div class="gallery-main" id="gallery-main">
@@ -1016,18 +1039,7 @@ function renderListingDetail(listing) {
                 <div class="gallery-counter" id="gallery-counter">1 / ${images.length}</div>
             </div>
             <div class="gallery-thumbs" id="gallery-thumbs">
-                ${images.map((img, index) => `
-                    <img src="${img}" alt="${listing.title} - Image ${index + 1}"
-                         class="thumb ${index === 0 ? 'active' : ''}"
-                         data-index="${index}"
-                         style="cursor:pointer;"
-                         onerror="this.src='https://placehold.co/100x100/0A1628/C9A84C?text=No+Image'">
-                `).join('')}
-                ${images.length > 4 ? `
-                    <div class="thumb more-photos" onclick="window.openGalleryModal(window.galleryImages, 0)">
-                        <span>+${images.length - 4} Photos</span>
-                    </div>
-                ` : ''}
+                ${thumbsHtml}
             </div>
         </div>
     `;
