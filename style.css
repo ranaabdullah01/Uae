@@ -2458,7 +2458,7 @@ nav .nav-container {
    LISTING DETAIL PAGE - REFINED 2-COLUMN LAYOUT
    ============================================================ */
 
-/* Both detail containers now have NO top padding, 
+/* Both detail containers now have NO top padding,
    so the distance from hero to button is 70px (hero 40px + container 30px) */
 #listing-detail {
     padding: 0 0 40px;
@@ -2527,8 +2527,10 @@ nav .nav-container {
     box-shadow: 0 8px 32px rgba(11, 59, 46, 0.08);
 }
 
+/* ===== STICKY GALLERY FOR BOTH OFF-PLAN AND LISTINGS ===== */
 @media (min-width: 1024px) {
-    #offplan-detail .listing-detail-left-col {
+    #offplan-detail .listing-detail-left-col,
+    #listing-detail .listing-detail-left-col {
         position: sticky;
         top: 30px;
         align-self: flex-start;
