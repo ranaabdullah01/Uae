@@ -2686,27 +2686,19 @@ nav .nav-container {
 }
 
 /* ============================================================
-   RIGHT COLUMN - STICKY ON DESKTOP (UPDATED)
+   RIGHT COLUMN - NORMAL FLOW (NO STICKY)
    ============================================================ */
-@media (min-width: 1024px) {
-    .listing-detail-right-col {
-        position: sticky !important;
-        top: 80px !important; /* adjust to match header height */
-        align-self: flex-start !important;
-    }
-}
-
-@media (max-width: 1023px) {
-    .listing-detail-right-col {
-        position: static !important;
-        top: auto !important;
-    }
-}
-
 .listing-detail-right-col {
     display: flex;
     flex-direction: column;
     gap: 16px;
+}
+
+/* Override any global sticky rules for right column */
+#listing-detail .listing-detail-right-col {
+    position: static !important;
+    top: auto !important;
+    align-self: auto !important;
 }
 
 .price-status-row {
@@ -3453,6 +3445,12 @@ nav .nav-container {
     }
 
     /* Override sticky for tablet/mobile */
+    #listing-detail .listing-detail-left-col {
+        position: static !important;
+        top: auto !important;
+        height: auto !important;
+    }
+
     .gallery-thumbs {
         gap: 8px !important;
         padding: 12px 16px 16px !important;
@@ -4274,8 +4272,30 @@ footer::before {
 }
 
 /* ============================================================
-   FIX: Match Property Detail spacing to Off‑Plan Detail
+   FIX: Property Detail – left column sticky, right column normal
+   (matches Off-Plan behavior)
    ============================================================ */
+
+/* Remove any sticky behavior from the right column */
+#listing-detail .listing-detail-right-col {
+    position: static !important;
+    top: auto !important;
+    align-self: auto !important;
+}
+
+/* Make the left column sticky (gallery + Property Details together) */
+@media (min-width: 1024px) {
+    #listing-detail .listing-detail-left-col {
+        position: sticky !important;
+        top: 30px !important;
+        align-self: flex-start !important;
+        height: fit-content !important;
+        overflow-y: visible !important;
+    }
+}
+
+/* Ensure the detail container does not clip anything */
 #listing-detail {
-    padding-top: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
 }
