@@ -3186,6 +3186,29 @@
     <!-- ========== TOAST CONTAINER ========== -->
     <div id="toast-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;"></div>
 
+    <!-- ========== AI PROPERTY ASSISTANT ========== -->
+    <div id="ai-chat-widget">
+        <button id="ai-chat-toggle" class="ai-chat-button" aria-label="Open AI Property Assistant">
+            <i class="fas fa-robot"></i>
+        </button>
+        <div id="ai-chat-panel" class="ai-chat-panel" style="display: none;">
+            <div class="ai-chat-header">
+                <span class="ai-chat-title">AI Property Assistant</span>
+                <button id="ai-chat-close" class="ai-chat-close">&times;</button>
+            </div>
+            <div id="ai-chat-messages" class="ai-chat-messages">
+                <div class="ai-chat-message bot">
+                    <div class="message-bubble">Hello! I'm your AI Property Assistant. How can I help you today?</div>
+                </div>
+            </div>
+            <div class="ai-chat-input-area">
+                <input type="text" id="ai-chat-input" placeholder="Ask about properties, communities, or the agent..." />
+                <button id="ai-chat-send" class="ai-chat-send-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+            <div class="ai-chat-powered">Powered by Cloudflare AI</div>
+        </div>
+    </div>
+
     <!-- ========== SCRIPTS ========== -->
     <script type="module" src="/config.js"></script>
     <script type="module" src="/main.js"></script>
