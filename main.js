@@ -3272,7 +3272,7 @@ function createAILeadForm() {
 }
 
 // ============================================================
-// FIXED: sendAIMessage - always appends user message and clears input
+// FIXED: sendAIMessage - always appends user message, clears input, and sends agentSlug
 // ============================================================
 async function sendAIMessage(message) {
     if (isAILoading) return;
@@ -3304,7 +3304,8 @@ async function sendAIMessage(message) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: message,
-                history: aiChatHistory.slice(-10)
+                history: aiChatHistory.slice(-10),
+                agentSlug: currentAgentSlug   // <-- added to pass the current agent slug
             })
         });
 
