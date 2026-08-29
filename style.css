@@ -2184,15 +2184,15 @@ nav .nav-container {
 .blog-detail .blog-detail-body,
 .blog-detail .blog-detail-tags,
 .blog-detail .blog-detail-share {
-    max-width: 1000px;   /* changed from 800px to 1000px */
+    max-width: 1000px;
     margin-left: auto;
     margin-right: auto;
 }
 
 /* Hero image – spans the full container width (1100px) */
 .blog-detail-image {
-    margin: 0 -20px;        /* compensate for container padding */
-    border-radius: 0;       /* optional: remove rounding for full-bleed look */
+    margin: 0 -20px;
+    border-radius: 0;
 }
 
 .blog-detail-image img {
@@ -4612,8 +4612,29 @@ footer::before {
     cursor: not-allowed;
 }
 
-/* Responsive */
+/* ============================================================
+   MOBILE FIX: AI & WhatsApp floating buttons alignment
+   ============================================================ */
+
 @media (max-width: 640px) {
+    /* AI container – ensure same right as WhatsApp, no extra padding */
+    #ai-chat-widget {
+        bottom: 80px;
+        right: 16px;
+        width: auto;              /* only as wide as the button */
+        padding: 0;
+        margin: 0;
+    }
+
+    /* AI button – remove redundant positioning, keep size */
+    .ai-chat-button {
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+        /* bottom and right removed – they had no effect */
+    }
+
+    /* Chat panel – keep existing positioning */
     .ai-chat-panel {
         right: 10px;
         bottom: 80px;
@@ -4623,17 +4644,17 @@ footer::before {
         max-height: 80vh;
         border-radius: var(--radius);
     }
-    .ai-chat-button {
-        width: 52px;
-        height: 52px;
-        font-size: 22px;
-        bottom: 80px;
+
+    /* WhatsApp – keep existing mobile positioning */
+    .float-whatsapp {
+        bottom: 16px;
         right: 16px;
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
     }
-    #ai-chat-widget {
-        bottom: 80px;
-        right: 16px;
-    }
+
+    /* Optional: adjust card sizes if needed, but left as before */
     .ai-card-image {
         width: 60px;
         height: 50px;
