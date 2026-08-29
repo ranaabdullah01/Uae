@@ -3263,8 +3263,6 @@ function createAILeadForm() {
         // Send lead via AI chat
         const leadMessage = `My name is ${name}, my WhatsApp is ${phone}${email ? ', email: ' + email : ''}. I'm interested in properties.`;
         // Append as user message and send
-        appendAIMessage('user', leadMessage);
-        aiInput.value = '';
         sendAIMessage(leadMessage);
         // Remove the lead form (or hide)
         form.style.display = 'none';
@@ -3273,27 +3271,33 @@ function createAILeadForm() {
     return form;
 }
 
-// Send message to AI
+// ============================================================
+// FIXED: sendAIMessage - always appends user message and clears input
+// ============================================================
 async function sendAIMessage(message) {
     if (isAILoading) return;
+
+    // If no message provided, get it from the input field
     if (!message) {
         message = aiInput.value.trim();
         if (!message) return;
-        aiInput.value = '';
-        appendAIMessage('user', message);
     }
-    
+
+    // Append the user message and clear the input
+    appendAIMessage('user', message);
+    if (aiInput) aiInput.value = '';
+
     isAILoading = true;
     aiSend.disabled = true;
     aiInput.disabled = true;
-    
+
     // Show typing indicator
     const typingDiv = document.createElement('div');
     typingDiv.className = 'ai-chat-message bot typing';
     typingDiv.innerHTML = '<div class="message-bubble typing-dots"><span></span><span></span><span></span></div>';
     aiMessages.appendChild(typingDiv);
     aiMessages.scrollTop = aiMessages.scrollHeight;
-    
+
     try {
         const response = await fetch(`${API_BASE}/api/ai-chat`, {
             method: 'POST',
@@ -3303,12 +3307,12 @@ async function sendAIMessage(message) {
                 history: aiChatHistory.slice(-10)
             })
         });
-        
+
         const data = await response.json();
-        
+
         // Remove typing indicator
         if (typingDiv.parentNode) typingDiv.remove();
-        
+
         if (data.success) {
             appendAIMessage('bot', data.reply, {
                 properties: data.properties || [],
