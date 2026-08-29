@@ -3085,6 +3085,252 @@ function showSection(section, slug) {
     }
 }
 
+// ============================================================
+// AI PROPERTY ASSISTANT - CHAT WIDGET
+// ============================================================
+
+// State
+let aiChatOpen = false;
+let aiChatMessages = [];
+let aiChatHistory = [];
+let isAILoading = false;
+let leadCollectionPending = false;
+
+// DOM refs
+const aiToggle = document.getElementById('ai-chat-toggle');
+const aiPanel = document.getElementById('ai-chat-panel');
+const aiClose = document.getElementById('ai-chat-close');
+const aiMessages = document.getElementById('ai-chat-messages');
+const aiInput = document.getElementById('ai-chat-input');
+const aiSend = document.getElementById('ai-chat-send');
+
+// Toggle chat
+function toggleAIChat() {
+    aiChatOpen = !aiChatOpen;
+    aiPanel.style.display = aiChatOpen ? 'flex' : 'none';
+    if (aiChatOpen) {
+        aiInput.focus();
+    }
+}
+
+// Append message to chat
+function appendAIMessage(sender, text, data = null) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `ai-chat-message ${sender}`;
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+    bubble.textContent = text;
+    messageDiv.appendChild(bubble);
+    
+    // If there are property/offplan/community cards, render them
+    if (data) {
+        if (data.properties && data.properties.length > 0) {
+            const cardsContainer = document.createElement('div');
+            cardsContainer.className = 'ai-chat-cards';
+            data.properties.forEach(prop => {
+                const card = createAIPropertyCard(prop);
+                cardsContainer.appendChild(card);
+            });
+            messageDiv.appendChild(cardsContainer);
+        }
+        if (data.offplan && data.offplan.length > 0) {
+            const cardsContainer = document.createElement('div');
+            cardsContainer.className = 'ai-chat-cards';
+            data.offplan.forEach(proj => {
+                const card = createAIOffplanCard(proj);
+                cardsContainer.appendChild(card);
+            });
+            messageDiv.appendChild(cardsContainer);
+        }
+        if (data.communities && data.communities.length > 0) {
+            const cardsContainer = document.createElement('div');
+            cardsContainer.className = 'ai-chat-cards';
+            data.communities.forEach(comm => {
+                const card = createAICommunityCard(comm);
+                cardsContainer.appendChild(card);
+            });
+            messageDiv.appendChild(cardsContainer);
+        }
+        // If lead required, show a small inline lead form
+        if (data.leadRequired) {
+            const leadForm = createAILeadForm();
+            messageDiv.appendChild(leadForm);
+        }
+    }
+    
+    aiMessages.appendChild(messageDiv);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+    
+    // Store in history
+    aiChatHistory.push({ role: sender === 'user' ? 'user' : 'assistant', content: text });
+    if (aiChatHistory.length > 20) aiChatHistory.shift();
+}
+
+// Create property card for chat
+function createAIPropertyCard(property) {
+    const card = document.createElement('div');
+    card.className = 'ai-chat-property-card';
+    const images = property.images && typeof property.images === 'string' 
+        ? property.images.split(',') 
+        : (Array.isArray(property.images) ? property.images : []);
+    const firstImage = images.length > 0 ? images[0] : 'https://placehold.co/150x100/0A1628/C9A84C?text=Property';
+    
+    card.innerHTML = `
+        <img src="${firstImage}" alt="${property.title}" class="ai-card-image">
+        <div class="ai-card-info">
+            <div class="ai-card-title">${property.title}</div>
+            <div class="ai-card-price">AED ${formatPrice(property.price)}</div>
+            <div class="ai-card-details">
+                <span>${property.bedrooms} bed</span>
+                <span>${property.bathrooms} bath</span>
+                <span>${property.sqft} sqft</span>
+            </div>
+            <button class="btn btn-secondary btn-sm ai-card-btn" onclick="window.viewListingPage('${property.id}')">View Property</button>
+        </div>
+    `;
+    return card;
+}
+
+// Create offplan card for chat
+function createAIOffplanCard(project) {
+    const card = document.createElement('div');
+    card.className = 'ai-chat-property-card';
+    let imageUrl = 'https://placehold.co/150x100/0A1628/C9A84C?text=Off-Plan';
+    if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+        imageUrl = project.images[0];
+    } else if (project.image) {
+        imageUrl = project.image;
+    }
+    
+    card.innerHTML = `
+        <img src="${imageUrl}" alt="${project.projectName}" class="ai-card-image">
+        <div class="ai-card-info">
+            <div class="ai-card-title">${project.projectName}</div>
+            <div class="ai-card-price">From AED ${formatPrice(project.startingPrice)}</div>
+            <div class="ai-card-details">
+                <span>${project.developer}</span>
+                <span>${project.community}</span>
+                ${project.goldenVisaEligible ? '<span>🏆 Golden Visa</span>' : ''}
+            </div>
+            <button class="btn btn-secondary btn-sm ai-card-btn" onclick="window.viewOffplanPage('${project.id}')">View Project</button>
+        </div>
+    `;
+    return card;
+}
+
+// Create community card for chat
+function createAICommunityCard(community) {
+    const card = document.createElement('div');
+    card.className = 'ai-chat-community-card';
+    const imageUrl = community.image || 'https://placehold.co/150x100/0A1628/C9A84C?text=Community';
+    
+    card.innerHTML = `
+        <img src="${imageUrl}" alt="${community.name}" class="ai-card-image">
+        <div class="ai-card-info">
+            <div class="ai-card-title">${community.name}</div>
+            <div class="ai-card-details">
+                <span>${community.communityType || 'Community'}</span>
+                ${community.avgRentalYield ? `<span>Yield: ${community.avgRentalYield}</span>` : ''}
+            </div>
+            <button class="btn btn-secondary btn-sm ai-card-btn" onclick="window.viewCommunity('${community.slug || community.id}')">View Community</button>
+        </div>
+    `;
+    return card;
+}
+
+// Create inline lead form
+function createAILeadForm() {
+    const form = document.createElement('div');
+    form.className = 'ai-chat-lead-form';
+    form.innerHTML = `
+        <p style="font-size:13px;color:var(--ink-soft);margin-bottom:8px;">Please share your contact details so we can assist you further:</p>
+        <input type="text" placeholder="Full Name" class="ai-lead-input" id="ai-lead-name" required>
+        <input type="tel" placeholder="WhatsApp Number" class="ai-lead-input" id="ai-lead-phone" required>
+        <input type="email" placeholder="Email (optional)" class="ai-lead-input" id="ai-lead-email">
+        <button class="btn btn-primary btn-sm ai-lead-submit">Submit</button>
+    `;
+    
+    const submitBtn = form.querySelector('.ai-lead-submit');
+    submitBtn.addEventListener('click', function() {
+        const name = document.getElementById('ai-lead-name').value.trim();
+        const phone = document.getElementById('ai-lead-phone').value.trim();
+        const email = document.getElementById('ai-lead-email').value.trim();
+        if (!name || !phone) {
+            showToast('Please fill in name and phone number.', 'error');
+            return;
+        }
+        // Send lead via AI chat
+        const leadMessage = `My name is ${name}, my WhatsApp is ${phone}${email ? ', email: ' + email : ''}. I'm interested in properties.`;
+        // Append as user message and send
+        appendAIMessage('user', leadMessage);
+        aiInput.value = '';
+        sendAIMessage(leadMessage);
+        // Remove the lead form (or hide)
+        form.style.display = 'none';
+    });
+    
+    return form;
+}
+
+// Send message to AI
+async function sendAIMessage(message) {
+    if (isAILoading) return;
+    if (!message) {
+        message = aiInput.value.trim();
+        if (!message) return;
+        aiInput.value = '';
+        appendAIMessage('user', message);
+    }
+    
+    isAILoading = true;
+    aiSend.disabled = true;
+    aiInput.disabled = true;
+    
+    // Show typing indicator
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-chat-message bot typing';
+    typingDiv.innerHTML = '<div class="message-bubble typing-dots"><span></span><span></span><span></span></div>';
+    aiMessages.appendChild(typingDiv);
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+    
+    try {
+        const response = await fetch(`${API_BASE}/api/ai-chat`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: message,
+                history: aiChatHistory.slice(-10)
+            })
+        });
+        
+        const data = await response.json();
+        
+        // Remove typing indicator
+        if (typingDiv.parentNode) typingDiv.remove();
+        
+        if (data.success) {
+            appendAIMessage('bot', data.reply, {
+                properties: data.properties || [],
+                offplan: data.offplan || [],
+                communities: data.communities || [],
+                leadRequired: data.leadRequired || false
+            });
+        } else {
+            appendAIMessage('bot', data.reply || 'Sorry, I encountered an error. Please try again.');
+        }
+    } catch (error) {
+        console.error('AI Chat error:', error);
+        if (typingDiv.parentNode) typingDiv.remove();
+        appendAIMessage('bot', 'Network error. Please check your connection and try again.');
+    } finally {
+        isAILoading = false;
+        aiSend.disabled = false;
+        aiInput.disabled = false;
+        aiInput.focus();
+    }
+}
+
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', async function() {
@@ -3168,6 +3414,29 @@ document.addEventListener('DOMContentLoaded', async function() {
             header.classList.remove('scrolled');
         }
     });
+
+    // ---- AI Chat Event Listeners ----
+    if (aiToggle) {
+        aiToggle.addEventListener('click', toggleAIChat);
+    }
+    if (aiClose) {
+        aiClose.addEventListener('click', toggleAIChat);
+    }
+    if (aiSend) {
+        aiSend.addEventListener('click', function() {
+            const msg = aiInput.value.trim();
+            if (msg) sendAIMessage(msg);
+        });
+    }
+    if (aiInput) {
+        aiInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const msg = aiInput.value.trim();
+                if (msg) sendAIMessage(msg);
+            }
+        });
+    }
 });
 
 // ============= EXPOSE FOR GLOBAL USE =============
@@ -3214,3 +3483,6 @@ window.showCommunityList = showCommunityList;
 window.applyCommunityFilterFromURL = applyCommunityFilterFromURL;
 window.recentSales = recentSales;
 window.agentsData = agentsData;
+window.toggleAIChat = toggleAIChat;
+window.sendAIMessage = sendAIMessage;
+window.appendAIMessage = appendAIMessage;
