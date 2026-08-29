@@ -2265,6 +2265,9 @@ async function loadBlog() {
     }
 }
 
+// ============================================================
+// UPDATED: renderBlogGrid - full card clickable + "+ Read More"
+// ============================================================
 function renderBlogGrid() {
     const container = document.getElementById('blog-grid');
     if (!container) return;
@@ -2278,6 +2281,7 @@ function renderBlogGrid() {
     blogPosts.forEach(post => {
         const card = document.createElement('div');
         card.className = 'blog-card';
+        card.style.cursor = 'pointer';
         
         const imageUrl = post.featured_image || 'https://placehold.co/800x400/0A1628/C9A84C?text=Blog';
         const tags = post.tags && typeof post.tags === 'string' ? post.tags.split(',') : (Array.isArray(post.tags) ? post.tags : []);
@@ -2298,10 +2302,21 @@ function renderBlogGrid() {
                     <div class="blog-tags">
                         ${tags.slice(0, 3).map(tag => `<span class="blog-tag">${tag.trim()}</span>`).join('')}
                     </div>
-                    <button class="btn btn-secondary btn-sm" onclick="window.viewBlogPost('${post.id}')">Read More</button>
+                    <button class="btn btn-secondary btn-sm blog-read-more-btn" onclick="event.stopPropagation(); window.viewBlogPost('${post.id}')">
+                        <i class="fas fa-plus" style="margin-right:6px;"></i> Read More
+                    </button>
                 </div>
             </div>
         `;
+        
+        // Click on the whole card opens the blog
+        card.addEventListener('click', function(e) {
+            // If the click target is the button, we already handled it via the button's onclick
+            // But we need to make sure we don't double-trigger. The button's onclick stops propagation,
+            // so the card click won't fire for button clicks.
+            window.viewBlogPost(post.id);
+        });
+        
         container.appendChild(card);
     });
 }
