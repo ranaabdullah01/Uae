@@ -2179,12 +2179,12 @@ nav .nav-container {
     margin: 0;
 }
 
-/* Article text – comfortable reading width (800px) and centered within the wider container */
+/* Article text – comfortable reading width (now 1000px) and centered within the wider container */
 .blog-detail .blog-detail-header,
 .blog-detail .blog-detail-body,
 .blog-detail .blog-detail-tags,
 .blog-detail .blog-detail-share {
-    max-width: 800px;
+    max-width: 1000px;   /* changed from 800px to 1000px */
     margin-left: auto;
     margin-right: auto;
 }
