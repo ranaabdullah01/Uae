@@ -951,39 +951,39 @@
 @media (max-width: 640px) {
     /* AI container – same right as WhatsApp, no extra padding */
     #ai-chat-widget {
-        bottom: 80px;
-        right: 16px;
-        width: auto;
-        padding: 0;
-        margin: 0;
+        bottom: 80px !important;
+        right: 16px !important;
+        width: auto !important;
+        padding: 0 !important;
+        margin: 0 !important;
     }
 
     /* AI button – size and base styles */
     .ai-chat-button {
-        width: 52px;
-        height: 52px;
-        font-size: 22px;
-        /* position: absolute? No, it's inside the fixed container, so we let container handle positioning */
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 22px !important;
+        /* position is handled by container */
     }
 
     /* Chat panel – keep existing positioning */
     .ai-chat-panel {
-        right: 10px;
-        bottom: 80px;
-        width: calc(100% - 20px);
-        max-width: 100%;
-        height: 60vh;
-        max-height: 80vh;
-        border-radius: var(--radius);
+        right: 10px !important;
+        bottom: 80px !important;
+        width: calc(100% - 20px) !important;
+        max-width: 100% !important;
+        height: 60vh !important;
+        max-height: 80vh !important;
+        border-radius: var(--radius) !important;
     }
 
     /* WhatsApp – now matches AI size (52px) and same right alignment */
     .float-whatsapp {
-        bottom: 16px;
-        right: 16px;
-        width: 52px;
-        height: 52px;
-        font-size: 24px;
+        bottom: 16px !important;
+        right: 16px !important;
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 24px !important;
     }
 
     .ai-card-image {
@@ -997,24 +997,24 @@
 
 @media (max-width: 480px) {
     .ai-chat-panel {
-        bottom: 70px;
-        right: 8px;
-        width: calc(100% - 16px);
-        height: 65vh;
-        max-height: 75vh;
+        bottom: 70px !important;
+        right: 8px !important;
+        width: calc(100% - 16px) !important;
+        height: 65vh !important;
+        max-height: 75vh !important;
     }
     .ai-chat-title {
-        font-size: 0.9rem;
+        font-size: 0.9rem !important;
     }
     .message-bubble {
-        font-size: 0.85rem;
-        padding: 10px 12px;
+        font-size: 0.85rem !important;
+        padding: 10px 12px !important;
     }
     .ai-card-title {
-        font-size: 0.8rem;
+        font-size: 0.8rem !important;
     }
     .ai-card-price {
-        font-size: 0.85rem;
+        font-size: 0.85rem !important;
     }
 }
 
@@ -1025,10 +1025,10 @@
 }
 @media (max-width: 640px) {
     .float-whatsapp {
-        bottom: 16px;
-        right: 16px;
-        width: 52px;
-        height: 52px;
-        font-size: 24px;
+        bottom: 16px !important;
+        right: 16px !important;
+        width: 52px !important;
+        height: 52px !important;
+        font-size: 24px !important;
     }
 }
