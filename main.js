@@ -2132,8 +2132,11 @@ window.showCommunityList = function(opts = {}) {
 
 // ============= ABOUT PAGE (DYNAMIC WITH AGENT + SALES) =============
 
+// ============================================================
+// FIXED: renderAboutPage - now uses currentAgentData correctly
+// ============================================================
 function renderAboutPage() {
-    // Testimonials
+    // Testimonials (from CONFIG – shared across agents, or make them agent-specific if needed)
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
         const testimonials = CONFIG.testimonials || [
@@ -2183,67 +2186,9 @@ function renderAboutPage() {
         });
     }
 
-    // Agent profile is already handled by updateConfigInDOM()
-    // but we also update it from the agentsData if available
-    if (agentsData && agentsData.length > 0) {
-        const agent = agentsData[0];
-        // Update name
-        const nameEl = document.getElementById('agent-name-about');
-        if (nameEl) nameEl.textContent = agent.agentName || 'Ahmed Khan';
-        
-        // Update photo
-        const photoEl = document.getElementById('agent-photo-about');
-        if (photoEl) photoEl.src = agent.photo || 'https://placehold.co/600x600/0A1628/C9A84C?text=Agent';
-        
-        // Update RERA
-        const rernaEl = document.getElementById('rerna-number-about');
-        if (rernaEl) rernaEl.textContent = agent.reraBRN || '123456';
-        
-        // Update bio
-        const bioEl = document.getElementById('agent-full-bio');
-        if (bioEl) bioEl.textContent = agent.bio || '';
-        
-        // Update stats
-        const yearsEl = document.getElementById('years-exp-about');
-        if (yearsEl) yearsEl.textContent = agent.yearsExperience || agent.experience || '12';
-        const soldEl = document.getElementById('properties-sold-about');
-        if (soldEl) soldEl.textContent = agent.propertiesSold || '850';
-        // Happy clients - not in agent table, keep as is or use config
-        const happyEl = document.getElementById('happy-clients-about');
-        if (happyEl) happyEl.textContent = '1200';
-        
-        // Specialties
-        const specialtiesContainer = document.getElementById('specialties-list');
-        if (specialtiesContainer) {
-            specialtiesContainer.innerHTML = '';
-            if (agent.specialties) {
-                agent.specialties.split(',').forEach(s => {
-                    if (s.trim()) {
-                        const tag = document.createElement('span');
-                        tag.className = 'tag';
-                        tag.textContent = s.trim();
-                        specialtiesContainer.appendChild(tag);
-                    }
-                });
-            }
-        }
-        
-        // Languages
-        const languagesContainer = document.getElementById('languages-list');
-        if (languagesContainer) {
-            languagesContainer.innerHTML = '';
-            if (agent.languages) {
-                agent.languages.split(',').forEach(l => {
-                    if (l.trim()) {
-                        const tag = document.createElement('span');
-                        tag.className = 'tag language';
-                        tag.textContent = l.trim();
-                        languagesContainer.appendChild(tag);
-                    }
-                });
-            }
-        }
-    }
+    // ✅ REMOVED: agent profile updates (now handled by updateConfigInDOM)
+    // The agent name, photo, bio, specialties, languages, and stats are already
+    // updated by updateConfigInDOM() which uses the correct currentAgentData.
 }
 
 // ============= BLOG FUNCTIONS =============
@@ -2311,9 +2256,6 @@ function renderBlogGrid() {
         
         // Click on the whole card opens the blog
         card.addEventListener('click', function(e) {
-            // If the click target is the button, we already handled it via the button's onclick
-            // But we need to make sure we don't double-trigger. The button's onclick stops propagation,
-            // so the card click won't fire for button clicks.
             window.viewBlogPost(post.id);
         });
         
