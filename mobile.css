@@ -943,3 +943,92 @@
         margin-bottom: 10px !important;
     }
 }
+
+/* ============================================================
+   MOBILE FIX: AI & WhatsApp floating buttons alignment
+   ============================================================ */
+
+@media (max-width: 640px) {
+    /* AI container – same right as WhatsApp, no extra padding */
+    #ai-chat-widget {
+        bottom: 80px;
+        right: 16px;
+        width: auto;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* AI button – size and base styles */
+    .ai-chat-button {
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+        /* position: absolute? No, it's inside the fixed container, so we let container handle positioning */
+    }
+
+    /* Chat panel – keep existing positioning */
+    .ai-chat-panel {
+        right: 10px;
+        bottom: 80px;
+        width: calc(100% - 20px);
+        max-width: 100%;
+        height: 60vh;
+        max-height: 80vh;
+        border-radius: var(--radius);
+    }
+
+    /* WhatsApp – now matches AI size (52px) and same right alignment */
+    .float-whatsapp {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+        font-size: 24px;
+    }
+
+    .ai-card-image {
+        width: 60px;
+        height: 50px;
+    }
+    .ai-chat-message {
+        max-width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .ai-chat-panel {
+        bottom: 70px;
+        right: 8px;
+        width: calc(100% - 16px);
+        height: 65vh;
+        max-height: 75vh;
+    }
+    .ai-chat-title {
+        font-size: 0.9rem;
+    }
+    .message-bubble {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+    .ai-card-title {
+        font-size: 0.8rem;
+    }
+    .ai-card-price {
+        font-size: 0.85rem;
+    }
+}
+
+/* Override for float-whatsapp to avoid overlap */
+.float-whatsapp {
+    bottom: 28px;
+    right: 28px;
+}
+@media (max-width: 640px) {
+    .float-whatsapp {
+        bottom: 16px;
+        right: 16px;
+        width: 52px;
+        height: 52px;
+        font-size: 24px;
+    }
+}
