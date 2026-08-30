@@ -4081,195 +4081,102 @@ footer::before {
 }
 
 /* ============================================================
-   DEEP GALLERY MODAL
+   DEEP GALLERY MODAL — DESKTOP 2‑COLUMN GRID
    ============================================================ */
-#gallery-modal-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(0, 0, 0, 0.50);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    font-family: 'Inter', sans-serif;
-}
 
-#gallery-modal-overlay .gallery-modal {
-    background: #ffffff;
-    border-radius: 20px;
-    max-width: 1200px;
-    width: 100%;
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 24px 80px rgba(0,0,0,0.3);
-    overflow: hidden;
-    position: relative;
-}
-
-#gallery-modal-overlay .gallery-close {
-    position: absolute;
-    top: 16px;
-    right: 20px;
-    z-index: 10;
-    background: none;
-    border: none;
-    font-size: 28px;
-    line-height: 1;
-    color: var(--emerald-deep, #072720);
-    cursor: pointer;
-    transition: transform 0.2s, color 0.2s;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: 300;
-}
-#gallery-modal-overlay .gallery-close:hover {
-    transform: scale(1.2);
-}
+/* The overlay and modal are already styled by the inline JS,
+   but we need to ensure the grid fits and scrolls correctly. */
 
 #gallery-modal-overlay .gallery-content {
-    display: flex;
-    flex-direction: row;
-    gap: 24px;
-    padding: 24px;
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    background: #ffffff;
-}
-
-#gallery-modal-overlay .gallery-left {
-    flex: 2;
-    position: relative;
-    background: #f8f6f2;
-    border-radius: 12px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 300px;
-    aspect-ratio: 4/3;
-}
-
-#gallery-modal-overlay .gallery-left img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    transition: opacity 0.3s ease;
-    background: #f8f6f2;
-}
-
-#gallery-modal-overlay .gallery-counter {
-    position: absolute;
-    bottom: 16px;
-    right: 20px;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(4px);
-    color: var(--cream, #F7F3EA);
-    padding: 4px 14px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    pointer-events: none;
-}
-
-#gallery-modal-overlay .gallery-right {
-    flex: 1.2;
-    display: flex;
     flex-direction: column;
-    min-width: 0;
-    max-height: 100%;
-    overflow-y: auto;
+    padding: 16px 24px;
+    gap: 16px;
+    max-height: calc(90vh - 70px);
+    overflow: hidden;
     background: #ffffff;
 }
 
-#gallery-modal-overlay .gallery-heading {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
-    color: var(--emerald-deep, #072720);
-    margin-bottom: 14px;
-    letter-spacing: -0.02em;
-}
-
-#gallery-modal-overlay .gallery-thumb-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    flex: 1;
-    align-content: start;
-}
-
-#gallery-modal-overlay .gallery-thumb-grid img {
+/* On mobile we keep the old behavior, so we only target desktop via the class added by JS */
+#gallery-modal-overlay .deep-gallery-desktop-grid {
     width: 100%;
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    border-radius: 8px;
-    border: 3px solid transparent;
-    cursor: pointer;
-    transition: border 0.2s, transform 0.2s;
-    background: #f8f6f2;
+    padding: 4px 0;
+    overflow-y: auto;
+    max-height: calc(90vh - 80px);
 }
 
-#gallery-modal-overlay .gallery-thumb-grid img.active {
-    border-color: var(--brass, #B08A3E);
-    transform: scale(1.02);
+#gallery-modal-overlay .deep-gallery-grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
 }
 
-#gallery-modal-overlay .gallery-mobile-image {
-    margin-bottom: 12px;
-    border-radius: 12px;
+#gallery-modal-overlay .deep-gallery-grid-item {
+    position: relative;
     overflow: hidden;
+    border-radius: 10px;
     background: #f8f6f2;
+    aspect-ratio: 4 / 3;
 }
 
-#gallery-modal-overlay .gallery-mobile-image img {
+#gallery-modal-overlay .deep-gallery-grid-item img {
     display: block;
     width: 100%;
-    height: auto;
-    border-radius: 12px;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.25s ease;
 }
 
-@media (max-width: 768px) {
+#gallery-modal-overlay .deep-gallery-grid-item:hover img {
+    transform: scale(1.03);
+}
+
+/* Hide old desktop left/right columns (legacy from previous implementation) */
+#gallery-modal-overlay .gallery-left,
+#gallery-modal-overlay .gallery-right {
+    display: none !important;
+}
+
+/* Ensure modal body handles scrolling and header stays fixed */
+#gallery-modal-overlay .gallery-content .deep-gallery-desktop-grid {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Keep mobile layout intact */
+@media (max-width: 767px) {
     #gallery-modal-overlay .gallery-content {
         flex-direction: column;
-        padding: 16px;
-        gap: 16px;
-    }
-    #gallery-modal-overlay .gallery-left {
-        min-height: 200px;
-    }
-    #gallery-modal-overlay .gallery-right {
-        max-height: 50vh;
+        padding: 12px 16px 20px;
+        gap: 12px;
+        max-height: calc(90vh - 60px);
         overflow-y: auto;
     }
-    #gallery-modal-overlay .gallery-thumb-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-    }
-    #gallery-modal-overlay .gallery-close {
-        top: 12px;
-        right: 16px;
-        font-size: 24px;
-    }
-}
 
-@media (max-width: 480px) {
-    #gallery-modal-overlay .gallery-thumb-grid {
-        grid-template-columns: repeat(2, 1fr);
+    #gallery-modal-overlay .gallery-left,
+    #gallery-modal-overlay .gallery-right {
+        display: none !important;
     }
-}
 
-@media (min-width: 1024px) {
-    #gallery-main,
-    #offplan-gallery-main {
-        cursor: zoom-in;
+    /* The mobile code in openGalleryModal creates .gallery-mobile-image elements,
+       so we do not interfere with those. */
+    #gallery-modal-overlay .gallery-mobile-image {
+        margin-bottom: 12px;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8f6f2;
+    }
+
+    #gallery-modal-overlay .gallery-mobile-image img {
+        display: block;
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+    }
+
+    /* Hide desktop grid on mobile */
+    #gallery-modal-overlay .deep-gallery-desktop-grid {
+        display: none !important;
     }
 }
 
