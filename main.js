@@ -292,11 +292,9 @@ function openGalleryModal(images, startIndex = 0) {
         // ----- DESKTOP LAYOUT – 2-COLUMN GRID (NEW) -----
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
-            width: 100%;
-            padding: 4px 0;
-            overflow-y: auto;
-            max-height: calc(90vh - 80px);
-        `;
+    width: 100%;
+    padding: 4px 0;
+`;
 
         const gridContainer = document.createElement('div');
         gridContainer.style.cssText = `
