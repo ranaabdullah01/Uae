@@ -3357,7 +3357,6 @@ async function sendAIMessage(message) {
 document.addEventListener('DOMContentLoaded', async function() {
     await loadAllData();
     handleRoute();
-    hidePreloader();
 
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
