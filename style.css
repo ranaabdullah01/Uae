@@ -144,41 +144,6 @@ img { max-width: 100%; height: auto; display: block; }
     letter-spacing: -0.02em;
 }
 
-/* ============================================================
-   PRELOADER
-   ============================================================ */
-
-#preloader {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    pointer-events: none;
-}
-
-#preloader-image {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    object-position: center;
-    transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
-    position: relative;
-    z-index: 9999;
-}
-
-#preloader-image.slide-up {
-    transform: translateY(-100vh);
-    opacity: 0;
-}
-
-#preloader.hide {
-    display: none;
-}
-
 /* ================ BUTTONS ================ */
 .btn {
     display: inline-flex;
