@@ -4100,8 +4100,6 @@ footer::before {
 #gallery-modal-overlay .deep-gallery-desktop-grid {
     width: 100%;
     padding: 4px 0;
-    overflow-y: auto;
-    max-height: calc(90vh - 80px);
 }
 
 #gallery-modal-overlay .deep-gallery-grid-container {
