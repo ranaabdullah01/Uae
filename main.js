@@ -159,6 +159,9 @@ function showToast(message, type = 'success') {
 // ============= NEW GALLERY MODAL =============
 let galleryModalOpen = false;
 
+// ============================================================
+// FIXED: openGalleryModal - desktop layout fixed (no blank area)
+// ============================================================
 function openGalleryModal(images, startIndex = 0) {
     if (!images || images.length === 0) {
         console.warn('openGalleryModal: no images provided');
@@ -264,6 +267,7 @@ function openGalleryModal(images, startIndex = 0) {
     `;
 
     if (isMobile) {
+        // ----- MOBILE LAYOUT – UNCHANGED -----
         imageList.forEach((src) => {
             const imgWrapper = document.createElement('div');
             imgWrapper.style.cssText = `
@@ -285,6 +289,7 @@ function openGalleryModal(images, startIndex = 0) {
             content.appendChild(imgWrapper);
         });
     } else {
+        // ----- DESKTOP LAYOUT – FIXED -----
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
             display: flex;
@@ -295,9 +300,10 @@ function openGalleryModal(images, startIndex = 0) {
             align-items: stretch;
         `;
 
+        // Left column: main image
         const leftCol = document.createElement('div');
         leftCol.style.cssText = `
-            flex: 2;
+            flex: 1;
             position: relative;
             background: #f8f6f2;
             border-radius: 12px;
@@ -306,14 +312,14 @@ function openGalleryModal(images, startIndex = 0) {
             align-items: center;
             justify-content: center;
             min-height: 300px;
-            aspect-ratio: 4/3;
+            height: 100%;
         `;
 
         const largeImg = document.createElement('img');
         largeImg.style.cssText = `
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             transition: opacity 0.3s ease;
             background: #f8f6f2;
         `;
@@ -340,6 +346,7 @@ function openGalleryModal(images, startIndex = 0) {
         leftCol.appendChild(largeImg);
         leftCol.appendChild(counter);
 
+        // Right column: thumbnails
         const rightCol = document.createElement('div');
         rightCol.style.cssText = `
             flex: 1.2;
@@ -2132,11 +2139,8 @@ window.showCommunityList = function(opts = {}) {
 
 // ============= ABOUT PAGE (DYNAMIC WITH AGENT + SALES) =============
 
-// ============================================================
-// FIXED: renderAboutPage - now uses currentAgentData correctly
-// ============================================================
 function renderAboutPage() {
-    // Testimonials (from CONFIG – shared across agents, or make them agent-specific if needed)
+    // Testimonials
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
         const testimonials = CONFIG.testimonials || [
@@ -2186,9 +2190,67 @@ function renderAboutPage() {
         });
     }
 
-    // ✅ REMOVED: agent profile updates (now handled by updateConfigInDOM)
-    // The agent name, photo, bio, specialties, languages, and stats are already
-    // updated by updateConfigInDOM() which uses the correct currentAgentData.
+    // Agent profile is already handled by updateConfigInDOM()
+    // but we also update it from the agentsData if available
+    if (agentsData && agentsData.length > 0) {
+        const agent = agentsData[0];
+        // Update name
+        const nameEl = document.getElementById('agent-name-about');
+        if (nameEl) nameEl.textContent = agent.agentName || 'Ahmed Khan';
+        
+        // Update photo
+        const photoEl = document.getElementById('agent-photo-about');
+        if (photoEl) photoEl.src = agent.photo || 'https://placehold.co/600x600/0A1628/C9A84C?text=Agent';
+        
+        // Update RERA
+        const rernaEl = document.getElementById('rerna-number-about');
+        if (rernaEl) rernaEl.textContent = agent.reraBRN || '123456';
+        
+        // Update bio
+        const bioEl = document.getElementById('agent-full-bio');
+        if (bioEl) bioEl.textContent = agent.bio || '';
+        
+        // Update stats
+        const yearsEl = document.getElementById('years-exp-about');
+        if (yearsEl) yearsEl.textContent = agent.yearsExperience || agent.experience || '12';
+        const soldEl = document.getElementById('properties-sold-about');
+        if (soldEl) soldEl.textContent = agent.propertiesSold || '850';
+        // Happy clients - not in agent table, keep as is or use config
+        const happyEl = document.getElementById('happy-clients-about');
+        if (happyEl) happyEl.textContent = '1200';
+        
+        // Specialties
+        const specialtiesContainer = document.getElementById('specialties-list');
+        if (specialtiesContainer) {
+            specialtiesContainer.innerHTML = '';
+            if (agent.specialties) {
+                agent.specialties.split(',').forEach(s => {
+                    if (s.trim()) {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag';
+                        tag.textContent = s.trim();
+                        specialtiesContainer.appendChild(tag);
+                    }
+                });
+            }
+        }
+        
+        // Languages
+        const languagesContainer = document.getElementById('languages-list');
+        if (languagesContainer) {
+            languagesContainer.innerHTML = '';
+            if (agent.languages) {
+                agent.languages.split(',').forEach(l => {
+                    if (l.trim()) {
+                        const tag = document.createElement('span');
+                        tag.className = 'tag language';
+                        tag.textContent = l.trim();
+                        languagesContainer.appendChild(tag);
+                    }
+                });
+            }
+        }
+    }
 }
 
 // ============= BLOG FUNCTIONS =============
@@ -2210,9 +2272,6 @@ async function loadBlog() {
     }
 }
 
-// ============================================================
-// UPDATED: renderBlogGrid - full card clickable + "+ Read More"
-// ============================================================
 function renderBlogGrid() {
     const container = document.getElementById('blog-grid');
     if (!container) return;
