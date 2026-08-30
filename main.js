@@ -289,150 +289,50 @@ function openGalleryModal(images, startIndex = 0) {
             content.appendChild(imgWrapper);
         });
     } else {
-        // ----- DESKTOP LAYOUT – FIXED -----
+        // ----- DESKTOP LAYOUT – 2-COLUMN GRID (NEW) -----
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
-            display: flex;
-            flex-direction: row;
-            gap: 24px;
-            min-height: 0;
-            height: 100%;
-            align-items: stretch;
-        `;
-
-        // Left column: main image
-        const leftCol = document.createElement('div');
-        leftCol.style.cssText = `
-            flex: 1;
-            position: relative;
-            background: #f8f6f2;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 300px;
-            height: 100%;
-        `;
-
-        const largeImg = document.createElement('img');
-        largeImg.style.cssText = `
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: opacity 0.3s ease;
-            background: #f8f6f2;
-        `;
-        largeImg.src = imageList[0];
-        largeImg.alt = 'Gallery image';
-
-        const counter = document.createElement('div');
-        counter.style.cssText = `
-            position: absolute;
-            bottom: 16px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(4px);
-            color: var(--cream, #F7F3EA);
-            padding: 4px 14px;
-            border-radius: 100px;
-            font-size: 13px;
-            font-weight: 500;
-            letter-spacing: 0.04em;
-            pointer-events: none;
-        `;
-        counter.textContent = `1 / ${total}`;
-
-        leftCol.appendChild(largeImg);
-        leftCol.appendChild(counter);
-
-        // Right column: thumbnails
-        const rightCol = document.createElement('div');
-        rightCol.style.cssText = `
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            min-width: 0;
-            max-height: 100%;
+            padding: 4px 0;
             overflow-y: auto;
+            max-height: calc(90vh - 80px);
         `;
 
-        const thumbGrid = document.createElement('div');
-        thumbGrid.style.cssText = `
+        const gridContainer = document.createElement('div');
+        gridContainer.style.cssText = `
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            flex: 1;
-            align-content: start;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
         `;
 
-        const thumbnails = [];
-        imageList.forEach((src, idx) => {
-            const thumb = document.createElement('img');
-            thumb.src = src;
-            thumb.alt = `Thumbnail ${idx + 1}`;
-            thumb.dataset.index = idx;
-            thumb.style.cssText = `
-                width: 100%;
-                aspect-ratio: 1/1;
-                object-fit: cover;
-                border-radius: 8px;
-                border: 3px solid transparent;
-                cursor: pointer;
-                transition: border 0.2s, transform 0.2s;
+        imageList.forEach((src) => {
+            const imgWrapper = document.createElement('div');
+            imgWrapper.style.cssText = `
+                position: relative;
+                overflow: hidden;
+                border-radius: 10px;
                 background: #f8f6f2;
+                aspect-ratio: 4 / 3;
             `;
-            if (idx === 0) {
-                thumb.style.borderColor = 'var(--brass, #B08A3E)';
-                thumb.style.transform = 'scale(1.02)';
-            }
-            thumb.addEventListener('click', () => {
-                setGalleryImage(idx);
-            });
-            thumbGrid.appendChild(thumb);
-            thumbnails.push(thumb);
+            const img = document.createElement('img');
+            img.src = src;
+            img.alt = 'Property image';
+            img.loading = 'lazy';
+            img.style.cssText = `
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.25s ease;
+            `;
+            imgWrapper.appendChild(img);
+            gridContainer.appendChild(imgWrapper);
         });
 
-        rightCol.appendChild(thumbGrid);
-        desktopContent.appendChild(leftCol);
-        desktopContent.appendChild(rightCol);
+        desktopContent.appendChild(gridContainer);
         content.appendChild(desktopContent);
 
-        function setGalleryImage(index) {
-            if (index < 0 || index >= total) return;
-            largeImg.style.opacity = '0';
-            setTimeout(() => {
-                largeImg.src = imageList[index];
-                largeImg.alt = `Image ${index + 1}`;
-                largeImg.style.opacity = '1';
-            }, 150);
-            counter.textContent = `${index + 1} / ${total}`;
-            thumbnails.forEach((thumb, i) => {
-                if (i === index) {
-                    thumb.style.borderColor = 'var(--brass, #B08A3E)';
-                    thumb.style.transform = 'scale(1.02)';
-                } else {
-                    thumb.style.borderColor = 'transparent';
-                    thumb.style.transform = 'scale(1)';
-                }
-            });
-        }
-
-        const keyHandlerDesktop = (e) => {
-            if (e.key === 'ArrowLeft') {
-                const currentSrc = largeImg.src;
-                const currentIndex = imageList.indexOf(currentSrc);
-                setGalleryImage(currentIndex - 1);
-            } else if (e.key === 'ArrowRight') {
-                const currentSrc = largeImg.src;
-                const currentIndex = imageList.indexOf(currentSrc);
-                setGalleryImage(currentIndex + 1);
-            }
-        };
-        document.addEventListener('keydown', keyHandlerDesktop);
-        window._galleryDesktopCleanup = () => {
-            document.removeEventListener('keydown', keyHandlerDesktop);
-        };
+        // No keyboard navigation for the grid
     }
 
     modal.appendChild(header);
@@ -452,10 +352,6 @@ function openGalleryModal(images, startIndex = 0) {
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             galleryModalOpen = false;
-            if (window._galleryDesktopCleanup) {
-                window._galleryDesktopCleanup();
-                delete window._galleryDesktopCleanup;
-            }
         }, 300);
     }
 
