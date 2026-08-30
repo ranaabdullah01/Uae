@@ -510,13 +510,12 @@ async function loadAllData() {
             currentAgentData = agentData.agent;
             Object.assign(config, currentAgentData);
         } else {
-            show404();
-            return;
+            // Do NOT call show404() here – keep using fallback config
+            console.warn('Agent not found, using fallback config');
         }
     } catch (e) {
         console.error('Failed to load agent:', e);
-        show404();
-        return;
+        // Keep using CONFIG fallback
     }
 
     // Load agents list for About page
@@ -2648,6 +2647,63 @@ function formatDate(date) {
     }
 }
 
+// ============================================================
+// SHOW INITIAL SECTION (NEW) - Called immediately on DOM ready
+// ============================================================
+
+function showInitialSection() {
+    const route = parseCurrentRoute();
+    let sectionId = route.section || 'home';
+
+    // If we have an agent slug in the URL, store it
+    if (route.agentSlug) {
+        currentAgentSlug = route.agentSlug;
+        localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, route.agentSlug);
+    } else {
+        const stored = localStorage.getItem(DEFAULT_AGENT_SLUG_KEY);
+        if (stored) currentAgentSlug = stored;
+        else currentAgentSlug = 'ahmed-khan';
+    }
+
+    // Activate the section
+    document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+    const target = document.getElementById(sectionId);
+    if (target) {
+        target.classList.add('active');
+    } else {
+        // Fallback to home
+        document.getElementById('home').classList.add('active');
+    }
+
+    // Update page title and header highlights
+    const sectionNames = {
+        home: currentAgentData?.siteName || config.siteName || 'Agent Web Studio - Luxury Real Estate Dubai',
+        listings: 'Properties | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        offplan: 'Off-Plan Projects | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        communities: 'Communities | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        about: 'About | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        contact: 'Contact | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        valuation: 'Valuation | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        goldenvisa: 'Golden Visa | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio'),
+        blog: 'Blog | ' + (currentAgentData?.siteName || config.siteName || 'Agent Web Studio')
+    };
+    document.title = sectionNames[sectionId] || currentAgentData?.siteName || config.siteName || 'Agent Web Studio';
+
+    document.querySelectorAll('.nav-menu a, .footer-links a, .floating-nav a, .nav-link, [data-section]').forEach(el => {
+        el.classList.remove('active');
+        if (el.dataset && el.dataset.section === sectionId) {
+            el.classList.add('active');
+        }
+        if (el.getAttribute('href') && el.getAttribute('href').includes(sectionId)) {
+            el.classList.add('active');
+        }
+    });
+
+    // Special handling for detail pages with slugs (listings, offplan, community, blog)
+    // but we don't render details here because data may not be loaded yet.
+    // The data load will refresh later.
+}
+
 // ============= SPA NAVIGATION =============
 
 function navigateTo(sectionId, opts = {}) {
@@ -2984,23 +3040,11 @@ document.addEventListener('keydown', function(e) {
 // ============================================================
 // HANDLE ROUTE — forceful, dedicated re-render on back/forward
 // ============================================================
-//
-// IMPORTANT: popstate-driven navigation must NOT be routed through
-// navigateTo()'s top "fast path" branch (used for click-driven same-section
-// transitions). That branch keys off whatever slug happens to currently be
-// in location.pathname, which after a popstate event is ALREADY the new
-// (destination) URL — so it was incorrectly matching "arriving at a detail
-// URL" and forcing the list/grid view instead of the detail view. Instead,
-// we parse the URL ourselves and dispatch straight to the dedicated,
-// forceful render functions (viewListingPage, renderListingDetail, etc.),
-// each called with { push: false } so we never touch history ourselves.
 
 function handleRoute() {
     const { section, slug, agentSlug } = parseCurrentRoute();
 
-    // Set agent slug from the URL or localStorage, but NEVER force it back
-    // into the URL via history.replaceState — that would corrupt the
-    // history stack that back/forward relies on.
+    // Set agent slug from the URL or localStorage
     if (agentSlug) {
         currentAgentSlug = agentSlug;
         localStorage.setItem(DEFAULT_AGENT_SLUG_KEY, agentSlug);
@@ -3016,9 +3060,6 @@ function handleRoute() {
 
     // Ensure core data is loaded before rendering the section.
     const needsCoreData = listings.length === 0 || communities.length === 0 || offplan.length === 0;
-    // Blog posts are loaded lazily (only when the blog section is first
-    // visited), so if we're routing straight to a blog URL on a hard
-    // load/refresh, make sure blogPosts is populated too.
     const needsBlogData = section === 'blog' && blogPosts.length === 0;
 
     if (needsCoreData || needsBlogData) {
@@ -3288,7 +3329,7 @@ function createAILeadForm() {
 }
 
 // ============================================================
-// FIXED: sendAIMessage - always appends user message, clears input, and sends agentSlug
+// sendAIMessage - always appends user message, clears input, and sends agentSlug
 // ============================================================
 async function sendAIMessage(message) {
     if (isAILoading) return;
@@ -3321,7 +3362,7 @@ async function sendAIMessage(message) {
             body: JSON.stringify({
                 message: message,
                 history: aiChatHistory.slice(-10),
-                agentSlug: currentAgentSlug   // <-- added to pass the current agent slug
+                agentSlug: currentAgentSlug
             })
         });
 
@@ -3354,10 +3395,41 @@ async function sendAIMessage(message) {
 
 // ============= INIT =============
 
-document.addEventListener('DOMContentLoaded', async function() {
-    await loadAllData();
-    handleRoute();
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Show the correct section immediately (based on URL or default home)
+    showInitialSection();
 
+    // 2. Load API/D1 data asynchronously (does NOT block rendering)
+    loadAllData()
+        .then(() => {
+            // After data loads, refresh dynamic content
+            updateAllSections();
+            // If we're on a detail page, re‑render it
+            const { section, slug } = parseCurrentRoute();
+            if (section === 'listings' && slug) {
+                const listing = listings.find(l => l.id == slug || String(l.id) === String(slug));
+                if (listing) window.viewListingPage(listing.id, { push: false });
+            }
+            if (section === 'offplan' && slug) {
+                const project = offplan.find(p => p.id == slug || String(p.id) === String(slug) || p.slug === slug);
+                if (project) window.viewOffplanPage(project.id, { push: false });
+            }
+            if (section === 'community' && slug) {
+                const community = communities.find(c => c.slug === slug || String(c.id) === String(slug));
+                if (community) window.viewCommunity(community.slug || community.id);
+            }
+            if (section === 'blog' && slug) {
+                window.viewBlogPost(slug, { push: false });
+            }
+        })
+        .catch(error => {
+            console.error('API loading error:', error);
+            // Keep the already visible page; do NOT destroy DOM.
+        });
+
+    // 3. Existing event listeners and other setup
+    // (everything below is unchanged from original)
+    
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
         isRTL = true;
