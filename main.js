@@ -292,9 +292,9 @@ function openGalleryModal(images, startIndex = 0) {
         // ----- DESKTOP LAYOUT – 2-COLUMN GRID (NEW) -----
         const desktopContent = document.createElement('div');
         desktopContent.style.cssText = `
-            width: 100%;
-            padding: 4px 0;
-        `;
+    width: 100%;
+    padding: 4px 0;
+`;
 
         const gridContainer = document.createElement('div');
         gridContainer.style.cssText = `
@@ -338,9 +338,6 @@ function openGalleryModal(images, startIndex = 0) {
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
 
-    // Lock body scroll
-    document.body.style.overflow = 'hidden';
-
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
     });
@@ -353,7 +350,6 @@ function openGalleryModal(images, startIndex = 0) {
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
             galleryModalOpen = false;
-            document.body.style.overflow = '';
         }, 300);
     }
 
@@ -486,9 +482,6 @@ async function loadAllData() {
 
     updateAllSections();
     applyCommunityFilterFromURL();
-    
-    // Populate mobile community dropdowns
-    populateMobileCommunityFilters();
 }
 
 function loadFromLocalStorage() {
@@ -499,7 +492,6 @@ function loadFromLocalStorage() {
         blogPosts = JSON.parse(localStorage.getItem('ak_blog') || '[]');
         Object.assign(config, JSON.parse(localStorage.getItem('ak_config') || '{}'));
         updateAllSections();
-        populateMobileCommunityFilters();
     } catch (e) {
         console.error('Error loading from localStorage:', e);
     }
@@ -546,7 +538,6 @@ function updateAllSections() {
     renderAboutPage();
     renderBlogGrid();
     populateCommunityFilter();
-    populateMobileCommunityFilters();
     
     const { section, slug } = parseCurrentRoute();
     const filterBar = document.getElementById('filter-bar');
@@ -717,156 +708,6 @@ function updateConfigInDOM() {
     const ogDesc = document.querySelector('meta[property="og:description"]');
     if (ogDesc && agent.siteDescription) {
         ogDesc.content = agent.siteDescription;
-    }
-}
-
-// ============= MOBILE FILTER FUNCTIONS =============
-
-function populateMobileCommunityFilters() {
-    const mobileCommunity = document.getElementById('mobile-community');
-    const sheetCommunity = document.getElementById('sheet-community');
-    
-    if (mobileCommunity) {
-        const currentValue = mobileCommunity.value;
-        mobileCommunity.innerHTML = '<option value="all">Community</option>';
-        communities.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.name;
-            option.textContent = c.name;
-            mobileCommunity.appendChild(option);
-        });
-        mobileCommunity.value = currentValue;
-    }
-    
-    if (sheetCommunity) {
-        const currentValue = sheetCommunity.value;
-        sheetCommunity.innerHTML = '<option value="all">All Communities</option>';
-        communities.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.name;
-            option.textContent = c.name;
-            sheetCommunity.appendChild(option);
-        });
-        sheetCommunity.value = currentValue;
-    }
-}
-
-function syncMobileFilters() {
-    const mobileType = document.getElementById('mobile-type');
-    const mobileCommunity = document.getElementById('mobile-community');
-    const mobilePrice = document.getElementById('mobile-price');
-    const mobileSearch = document.getElementById('mobile-search');
-    
-    const desktopType = document.getElementById('filter-type-listings');
-    const desktopCommunity = document.getElementById('filter-community-listings');
-    const desktopPrice = document.getElementById('filter-price-listings');
-    const desktopSearch = document.getElementById('filter-search');
-    const desktopBedrooms = document.getElementById('filter-bedrooms-listings');
-    const desktopStatus = document.getElementById('filter-status-listings');
-    
-    if (mobileType && desktopType) {
-        desktopType.value = mobileType.value;
-    }
-    if (mobileCommunity && desktopCommunity) {
-        desktopCommunity.value = mobileCommunity.value;
-    }
-    if (mobilePrice && desktopPrice) {
-        desktopPrice.value = mobilePrice.value;
-    }
-    if (mobileSearch && desktopSearch) {
-        desktopSearch.value = mobileSearch.value;
-    }
-    
-    // Also sync bottom sheet values if it's open
-    const sheetType = document.getElementById('sheet-type');
-    const sheetCommunity = document.getElementById('sheet-community');
-    const sheetPrice = document.getElementById('sheet-price');
-    const sheetBedrooms = document.getElementById('sheet-bedrooms');
-    const sheetStatus = document.getElementById('sheet-status');
-    
-    if (sheetType && desktopType) sheetType.value = desktopType.value;
-    if (sheetCommunity && desktopCommunity) sheetCommunity.value = desktopCommunity.value;
-    if (sheetPrice && desktopPrice) sheetPrice.value = desktopPrice.value;
-    if (sheetBedrooms && desktopBedrooms) sheetBedrooms.value = desktopBedrooms.value;
-    if (sheetStatus && desktopStatus) sheetStatus.value = desktopStatus.value;
-    
-    if (typeof window.filterListings === 'function') {
-        window.filterListings();
-    }
-}
-
-function openFilterSheet() {
-    const sheet = document.getElementById('filter-bottom-sheet');
-    if (!sheet) return;
-    
-    // Sync current values into the sheet
-    const desktopType = document.getElementById('filter-type-listings');
-    const desktopCommunity = document.getElementById('filter-community-listings');
-    const desktopPrice = document.getElementById('filter-price-listings');
-    const desktopBedrooms = document.getElementById('filter-bedrooms-listings');
-    const desktopStatus = document.getElementById('filter-status-listings');
-    
-    const sheetType = document.getElementById('sheet-type');
-    const sheetCommunity = document.getElementById('sheet-community');
-    const sheetPrice = document.getElementById('sheet-price');
-    const sheetBedrooms = document.getElementById('sheet-bedrooms');
-    const sheetStatus = document.getElementById('sheet-status');
-    
-    if (sheetType && desktopType) sheetType.value = desktopType.value;
-    if (sheetCommunity && desktopCommunity) sheetCommunity.value = desktopCommunity.value;
-    if (sheetPrice && desktopPrice) sheetPrice.value = desktopPrice.value;
-    if (sheetBedrooms && desktopBedrooms) sheetBedrooms.value = desktopBedrooms.value;
-    if (sheetStatus && desktopStatus) sheetStatus.value = desktopStatus.value;
-    
-    sheet.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    requestAnimationFrame(() => {
-        sheet.classList.add('open');
-    });
-}
-
-function closeFilterSheet() {
-    const sheet = document.getElementById('filter-bottom-sheet');
-    if (!sheet) return;
-    sheet.classList.remove('open');
-    document.body.style.overflow = '';
-    setTimeout(() => {
-        sheet.style.display = 'none';
-    }, 350);
-}
-
-function applySheetFilters() {
-    const sheetType = document.getElementById('sheet-type');
-    const sheetCommunity = document.getElementById('sheet-community');
-    const sheetPrice = document.getElementById('sheet-price');
-    const sheetBedrooms = document.getElementById('sheet-bedrooms');
-    const sheetStatus = document.getElementById('sheet-status');
-    
-    const desktopType = document.getElementById('filter-type-listings');
-    const desktopCommunity = document.getElementById('filter-community-listings');
-    const desktopPrice = document.getElementById('filter-price-listings');
-    const desktopBedrooms = document.getElementById('filter-bedrooms-listings');
-    const desktopStatus = document.getElementById('filter-status-listings');
-    
-    if (sheetType && desktopType) desktopType.value = sheetType.value;
-    if (sheetCommunity && desktopCommunity) desktopCommunity.value = sheetCommunity.value;
-    if (sheetPrice && desktopPrice) desktopPrice.value = sheetPrice.value;
-    if (sheetBedrooms && desktopBedrooms) desktopBedrooms.value = sheetBedrooms.value;
-    if (sheetStatus && desktopStatus) desktopStatus.value = sheetStatus.value;
-    
-    // Update mobile quick filters to match
-    const mobileType = document.getElementById('mobile-type');
-    const mobileCommunity = document.getElementById('mobile-community');
-    const mobilePrice = document.getElementById('mobile-price');
-    
-    if (mobileType && desktopType) mobileType.value = desktopType.value;
-    if (mobileCommunity && desktopCommunity) mobileCommunity.value = desktopCommunity.value;
-    if (mobilePrice && desktopPrice) mobilePrice.value = desktopPrice.value;
-    
-    closeFilterSheet();
-    
-    if (typeof window.filterListings === 'function') {
-        window.filterListings();
     }
 }
 
@@ -2504,27 +2345,6 @@ function filterListings() {
     if (container) {
         renderListings(filtered, container);
     }
-    
-    // Also update mobile filter values to reflect current state
-    const mobileType = document.getElementById('mobile-type');
-    const mobileCommunity = document.getElementById('mobile-community');
-    const mobilePrice = document.getElementById('mobile-price');
-    const mobileSearch = document.getElementById('mobile-search');
-    const sheetType = document.getElementById('sheet-type');
-    const sheetCommunity = document.getElementById('sheet-community');
-    const sheetPrice = document.getElementById('sheet-price');
-    const sheetBedrooms = document.getElementById('sheet-bedrooms');
-    const sheetStatus = document.getElementById('sheet-status');
-    
-    if (mobileType) mobileType.value = type;
-    if (mobileCommunity) mobileCommunity.value = community;
-    if (mobilePrice) mobilePrice.value = price;
-    if (mobileSearch) mobileSearch.value = search;
-    if (sheetType) sheetType.value = type;
-    if (sheetCommunity) sheetCommunity.value = community;
-    if (sheetPrice) sheetPrice.value = price;
-    if (sheetBedrooms) sheetBedrooms.value = bedrooms;
-    if (sheetStatus) sheetStatus.value = status;
 }
 
 window.filterByCommunity = function(communityName) {
@@ -2589,8 +2409,6 @@ function populateCommunityFilter() {
         });
         heroCommunitySelect.value = currentHeroVal;
     }
-    
-    populateMobileCommunityFilters();
 }
 
 // ============= VIEW LISTING DETAIL (LEGACY MODAL SUPPORT) =============
@@ -2840,7 +2658,6 @@ function navigateTo(sectionId, opts = {}) {
         if (sectionId === 'listings') {
             filterListings();
             populateCommunityFilter();
-            populateMobileCommunityFilters();
             if (query && query.community) {
                 const communitySelect = document.getElementById('filter-community-listings');
                 if (communitySelect && communities.some(c => c.name === query.community)) {
@@ -3012,7 +2829,6 @@ function navigateTo(sectionId, opts = {}) {
 
     if (sectionId === 'listings') {
         populateCommunityFilter();
-        populateMobileCommunityFilters();
         filterListings();
         if (query && query.community) {
             const communitySelect = document.getElementById('filter-community-listings');
@@ -3499,9 +3315,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (section === 'blog' && slug) {
                 window.viewBlogPost(slug, { push: false });
             }
-            
-            // Populate mobile filters after data loads
-            populateMobileCommunityFilters();
         })
         .catch(error => {
             console.error('API loading error:', error);
@@ -3509,6 +3322,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
     // 3. Existing event listeners and other setup
+    // (everything below is unchanged from original)
     
     const rtlStored = localStorage.getItem('ak_rtl');
     if (rtlStored === 'true') {
@@ -3586,45 +3400,6 @@ document.addEventListener('DOMContentLoaded', function() {
             header.classList.remove('scrolled');
         }
     });
-
-    // ---- MOBILE FILTER EVENT LISTENERS ----
-    const mobileType = document.getElementById('mobile-type');
-    const mobileCommunity = document.getElementById('mobile-community');
-    const mobilePrice = document.getElementById('mobile-price');
-    const mobileSearch = document.getElementById('mobile-search');
-    const moreFiltersBtn = document.getElementById('mobile-more-filters-btn');
-    const sheetClose = document.getElementById('filter-sheet-close');
-    const sheetOverlay = document.querySelector('.filter-sheet-overlay');
-    const sheetApply = document.getElementById('sheet-apply-filters');
-    
-    if (mobileType) {
-        mobileType.addEventListener('change', syncMobileFilters);
-    }
-    if (mobileCommunity) {
-        mobileCommunity.addEventListener('change', syncMobileFilters);
-    }
-    if (mobilePrice) {
-        mobilePrice.addEventListener('change', syncMobileFilters);
-    }
-    if (mobileSearch) {
-        let searchTimeout;
-        mobileSearch.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(syncMobileFilters, 300);
-        });
-    }
-    if (moreFiltersBtn) {
-        moreFiltersBtn.addEventListener('click', openFilterSheet);
-    }
-    if (sheetClose) {
-        sheetClose.addEventListener('click', closeFilterSheet);
-    }
-    if (sheetOverlay) {
-        sheetOverlay.addEventListener('click', closeFilterSheet);
-    }
-    if (sheetApply) {
-        sheetApply.addEventListener('click', applySheetFilters);
-    }
 
     // ---- AI Chat Event Listeners ----
     if (aiToggle) {
