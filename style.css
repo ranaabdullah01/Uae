@@ -2130,81 +2130,564 @@ nav .nav-container {
 }
 
 /* ============================================================
-   BLOG DETAIL - WIDER LAYOUT (centered)
+   BLOG ARTICLE TYPOGRAPHY IMPROVEMENTS
+   Professional editorial typography for real-estate blog
    ============================================================ */
 
-/* Overall container – wider and centered */
+/* 1. Blog Detail Container – comfortable reading width */
 #blog-detail {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
-/* Back button – align with left edge of the container */
-#blog-detail .btn-secondary {
-    margin-bottom: 24px;
-    display: inline-block;
-}
-
-/* Reset .blog-detail – no width constraint, let children control width */
-.blog-detail {
-    padding: 0;
-    max-width: none;
-    margin: 0;
-}
-
-/* Article text – comfortable reading width (now 1000px) and centered within the wider container */
-.blog-detail .blog-detail-header,
-.blog-detail .blog-detail-body,
-.blog-detail .blog-detail-tags,
-.blog-detail .blog-detail-share {
-    max-width: 1000px;
+#blog-detail .blog-detail-header,
+#blog-detail .blog-detail-body,
+#blog-detail .blog-detail-tags,
+#blog-detail .blog-detail-share {
+    max-width: 880px;
     margin-left: auto;
     margin-right: auto;
 }
 
-/* Hero image – spans the full container width (1100px) */
+/* 2. Article Title (H1) – bold but elegant */
+.blog-detail-title {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--emerald-deep);
+    margin: 0 0 16px 0;
+    max-width: 860px;
+}
+
+/* 3. Article Excerpt – clear and readable */
+.blog-detail-excerpt {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.25vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--ink-soft);
+    border-left: 4px solid var(--brass);
+    padding-left: 24px;
+    margin: 0 0 28px 0;
+    max-width: 780px;
+}
+
+/* 4. Metadata – clean and readable */
+.blog-detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    align-items: center;
+    margin-bottom: 18px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.blog-detail-meta .blog-category {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 100px;
+    background: var(--cream-warm);
+    color: var(--emerald);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.blog-detail-meta .blog-date,
+.blog-detail-meta .blog-views {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.blog-detail-meta .blog-author {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    color: var(--emerald);
+    font-size: 13px;
+}
+
+/* 5. Article Body – comfortable reading */
+.blog-detail-body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    font-size: clamp(1rem, 1.1vw, 1.125rem);
+    line-height: 1.75;
+    color: var(--ink);
+    max-width: 880px;
+}
+
+.blog-detail-body p {
+    margin-bottom: 20px;
+    color: var(--ink);
+    font-weight: 400;
+}
+
+/* 6. Section Headings (H2, H3) – clear hierarchy */
+.blog-detail-body h2 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--emerald-deep);
+    margin-top: 44px;
+    margin-bottom: 12px;
+}
+
+.blog-detail-body h3 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: var(--emerald-deep);
+    margin-top: 34px;
+    margin-bottom: 10px;
+}
+
+.blog-detail-body h4 {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--emerald-deep);
+    margin-top: 28px;
+    margin-bottom: 8px;
+}
+
+/* 7. Numbered sections (like "1. Downtown Dubai") – proper heading style */
+.blog-detail-body ol,
+.blog-detail-body ul {
+    padding-left: 28px;
+    margin-bottom: 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: clamp(1rem, 1.1vw, 1.125rem);
+    line-height: 1.75;
+    color: var(--ink);
+}
+
+.blog-detail-body li {
+    margin-bottom: 8px;
+    color: var(--ink);
+}
+
+/* Numbered list items that look like section headings */
+.blog-detail-body ol li strong,
+.blog-detail-body ul li strong {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    color: var(--emerald-deep);
+}
+
+/* 8. Blockquote – elegant pull quote */
+.blog-detail-body blockquote {
+    border-left: 4px solid var(--brass);
+    padding: 18px 26px 18px 28px;
+    margin: 28px 0 28px 0;
+    background: var(--cream-warm);
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-style: italic;
+    font-size: clamp(1rem, 1.1vw, 1.1rem);
+    line-height: 1.65;
+    color: var(--ink);
+}
+
+/* 9. Images in blog body */
+.blog-detail-body img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-sm);
+    margin: 24px 0 24px 0;
+    display: block;
+}
+
+/* 10. Tags – clean and readable */
+.blog-detail-tags {
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.blog-detail-tags h4 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+}
+
+.blog-detail-tags .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.blog-detail-tags .blog-tag {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 100px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--ink-soft);
+    transition: var(--transition);
+}
+
+.blog-detail-tags .blog-tag:hover {
+    border-color: var(--brass);
+    color: var(--emerald);
+    background: var(--cream);
+}
+
+/* 11. Share section */
+.blog-detail-share {
+    margin-top: 36px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+}
+
+.blog-detail-share h4 {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    transition: var(--transition);
+    text-decoration: none;
+    font-size: 16px;
+}
+
+.share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.share-btn.twitter {
+    background: #1DA1F2;
+}
+.share-btn.facebook {
+    background: #1877F2;
+}
+.share-btn.linkedin {
+    background: #0A66C2;
+}
+.share-btn.whatsapp {
+    background: #25D366;
+}
+
+/* 12. Back button */
+#blog-detail .btn-secondary {
+    margin-bottom: 28px;
+    padding: 10px 24px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    border-radius: 100px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+#blog-detail .btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+}
+
+/* 13. Featured image */
 .blog-detail-image {
-    margin: 0 -20px;
-    border-radius: 0;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 32px;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .blog-detail-image img {
     width: 100%;
-    height: auto;
+    max-height: 480px;
+    object-fit: cover;
     display: block;
 }
 
-/* ============================================================
-   BLOG DETAIL - RESPONSIVE
-   ============================================================ */
+/* 14. Header spacing */
+.blog-detail-header {
+    margin-bottom: 24px;
+}
 
+/* 15. Responsive refinements */
+
+/* Tablet */
+@media (max-width: 1024px) {
+    #blog-detail .blog-detail-header,
+    #blog-detail .blog-detail-body,
+    #blog-detail .blog-detail-tags,
+    #blog-detail .blog-detail-share {
+        max-width: 740px;
+    }
+
+    .blog-detail-image {
+        max-width: 740px;
+    }
+
+    .blog-detail-title {
+        font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+    }
+
+    .blog-detail-body h2 {
+        font-size: clamp(1.5rem, 2.5vw, 2rem);
+    }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
     #blog-detail {
         padding: 0 16px;
     }
-    .blog-detail-image {
-        margin: 0 -16px;
-    }
-    .blog-detail .blog-detail-header,
-    .blog-detail .blog-detail-body,
-    .blog-detail .blog-detail-tags,
-    .blog-detail .blog-detail-share {
+
+    #blog-detail .blog-detail-header,
+    #blog-detail .blog-detail-body,
+    #blog-detail .blog-detail-tags,
+    #blog-detail .blog-detail-share {
         max-width: 100%;
+        padding: 0 4px;
+    }
+
+    .blog-detail-image {
+        max-width: 100%;
+        margin: 0 -16px 28px -16px;
+        border-radius: 0;
+    }
+
+    .blog-detail-image img {
+        max-height: 320px;
+        border-radius: 0;
+    }
+
+    .blog-detail-title {
+        font-size: clamp(1.8rem, 5.5vw, 2.4rem);
+        line-height: 1.1;
+    }
+
+    .blog-detail-excerpt {
+        font-size: clamp(0.95rem, 2vw, 1.05rem);
+        padding-left: 16px;
+        border-left-width: 3px;
+        margin-bottom: 20px;
+    }
+
+    .blog-detail-meta {
+        font-size: 12px;
+        gap: 6px 16px;
+        margin-bottom: 14px;
+    }
+
+    .blog-detail-meta .blog-category {
+        font-size: 10px;
+        padding: 2px 12px;
+    }
+
+    .blog-detail-meta .blog-date,
+    .blog-detail-meta .blog-views,
+    .blog-detail-meta .blog-author {
+        font-size: 12px;
+    }
+
+    .blog-detail-body {
+        font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+        line-height: 1.7;
+    }
+
+    .blog-detail-body p {
+        margin-bottom: 16px;
+    }
+
+    .blog-detail-body h2 {
+        font-size: clamp(1.3rem, 3.5vw, 1.7rem);
+        margin-top: 34px;
+        margin-bottom: 10px;
+    }
+
+    .blog-detail-body h3 {
+        font-size: clamp(1.1rem, 2.8vw, 1.4rem);
+        margin-top: 28px;
+        margin-bottom: 8px;
+    }
+
+    .blog-detail-body h4 {
+        font-size: clamp(0.95rem, 2vw, 1.1rem);
+        margin-top: 24px;
+        margin-bottom: 6px;
+    }
+
+    .blog-detail-body ol,
+    .blog-detail-body ul {
+        padding-left: 20px;
+        font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    }
+
+    .blog-detail-body blockquote {
+        padding: 14px 18px 14px 20px;
+        margin: 20px 0 20px 0;
+        font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+    }
+
+    .blog-detail-tags {
+        margin-top: 32px;
+        padding-top: 22px;
+    }
+
+    .blog-detail-tags h4 {
+        font-size: 12px;
+    }
+
+    .blog-detail-tags .blog-tag {
+        font-size: 11px;
+        padding: 3px 12px;
+    }
+
+    .blog-detail-share {
+        margin-top: 28px;
+        padding-top: 22px;
+    }
+
+    .blog-detail-share h4 {
+        font-size: 12px;
+    }
+
+    .share-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 14px;
+    }
+
+    #blog-detail .btn-secondary {
+        padding: 8px 18px;
+        font-size: 11px;
+        margin-bottom: 20px;
+        width: 100%;
+        justify-content: center;
     }
 }
 
+/* Small mobile */
 @media (max-width: 480px) {
     #blog-detail {
         padding: 0 12px;
     }
+
     .blog-detail-image {
-        margin: 0 -12px;
+        margin: 0 -12px 20px -12px;
+    }
+
+    .blog-detail-image img {
+        max-height: 240px;
+    }
+
+    .blog-detail-title {
+        font-size: clamp(1.6rem, 5vw, 2rem);
+    }
+
+    .blog-detail-excerpt {
+        font-size: 0.9rem;
+        padding-left: 14px;
+        border-left-width: 3px;
+    }
+
+    .blog-detail-body {
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+
+    .blog-detail-body h2 {
+        font-size: 1.2rem;
+        margin-top: 28px;
+    }
+
+    .blog-detail-body h3 {
+        font-size: 1rem;
+        margin-top: 24px;
+    }
+
+    .blog-detail-body ol,
+    .blog-detail-body ul {
+        padding-left: 16px;
+        font-size: 0.9rem;
+    }
+
+    .blog-detail-body blockquote {
+        padding: 12px 14px 12px 16px;
+        font-size: 0.9rem;
+        margin: 16px 0;
+    }
+
+    .blog-detail-meta {
+        font-size: 11px;
+        gap: 4px 12px;
+    }
+
+    .blog-detail-meta .blog-category {
+        font-size: 9px;
+        padding: 2px 10px;
+    }
+
+    .blog-detail-meta .blog-date,
+    .blog-detail-meta .blog-views,
+    .blog-detail-meta .blog-author {
+        font-size: 11px;
+    }
+
+    .blog-detail-tags .blog-tag {
+        font-size: 10px;
+        padding: 2px 10px;
+    }
+
+    .share-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 12px;
     }
 }
 
 /* ============================================================
-   BLOG DETAIL LEGACY STYLES (Preserved for compatibility)
+   BLOG DETAIL - Legacy styles preserved for compatibility
+   (These are now overridden by the improved typography above,
+    but kept for any edge cases.)
    ============================================================ */
 
 .blog-detail {
