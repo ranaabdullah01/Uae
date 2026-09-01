@@ -7,7 +7,7 @@
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // FIX: ABOUT SECTION USES CURRENT AGENT INSTEAD OF FIRST AGENT
 // FIX: SOCIAL LINKS NOW USE AGENT'S TOP-LEVEL FIELDS (facebook, instagram, linkedin, youtube)
-// FIX: LOADING OVERLAY TO PREVENT FLASH OF DEFAULT AGENT
+// FIX: LOADING OVERLAY WITH SPINNER ONLY (NO TEXT)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -3292,7 +3292,7 @@ async function sendAIMessage(message) {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', function() {
-    // ---- SHOW LOADING OVERLAY ----
+    // ---- SHOW LOADING OVERLAY (SPINNER ONLY, NO TEXT) ----
     const loadingOverlay = document.createElement('div');
     loadingOverlay.id = 'app-loading-overlay';
     loadingOverlay.style.cssText = `
@@ -3304,15 +3304,12 @@ document.addEventListener('DOMContentLoaded', function() {
         align-items: center;
         justify-content: center;
         font-family: 'Inter', sans-serif;
-        font-size: 1.2rem;
-        color: var(--emerald);
         flex-direction: column;
         gap: 20px;
         transition: opacity 0.5s ease;
     `;
     loadingOverlay.innerHTML = `
-        <div style="font-weight:600;">Loading Agent Profile...</div>
-        <div style="width: 40px; height: 40px; border: 3px solid var(--line); border-top-color: var(--brass); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <div style="width: 44px; height: 44px; border: 3px solid var(--line); border-top-color: var(--brass); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
     `;
     // Add keyframe if not present
     if (!document.getElementById('spin-keyframes')) {
