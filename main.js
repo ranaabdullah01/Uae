@@ -6,6 +6,7 @@
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // FIX: ABOUT SECTION USES CURRENT AGENT INSTEAD OF FIRST AGENT
+// FIX: SOCIAL LINKS NOW USE AGENT'S TOP-LEVEL FIELDS (facebook, instagram, linkedin, youtube)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -652,14 +653,21 @@ function updateConfigInDOM() {
     document.querySelectorAll('.portal-btn.propertyfinder').forEach(el => el.href = agent.propertyFinderURL || config.propertyFinderURL || '#');
     document.querySelectorAll('.portal-btn.bayut').forEach(el => el.href = agent.bayutURL || config.bayutURL || '#');
     
-    const social = agent.social || config.social || {};
+    // ========== FIX SOCIAL LINKS ==========
+    // Use top-level agent fields first, then fallback to config.social or config top-level
+    const socialLinks = {
+        facebook: agent.facebook || config.facebook || config.social?.facebook || '#',
+        instagram: agent.instagram || config.instagram || config.social?.instagram || '#',
+        linkedin: agent.linkedin || config.linkedin || config.social?.linkedin || '#',
+        youtube: agent.youtube || config.youtube || config.social?.youtube || '#',
+    };
     const socialKeys = ['facebook', 'instagram', 'linkedin', 'youtube'];
     document.querySelectorAll('.social-links a').forEach((link, index) => {
         if (index < socialKeys.length) {
-            const key = socialKeys[index];
-            link.href = social[key] || config.social?.[key] || '#';
+            link.href = socialLinks[socialKeys[index]];
         }
     });
+    // =====================================
     
     const greeting = agent.whatsappGreeting || config.whatsappGreeting || 'Hello! I\'m interested in your real estate services.';
     const cleanNumber = whatsapp.replace(/[^0-9]/g, '');
