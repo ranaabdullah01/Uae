@@ -7,7 +7,7 @@
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
 // FIX: ABOUT SECTION USES CURRENT AGENT INSTEAD OF FIRST AGENT
 // FIX: SOCIAL LINKS NOW USE AGENT'S TOP-LEVEL FIELDS (facebook, instagram, linkedin, youtube)
-// FIX: NO LOADING OVERLAY – PAGE SHOWS IMMEDIATELY, UPDATES AFTER API RESPONSE
+// FIX: LOADING OVERLAY WITH SPINNER ONLY (NO TEXT)
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -3292,11 +3292,38 @@ async function sendAIMessage(message) {
 // ============= INIT =============
 
 document.addEventListener('DOMContentLoaded', function() {
+    // ---- SHOW LOADING OVERLAY (SPINNER ONLY, NO TEXT) ----
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'app-loading-overlay';
+    loadingOverlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        background: var(--paper, #FBF9F4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Inter', sans-serif;
+        flex-direction: column;
+        gap: 20px;
+        transition: opacity 0.5s ease;
+    `;
+    loadingOverlay.innerHTML = `
+        <div style="width: 44px; height: 44px; border: 3px solid var(--line); border-top-color: var(--brass); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+    `;
+    // Add keyframe if not present
+    if (!document.getElementById('spin-keyframes')) {
+        const style = document.createElement('style');
+        style.id = 'spin-keyframes';
+        style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+    }
+    document.body.prepend(loadingOverlay);
+
     // 1. Show the correct section immediately (based on URL or default home)
     showInitialSection();
 
     // 2. Load API/D1 data asynchronously (does NOT block rendering)
-    // No loading overlay – page shows immediately with default content, updates after API response.
     loadAllData()
         .then(() => {
             // After data loads, refresh dynamic content
@@ -3318,9 +3345,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (section === 'blog' && slug) {
                 window.viewBlogPost(slug, { push: false });
             }
+            // ---- HIDE LOADING OVERLAY ----
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => loadingOverlay.remove(), 500);
         })
         .catch(error => {
             console.error('API loading error:', error);
+            // Hide overlay anyway
+            loadingOverlay.style.opacity = '0';
+            setTimeout(() => loadingOverlay.remove(), 500);
             // Keep the already visible page; do NOT destroy DOM.
         });
 
