@@ -5,11 +5,7 @@
 // CLICK-TO-OPEN-DETAIL ON LISTING AND OFF-PLAN CARDS (like communities)
 // SPACING ADJUSTED TO MATCH OFF-PLAN LISTING PAGE
 // DYNAMIC AGENT PROFILE + RECENT SALES ADDED
-// ================================================
-
-// ================================================
-// UPDATED: Home page counts all set to 3
-// Featured Properties: 3, Featured Off-Plan: 3, Communities: 3
+// FIX: ABOUT SECTION USES CURRENT AGENT INSTEAD OF FIRST AGENT
 // ================================================
 
 import { CONFIG } from './config.js';
@@ -412,7 +408,7 @@ async function loadAllData() {
         // Keep using CONFIG fallback
     }
 
-    // Load agents list for About page
+    // Load agents list for About page (only needed for fallback now)
     try {
         const agentsResp = await fetch(`${API_BASE}/api/agents`);
         const agentsDataJson = await agentsResp.json();
@@ -2030,10 +2026,69 @@ window.showCommunityList = function(opts = {}) {
     navigateTo('communities', { push: false });
 };
 
-// ============= ABOUT PAGE (DYNAMIC WITH AGENT + SALES) =============
+// ============= ABOUT PAGE (DYNAMIC WITH CURRENT AGENT) =============
 
 function renderAboutPage() {
-    // Testimonials
+    // ---- Use the current agent (from URL slug) instead of first agent ----
+    const agent = currentAgentData || agentProfile || config;
+
+    // Update name
+    const nameEl = document.getElementById('agent-name-about');
+    if (nameEl) nameEl.textContent = agent.agentName || 'Ahmed Khan';
+
+    // Update photo
+    const photoEl = document.getElementById('agent-photo-about');
+    if (photoEl) photoEl.src = agent.photo || 'https://placehold.co/600x600/0A1628/C9A84C?text=Agent';
+
+    // Update RERA
+    const rernaEl = document.getElementById('rerna-number-about');
+    if (rernaEl) rernaEl.textContent = agent.reraBRN || '123456';
+
+    // Update bio
+    const bioEl = document.getElementById('agent-full-bio');
+    if (bioEl) bioEl.textContent = agent.bio || '';
+
+    // Update stats
+    const yearsEl = document.getElementById('years-exp-about');
+    if (yearsEl) yearsEl.textContent = agent.yearsExperience || agent.experience || '12';
+    const soldEl = document.getElementById('properties-sold-about');
+    if (soldEl) soldEl.textContent = agent.propertiesSold || '850';
+    const happyEl = document.getElementById('happy-clients-about');
+    if (happyEl) happyEl.textContent = '1200'; // you can add agent.happyClients if available
+
+    // Specialties
+    const specialtiesContainer = document.getElementById('specialties-list');
+    if (specialtiesContainer) {
+        specialtiesContainer.innerHTML = '';
+        if (agent.specialties) {
+            agent.specialties.split(',').forEach(s => {
+                if (s.trim()) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = s.trim();
+                    specialtiesContainer.appendChild(tag);
+                }
+            });
+        }
+    }
+
+    // Languages
+    const languagesContainer = document.getElementById('languages-list');
+    if (languagesContainer) {
+        languagesContainer.innerHTML = '';
+        if (agent.languages) {
+            agent.languages.split(',').forEach(l => {
+                if (l.trim()) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag language';
+                    tag.textContent = l.trim();
+                    languagesContainer.appendChild(tag);
+                }
+            });
+        }
+    }
+
+    // ---- Testimonials (unchanged) ----
     const testimonialsContainer = document.getElementById('testimonials-grid');
     if (testimonialsContainer) {
         const testimonials = CONFIG.testimonials || [
@@ -2056,7 +2111,7 @@ function renderAboutPage() {
         });
     }
 
-    // Recent Sales - dynamic from API
+    // ---- Recent Sales - dynamic from API (unchanged) ----
     const salesContainer = document.getElementById('sales-grid');
     if (salesContainer) {
         salesContainer.innerHTML = '';
@@ -2081,68 +2136,6 @@ function renderAboutPage() {
             `;
             salesContainer.appendChild(card);
         });
-    }
-
-    // Agent profile is already handled by updateConfigInDOM()
-    // but we also update it from the agentsData if available
-    if (agentsData && agentsData.length > 0) {
-        const agent = agentsData[0];
-        // Update name
-        const nameEl = document.getElementById('agent-name-about');
-        if (nameEl) nameEl.textContent = agent.agentName || 'Ahmed Khan';
-        
-        // Update photo
-        const photoEl = document.getElementById('agent-photo-about');
-        if (photoEl) photoEl.src = agent.photo || 'https://placehold.co/600x600/0A1628/C9A84C?text=Agent';
-        
-        // Update RERA
-        const rernaEl = document.getElementById('rerna-number-about');
-        if (rernaEl) rernaEl.textContent = agent.reraBRN || '123456';
-        
-        // Update bio
-        const bioEl = document.getElementById('agent-full-bio');
-        if (bioEl) bioEl.textContent = agent.bio || '';
-        
-        // Update stats
-        const yearsEl = document.getElementById('years-exp-about');
-        if (yearsEl) yearsEl.textContent = agent.yearsExperience || agent.experience || '12';
-        const soldEl = document.getElementById('properties-sold-about');
-        if (soldEl) soldEl.textContent = agent.propertiesSold || '850';
-        // Happy clients - not in agent table, keep as is or use config
-        const happyEl = document.getElementById('happy-clients-about');
-        if (happyEl) happyEl.textContent = '1200';
-        
-        // Specialties
-        const specialtiesContainer = document.getElementById('specialties-list');
-        if (specialtiesContainer) {
-            specialtiesContainer.innerHTML = '';
-            if (agent.specialties) {
-                agent.specialties.split(',').forEach(s => {
-                    if (s.trim()) {
-                        const tag = document.createElement('span');
-                        tag.className = 'tag';
-                        tag.textContent = s.trim();
-                        specialtiesContainer.appendChild(tag);
-                    }
-                });
-            }
-        }
-        
-        // Languages
-        const languagesContainer = document.getElementById('languages-list');
-        if (languagesContainer) {
-            languagesContainer.innerHTML = '';
-            if (agent.languages) {
-                agent.languages.split(',').forEach(l => {
-                    if (l.trim()) {
-                        const tag = document.createElement('span');
-                        tag.className = 'tag language';
-                        tag.textContent = l.trim();
-                        languagesContainer.appendChild(tag);
-                    }
-                });
-            }
-        }
     }
 }
 
